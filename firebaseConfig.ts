@@ -1,7 +1,7 @@
-import { initializeApp } from 'firebase/app';
-import {signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword } from 'firebase/auth';
+import {getApps , initializeApp } from 'firebase/app';
+import {signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, sendEmailVerification  } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {initializeAuth, getReactNativePersistence } from "firebase/auth";
+import {getAuth, initializeAuth, getReactNativePersistence, onAuthStateChanged } from "firebase/auth";
 
 
 // Вставьте сюда ваши настройки Firebase
@@ -15,12 +15,18 @@ const firebaseConfig = {
   appId: '1:938397449309:web:2e2ea7017eedbfbb4be1b4',
   measurementId: 'G-9WZKC73K6S',
 };
+let app;
+let auth;
 
-
-const app = initializeApp(firebaseConfig);
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage)
-});
+if (getApps().length===0) {
+  app = initializeApp(firebaseConfig);
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage)
+  });
+} else {
+  app = getApps()[0];
+  auth = getAuth(app);
+}
 
 export const signInWithEmailAndPassword = async (email: string, password: string) => {
   try {
@@ -31,11 +37,31 @@ export const signInWithEmailAndPassword = async (email: string, password: string
   }
 };
 
+export const signOut = async () => {
+  try {
+    await auth.signOut();
+    console.log('User signed outd!')
+  } catch (error) {
+    throw error;
+  }
+}
+
+
 export const createUserWithEmailAndPassword = async (email: string, password: string) => {
   try {
     const userCredential = await firebaseCreateUserWithEmailAndPassword(auth, email, password);
+    await sendEmailVerification(userCredential.user);
     return userCredential;
   } catch (error) {
     throw error;
   }
 };
+
+export const onAuthStateChangedListener = (callback: any) => {
+  onAuthStateChanged(auth, callback);
+};
+
+export const getCurrentAuth = () => {
+  return auth;
+}
+
