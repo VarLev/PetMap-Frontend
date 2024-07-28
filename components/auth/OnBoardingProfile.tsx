@@ -1,12 +1,14 @@
 import React, { useRef, useState } from 'react';
-import { View, Dimensions, TextInput, Platform, StyleSheet } from 'react-native';
+import { View, Dimensions, TextInput, Platform, StyleSheet, ImageSourcePropType } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
-import { Avatar, Button, Text } from 'react-native-paper';
+import { Button, Text } from 'react-native-paper';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import CustomButtonPrimary from '../customButtons/CustomButtonPrimary';
 import CustomButtonOutlined from '../customButtons/CustomButtonOutlined';
 import SelectDropdown from 'react-native-select-dropdown';
 import * as ImagePicker from 'expo-image-picker';
+import { Avatar } from '@rneui/themed';
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -25,7 +27,13 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   const [petAge, setPetAge] = useState(new Date(0));
   const [show, setShow] = useState(false);
   const [userImage, setUserImage] = useState('');
+  const [petImage, setPetImage] = useState('');
+  
   const carouselRef = useRef(null);
+
+  const source: ImageSourcePropType | undefined = userImage ? { uri: userImage } : undefined;
+  const sourcePet: ImageSourcePropType | undefined = petImage ? { uri: petImage } : undefined;
+
 
   const breeds = ["Шарней", "Лабрадор", "Лайка", "Хаски"];
   const [selectedBreed, setSelectedBreed] = useState<string | null>(null);
@@ -74,8 +82,8 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
+      aspect: [3, 3],
+      quality: 0.7,
     });
 
     if (!result.canceled) {
@@ -83,6 +91,20 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
     }
   };
 
+  const SetPetImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [3, 3],
+      quality: 0.7,
+    });
+
+    if (!result.canceled) {
+      setPetImage(result.assets[0].uri);
+    }
+  };
+
+  
   
 
   const data = [
@@ -109,7 +131,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
     {
       id: 3,
       content: (
-        <View className="items-center w-full">
+        <View className="items-center w-full h-full justify-center">
           <Text variant='titleMedium'  className="text-2xl mb-5">Расскажи нам о себе</Text>
           <TextInput
             placeholder="Как тебя зовут?"
@@ -133,13 +155,23 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
           )}
           <CustomButtonPrimary title='Добавь фотографию' handlePress={SetUserImage} containerStyles='w-full' />
           
+          <Avatar 
+          source={source}
+          rounded size={200} 
+          containerStyle={{ backgroundColor: "#BDBDBD", marginTop: 20,   borderColor: 'white', borderWidth: 10,  shadowColor: 'black',  elevation: 4, }} 
+          icon={{ name: 'user', type: 'font-awesome', color: 'white' }}
+          >
+            <Avatar.Accessory size={30}  onPress={SetUserImage} />
+          </Avatar>
+         
+          
         </View>
       ),
     },
     {
       id: 4,
       content: (
-        <View className="items-center w-full ">
+        <View className="items-center w-full h-full justify-center">
           <Text variant='titleMedium'  className="text-2xl mb-5 text-center">Расскажи нам о своем питомце</Text>
           <TextInput
             placeholder="Как его зовут?"
@@ -187,7 +219,15 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
               onChange={onPetAgeChange}
             />
           )}
-          <CustomButtonPrimary title='Добавь фотографию' handlePress={() => { }} containerStyles='w-full ' />
+          <CustomButtonPrimary title='Добавь фотографию' handlePress={SetPetImage} containerStyles='w-full ' />
+          <Avatar 
+          source={sourcePet}
+          rounded size={200} 
+          containerStyle={{ backgroundColor: "#BDBDBD", marginTop: 20,   borderColor: 'white', borderWidth: 10,  shadowColor: 'black',  elevation: 4, }} 
+          icon={{ name: 'dog', type: 'font-awesome-5', color: 'white' }}
+          >
+            <Avatar.Accessory size={30}  onPress={SetPetImage} />
+          </Avatar>
         </View>
       ),
     },

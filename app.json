@@ -31,7 +31,13 @@
     "plugins": [
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
-      "expo-router"
+      "expo-router",
+      [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsDownloadToken": "sk.eyJ1IjoibGV2cm9tZiIsImEiOiJjbHo1MHJsaTEycWk0MmlwenhtNmdiejd4In0.dbT6ev1cKVamxztfuakhBA"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
