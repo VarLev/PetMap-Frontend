@@ -1,11 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { View, Dimensions, TextInput, Platform, StyleSheet } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
-import { Button, Text } from 'react-native-paper';
+import { Avatar, Button, Text } from 'react-native-paper';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import CustomButtonPrimary from '../customButtons/CustomButtonPrimary';
 import CustomButtonOutlined from '../customButtons/CustomButtonOutlined';
 import SelectDropdown from 'react-native-select-dropdown';
+import * as ImagePicker from 'expo-image-picker';
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,6 +24,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   const [age, setAge] = useState(new Date(0));
   const [petAge, setPetAge] = useState(new Date(0));
   const [show, setShow] = useState(false);
+  const [userImage, setUserImage] = useState('');
   const carouselRef = useRef(null);
 
   const breeds = ["Шарней", "Лабрадор", "Лайка", "Хаски"];
@@ -68,6 +70,21 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
     handleNext(); // Переключение на следующий слайд после выбора языка
   };
 
+  const SetUserImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setUserImage(result.assets[0].uri);
+    }
+  };
+
+  
+
   const data = [
     {
       id: 1,
@@ -83,18 +100,27 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
     {
       id: 2,
       content: (
-        <View style={styles.contentContainer}>
-          <Text variant='titleMedium' style={styles.titleText}>Расскажи нам о себе</Text>
+        <View className='w-full justify-center items-center '>
+          <Text variant='titleMedium' className='text-3xl mb-5'>Расскажи нам о себе!</Text>
+          <Text variant='titleMedium' className='text-lg text-justify'>За каждый ответ мы дадим тебе косточки, которые ты потом сможешь обменять на очень ценные подарки.</Text>
+        </View>
+      ),
+    },
+    {
+      id: 3,
+      content: (
+        <View className="items-center w-full">
+          <Text variant='titleMedium'  className="text-2xl mb-5">Расскажи нам о себе</Text>
           <TextInput
             placeholder="Как тебя зовут?"
             value={name}
             onChangeText={setName}
-            style={styles.textInput}
+            className="bg-white w-full p-3 border border-gray-300 rounded-full shadow shadow-black font-psemi text-lg"
           />
           <CustomButtonOutlined
             title={age > new Date(0) ? age.toLocaleDateString('en-US') : 'Дата рождения?'}
             handlePress={showDatepicker}
-            containerStyles='items-start w-full p-1 border'
+            containerStyles='w-full p-1 border'
             textStyles='text-gray-500 w-full pl-1'
           />
           {show && (
@@ -105,20 +131,21 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
               onChange={onAgeChange}
             />
           )}
-          <CustomButtonPrimary title='Добавь фотографию' handlePress={() => { }} containerStyles='w-full ' />
+          <CustomButtonPrimary title='Добавь фотографию' handlePress={SetUserImage} containerStyles='w-full' />
+          
         </View>
       ),
     },
     {
-      id: 3,
+      id: 4,
       content: (
-        <View style={styles.contentContainer}>
-          <Text variant='titleMedium' style={styles.titleText}>Расскажи нам о своем питомце</Text>
+        <View className="items-center w-full ">
+          <Text variant='titleMedium'  className="text-2xl mb-5 text-center">Расскажи нам о своем питомце</Text>
           <TextInput
             placeholder="Как его зовут?"
             value={petName}
             onChangeText={setPetName}
-            style={styles.textInput}
+             className="bg-white w-full p-3 border border-gray-300 rounded-full shadow shadow-black font-psemi text-lg"
           />
           <View style={styles.dropdownContainer}>
             <SelectDropdown
