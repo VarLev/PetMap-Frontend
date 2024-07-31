@@ -13,10 +13,10 @@ import { useStore } from '@/contexts/StoreProvider';
 const App = () => {
   const { loading, isLogged } = useStore();
 
-  // console.log(loading, isLogged);
-  // if (!loading && isLogged) return <Redirect href="/map" />;
+  console.log(loading, isLogged);
+  if (!loading && isLogged) return <Redirect href="/map" />;
  
-  return <Redirect href="/onboarding" />;
+  //return <Redirect href="/onboarding" />;
 
   return (
       <SafeAreaView className='bg-violet-100 h-full'>

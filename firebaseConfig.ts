@@ -50,7 +50,7 @@ export const signOut = async () => {
 export const createUserWithEmailAndPassword = async (email: string, password: string) => {
   try {
     const userCredential = await firebaseCreateUserWithEmailAndPassword(auth, email, password);
-    await sendEmailVerification(userCredential.user);
+    //await sendEmailVerification(userCredential.user);
     return userCredential;
   } catch (error) {
     throw error;

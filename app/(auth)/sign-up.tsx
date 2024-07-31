@@ -2,19 +2,19 @@ import { View, ScrollView, Alert, Image} from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, TextInput,Text } from 'react-native-paper';
-import { createUserWithEmailAndPassword } from '@/firebaseConfig';
 import { Link, router } from 'expo-router';
 import Images from '@/constants/Images';
-import { useStore } from '@/contexts/StoreProvider';
+//import { useStore } from '@/contexts/StoreProvider';
+import userStore from '@/stores/UserStore';
 
 
 
 const SignUp = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState('levromf@gmail.com');
+  const [password, setPassword] = useState('123456');
+  const [confirmPassword, setConfirmPassword] = useState('123456');
   const [isSecure, setIsSecure] = useState(true);
-  const { setLoading, setLogged, setCreatedUser } = useStore();
+  //const { setLoading, setLogged, setCreatedUser } = useStore();
 
 
   const handleRegister = async () => {
@@ -24,17 +24,12 @@ const SignUp = () => {
       return;
     }
     try {
-      setLoading(true);
-      const userCred = await createUserWithEmailAndPassword(email, password);
+      await userStore.registerUser(email, password);
+      
       Alert.alert('Success', 'Account created successfully! A verification email has been sent to your email address. Please check your inbox and verify your email to complete the registration.');
-      setCreatedUser(userCred);
-      setLogged(true);
       router.push("/onboarding");
     } catch (error: any) {
       Alert.alert('Registration Error', error.message.replace('Firebase:', ''));
-    }
-    finally {
-      setLoading(false);
     }
   };
 
@@ -54,6 +49,7 @@ const SignUp = () => {
           mode='outlined'
           label="Email"
           value={email}
+          
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
@@ -63,6 +59,7 @@ const SignUp = () => {
           mode='outlined'
           label="Password"
           value={password}
+         
           onChangeText={setPassword}
           secureTextEntry={isSecure}
            className='mb-2'

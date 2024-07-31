@@ -1,12 +1,21 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import MapBoxMap from '@/components/map/MapComponent';
+import React from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+
+
 
 const map = () => {
   return (
-    <View>
-      <Text>map</Text>
-    </View>
+   
+    <SafeAreaView className='bg-violet-100 h-full'>
+       <GestureHandlerRootView style={{ flex: 1 }}>
+        <MapBoxMap />
+      </GestureHandlerRootView>
+    </SafeAreaView>
+    
   )
 }
 
-export default map
+export default map;

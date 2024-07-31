@@ -20,7 +20,7 @@ const Tabslayout = () => {
         }}
       >
         <Tabs.Screen
-          name="explore"
+          name="map"
           options={{
             title: 'Explore',
             headerShown: false,
@@ -34,7 +34,7 @@ const Tabslayout = () => {
           }}
         />
         <Tabs.Screen
-          name="map"
+          name="explore"
           options={{
             title: 'Map',
             headerShown: true,

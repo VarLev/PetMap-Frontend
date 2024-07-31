@@ -13,15 +13,23 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location.",
+        "NSLocationAlwaysUsageDescription": "Allow $(PRODUCT_NAME) to use your location always."
+      }
     },
     "android": {
       "googleServicesFile": "./google-services.json",
-      "package": "io.cordova.hellocordova",
+      "package": "com.lightway.petmap",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -35,12 +43,26 @@
       [
         "@rnmapbox/maps",
         {
-          "RNMapboxMapsDownloadToken": "sk.eyJ1IjoibGV2cm9tZiIsImEiOiJjbHo1MHJsaTEycWk0MmlwenhtNmdiejd4In0.dbT6ev1cKVamxztfuakhBA"
+          "RNMapboxMapsDownloadToken": "sk.eyJ1IjoibGV2cm9tZiIsImEiOiJjbHo2MDBwdDgwbTdqMmxwcXY1dmlmdmtxIn0.WW3q9APCIelvOtiRMxU58Q"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "c91558ba-1e37-4143-a140-de78a0cfec3a"
+      }
     }
   }
 }

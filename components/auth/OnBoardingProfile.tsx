@@ -8,23 +8,25 @@ import CustomButtonOutlined from '../customButtons/CustomButtonOutlined';
 import SelectDropdown from 'react-native-select-dropdown';
 import * as ImagePicker from 'expo-image-picker';
 import { Avatar } from '@rneui/themed';
+import { IUser } from '@/dtos/Interfaces/user/IUser';
+import userStore from '@/stores/UserStore';
+import { IPet } from '@/dtos/Interfaces/pet/IPet';
 
 
 const { width, height } = Dimensions.get('window');
 
 interface OnBoardingProfileProps {
   onLanguageSelect: (language: string) => void;
-  onUserInfoSubmit: (name: string, birthDate: Date) => void;
-  onPetInfoSubmit: (petName: string, breed: string | null, petBirthDate: Date) => void;
-  onComplete: () => void; // Добавляем функцию для завершения
+  onComplete: (user:IUser) => void; // Добавляем функцию для завершения
 }
 
-const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect, onUserInfoSubmit, onPetInfoSubmit, onComplete }) => {
+const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect, onComplete }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [name, setName] = useState('');
   const [petName, setPetName] = useState('');
   const [age, setAge] = useState(new Date(0));
   const [petAge, setPetAge] = useState(new Date(0));
+  
   const [show, setShow] = useState(false);
   const [userImage, setUserImage] = useState('');
   const [petImage, setPetImage] = useState('');
@@ -59,17 +61,31 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   };
 
   const handleNext = () => {
+
     if (currentIndex < data.length - 1) {
       const nextIndex = currentIndex + 1;
       setCurrentIndex(nextIndex);
       (carouselRef.current as any)?.scrollTo({ index: nextIndex, animated: true });
-    } else {
-      if (currentIndex === 1) {
-        onUserInfoSubmit(name, age);
-      } else if (currentIndex === 2) {
-        onPetInfoSubmit(petName, selectedBreed, petAge);
-      }
-      onComplete();
+    } 
+
+    if(currentIndex === data.length - 1 ){
+      const currentUser = userStore.currentUser;
+      
+      const newPetProfile: Partial<IPet> = {
+        petName: petName,
+        breed: selectedBreed,
+        birthDate: petAge,
+        userId: currentUser!.id,
+        thumbnailUrl: petImage
+      };
+      console.log('UserID', currentUser!.id);
+
+      currentUser!.name = name;
+      currentUser!.birthDate = age;
+      currentUser!.thumbnailUrl = userImage;
+      currentUser?.petProfiles?.push(newPetProfile as IPet);
+        
+      onComplete(currentUser as IUser);
     }
   };
 
@@ -104,7 +120,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
     }
   };
 
-  
   
 
   const data = [
