@@ -27,7 +27,7 @@ const SignUp = () => {
       await userStore.registerUser(email, password);
       
       Alert.alert('Success', 'Account created successfully! A verification email has been sent to your email address. Please check your inbox and verify your email to complete the registration.');
-      router.push("/onboarding");
+      router.replace('/onboarding');
     } catch (error: any) {
       Alert.alert('Registration Error', error.message.replace('Firebase:', ''));
     }

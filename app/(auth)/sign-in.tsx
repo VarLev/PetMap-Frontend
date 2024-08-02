@@ -4,26 +4,20 @@ import { Button, TextInput } from 'react-native-paper'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Link, router } from 'expo-router'
-import { signInWithEmailAndPassword } from '@/firebaseConfig'
 import Images from '@/constants/Images';
-import { useStore } from '@/contexts/StoreProvider';
+import userStore from '@/stores/UserStore';
 
 
 const SignIn = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('levromf@gmail.com');
+  const [password, setPassword] = useState('123456');
   const [isSecure, setIsSecure] = useState(true);
-  const { setLoading, setLogged, setLoginedUser } = useStore();
+  
 
   const handleLogin = async () => {
     try {
-      setLoading(true);
-      const userCred = await signInWithEmailAndPassword(email, password);
-      Alert.alert('Success', 'Logged in successfully!');
-      setLoginedUser(userCred);
-      setLogged(true);
-      router.push("/onboarding");
-      setLoading(false);
+      userStore.singInUser(email, password);
+      router.replace('/map');
     } catch (error: any) {
       Alert.alert('Login Error', error.message.replace('Firebase:', ''));
     }
@@ -58,7 +52,7 @@ const SignIn = () => {
           onChangeText={setPassword}
           secureTextEntry={isSecure}
           className='mb-2'
-          right={<TextInput.Icon icon="eye" onPress={handleToggleSecure} />}
+          // right={<TextInput.Icon icon="eye" onPress={handleToggleSecure} />}
         />
     
         <Button mode="contained" onPress={handleLogin} className='mt-4'>Sign-In</Button>

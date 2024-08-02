@@ -7,11 +7,11 @@ export interface IPet {
   breed?: string | null;
   birthDate: Date | null;
   gender?: string | null;
-  weight: number;
+  weight: number | null;
   color?: string | null;
   size?: string | null;
   vaccinations?: string[] | null;
-  neutered: boolean;
+  neutered: boolean | null;
   temperament?: string | null;
   activityLevel?: string | null;
   playPreferences?: string | null;

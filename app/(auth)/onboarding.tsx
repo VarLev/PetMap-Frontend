@@ -16,7 +16,7 @@ const Onboarding = () => {
 
   const handleComplete = (user: IUser) => {
     userStore.updateUserOnbordingData(user);
-    router.replace('/onboarding');
+    router.replace('/map');
   };
 
 

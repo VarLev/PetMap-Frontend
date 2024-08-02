@@ -6,10 +6,10 @@ export interface IUser {
   firebaseUid: string;
   name?: string | null;
   email: string;
-  birthDate?: Date | null;
+  birthDate: Date | null;
   gender?: string | null;
   description?: string | null;
-  interests?: string[] | null;
+  interests: string[];
   work?: string | null;
   education?: string | null;
   passwordHash?: string | null;
