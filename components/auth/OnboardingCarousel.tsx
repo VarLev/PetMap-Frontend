@@ -8,17 +8,22 @@ const { width } = Dimensions.get('window');
 const data = [
   {
     id:1,
-    title: 'Text for onboarding 1',
+    title: 'Заводите новые знакомства с владельцами питомцев. Ходите на совместные прогулки.',
     image:'https://placehold.co/400x700.png'
   },
   {
     id:2,
-    title: 'Text for onboarding 2',
+    title: 'Все полезные локации в одном приложении: ветеринарные клиники, парки и многое другое.',
     image:'https://placehold.co/400x700.png'
   },
   {
     id:3,
-    title: 'Text for onboarding 3',
+    title: 'Выбирайте проверенных специалистов для различных услуг: груминг, кинолог и др',
+    image:'https://placehold.co/400x700.png'
+  },
+  {
+    id:4,
+    title: 'Будьте в курсе всех мероприятий для питомцев.',
     image:'https://placehold.co/400x700.png'
   }
 ];
@@ -30,16 +35,15 @@ const OnboardingCarousel: React.FC = () => {
     <Carousel
       loop
       width={width}
-      height={550}
+      height={480}
       autoPlay={true}
       data={data}
-      scrollAnimationDuration={2000}
-      autoPlayInterval={2000}
+      scrollAnimationDuration={2500}
+      autoPlayInterval={2500}
       renderItem={({ item }) => (
-        <View className='flex-1 items-center justify-center bg-white flex-col'> 
+        <View className='items-center h-full flex-col'> 
           <Image source={{ uri: item.image }} style={styles.image} />
-          <Text variant='titleSmall' className='flex-1 text-3xl font-pextra'>{item.title}</Text>
-          
+          <Text variant='titleSmall' className='p-3 text-base text-center font-nunitoSansRegular'>{item.title}</Text>
         </View>
       )}
     />
@@ -53,15 +57,13 @@ const styles = StyleSheet.create({
    
    
   },
-  onBording:{
-  
-  },
   image: {
-    width: '100%',
-    height: 550,
-    position: 'absolute',
+    justifyContent: 'center',
+    width: '90%',
+    height: 400,
+    borderStartColor:'transparent',
     top: 0,
-    left: 0,
+    borderRadius: 30,
   },
   text: {
     textAlign: 'center',

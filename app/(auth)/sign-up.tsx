@@ -1,11 +1,12 @@
 import { View, ScrollView, Alert, Image} from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, TextInput,Text } from 'react-native-paper';
+import { Button, TextInput, Text, Checkbox } from 'react-native-paper';
 import { Link, router } from 'expo-router';
 import Images from '@/constants/Images';
 //import { useStore } from '@/contexts/StoreProvider';
 import userStore from '@/stores/UserStore';
+import CustomButtonPrimary from '@/components/customButtons/CustomButtonPrimary';
 
 
 
@@ -38,12 +39,12 @@ const SignUp = () => {
   }
   
   return (
-    <SafeAreaView className='bg-violet-100 h-full'>
+    <SafeAreaView className='bg-white h-full'>
       <ScrollView>
-        <View className=' w-full justify-center h-full  px-9 my-20'>
-          <View className='-ml-4 flex-row items-start justify-center '>
-            <Image source={Images.logo} className='w-[80px] h-[60px]' resizeMode='center'/>
-            <Text variant='titleSmall' className='-ml-4 text-4xl font-pblack mt-4 text-violet-900'>PetMap</Text>
+        <View className=' w-full justify-center h-full px-9 my-20 '>
+          <View className='flex-col items-start justify-center '>
+            <Text variant='titleSmall' className='text-lg font-nunitoSansBold'>Станьте частью PetMap!</Text>
+            <Text variant='titleSmall' className='mb-4 text-sm font-nunitoSansRegular'>Введите данные, чтобы создать аккаунт.</Text>
           </View>  
           <TextInput
           mode='outlined'
@@ -74,10 +75,20 @@ const SignUp = () => {
           secureTextEntry
            className='mb-2'
         />
-        <Button mode="contained" onPress={handleRegister} className='mt-4'>Sign-Up</Button>
+        <View className='flex-row items-center justify-center gap-3'>
+          <Checkbox status={'checked'} onPress={() => {}} color='#3730a3'/>
+          <Text variant='titleSmall' className='mb-4 p-2 font-nunitoSansRegular text-xs'>Я согласен с Политикой обработки данных сервиса</Text>
+        </View>
+        
+        <CustomButtonPrimary 
+                title='Зарегистрироваться' 
+                handlePress={handleRegister} 
+                containerStyles='w-full' 
+              />        
+      
         <View className='justify-center pt-5 flex-row gap-2'>        
-          <Text className='text-lg text-gray-500 font-pregular'>Already have account?</Text>
-          <Link href='/sign-in' className='text-lg text-violet-900 font-pbold'>Sign In!</Link>
+          <Text className='text-base text-gray-500 font-nunitoSansRegular'>У вас уже есть аккаунт,</Text>
+          <Link href='/sign-in' className='text-base text-indigo-800 font-nunitoSansBold'>Войти!</Link>
         </View>
 
         </View>

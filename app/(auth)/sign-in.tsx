@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Link, router } from 'expo-router'
 import Images from '@/constants/Images';
 import userStore from '@/stores/UserStore';
+import CustomButtonPrimary from '@/components/customButtons/CustomButtonPrimary';
 
 
 const SignIn = () => {
@@ -29,12 +30,12 @@ const SignIn = () => {
   }
   
   return (
-    <SafeAreaView className='bg-violet-100 h-full'>
+    <SafeAreaView className='bg-white h-full'>
     <ScrollView>
       <View className='w-full justify-center h-full  px-9 my-20'>
-        <View className='-ml-4 flex-row items-start justify-center '>
-          <Image source={Images.logo} className='w-[80px] h-[60px]' resizeMode='center'/>
-          <Text variant='titleSmall' className='-ml-4 text-4xl font-pblack mt-4 text-violet-900'>PetMap</Text>
+        <View className='flex-col items-start justify-center '>
+          <Text variant='titleSmall' className='text-lg font-nunitoSansBold'>Рады видеть вас снова!</Text>
+          <Text variant='titleSmall' className='pb-4 text-sm font-nunitoSansRegular '>Введите данные для входа в существующий аккаунт.</Text>
         </View>  
         <TextInput
         mode='outlined'
@@ -54,12 +55,19 @@ const SignIn = () => {
           className='mb-2'
           // right={<TextInput.Icon icon="eye" onPress={handleToggleSecure} />}
         />
-    
-        <Button mode="contained" onPress={handleLogin} className='mt-4'>Sign-In</Button>
-        <View className='justify-center pt-5 flex-row gap-2'>
-          <Text className='text-lg text-gray-500 font-pregular'>Don't have account?</Text>
-          <Link href='/sign-up' className='text-lg text-violet-900 font-pbold'>Sign Up!</Link>
+        <CustomButtonPrimary 
+          title='Войти' 
+          handlePress={handleLogin} 
+          containerStyles='w-full' 
+        /> 
+        <View className='items-center pt-5'>
+          <View className='justify-center flex-row gap-2'>
+            <Text className='text-base text-gray-500 font-nunitoSansRegular'>Нет аккаунта?</Text>
+            <Link href='/sign-up' className='text-base text-indigo-800 font-nunitoSansBold'>Зарегистрироваться!</Link>
+          </View>
+          <Link href='/sign-up' className='pt-4 text-base text-indigo-800 font-nunitoSansBold'>Забыли пароль</Link>
         </View>
+        
       </View>
     </ScrollView>
   </SafeAreaView>

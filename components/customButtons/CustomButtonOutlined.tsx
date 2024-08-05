@@ -15,9 +15,9 @@ const CustomButtonOutlined = ({title, handlePress, containerStyles, textStyles, 
       onPress={handlePress}
       activeOpacity={0.8}
       disabled={isLoading}
-      className={`bg-white rounded-full min-h-[55px] justify-center items-center mt-3 border border-gray-300 shadow shadow-black
+      className={`bg-violet-200 rounded-full min-h-[50px] justify-center items-center mt-2
       ${containerStyles} ${isLoading ? 'opacity-50':''}`}>
-        <Text className={`text-gray-900 font-psemi text-lg ${textStyles}`}>{title}</Text>
+        <Text className={`text-gray-900 font-nunitoSansRegular text-base ${textStyles}`}>{title}</Text>
     </TouchableOpacity>
   )
 }

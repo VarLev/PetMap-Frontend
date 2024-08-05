@@ -16,6 +16,8 @@ module.exports = {
         plight: ['Poppins-Light', 'sans-serif'],
         pregular: ['Poppins-Regular', 'sans-serif'],
         pextrabold: ['Poppins-ExtraBold', 'sans-serif'],
+        nunitoSansRegular: ['NunitoSans_400Regular'],
+        nunitoSansBold: ['NunitoSans_700Bold'],
       }
     },
   },

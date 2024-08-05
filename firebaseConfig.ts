@@ -2,6 +2,7 @@ import {getApps , initializeApp } from 'firebase/app';
 import {signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, sendEmailVerification  } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getAuth, initializeAuth, getReactNativePersistence, onAuthStateChanged } from "firebase/auth";
+import {getDatabase} from 'firebase/database';
 
 
 // Вставьте сюда ваши настройки Firebase
@@ -18,6 +19,7 @@ const firebaseConfig = {
 let app;
 let auth;
 
+
 if (getApps().length===0) {
   app = initializeApp(firebaseConfig);
   auth = initializeAuth(app, {
@@ -27,6 +29,9 @@ if (getApps().length===0) {
   app = getApps()[0];
   auth = getAuth(app);
 }
+const database = getDatabase(app);
+
+export { database };
 
 export const signInWithEmailAndPassword = async (email: string, password: string) => {
   try {

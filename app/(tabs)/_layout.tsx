@@ -1,13 +1,16 @@
 import React from 'react';
-import { Tabs } from 'expo-router';
+import { Tabs, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import TabBar from '@/components/navigation/TabBar';
 
 const Tabslayout = () => {
+  const pathname = usePathname();
+  const hideTabBar = pathname.includes('/chat/');
+
   return (
     <>
       <Tabs
-        tabBar={(props) => <TabBar {...props} />}
+        tabBar={(props) => !hideTabBar && <TabBar {...props} />}
         screenOptions={{
           tabBarShowLabel: false,
           tabBarActiveTintColor: '#2f0f48',
@@ -18,14 +21,8 @@ const Tabslayout = () => {
             height: 70,
           },
         }}
+        initialRouteName='map'
       >
-        <Tabs.Screen
-          name="map"
-          options={{
-            title: 'Explore',
-            headerShown: false,
-          }}
-        />
         <Tabs.Screen
           name="search"
           options={{
@@ -36,15 +33,22 @@ const Tabslayout = () => {
         <Tabs.Screen
           name="explore"
           options={{
-            title: 'Map',
+            title: 'Explore',
             headerShown: true,
+          }}
+        />
+        <Tabs.Screen
+          name="map"
+          options={{
+            title: 'Map',
+            headerShown: false,
           }}
         />
         <Tabs.Screen
           name="chat"
           options={{
             title: 'Chat',
-            headerShown: true,
+            headerShown: false,
           }}
         />
         <Tabs.Screen

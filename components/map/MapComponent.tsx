@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, TextInput, FlatList, TouchableOpacity, Text, SafeAreaView, StyleSheet, Button } from 'react-native';
+import { View, TextInput, FlatList, TouchableOpacity, Text, SafeAreaView, StyleSheet, Button, Alert } from 'react-native';
 import Mapbox, { MapView, UserLocation, Camera, ShapeSource, SymbolLayer } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
 import { FAB, Portal, Provider } from 'react-native-paper';
@@ -19,6 +19,15 @@ const MapBoxMap = observer(() => {
   const [fabOpen, setFabOpen] = useState(false);
   const [fabVisible, setFabVisible] = useState(true);
 
+  useEffect(() => {
+    (async () => {
+      const granted = await Mapbox.requestAndroidLocationPermissions();
+      if (!granted) {
+        Alert.alert('Permission to access location was denied');
+      }
+    })();
+  }, []);
+
   const handleAddressChange = (text: string) => {
     mapStore.setAddress(text);
     mapStore.fetchSuggestions(text);
@@ -31,6 +40,15 @@ const MapBoxMap = observer(() => {
   };
 
   const onPinPress = (e: { features: any[] }) => {
+    if (mapStore.selectedFeature) {
+      mapStore.setSelectedFeature(null);
+      return;
+    }
+    const feature = e?.features[0];
+    mapStore.setSelectedFeature(feature);
+  };
+
+  const onPinTypePress = (e: { features: any[] }) => {
     if (mapStore.selectedFeature) {
       mapStore.setSelectedFeature(null);
       return;
