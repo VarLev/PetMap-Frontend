@@ -1,19 +1,18 @@
-import { View, ScrollView, Alert, Image} from 'react-native';
+import { View, ScrollView, Alert} from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, TextInput, Text, Checkbox } from 'react-native-paper';
+import {  TextInput, Text, Checkbox } from 'react-native-paper';
 import { Link, router } from 'expo-router';
-import Images from '@/constants/Images';
-//import { useStore } from '@/contexts/StoreProvider';
+
 import userStore from '@/stores/UserStore';
-import CustomButtonPrimary from '@/components/customButtons/CustomButtonPrimary';
+import CustomButtonPrimary from '@/components/custom/buttons/CustomButtonPrimary';
 
 
 
 const SignUp = () => {
-  const [email, setEmail] = useState('levromf@gmail.com');
-  const [password, setPassword] = useState('123456');
-  const [confirmPassword, setConfirmPassword] = useState('123456');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isSecure, setIsSecure] = useState(true);
   //const { setLoading, setLogged, setCreatedUser } = useStore();
 

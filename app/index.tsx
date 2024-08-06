@@ -3,21 +3,20 @@ import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import OnboardingCarousel from '../components/auth/OnboardingCarousel';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, Image} from 'react-native';
-import Images from '@/constants/Images';
-import CustomButtonPrimary from '@/components/customButtons/CustomButtonPrimary';
+import { ScrollView} from 'react-native';
+import CustomButtonPrimary from '@/components/custom/buttons/CustomButtonPrimary';
 import { Redirect, router } from 'expo-router';
 import { useStore } from '@/contexts/StoreProvider';
-import CustomButtonOutlined from '@/components/customButtons/CustomButtonOutlined';
+import CustomButtonOutlined from '@/components/custom/buttons/CustomButtonOutlined';
 
 
 const App = () => {
   const { loading, isLogged } = useStore();
 
   console.log(loading, isLogged);
-  //if (!loading && isLogged) return <Redirect href="/map" />;
+  if (!loading && isLogged) return <Redirect href="/map" />;
  
-  return <Redirect href="/onboarding" />;
+  //return <Redirect href="/onboarding" />;
 
   return (
       <SafeAreaView className='bg-white h-full'>

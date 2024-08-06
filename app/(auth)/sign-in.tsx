@@ -1,12 +1,11 @@
-import { View,ScrollView, Alert,Image} from 'react-native'
+import { View,ScrollView, Alert} from 'react-native'
 import { Text } from 'react-native-paper';
-import { Button, TextInput } from 'react-native-paper'
+import {  TextInput } from 'react-native-paper'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Link, router } from 'expo-router'
-import Images from '@/constants/Images';
 import userStore from '@/stores/UserStore';
-import CustomButtonPrimary from '@/components/customButtons/CustomButtonPrimary';
+import CustomButtonPrimary from '@/components/custom/buttons/CustomButtonPrimary';
 
 
 const SignIn = () => {
