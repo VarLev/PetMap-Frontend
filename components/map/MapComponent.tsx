@@ -16,8 +16,6 @@ Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
 const MapBoxMap = observer(() => {
   const sheetRef = useRef<BottomSheet>(null);
-  const [fabOpen, setFabOpen] = useState(false);
-  const [fabVisible, setFabVisible] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -28,10 +26,7 @@ const MapBoxMap = observer(() => {
     })();
   }, []);
 
-  const handleAddressChange = (text: string) => {
-    mapStore.setAddress(text);
-    mapStore.fetchSuggestions(text);
-  };
+
 
   const handleLongPress = (event: any) => {
     const coordinates = event.geometry.coordinates;
@@ -48,14 +43,7 @@ const MapBoxMap = observer(() => {
     mapStore.setSelectedFeature(feature);
   };
 
-  const onPinTypePress = (e: { features: any[] }) => {
-    if (mapStore.selectedFeature) {
-      mapStore.setSelectedFeature(null);
-      return;
-    }
-    const feature = e?.features[0];
-    mapStore.setSelectedFeature(feature);
-  };
+ 
 
   const renderContent = () => (
     <View style={styles.bottomSheet}>
@@ -68,26 +56,7 @@ const MapBoxMap = observer(() => {
   return (
     <Provider>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ position: 'absolute', zIndex: 20, paddingTop: 3, paddingLeft: 4, paddingRight: 4, width: '100%', backgroundColor: 'transparent' }}>
-          <TextInput
-            style={{ borderRadius: 15, padding: 12, borderColor: '#ccc', height: 56, width: '100%', backgroundColor: 'white' }}
-            placeholder="Enter address"
-            value={mapStore.address}
-            onChangeText={handleAddressChange}
-          />
-          {mapStore.suggestions.length > 0 && (
-            <FlatList
-              data={mapStore.suggestions}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => mapStore.selectAddress(item)}>
-                  <Text style={styles.suggestion}>{item.place_name}</Text>
-                </TouchableOpacity>
-              )}
-              style={styles.suggestionsList}
-            />
-          )}
-        </View>
+       
 
         <MapView style={{ flex: 1 }} onLongPress={handleLongPress}>
           <Camera
@@ -129,26 +98,7 @@ const MapBoxMap = observer(() => {
           renderContent={renderContent}
         />
 
-        <Portal>
-          <FAB.Group
-            style={{ paddingBottom: 100 }} 
-            open={fabOpen}
-            visible={fabVisible}
-            icon={fabOpen ? 'close' : 'plus'}
-            actions={[
-              { icon: 'walk', label: 'Прогулка', onPress: () => console.log('Pressed Прогулка') },
-              { icon: () => <MaterialCommunityIcons name="map-marker" size={24} color="white" />, label: 'Личная заметка', onPress: () => console.log('Pressed Личная заметка') },
-              { icon: 'note-multiple', label: 'Публичная заметка', onPress: () => console.log('Pressed Публичная заметка') },
-              { icon: 'alert', label: 'Опасность', onPress: () => console.log('Pressed Опасность') },
-            ]}
-            onStateChange={({ open }) => setFabOpen(open)}
-            onPress={() => {
-              if (fabOpen) {
-                // Do something if the FAB is open
-              }
-            }}
-          />
-        </Portal>
+        
       </SafeAreaView>
     </Provider>
   );

@@ -27,7 +27,6 @@ const Profile = observer(() => {
     if (!userStore.currentUser) {
       userStore.loadUser();
     } else {
-      console.log('asdasdadasdasdasdasdasdasdasdasd',userStore.currentUser);
       setEditableUser(userStore.currentUser);
       
     }

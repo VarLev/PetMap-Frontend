@@ -1,4 +1,5 @@
 import {getApps , initializeApp } from 'firebase/app';
+import { getStorage } from 'firebase/storage';
 import {signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, sendEmailVerification  } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getAuth, initializeAuth, getReactNativePersistence, onAuthStateChanged } from "firebase/auth";
@@ -20,6 +21,7 @@ let app;
 let auth;
 
 
+
 if (getApps().length===0) {
   app = initializeApp(firebaseConfig);
   auth = initializeAuth(app, {
@@ -30,8 +32,8 @@ if (getApps().length===0) {
   auth = getAuth(app);
 }
 const database = getDatabase(app);
-
-export { database };
+const storage = getStorage(app);
+export { database, storage };
 
 export const signInWithEmailAndPassword = async (email: string, password: string) => {
   try {

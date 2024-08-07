@@ -17,7 +17,7 @@ const SignIn = () => {
   const handleLogin = async () => {
     try {
       userStore.singInUser(email, password);
-      router.replace('/map');
+      router.replace('/onboarding');
     } catch (error: any) {
       Alert.alert('Login Error', error.message.replace('Firebase:', ''));
     }

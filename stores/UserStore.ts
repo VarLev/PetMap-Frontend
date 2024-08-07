@@ -4,14 +4,14 @@ import { IUser } from '@/dtos/Interfaces/user/IUser';
 import { IUserRegister } from '@/dtos/Interfaces/user/IUserRegisterDTO';
 import { UserCredential } from 'firebase/auth';
 import { action, runInAction, makeAutoObservable } from 'mobx';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@/firebaseConfig';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, storage } from '@/firebaseConfig';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import axios from 'axios';
 import apiClient from '@/hooks/axiosConfig';
+import * as ImageManipulator from 'expo-image-manipulator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IUserUpdateOnbording } from '@/dtos/Interfaces/user/IUserUpdateOnbording';
 import { User } from '@/dtos/classes/user/UserDTO';
-
-
 
 
 class UserStore {
@@ -253,6 +253,15 @@ class UserStore {
       if (this.currentUser) 
       {
         // Обновление локального состояния
+        console.log(this.currentUser?.email);
+        if(user.thumbnailUrl && this.currentUser?.email){
+          
+          const thumUrl = await this.uploadImage(user.thumbnailUrl, `users/${this.currentUser?.email}/thumbnail`);
+          console.log(thumUrl);
+          this.currentUser.thumbnailUrl = thumUrl;
+        }
+        
+          
         runInAction(() => {
           this.currentUser = new User({ ...this.currentUser, ...user });
         });
@@ -285,6 +294,28 @@ class UserStore {
       throw error;
     } 
   }
+
+  async uploadImage(image:string, pathToSave:string): Promise<string|undefined> {
+    if (!image) return;
+    const compressedImage = await this.compressImage(image);
+    const response = await fetch(compressedImage);
+    const blob = await response.blob();
+    const storageRef = ref(storage, `${pathToSave}`);
+
+    await uploadBytes(storageRef, blob);
+
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+  };
+
+  async compressImage (uri: string): Promise<string> {
+    const manipResult = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize: { width: 800 } }], // Изменение размера изображения
+      { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    return manipResult.uri;
+  };
   
   async updateOnlyUserData(user: Partial<IUser>) {
     try 

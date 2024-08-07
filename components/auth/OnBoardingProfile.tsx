@@ -98,10 +98,10 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
 
   const SetUserImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [3, 3],
-      quality: 0.7,
+      quality: 0.5,
     });
 
     if (!result.canceled) {
