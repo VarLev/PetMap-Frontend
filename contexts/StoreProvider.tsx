@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import userStore from '@/stores/UserStore';
 
 
+
 const StoreContext = createContext(userStore);
 
 interface StoreProviderProps {
@@ -21,6 +22,7 @@ export const StoreProvider = ({ children }: StoreProviderProps) => {
         userStore.setLogged(false);
         userStore.setUser(null);
         console.log('User not logined');
+        userStore.signOut();
       }
     }).catch((error) => {
       console.log(error);

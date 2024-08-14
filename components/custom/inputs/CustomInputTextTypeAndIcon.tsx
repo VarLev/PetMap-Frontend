@@ -33,7 +33,7 @@ const CustomInputTextTypeAndIcon = ({
 }: InputTextProps) => {
   return (
     <View className={`w-full ${containerStyles}`}>
-      {label && <Text className={`text-gray-700 font-nunitoSansRegular mb-2 ${labelStyles}`}>{label}</Text>}
+      {label && <Text className={`text-gray-700 text-base font-nunitoSansRegular mb-2 ${labelStyles}`}>{label}</Text>}
       <View className="flex-row items-center border border-gray-300 rounded-lg px-4 py-2">
         {iconName && <MaterialIcons name={iconName} size={iconSize} color={iconColor} style={{ marginRight: 8 }} />}
         {formatType === 'date' ? (
@@ -53,7 +53,7 @@ const CustomInputTextTypeAndIcon = ({
             value={value}
             placeholder={placeholder}
             onChangeText={handleChange}
-            className={`flex-1 ${inputStyles}`}
+            className={`flex-1 text-base font-nunitoSansRegular ${inputStyles}`}
             {...rest}
           />
         )}

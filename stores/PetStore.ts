@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import axios from 'axios';
 import apiClient from '@/hooks/axiosConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { IPet} from '@/dtos/Interfaces/pet/IPet';
 
 class PetStore {

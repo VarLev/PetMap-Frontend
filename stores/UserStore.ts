@@ -1,10 +1,10 @@
 // eslint-disable-next-line import/no-unresolved
-import { F_TOKEN } from '@env';
+import { F_TOKEN, CURRENT_USER } from '@env';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import { IUserRegister } from '@/dtos/Interfaces/user/IUserRegisterDTO';
 import { UserCredential } from 'firebase/auth';
 import { action, runInAction, makeAutoObservable } from 'mobx';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, storage } from '@/firebaseConfig';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, storage, signOut } from '@/firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import axios from 'axios';
 import apiClient from '@/hooks/axiosConfig';
@@ -12,6 +12,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IUserUpdateOnbording } from '@/dtos/Interfaces/user/IUserUpdateOnbording';
 import { User } from '@/dtos/classes/user/UserDTO';
+
 
 
 class UserStore {
@@ -48,6 +49,7 @@ class UserStore {
 
   setUser(user: IUser | null) {
     this.currentUser = new User({ ...user })
+    
     this.isLogged = !!user;
   }
 
@@ -65,6 +67,8 @@ class UserStore {
   getUser(user: UserCredential) {
     this.fUser = user;
   }
+
+  
 
   getCleanUser(obj: any): any  {
     if (Array.isArray(obj)) {
@@ -101,6 +105,11 @@ class UserStore {
       runInAction(() => {
         this.currentUser = new User({...response.data});
       });
+
+      AsyncStorage.setItem('currentUser', JSON.stringify(this.currentUser))
+        .then(() => console.log('Пользователь сохранен в AsyncStorage'))
+        .catch((error) => console.error('Ошибка сохранения пользователя в AsyncStorage', error));
+
     } catch (error) {
       console.error('Failed to load user', error);
     }
@@ -114,6 +123,12 @@ class UserStore {
       runInAction(() => {
         this.currentUser = new User(response.data);
       });
+      
+      AsyncStorage.setItem('currentUser', JSON.stringify(this.currentUser))
+        .then(() => console.log('Пользователь сохранен в AsyncStorage'))
+        .catch((error) => console.error('Ошибка сохранения пользователя в AsyncStorage', error));
+
+
     } catch (error) {
       if (axios.isAxiosError(error)) 
         {
@@ -139,7 +154,21 @@ class UserStore {
   }
   
   async getCurrentUser(): Promise<IUser> {
-    return this.currentUser?? {} as IUser;
+    if(this.currentUser?.id) {
+      console.log('Пользователь загружен из базы:');
+      return this.currentUser?? {} as IUser;
+    }
+    else{
+      const userData = await AsyncStorage.getItem('currentUser');
+      if (userData) {
+        const user = JSON.parse(userData);
+        console.log('Пользователь загружен из AsyncStorage:');
+        return user as IUser;
+      } else {
+        console.log('Пользователь не найден');
+        return null as unknown as IUser;
+      }
+    }
   }
 
   async singInUser(email: string, password: string) {
@@ -149,13 +178,10 @@ class UserStore {
       const userCred = await signInWithEmailAndPassword(email, password);
       const token = await userCred.user.getIdToken();
       await AsyncStorage.setItem(F_TOKEN, token);
-      runInAction(() => {
-        this.setLoginedUser(userCred);
-        this.loadUserAfterSignIn();
-        this.setLogged(true);
-      });
+      runInAction(() => {this.setLoginedUser(userCred);});
+      await this.loadUserAfterSignIn();
+      runInAction(() => {this.setLogged(true);});
       
-
     } catch (error) 
     {
       if (axios.isAxiosError(error)) 
@@ -210,12 +236,12 @@ class UserStore {
         this.setUser(registeredUser);
       });
 
-      await AsyncStorage.setItem('user', JSON.stringify({
-        email: registeredUser.email,
-        uid: registeredUser.firebaseUid,
-        provider: registeredUser.provider,
-        userId: registeredUser.id
-      }));
+      // await AsyncStorage.setItem('user', JSON.stringify({
+      //   email: registeredUser.email,
+      //   uid: registeredUser.firebaseUid,
+      //   provider: registeredUser.provider,
+      //   userId: registeredUser.id
+      // }));
 
       return userCred;
     } catch (error) 
@@ -255,20 +281,31 @@ class UserStore {
         // Обновление локального состояния
         console.log(this.currentUser?.email);
         if(user.thumbnailUrl && this.currentUser?.email){
-          
           const thumUrl = await this.uploadImage(user.thumbnailUrl, `users/${this.currentUser?.email}/thumbnail`);
-          console.log(thumUrl);
           this.currentUser.thumbnailUrl = thumUrl;
+          user.thumbnailUrl = thumUrl;
+          console.log('user thumbnailUrl updated');
         }
         
           
         runInAction(() => {
           this.currentUser = new User({ ...this.currentUser, ...user });
         });
+         
+        if(user.petProfiles![0].thumbnailUrl){
+          const thumUrl = await this.uploadImage(user.petProfiles![0].thumbnailUrl, `pets/${user.petProfiles![0].id}/thumbnail`);
+          this.currentUser.petProfiles![0].thumbnailUrl = thumUrl;
+          user.petProfiles![0].thumbnailUrl = thumUrl;
+          console.log('pet thumbnailUrl updated');
+        }
         
-        // Отправка данных на сервер
+          
+        runInAction(() => {
+          this.currentUser = new User({ ...this.currentUser, ...user });
+        });
+
+        
         await apiClient.put('/users/updateOnbording', this.currentUser);
-        console.log('User data updated');
       }
     } catch (error) 
     {
@@ -311,7 +348,7 @@ class UserStore {
   async compressImage (uri: string): Promise<string> {
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
-      [{ resize: { width: 800 } }], // Изменение размера изображения
+      [{ resize: { width: 400 } }], // Изменение размера изображения
       { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
     );
     return manipResult.uri;
@@ -355,6 +392,19 @@ class UserStore {
       throw error;
     } 
   }
+
+
+  async signOut() {
+    try {
+      
+      await AsyncStorage.removeItem(F_TOKEN);
+      await AsyncStorage.removeItem(CURRENT_USER);
+      signOut();
+    } catch (error) {
+      console.error('Failed to sign out', error);     
+    }
+  }
+
 
 }
 

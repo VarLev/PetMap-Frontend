@@ -5,7 +5,9 @@ import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Link, router } from 'expo-router'
 import userStore from '@/stores/UserStore';
-import CustomButtonPrimary from '@/components/custom/buttons/CustomButtonPrimary';
+
+import CustomLoadingButton from '@/components/custom/buttons/CustomLoadingButton';
+import mapStore from '@/stores/MapStore';
 
 
 const SignIn = () => {
@@ -13,10 +15,11 @@ const SignIn = () => {
   const [password, setPassword] = useState('123456');
   const [isSecure, setIsSecure] = useState(true);
   
-
+  
   const handleLogin = async () => {
     try {
-      userStore.singInUser(email, password);
+      await userStore.singInUser(email, password);
+      await mapStore.setWalkAdvrts();
       router.replace('/onboarding');
     } catch (error: any) {
       Alert.alert('Login Error', error.message.replace('Firebase:', ''));
@@ -54,11 +57,11 @@ const SignIn = () => {
           className='mb-2'
           // right={<TextInput.Icon icon="eye" onPress={handleToggleSecure} />}
         />
-        <CustomButtonPrimary 
-          title='Войти' 
-          handlePress={handleLogin} 
-          containerStyles='w-full' 
-        /> 
+        <CustomLoadingButton
+            title='Войти'
+            handlePress={handleLogin}
+            containerStyles='w-full'
+          />
         <View className='items-center pt-5'>
           <View className='justify-center flex-row gap-2'>
             <Text className='text-base text-gray-500 font-nunitoSansRegular'>Нет аккаунта?</Text>

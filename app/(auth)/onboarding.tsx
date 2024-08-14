@@ -6,6 +6,9 @@ import userStore from '@/stores/UserStore';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 
 const Onboarding = () => {
+
+  
+ 
   
   const handleLanguageSelect = (selectedLanguage: string) => {
     userStore.updateUserOnbordingData({ 
@@ -14,9 +17,12 @@ const Onboarding = () => {
     });
   };
 
-  const handleComplete = (user: IUser) => {
-    userStore.updateUserOnbordingData(user);
+  const handleComplete = async (user: IUser) => {
+    
+    await userStore.updateUserOnbordingData(user);
     router.replace('/map');
+  
+    
   };
 
 

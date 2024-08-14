@@ -1,9 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { View, Dimensions, TextInput, Platform, StyleSheet, ImageSourcePropType, Image, ScrollView } from 'react-native';
+import { View, Dimensions, Platform, StyleSheet, ImageSourcePropType, Image, ScrollView } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
-import { Button, Text, TextInput as TextInputPaper } from 'react-native-paper';
+import { Button, Text } from 'react-native-paper';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import CustomButtonPrimary from '../custom/buttons/CustomButtonPrimary';
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
 import SelectDropdown from 'react-native-select-dropdown';
 import * as ImagePicker from 'expo-image-picker';
@@ -12,7 +11,11 @@ import { IUser } from '@/dtos/Interfaces/user/IUser';
 import userStore from '@/stores/UserStore';
 import { IPet } from '@/dtos/Interfaces/pet/IPet';
 import CustomInputText from '../custom/inputs/CustomInputText';
-import CustomInputTextTypeAndIcon from '../custom/inputs/CustomInputTextTypeAndIcon';
+import * as Crypto from 'expo-crypto';
+
+import { User } from '@/dtos/classes/user/UserDTO';
+import CustomSegmentedButtons from '../custom/buttons/CustomSegmentedButtons';
+import { router } from 'expo-router';
 
 
 const { width, height } = Dimensions.get('window');
@@ -23,11 +26,15 @@ interface OnBoardingProfileProps {
 }
 
 const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect, onComplete }) => {
+  const user: User = userStore.currentUser!;
+  const [editableUser, setEditableUser] = useState<User>(new User({ ...user }));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [name, setName] = useState('');
+  const [gender, setGender] = useState('');
+  const [petGender, setPetGender] = useState('');
   const [petName, setPetName] = useState('');
   const [age, setAge] = useState(new Date(0));
-  const [petAge, setPetAge] = useState(new Date(0));
+  const [petAge, setPetAge] = useState<Date>(new Date(0));
   
   const [show, setShow] = useState(false);
   const [userImage, setUserImage] = useState('');
@@ -39,7 +46,17 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   const sourcePet: ImageSourcePropType | undefined = petImage ? { uri: petImage } : undefined;
 
 
-  const breeds = ["Шарней", "Лабрадор", "Лайка", "Хаски"];
+  const breeds = [
+    "Шарпей", "Лабрадор", "Лайка", "Хаски", "Лабрадор ретривер", "Немецкая овчарка",
+    "Голден ретривер", "Французский бульдог", "Бульдог", "Пудель", "Бигль", "Ротвейлер",
+    "Йоркширский терьер", "Немецкий дог", "Сибирский хаски", "Мальтийская болонка", "Боксер", "Чихуахуа",
+    "Доберман", "Бордер-колли", "Ши-тцу", "Шарпей", "Кокер-спаниель", "Английский бульдог",
+    "Бостон-терьер", "Папийон", "Пекинес", "Самоед", "Вест-хайленд-уайт-терьер", "Вельш-корги пемброк",
+    "Акита", "Австралийская овчарка", "Бассет-хаунд", "Далматин", "Колли", "Ирландский сеттер",
+    "Итальянский грейхаунд", "Лхаса апсо", "Мопс", "Ньюфаундленд", "Аляскинский маламут", "Американский бульдог",
+    "Бельгийская овчарка (малинуа)", "Американский стаффордширский терьер", "Басенджи", "Лабрадудль", "Кане корсо", "Кавалер-кинг-чарльз-спаниель",
+    "Пойнтер", "Русский той", "Фокстерьер", "Грейхаунд", "Шелти (Шетландская овчарка)", "Веймаранер"
+  ];
   const [selectedBreed, setSelectedBreed] = useState<string | null>(null);
 
   const handleIndex = (index: number) => {
@@ -47,19 +64,24 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   };
 
   const onAgeChange = (event: DateTimePickerEvent, selectedDate?: Date | undefined) => {
-    const currentDate = selectedDate || age;
     setShow(Platform.OS === 'ios');
-    setAge(currentDate);
+    if (selectedDate) {
+      setAge(selectedDate);
+    }
   };
 
-  const onPetAgeChange = (selectedDate?: string | undefined) => {
-    const currentDate = petAge;
+  const onPetAgeChange = (event: DateTimePickerEvent, selectedDate?: Date | undefined) => {
+    const currentDate = selectedDate || petAge;
     setShow(Platform.OS === 'ios');
-    setPetAge(currentDate);
+    setPetAge(currentDate!);
   };
 
   const showDatepicker = () => {
     setShow(true);
+  };
+
+  const handleChange = (field: keyof User, value: any) => {
+    setEditableUser({ ...editableUser, [field]: value });
   };
 
   const handleNext = () => {
@@ -74,18 +96,21 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
       const currentUser = userStore.currentUser;
       
       const newPetProfile: Partial<IPet> = {
+        id: Crypto.randomUUID(),
         petName: petName,
         breed: selectedBreed,
         birthDate: petAge,
+        gender: petGender,
         userId: currentUser!.id,
         thumbnailUrl: petImage
       };
-      console.log('UserID', currentUser!.id);
+
 
       currentUser!.name = name;
+      currentUser!.gender = gender;
       currentUser!.birthDate = age;
       currentUser!.thumbnailUrl = userImage;
-      currentUser?.petProfiles?.push(newPetProfile as IPet);
+      currentUser!.petProfiles = [newPetProfile as IPet];
         
       onComplete(currentUser as IUser);
     }
@@ -102,6 +127,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
       allowsEditing: true,
       aspect: [3, 3],
       quality: 0.5,
+      
     });
 
     if (!result.canceled) {
@@ -122,7 +148,15 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
     }
   };
 
-  const [date, setDate] = useState('');
+
+  const handleGenderChange = (value: string) => {
+    setGender(value);
+  };
+
+  const handlePetGenderChange = (value: string) => {
+    setPetGender(value);
+  };
+
 
   const data = [
     {
@@ -153,53 +187,41 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
     {
       id: 3,
       content: (
+       
         <View className="items-center w-full h-full justify-center">
-          <Image source={require('@/assets/images/onboardingProfile/3user.webp')} className='h-[40%]' resizeMode='center' />
+          {source ? (
+            <Avatar
+              source={source}
+              rounded
+              size={200}
+              containerStyle={{ backgroundColor: "#BDBDBD", marginTop: 10,   borderColor: 'white', borderWidth: 3,  shadowColor: 'black',  elevation: 4, }}
+              icon={{ name: 'user', type: 'font-awesome', color: 'white' }}
+            />
+          ) : (
+            <Image source={require('@/assets/images/onboardingProfile/3user.webp')} className='h-[40%]' resizeMode='center' />
+          )}
           <Text className="pl-4 pr-4 text-lg font-nunitoSansBold text-center">Расскажите немного о себе</Text>
           <Text className="text-base font-nunitoSansRegular text-center">Ваш профиль будет отображаться другим пользователям с питомцами.</Text>
-          {/* <TextInput
-            placeholder="Как тебя зовут?"
-            value={name}
-            onChangeText={setName}
-            className="bg-white w-full p-3 border border-gray-300 rounded-full shadow shadow-black font-psemi text-lg"
-          /> */}
-          <TextInputPaper
-            mode='outlined'
-            label="Как тебя зовут?"
-            value={name}
-            onChangeText={setName}
-            autoCapitalize="words"
-            className='mt-4 mb-2 w-full'
-          />
-          <TextInputPaper
-            mode='outlined'
-            label="Дата рождения"
-            value={ age.toLocaleDateString('en-US')}
-            onChangeText={showDatepicker}
-            autoCapitalize="words"
-            className='mb-2 w-full'
-          />
+          <CustomInputText placeholder='Как тебя зовут?' value={name} handleChange={setName} containerStyles='mb-2 mt-4' />
           
-          {show && (
-            <DateTimePicker
-              value={age}
-              mode="date"
-              display="spinner"
-              onChange={onAgeChange}
-            />
-          )}
+          <View className='flex-row items-start justify-between'>
+            <CustomInputText placeholder='Дата рождения' value={age ? age.toLocaleDateString('en-US') : ''} handleChange={showDatepicker} containerStyles='w-1/2 pr-2 mb-2' />
+            {show && (
+              <DateTimePicker
+                value={age || new Date()}
+                mode="date"
+                display="spinner"
+                onChange={onAgeChange}
+              />
+            )}
+            
+            <CustomSegmentedButtons containerStyles='w-[50%]' value={gender} onValueChange={handleGenderChange}/>
+
+          </View>
+
           <CustomButtonOutlined title='Добавь фотографию' handlePress={SetUserImage} containerStyles='w-full' />
           
-          {/* <Avatar 
-          source={source}
-          rounded size={200} 
-          containerStyle={{ backgroundColor: "#BDBDBD", marginTop: 20,   borderColor: 'white', borderWidth: 10,  shadowColor: 'black',  elevation: 4, }} 
-          icon={{ name: 'user', type: 'font-awesome', color: 'white' }}
-          >
-            <Avatar.Accessory size={30}  onPress={SetUserImage} />
-          </Avatar> */}
-         
-          
+
         </View>
       ),
     },
@@ -207,13 +229,16 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
       id: 4,
       content: (
         <View className="items-center w-full h-full justify-center">
-          <Image source={require('@/assets/images/onboardingProfile/4pet.webp')} className='h-[40%]' resizeMode='center' />
+          {sourcePet ? (<Avatar 
+            source={sourcePet}
+            rounded size={200} 
+            containerStyle={{ backgroundColor: "#BDBDBD", marginTop: 20,    borderColor: 'white', borderWidth: 3,  shadowColor: 'black',  elevation: 4 }} 
+            icon={{ name: 'dog', type: 'font-awesome-5', color: 'white' }}
+          />
+          ) : <Image source={require('@/assets/images/onboardingProfile/4pet.webp')} className='h-[40%]' resizeMode='center' />}
           <Text className="pl-4 pr-4 text-lg font-nunitoSansBold text-center">Настройте профиль своего питомца</Text>
           <Text className="text-base font-nunitoSansRegular text-center mb-4">Профиль питомца будет доступен другим пользователям при отклике на прогулку.</Text>
-          
-          <CustomInputText placeholder='Имя' value={petName} handleChange={setPetName} />
-         
-          <View className='w-full mt-2'>
+          <View className='flex-row'>
             <SelectDropdown 
               data={breeds}
               onSelect={(selectedItem, index) => {
@@ -238,32 +263,30 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
               dropdownStyle={styles.dropdown}
               search={true}
             />
+              <CustomInputText placeholder='Имя' value={petName} handleChange={setPetName}  containerStyles='mb-2 w-[45%] pl-2' />
           </View>
-          <CustomInputTextTypeAndIcon value={petAge.toLocaleDateString('en-US')} handleChange={onPetAgeChange} iconName="date-range" formatType="date"  placeholder="MM/DD/YYYY" />
-          {/* <TextInputPaper
-            mode='outlined'
-            label="Дата рождения"
-            value={ petAge.toLocaleDateString('en-US') }
-            onChangeText={showDatepicker}
-            className='mb-2 mt-3 w-full'
-          /> */}
-          {/* {show && (
-            <DateTimePicker
-              value={petAge}
-              mode="date"
-              display="spinner"
-              onChange={onPetAgeChange}
+        
+          <View className='flex-row items-start '>
+            <CustomInputText 
+              placeholder='Дата рождения' 
+              value={petAge ? petAge.toLocaleDateString('en-US') : ''}
+              handleChange={showDatepicker} 
+              containerStyles='w-[55%]  mb-2' 
             />
-          )} */}
+            {show && (
+              <DateTimePicker
+                value={petAge || new Date()}
+                mode="date"
+                display="spinner"
+                onChange={onPetAgeChange}
+              />
+            )}
+            
+            <CustomSegmentedButtons containerStyles='ml-2 w-[43%]' value={petGender} onValueChange={handlePetGenderChange} showNAButton={false} />
+
+          </View>
           <CustomButtonOutlined title='Добавь фотографию' handlePress={SetPetImage} containerStyles='w-full ' />
-          {/* <Avatar 
-          source={sourcePet}
-          rounded size={200} 
-          containerStyle={{ backgroundColor: "#BDBDBD", marginTop: 20,   borderColor: 'white', borderWidth: 10,  shadowColor: 'black',  elevation: 4, }} 
-          icon={{ name: 'dog', type: 'font-awesome-5', color: 'white' }}
-          >
-            <Avatar.Accessory size={30}  onPress={SetPetImage} />
-          </Avatar> */}
+          
         </View>
       ),
     },
@@ -289,7 +312,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
         )}
       />
       <View style={styles.bottomNavigationContainer}>
-        <Button onPress={() => { }} style={styles.navigationButton}>Пропустить</Button>
+        <Button onPress={() => {router.replace('/map') }} style={styles.navigationButton}>Пропустить</Button>
         <View style={styles.indicatorContainer}>
           {data.map((_, index) => (
             <View
@@ -337,16 +360,17 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   dropdownButton: {
-    width: '100%',
-    height: 55,
+    width: '55%',
+    height: 45,
     backgroundColor: '#FFF',
-    borderRadius: 5,
+    borderRadius: 7,
     borderWidth: 1,
     borderColor: 'lightgray',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 12,
+    paddingRight:5
    
   },
   dropdownButtonText: {
@@ -359,6 +383,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderRadius: 8,
     marginTop: -20,
+    height: 280,
   },
   dropdownItem: {
     backgroundColor: '#FFF',

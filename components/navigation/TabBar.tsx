@@ -1,13 +1,18 @@
 import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { observer } from 'mobx-react-lite';
 import TabBarButton from './TabBarButton';
 import { Colors } from '@/constants/Colors';
-
+import mapStore from '@/stores/MapStore';
 
 const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   const primaryColor = Colors.light.primTextButtHigh;
   const greyColor = Colors.light.primTextButtDefault;
+
+  if (mapStore.bottomSheetVisible) {
+    return null;
+  }
 
   return (
     <View style={styles.tabbar}>
@@ -42,6 +47,7 @@ const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation })
             target: route.key,
           });
         };
+
         return (
           <TabBarButton
             key={route.name}
@@ -49,12 +55,10 @@ const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation })
             onLongPress={onLongPress}
             isFocused={isFocused}
             routeName={route.name}
-            color={isFocused ? primaryColor : greyColor} 
-            label={label.toString()}              
-
+            color={isFocused ? primaryColor : greyColor}
+            label={label.toString()}
           />
         );
-        
       })}
     </View>
   );
@@ -63,12 +67,12 @@ const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation })
 const styles = StyleSheet.create({
   tabbar: {
     position: 'absolute',
-    bottom: 25,
+    bottom: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'white',
-    marginHorizontal: 20,
+    marginHorizontal: 10 ,
     paddingVertical: 15,
     borderRadius: 25,
     shadowColor: 'black',
@@ -78,4 +82,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TabBar;
+export default observer(TabBar);

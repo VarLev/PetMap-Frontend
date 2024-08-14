@@ -5,18 +5,20 @@ import BottomSheet from '@gorhom/bottom-sheet';
 interface BottomSheetComponentProps {
   snapPoints: (number | string)[];
   renderContent: () => React.ReactNode;
+  onClose?: () => void;
 }
 
 const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
-  ({ snapPoints, renderContent }, ref) => {
+  ({ snapPoints, renderContent, onClose }, ref) => {
     return (
-      <BottomSheet
+      <BottomSheet 
         ref={ref}
         snapPoints={snapPoints}
         style={styles.bottomSheetContainer}
         enablePanDownToClose={true}
+        onClose={onClose}
       >
-        <View style={styles.contentContainer}>{renderContent()}</View>
+        {renderContent()}
       </BottomSheet>
     );
   }
@@ -28,6 +30,7 @@ const styles = StyleSheet.create({
   bottomSheetContainer: {
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
+    
   },
   contentContainer: {
     flex: 1,

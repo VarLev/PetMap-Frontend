@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { Button, IconButton, TextInput, Text, SegmentedButtons } from 'react-native-paper';
+import { Button, TextInput, Text, SegmentedButtons } from 'react-native-paper';
 import userStore from '@/stores/UserStore';
 import { observer } from 'mobx-react-lite';
 import { User } from '@/dtos/classes/user/UserDTO';
-import EditPetProfileComponent from './EditPetProfileComponent';
 import { Pet } from '@/dtos/classes/pet/Pet';
+import { Avatar } from '@rneui/themed';
+import { INTEREST_TAGS, LANGUAGE_TAGS } from '@/constants/Strings';
+
+import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
+
 
 const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => void, onCancel: () => void }) => {
   const user: User = userStore.currentUser!;
   const [editableUser, setEditableUser] = useState<User>(new User({ ...user }));
+
 
   const handleChange = (field: keyof User, value: any) => {
     setEditableUser({ ...editableUser, [field]: value });
@@ -28,25 +33,22 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
 
   return (
     <ScrollView style={{ padding: 2 }}>
-      {editableUser.thumbnailUrl && (
-        <IconButton icon="account" size={96} style={{ alignSelf: 'center', marginBottom: 10 }} />
-      )}
-      <TextInput
+        <Avatar
+        source={{ uri: editableUser.thumbnailUrl || 'https://via.placeholder.com/100' }} // Путь к изображению пользователя
+        rounded
+        size={200}
+        containerStyle={{ backgroundColor: "#BDBDBD", marginTop: 10,   borderColor: 'white', borderWidth: 3,  shadowColor: 'black',  elevation: 4, }}
+        icon={{ name: 'user', type: 'font-awesome', color: 'white' }}
+      />
+      
+      <TextInput 
         label="Name"
         value={editableUser.name || ''}
         onChangeText={(text) => handleChange('name', text)}
         left={<TextInput.Icon icon="account" />}
         style={{ marginBottom: 10 }}
       />
-
       <View style={{ marginBottom: 20 }}>
-        <TextInput
-          label="Email"
-          value={editableUser.email}
-          onChangeText={(text) => handleChange('email', text)}
-          left={<TextInput.Icon icon="email" />}
-          style={{ marginBottom: 10 }}
-        />
 
         <TextInput
           label="Birth Date"
@@ -75,21 +77,6 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
           style={{ marginBottom: 10 }}
         />
 
-        <Text variant="bodyLarge">Interests:</Text>
-        {editableUser.interests?.map((interest, index) => (
-          <TextInput
-            key={index}
-            label={`Interest ${index + 1}`}
-            value={interest}
-            onChangeText={(text) => {
-              const newInterests = [...editableUser.interests!];
-              newInterests[index] = text;
-              handleChange('interests', newInterests);
-            }}
-            left={<TextInput.Icon icon="format-list-bulleted" />}
-            style={{ marginBottom: 10 }}
-          />
-        ))}
 
         <TextInput
           label="Work"
@@ -108,26 +95,20 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
         />
 
         <Text variant="bodyLarge">Languages:</Text>
-        {editableUser.userLanguages?.map((language, index) => (
-          <TextInput
-            key={index}
-            label={`Language ${index + 1}`}
-            value={language}
-            onChangeText={(text) => {
-              const newLanguages = [...editableUser.userLanguages!];
-              newLanguages[index] = text;
-              handleChange('userLanguages', newLanguages);
-            }}
-            left={<TextInput.Icon icon="translate" />}
-            style={{ marginBottom: 10 }}
-          />
-        ))}
-      </View>
+         <CustomTagsSelector 
+          tags={LANGUAGE_TAGS} 
+          initialSelectedTags={editableUser.userLanguages || []}
+          onSelectedTagsChange={(selectedTags) => handleChange('userLanguages', selectedTags)} // Обновляем выбранные языки
+        />
 
-      <Text variant="bodyLarge" style={{ marginBottom: 10 }}>Pet Profiles:</Text>
-      {editableUser.petProfiles?.map((pet, index) => (
-        <EditPetProfileComponent key={index} pet={pet} index={index} onPetChange={handlePetChange} />
-      ))}
+        <Text variant="bodyLarge">Interests:</Text>
+        <CustomTagsSelector 
+          tags={INTEREST_TAGS} 
+          initialSelectedTags={editableUser.interests || []}
+          onSelectedTagsChange={(selectedTags) => handleChange('interests', selectedTags)} 
+          maxSelectableTags={5}
+        />
+      </View>
 
       <Button mode="contained" onPress={handleSave} style={{ marginTop: 20 }}>Save</Button>
       <Button mode="outlined" onPress={onCancel} style={{ marginTop: 10 }}>Cancel</Button>

@@ -1,90 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { database } from '../../../firebaseConfig';
-import { ref, onValue, get } from 'firebase/database';
+import React, { useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import { View, Text, FlatList, TouchableOpacity,Image, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import userStore from '@/stores/UserStore';
+import ChatStore from '@/stores/ChatStore';
+import { Divider, Surface } from 'react-native-paper';
+import { Ionicons } from '@expo/vector-icons';
 
-interface Chat {
-  id: string;
-  lastMessage: string;
-  participants: { [key: string]: boolean };
-  otherUserName: string;
-}
-
-const ChatListScreen: React.FC = () => {
-  const [chats, setChats] = useState<Chat[]>([]);
-  const userUid = userStore.currentUser?.firebaseUid;
+const ChatListScreen: React.FC = observer(() => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!userUid) return;
+    ChatStore.fetchChats();
+  }, []);
 
-    const fetchChats = async () => {
-      const chatsRef = ref(database, 'chats');
-      const snapshot = await get(chatsRef);
-      const chatsList: Chat[] = [];
+  const handleDelete = () => {
+    Alert.alert(
+      "Удалить чат",
+      "Вы уверены, что хотите удалить этот чат?",
+      [
+        { text: "Отмена", style: "cancel" },
+        { text: "Удалить", onPress: () => {} }
+      ]
+    );
+  };
 
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        for (const chatId in data) {
-          const chatData = data[chatId];
-          const participantIds = Object.keys(chatData.participants);
-          const otherUserId = participantIds.find(id => id !== userUid);
-
-          if (otherUserId) {
-            const userSnapshot = await get(ref(database, `users/${otherUserId}`));
-            const otherUserName = userSnapshot.val().name;
-            chatsList.push({
-              id: chatId,
-              lastMessage: chatData.lastMessage,
-              participants: chatData.participants,
-              otherUserName
-            });
-          }
-        }
-        setChats(chatsList);
-      }
-    };
-
-    fetchChats();
-  }, [userUid]);
-
-  const renderItem = ({ item }: { item: Chat }) => (
-    <TouchableOpacity onPress={() => router.push(`/chat/${item.id}`)}>
-      <View style={styles.chatItem}>
-        <Text style={styles.chatTitle}>{item.otherUserName}</Text>
-        <Text style={styles.chatLastMessage}>{item.lastMessage}</Text>
+  const renderItem = ({ item }: { item: typeof ChatStore.chats[0] }) => (
+    <TouchableOpacity onPress={() => router.push(`/chat/${item?.id}`)} className='bg-violet-300'>
+    <View className='flex-row justify-between p-1 ml-4 items-center h-17 bg-gray-100 rounded-l-xl'>
+      <View className='flex-row items-center'>
+        <Image source={{ uri: item?.thumbnailUrl ?? 'https://i.pravatar.cc/200' }} className='rounded-xl h-16 w-16' />
+        <Text className='text-indigo-800 pl-4 text-xl font-nunitoSansBold'>{item.otherUserName}</Text>
       </View>
-    </TouchableOpacity>
+      <TouchableOpacity onPress={handleDelete} className='p-2'>
+        <Ionicons name="trash" size={24} color="grey" />
+      </TouchableOpacity>
+    </View>
+    <Divider bold className='bg-gray-400'/>
+  </TouchableOpacity>
   );
 
   return (
-    <SafeAreaProvider>
-      <FlatList
-        data={chats}
+    <View className='h-full'>
+      <FlatList 
+        data={ChatStore.chats}
         renderItem={renderItem}
         keyExtractor={item => item.id}
-      />
-    </SafeAreaProvider>
-  );
-};
 
-const styles = StyleSheet.create({
-  chatItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  chatTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  chatLastMessage: {
-    fontSize: 14,
-    color: '#555',
-  },
+      />
+      <Surface elevation={5} className='h-24 bg-white' children={undefined}/>
+    </View>
+  );
 });
+
+
 
 export default ChatListScreen;

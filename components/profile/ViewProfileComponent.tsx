@@ -13,7 +13,7 @@ const ViewProfileComponent = observer(({ onEdit }: { onEdit: () => void }) => {
   return (
     <ScrollView>
       {user.thumbnailUrl && (
-        <Avatar.Image size={96} source={{ uri: user.thumbnailUrl }} style={{ alignSelf: 'center', marginBottom: 10 }} />
+        <Avatar.Image size={96} source={{ uri: user.thumbnailUrl || 'https://via.placeholder.com/100' }} style={{ alignSelf: 'center', marginBottom: 10 }} />
       )}
       <Text variant="headlineMedium" style={{ textAlign: 'center', marginBottom: 10 }}>{user.name}</Text>
 

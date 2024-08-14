@@ -11,8 +11,11 @@ import CustomButtonOutlined from '@/components/custom/buttons/CustomButtonOutlin
 
 
 const App = () => {
-  const { loading, isLogged } = useStore();
-
+  const { loading, isLogged, signOut} = useStore();
+  signOut();
+  console.log('User signed out');
+  
+ 
   console.log(loading, isLogged);
   if (!loading && isLogged) return <Redirect href="/map" />;
  
