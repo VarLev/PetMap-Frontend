@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { View, Dimensions, Platform, StyleSheet, ImageSourcePropType, Image, ScrollView } from 'react-native';
+import React, { ReactNode, useRef, useState } from 'react';
+import { View, Dimensions, Platform, StyleSheet, ImageSourcePropType, Image, ScrollView, FlatList } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { Button, Text } from 'react-native-paper';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
@@ -16,6 +16,11 @@ import * as Crypto from 'expo-crypto';
 import { User } from '@/dtos/classes/user/UserDTO';
 import CustomSegmentedButtons from '../custom/buttons/CustomSegmentedButtons';
 import { router } from 'expo-router';
+import BottomSheetComponent from '../common/BottomSheetComponent';
+import BottomSheet from '@gorhom/bottom-sheet';
+import AvatarSelector from '../common/AvatarSelector';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { avatarsStringF,avatarsStringM } from '@/constants/Avatars';
 
 
 const { width, height } = Dimensions.get('window');
@@ -44,7 +49,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
 
   const source: ImageSourcePropType | undefined = userImage ? { uri: userImage } : undefined;
   const sourcePet: ImageSourcePropType | undefined = petImage ? { uri: petImage } : undefined;
-
+  
 
   const breeds = [
     "Шарпей", "Лабрадор", "Лайка", "Хаски", "Лабрадор ретривер", "Немецкая овчарка",
@@ -58,6 +63,11 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
     "Пойнтер", "Русский той", "Фокстерьер", "Грейхаунд", "Шелти (Шетландская овчарка)", "Веймаранер"
   ];
   const [selectedBreed, setSelectedBreed] = useState<string | null>(null);
+  const sheetRef = useRef<BottomSheet>(null);
+  const [isSheetVisible, setIsSheetVisible] = useState(false);
+  const [renderContent, setRenderContent] = useState<ReactNode>(() => null);
+  //const [userAvatar, setUserAvatar] = useState<string | null>(null);
+
 
   const handleIndex = (index: number) => {
     setCurrentIndex(index);
@@ -157,6 +167,35 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
     setPetGender(value);
   };
 
+  const handleSheetClose = () => {
+    setIsSheetVisible(false);
+    sheetRef.current?.close();
+  };
+
+  const handleAvatarSelect = (avatar: number, isMail:boolean) => {
+    //setUserAvatar(avatar);
+    const userAv = isMail ? avatarsStringM[avatar] : avatarsStringF[avatar];
+    userStore.fetchImageUrl(userAv).then(resp => {
+      if(resp){
+        setUserImage(resp);
+        sheetRef.current?.close();
+      }
+        
+    });
+  };
+
+
+  const handleSheetOpen = () => {
+    setIsSheetVisible(true);
+    setRenderContent(() => (
+      <AvatarSelector onAvatarSelect={handleAvatarSelect} />
+    ));
+    sheetRef.current?.expand();
+  };
+
+ 
+
+  
 
   const data = [
     {
@@ -219,7 +258,10 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
 
           </View>
 
-          <CustomButtonOutlined title='Добавь фотографию' handlePress={SetUserImage} containerStyles='w-full' />
+          <View className='flex-row justify-between'>
+            <CustomButtonOutlined title='Выбрать фото' handlePress={SetUserImage} containerStyles='mr-1 w-1/2 bg-indigo-700 text-white' textStyles = 'text-white' />
+            <CustomButtonOutlined title='Выбрать аватар' handlePress={handleSheetOpen} containerStyles='ml-1 w-1/2' />
+          </View>
           
 
         </View>
@@ -293,39 +335,55 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   ];
 
   return (
-    <ScrollView  style={styles.container}>
-      <Carousel
-        ref={carouselRef}
-        width={width}
-        height={height - 100}
-        data={data}
-        pagingEnabled={true}
-        loop={false}
-        onProgressChange={(_, absoluteProgress) => {
-          handleIndex(Math.round(absoluteProgress));
-        }}
-        onSnapToItem={(index) => setCurrentIndex(index)}
-        renderItem={({ item }) => (
-          <View style={styles.carouselItemContainer}>
-            {item.content}
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <FlatList
+        data={[{ key: 'carousel' }]}
+        renderItem={() => (
+          <View style={styles.container}>
+            <Carousel
+              ref={carouselRef}
+              width={width}
+              height={height - 100}
+              data={data}
+              pagingEnabled={true}
+              loop={false}
+              onProgressChange={(_, absoluteProgress) => {
+                handleIndex(Math.round(absoluteProgress));
+              }}
+              onSnapToItem={(index) => setCurrentIndex(index)}
+              renderItem={({ item }) => (
+                <View style={styles.carouselItemContainer}>
+                  {item.content}
+                </View>
+              )}
+            />
+            <View style={styles.bottomNavigationContainer}>
+              <Button onPress={() => { router.replace('/map'); }} style={styles.navigationButton}>Пропустить</Button>
+              <View style={styles.indicatorContainer}>
+                {data.map((_, index) => (
+                  <View
+                    key={index}
+                    style={[styles.indicator, currentIndex === index ? styles.activeIndicator : styles.inactiveIndicator]}
+                  />
+                ))}
+              </View>
+              <Button onPress={handleNext} style={styles.navigationButton}>
+                {currentIndex === data.length - 1 ? 'Завершить' : 'Далее'}
+              </Button>
+            </View>
+            {isSheetVisible && (   
+              <BottomSheetComponent
+                ref={sheetRef}
+                snapPoints={['60%','100%']}
+                renderContent={() => renderContent}
+                onClose={handleSheetClose}
+              />
+            )}
           </View>
         )}
+        keyExtractor={(item) => item.key}
       />
-      <View style={styles.bottomNavigationContainer}>
-        <Button onPress={() => {router.replace('/map') }} style={styles.navigationButton}>Пропустить</Button>
-        <View style={styles.indicatorContainer}>
-          {data.map((_, index) => (
-            <View
-              key={index}
-              style={[styles.indicator, currentIndex === index ? styles.activeIndicator : styles.inactiveIndicator]}
-            />
-          ))}
-        </View>
-        <Button onPress={handleNext} style={styles.navigationButton}>
-          {currentIndex === data.length - 1 ? 'Завершить' : 'Далее'}
-        </Button>
-      </View>
-    </ScrollView>
+    </GestureHandlerRootView>
   );
 };
 

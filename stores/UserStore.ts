@@ -14,7 +14,6 @@ import { IUserUpdateOnbording } from '@/dtos/Interfaces/user/IUserUpdateOnbordin
 import { User } from '@/dtos/classes/user/UserDTO';
 
 
-
 class UserStore {
   fUser: UserCredential | null = null;
   currentUser: User | null = null;
@@ -42,14 +41,11 @@ class UserStore {
   setLoginedUser(user: any) {
     this.fUser = user;
     this.isLogged = !!user;
-
-
   }
   
 
   setUser(user: IUser | null) {
     this.currentUser = new User({ ...user })
-    
     this.isLogged = !!user;
   }
 
@@ -392,6 +388,17 @@ class UserStore {
       throw error;
     } 
   }
+
+  async fetchImageUrl(path:string) {
+    try {
+      const storageRef = ref(storage, `${path}`);
+      const downloadURL = await getDownloadURL(storageRef);
+      console.log('Image URL:', downloadURL);
+      return downloadURL;
+    } catch (error) {
+      console.error('Error fetching image URL:', error);
+    }
+  };
 
 
   async signOut() {

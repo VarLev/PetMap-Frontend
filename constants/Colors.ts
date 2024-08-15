@@ -8,5 +8,8 @@ export const Colors = {
   light: {
     primTextButtHigh: '#480299',
     primTextButtDefault: '#737373',
-  }
+  },
+  indigo:'#303F9F',
+  purple:'#8F00FF',
+  
 };

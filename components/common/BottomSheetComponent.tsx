@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { View, StyleSheet } from 'react-native';
-import BottomSheet from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
 interface BottomSheetComponentProps {
   snapPoints: (number | string)[];
@@ -17,8 +17,11 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
         style={styles.bottomSheetContainer}
         enablePanDownToClose={true}
         onClose={onClose}
+        backgroundStyle={{ backgroundColor: '#e5e5e5' }}
       >
-        {renderContent()}
+        <BottomSheetScrollView>
+          {renderContent()}
+        </BottomSheetScrollView>
       </BottomSheet>
     );
   }
@@ -30,7 +33,6 @@ const styles = StyleSheet.create({
   bottomSheetContainer: {
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    
   },
   contentContainer: {
     flex: 1,
