@@ -11,6 +11,7 @@ const ChatListScreen: React.FC = observer(() => {
 
   useEffect(() => {
     ChatStore.fetchChats();
+    console.log('ChatListScreen useEffect');
   }, []);
 
   const handleDelete = () => {

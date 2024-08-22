@@ -25,6 +25,8 @@ export class User implements IUser {
   userLanguages?: string[] | null;
   photos?: Photo[] | null;
   petProfiles: Pet[] | null;
+  avatarUrl: any;
+  age: ReactNode;
 
   constructor(data: Partial<IUser> = {}) {
 

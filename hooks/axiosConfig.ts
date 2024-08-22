@@ -4,9 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { F_TOKEN } from '@env';
 
 const apiClient = axios.create({
-    baseURL: 'http://192.168.0.98:5142/api',
+  //baseURL: 'http://10.113.1.31:5142/api',
+  baseURL: 'http://192.168.1.17:5142/api'
 });
-
+//baseURL: 'http://192.168.0.98:5142/api'
 apiClient.interceptors.request.use(
     async config => {
         const token = await AsyncStorage.getItem(F_TOKEN);

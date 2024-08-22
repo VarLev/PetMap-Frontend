@@ -37,7 +37,7 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({ onAvatarSelect }) => {
 
       <FlatList
         data={avatars}
-        className="items-center"
+        
         renderItem={({ item, index }) => (
           <Pressable
             onPress={() => handleAvatarSelect(index)}

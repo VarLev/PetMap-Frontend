@@ -18,6 +18,8 @@ const CustomTagsSelector: React.FC<CustomTagsSelectorProps> = ({
   const [selectedTags, setSelectedTags] = useState<string[]>(initialSelectedTags);
 
   const handleTagPress = (index: number, tagLabel: string, event: any, deleted: boolean) => {
+    if (!selectedTags.length) return;
+
     let updatedSelectedTags;
 
     if (selectedTags.includes(tagLabel)) {
@@ -37,7 +39,7 @@ const CustomTagsSelector: React.FC<CustomTagsSelectorProps> = ({
     }
   };
 
-  // Обновляем selectedTags если initialSelectedTags изменились
+  // Обновляем selectedTags, если initialSelectedTags изменились
   useEffect(() => {
     setSelectedTags(initialSelectedTags || []);
   }, [initialSelectedTags]);
@@ -49,13 +51,22 @@ const CustomTagsSelector: React.FC<CustomTagsSelectorProps> = ({
         readonly={true}
         onTagPress={handleTagPress}
         renderTag={({ tag, index, onPress }) => (
-          <TouchableOpacity
-            key={`${tag}-${index}`}
-            className={`px-4 py-2 m-1 justify-between rounded-full ${selectedTags.includes(tag) ? 'bg-indigo-800' : 'bg-gray-300'}`}
-            onPress={onPress}
-          >
-            <Text className={`${selectedTags.includes(tag) ? 'text-white' : 'text-black'}`}>{tag}</Text>
-          </TouchableOpacity>
+          selectedTags.length > 0 ? (
+            <TouchableOpacity
+              key={`${tag}-${index}`}
+              className={`px-4 py-2 m-1 justify-between rounded-full ${selectedTags.includes(tag) ? 'bg-indigo-800' : 'bg-gray-300'}`}
+              onPress={onPress}
+            >
+              <Text className={`${selectedTags.includes(tag) ? 'text-white' : 'text-black'} text-xs font-nunitoSansRegular`}>{tag}</Text>
+            </TouchableOpacity>
+          ) : (
+            <View
+              key={`${tag}-${index}`}
+              className="px-4 py-2 m-1 justify-between rounded-full bg-purple-100 font-nunitoSansRegular"
+            >
+              <Text className="text-black text-sm font-nunitoSansRegular">{tag}</Text>
+            </View>
+          )
         )}
       />
     </View>

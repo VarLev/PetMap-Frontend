@@ -1,3 +1,6 @@
+import { avatarsStringF, avatarsStringM } from "@/constants/Avatars";
+import { IUser } from "@/dtos/Interfaces/user/IUser";
+
 /**
  * Вычисляет возраст собаки в годах или месяцах в зависимости от даты рождения.
  * @param birthDate Дата рождения собаки.
@@ -36,5 +39,20 @@ export function getGenderIcon(gender: string): string {
       return 'female';
     default:
       return 'paw'; // Универсальная иконка, подходящая для животных
+  }
+}
+
+export function setUserAvatarDependOnGender(user: IUser): string {
+  const randomIndex = Math.floor(Math.random() * avatarsStringF.length);
+  if(user.gender){
+    if(user.gender.toLowerCase()==='female'){
+      return avatarsStringF[randomIndex];
+    }
+    else{
+      return avatarsStringM[randomIndex];
+    }
+  }
+  else{
+    return avatarsStringM[randomIndex];
   }
 }

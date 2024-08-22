@@ -11,5 +11,5 @@ export const Colors = {
   },
   indigo:'#303F9F',
   purple:'#8F00FF',
-  
+  darkViolet:'#2F00B6'
 };

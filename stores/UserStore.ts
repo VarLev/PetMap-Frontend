@@ -12,6 +12,8 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IUserUpdateOnbording } from '@/dtos/Interfaces/user/IUserUpdateOnbording';
 import { User } from '@/dtos/classes/user/UserDTO';
+import * as ImagePicker from 'expo-image-picker';
+import { IPet } from '@/dtos/Interfaces/pet/IPet';
 
 
 class UserStore {
@@ -277,7 +279,7 @@ class UserStore {
         // Обновление локального состояния
         console.log(this.currentUser?.email);
         if(user.thumbnailUrl && this.currentUser?.email){
-          const thumUrl = await this.uploadImage(user.thumbnailUrl, `users/${this.currentUser?.email}/thumbnail`);
+          const thumUrl = await this.uploadUserThumbnailImage(new User({ ...this.currentUser, ...user }));
           this.currentUser.thumbnailUrl = thumUrl;
           user.thumbnailUrl = thumUrl;
           console.log('user thumbnailUrl updated');
@@ -287,14 +289,17 @@ class UserStore {
         runInAction(() => {
           this.currentUser = new User({ ...this.currentUser, ...user });
         });
-         
+        let thumUrl;
         if(user.petProfiles![0].thumbnailUrl){
-          const thumUrl = await this.uploadImage(user.petProfiles![0].thumbnailUrl, `pets/${user.petProfiles![0].id}/thumbnail`);
-          this.currentUser.petProfiles![0].thumbnailUrl = thumUrl;
-          user.petProfiles![0].thumbnailUrl = thumUrl;
-          console.log('pet thumbnailUrl updated');
+          thumUrl = await this.uploadImage(user.petProfiles![0].thumbnailUrl, `pets/${user.petProfiles![0].id}/thumbnail`);
+          
+        }else{
+          const petAvatarUrl = await this.fetchImageUrl(`assets/images/pet/thumbnail`);
+          thumUrl = await this.uploadImage(petAvatarUrl!, `pets/${user.petProfiles![0].id}/thumbnail`);
         }
-        
+        this.currentUser.petProfiles![0].thumbnailUrl = thumUrl;
+        user.petProfiles![0].thumbnailUrl = thumUrl;
+        console.log('pet thumbnailUrl updated');
           
         runInAction(() => {
           this.currentUser = new User({ ...this.currentUser, ...user });
@@ -327,6 +332,12 @@ class UserStore {
       throw error;
     } 
   }
+
+  async uploadUserThumbnailImage(user: IUser): Promise<string|undefined> {
+    return this.uploadImage(user.thumbnailUrl!,`users/${this.currentUser?.email}/thumbnail`)
+  }
+
+
 
   async uploadImage(image:string, pathToSave:string): Promise<string|undefined> {
     if (!image) return;
@@ -411,6 +422,20 @@ class UserStore {
       console.error('Failed to sign out', error);     
     }
   }
+
+  async setUserImage() {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [3, 3],
+      quality: 0.5,
+      
+    });
+
+    if (!result.canceled) {
+      return result.assets[0].uri;
+    }
+  };
 
 
 }

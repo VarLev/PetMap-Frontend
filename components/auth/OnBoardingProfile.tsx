@@ -1,5 +1,5 @@
 import React, { ReactNode, useRef, useState } from 'react';
-import { View, Dimensions, Platform, StyleSheet, ImageSourcePropType, Image, ScrollView, FlatList } from 'react-native';
+import { View, Dimensions, Platform, StyleSheet, ImageSourcePropType, Image, FlatList } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { Button, Text } from 'react-native-paper';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
@@ -132,17 +132,11 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   };
 
   const SetUserImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [3, 3],
-      quality: 0.5,
-      
+    userStore.setUserImage().then(resp => {
+      if(resp){
+        setUserImage(resp);
+      }
     });
-
-    if (!result.canceled) {
-      setUserImage(result.assets[0].uri);
-    }
   };
 
   const SetPetImage = async () => {
@@ -173,7 +167,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   };
 
   const handleAvatarSelect = (avatar: number, isMail:boolean) => {
-    //setUserAvatar(avatar);
     const userAv = isMail ? avatarsStringM[avatar] : avatarsStringF[avatar];
     userStore.fetchImageUrl(userAv).then(resp => {
       if(resp){
@@ -371,18 +364,20 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
                 {currentIndex === data.length - 1 ? 'Завершить' : 'Далее'}
               </Button>
             </View>
-            {isSheetVisible && (   
+            
+          </View>
+        )}
+        keyExtractor={(item) => item.key}
+      />
+      {isSheetVisible && (   
               <BottomSheetComponent
                 ref={sheetRef}
                 snapPoints={['60%','100%']}
                 renderContent={() => renderContent}
                 onClose={handleSheetClose}
+                enablePanDownToClose={true}
               />
             )}
-          </View>
-        )}
-        keyExtractor={(item) => item.key}
-      />
     </GestureHandlerRootView>
   );
 };
@@ -441,7 +436,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderRadius: 8,
     marginTop: -20,
-    height: 280,
+    height: 230,
   },
   dropdownItem: {
     backgroundColor: '#FFF',

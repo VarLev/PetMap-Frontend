@@ -5,23 +5,16 @@ import userStore from '@/stores/UserStore';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import 'nativewind';
-
-import EditProfileComponent from '@/components/profile/EditProfileComponent';
 import ViewProfileComponent from '@/components/profile/ViewProfileComponent';
 import { User } from '@/dtos/classes/user/UserDTO';
+import EmptyUserProfile from '@/components/profile/EmptyUserProfile';
+import { router } from 'expo-router';
+import { PaperProvider } from 'react-native-paper';
 
 const Profile = observer(() => {
   const [editableUser, setEditableUser] = useState<User>();
   const [isEditing, setIsEditing] = useState(false);
-
-  const handleEdit = () => setIsEditing(true);
-  const handleSave = () => {
-    setIsEditing(false);
-    userStore.loadUser(); 
-  };
-
-  const handleCancel = () => setIsEditing(false);
+  
   useEffect(() => {
     // Загрузка данных пользователя, если они еще не загружены
     if (!userStore.currentUser) {
@@ -32,6 +25,13 @@ const Profile = observer(() => {
     }
   }, []);
 
+  const handleEdit = () => {
+    router.push('profile/editUser');
+  }
+  
+  const handleSave = () => {};
+
+  const handleCancel = () => {}
   
   const handleChange = (field: keyof IUser, value: any) => {
     if (editableUser) {
@@ -48,15 +48,17 @@ const Profile = observer(() => {
   }
 
   return (
-    <SafeAreaView className='bg-violet-100 h-full p-5'>
-      <View className='mb-20'>
+    
+      <View>
         {isEditing ? (
-          <EditProfileComponent onSave={handleSave} onCancel={handleCancel} />
+          <EmptyUserProfile />
         ) : (
-          <ViewProfileComponent onEdit={handleEdit} />
+          
+            <ViewProfileComponent onEdit={handleEdit}  />
+          
         )}
       </View>
-    </SafeAreaView>
+   
   );
 });
 

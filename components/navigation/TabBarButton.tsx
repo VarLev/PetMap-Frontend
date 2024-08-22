@@ -19,8 +19,8 @@ const TabBarButton: React.FC<TabBarButtonProps> = ({ isFocused, label, routeName
     }, [scale, isFocused]);
 
     const animatedIconStyle = useAnimatedStyle(() => {
-        const scaleValue = interpolate(scale.value, [0, 1], [1, 1.4]);
-        const top = interpolate(scale.value, [0, 1], [0, 8]);
+        const scaleValue = interpolate(scale.value, [0, 1], [1, 1.3]);
+        const top = interpolate(scale.value, [0, 1], [0, 1]);
 
         return {
             transform: [{ scale: scaleValue }],
@@ -38,12 +38,12 @@ const TabBarButton: React.FC<TabBarButtonProps> = ({ isFocused, label, routeName
 
     return (
         <Pressable {...props} style={styles.container}>
-            <Animated.View style={animatedIconStyle}>
+            <Animated.View style={[animatedIconStyle, routeName === 'map' && styles.mapIconContainer]}>
                 {iconsTab[routeName]({ color })}
             </Animated.View>
-            <Animated.Text style={[{ color, fontSize: 11 }, animatedTextStyle]}>
+            {/* <Animated.Text style={[{ color, fontSize: 11 }, animatedTextStyle]}>
                 {label}
-            </Animated.Text>
+            </Animated.Text> */}
         </Pressable>
     );
 };
@@ -55,6 +55,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 4,
     },
+    mapIconContainer: {
+      width: 50, 
+      height: 50, 
+      borderRadius: 25, 
+      backgroundColor: '#F5ECFF', // Устанавливаем пурпурный цвет фона
+      justifyContent: 'center', 
+      alignItems: 'center',
+  },
 });
 
 export default TabBarButton;

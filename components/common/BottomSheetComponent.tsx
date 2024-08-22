@@ -1,27 +1,30 @@
 import React, { forwardRef } from 'react';
-import { View, StyleSheet } from 'react-native';
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { StyleSheet } from 'react-native';
+import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 
 interface BottomSheetComponentProps {
   snapPoints: (number | string)[];
   renderContent: () => React.ReactNode;
   onClose?: () => void;
+  enablePanDownToClose: boolean;
 }
 
 const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
-  ({ snapPoints, renderContent, onClose }, ref) => {
+  ({ snapPoints, renderContent, onClose, enablePanDownToClose }, ref) => {
     return (
-      <BottomSheet 
+      <BottomSheet
         ref={ref}
         snapPoints={snapPoints}
-        style={styles.bottomSheetContainer}
-        enablePanDownToClose={true}
+        enablePanDownToClose={enablePanDownToClose}
         onClose={onClose}
-        backgroundStyle={{ backgroundColor: '#e5e5e5' }}
+        backgroundStyle={styles.backgroundStyle}
+        handleStyle={styles.handleStyle}
       >
-        <BottomSheetScrollView>
-          {renderContent()}
-        </BottomSheetScrollView>
+        <BottomSheetFlatList
+          data={[]}
+          renderItem={null}
+          ListHeaderComponent={renderContent}
+        />
       </BottomSheet>
     );
   }
@@ -30,13 +33,17 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
 BottomSheetComponent.displayName = 'BottomSheetComponent';
 
 const styles = StyleSheet.create({
-  bottomSheetContainer: {
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+  backgroundStyle: {
+
+    backgroundColor: 'white',
+    borderTopLeftRadius: 80,
+    borderTopRightRadius: 80,
   },
-  contentContainer: {
-    flex: 1,
-    padding: 16,
+  handleStyle: {
+   
+    backgroundColor: 'white', // Цвет ручки (если используется)
+    borderTopLeftRadius: 80,
+    borderTopRightRadius: 80,
   },
 });
 

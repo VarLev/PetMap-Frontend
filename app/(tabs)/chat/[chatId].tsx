@@ -6,6 +6,7 @@ import ChatStore from '@/stores/ChatStore';
 import { Chat, MessageType } from '@flyerhq/react-native-chat-ui';
 import UserStore from '@/stores/UserStore';
 import CustomMessageComponent from '@/components/chat/CustomMessageComponent';
+import mapStore from '@/stores/MapStore';
 
 const ChatScreen: React.FC = observer(() => {
   const { chatId } = useLocalSearchParams<{ chatId: string }>();
@@ -18,7 +19,8 @@ const ChatScreen: React.FC = observer(() => {
     }
 
     const backAction = () => {
-      router.replace('/chat/');  // Возвращаемся на предыдущий экран
+      router.replace('/chat/');
+      mapStore.setBottomSheetVisible(false)  // Возвращаемся на предыдущий экран
       return true;
     };
 

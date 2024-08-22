@@ -21,18 +21,10 @@ const CustomMessageComponent = ({ message }: { message: MessageType.Custom }) =>
         <Text className='text-lg'>{message.metadata?.userName}</Text>
       </Chip>
       <Divider />
-      <Chip
-        avatar={<Image source={{ uri: message.metadata?.userAvatar?? 'https://i.pravatar.cc/200' }} style={{ width: 30, height: 30, borderRadius: 15, margin:3 }} />}
-        onPress={handlePress}
-        className='h-10 items-start '
-      >
-        <Text className='text-base'>{message.metadata?.userName}</Text>
-      </Chip>
-      <Text className='p-2 text-white'>Привет я бы хотел присоедениться к твоей прогулке!</Text>
-      <View className='bg-gray-200 h-10 flex-row justify-between'>
-        
-       <Button icon="account" onPress={() => {}} mode='contained-tonal' color='green'>Профиль</Button>
-       <Button icon="dog" onPress={() => {}} mode='contained-tonal' color='green'>Питомцы</Button>
+      <Text className='p-2 text-white bg-indigo-700'>Привет я бы хотел присоедениться к твоей прогулке!</Text>
+      <View className='bg-indigo-700 h-10 flex-row justify-between'>
+        <Button icon="account" onPress={() => {}} mode='contained-tonal' color='green'>Профиль</Button>
+        <Button icon="dog" onPress={() => {}} mode='contained-tonal' color='green'>Питомцы</Button>
       </View>
       
     </View>

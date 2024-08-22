@@ -2,6 +2,8 @@ import React from 'react';
 import { Tabs, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import TabBar from '@/components/navigation/TabBar';
+import { DrawerProvider } from '@/contexts/DrawerProvider';
+import SidebarUserProfileComponent from '@/components/navigation/SidebarUserProfileComponent';
 
 const Tabslayout = () => {
   const pathname = usePathname();
@@ -9,12 +11,14 @@ const Tabslayout = () => {
 
   return (
     <>
+     <DrawerProvider renderNavigationView={() => <SidebarUserProfileComponent />}> 
       <Tabs
         tabBar={(props) => !hideTabBar && <TabBar {...props} />}
         screenOptions={{
           tabBarShowLabel: false,
           tabBarActiveTintColor: '#2f0f48',
           tabBarInactiveTintColor: '#9a76b7',
+          
           tabBarStyle: {
             backgroundColor: 'white',
             borderTopWidth: 1,
@@ -49,6 +53,7 @@ const Tabslayout = () => {
           options={{
             title: 'Chat',
             headerShown: false,
+           
           }}
         />
         <Tabs.Screen
@@ -57,9 +62,11 @@ const Tabslayout = () => {
             title: 'Profile',
             headerShown: false,
           }}
+          
         />
       </Tabs>
       <StatusBar backgroundColor="#161622" style="light" />
+      </DrawerProvider>
     </>
   );
 };

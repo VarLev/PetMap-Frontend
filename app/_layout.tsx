@@ -3,6 +3,8 @@ import { useFonts } from 'expo-font';
 import { Stack, SplashScreen } from 'expo-router';
 import React, { useEffect } from 'react';
 import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans';
+import { DrawerProvider } from '@/contexts/DrawerProvider';
+import SidebarUserProfileComponent from '@/components/navigation/SidebarUserProfileComponent';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -39,12 +41,12 @@ const Layout = () => {
 
   return (
     <StoreProvider>
-      <Stack initialRouteName='(tabs)'>
-        <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-        <Stack.Screen name='(auth)' options={{ headerShown: false }} />
-        <Stack.Screen name='index' options={{ headerShown: false }} />
-        <Stack.Screen name='search/[query]' options={{ headerShown: false }} />
-      </Stack>
+        <Stack initialRouteName='(tabs)'>
+          <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+          <Stack.Screen name='(auth)' options={{ headerShown: false }} />
+          <Stack.Screen name='index' options={{ headerShown: false }} />
+          <Stack.Screen name='search/[query]' options={{ headerShown: false }} />
+        </Stack>
     </StoreProvider>
   );
 };
