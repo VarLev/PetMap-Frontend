@@ -31,7 +31,7 @@ export const DrawerProvider = ({
   const closeDrawer = () => {
     drawer.current?.closeDrawer();
   };
-  console.log('drawer')
+
   return (
     
     <DrawerContext.Provider value={{ openDrawer, closeDrawer }}>

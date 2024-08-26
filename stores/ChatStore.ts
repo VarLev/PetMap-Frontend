@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { database } from '@/firebaseConfig';
-import { ref, get, push, update, query, orderByChild, onValue, off } from 'firebase/database';
+import { ref, get, push, update, query, orderByChild, onValue, off, remove } from 'firebase/database';
 import userStore from '@/stores/UserStore';
 import { MessageType } from '@flyerhq/react-native-chat-ui';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
@@ -209,6 +209,24 @@ class ChatStore {
         this.messages = messagesList.reverse(); // Обратный порядок для правильного отображения
       });
     });
+  }
+
+  async deleteChat(chatId: string) {
+    const userId = userStore.currentUser?.id;
+    if (!userId) {
+      console.error("User is not defined");
+      return;
+    }
+    console.log('chatId:', chatId);
+    const chatRef = ref(database, `chats/${chatId}`);
+    const messagesRef = ref(database, `messages/${chatId}`);
+
+    try {
+      await remove(chatRef);
+      await remove(messagesRef);
+    } catch (error) {
+      console.error("Error deleting chat:", error);
+    }
   }
 
   

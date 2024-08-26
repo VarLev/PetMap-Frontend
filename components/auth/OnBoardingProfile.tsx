@@ -21,6 +21,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import AvatarSelector from '../common/AvatarSelector';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { avatarsStringF,avatarsStringM } from '@/constants/Avatars';
+import { BREEDS_TAGS } from '@/constants/Strings';
 
 
 const { width, height } = Dimensions.get('window');
@@ -51,17 +52,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   const sourcePet: ImageSourcePropType | undefined = petImage ? { uri: petImage } : undefined;
   
 
-  const breeds = [
-    "Шарпей", "Лабрадор", "Лайка", "Хаски", "Лабрадор ретривер", "Немецкая овчарка",
-    "Голден ретривер", "Французский бульдог", "Бульдог", "Пудель", "Бигль", "Ротвейлер",
-    "Йоркширский терьер", "Немецкий дог", "Сибирский хаски", "Мальтийская болонка", "Боксер", "Чихуахуа",
-    "Доберман", "Бордер-колли", "Ши-тцу", "Шарпей", "Кокер-спаниель", "Английский бульдог",
-    "Бостон-терьер", "Папийон", "Пекинес", "Самоед", "Вест-хайленд-уайт-терьер", "Вельш-корги пемброк",
-    "Акита", "Австралийская овчарка", "Бассет-хаунд", "Далматин", "Колли", "Ирландский сеттер",
-    "Итальянский грейхаунд", "Лхаса апсо", "Мопс", "Ньюфаундленд", "Аляскинский маламут", "Американский бульдог",
-    "Бельгийская овчарка (малинуа)", "Американский стаффордширский терьер", "Басенджи", "Лабрадудль", "Кане корсо", "Кавалер-кинг-чарльз-спаниель",
-    "Пойнтер", "Русский той", "Фокстерьер", "Грейхаунд", "Шелти (Шетландская овчарка)", "Веймаранер"
-  ];
   const [selectedBreed, setSelectedBreed] = useState<string | null>(null);
   const sheetRef = useRef<BottomSheet>(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
@@ -275,7 +265,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
           <Text className="text-base font-nunitoSansRegular text-center mb-4">Профиль питомца будет доступен другим пользователям при отклике на прогулку.</Text>
           <View className='flex-row'>
             <SelectDropdown 
-              data={breeds}
+              data={BREEDS_TAGS}
               onSelect={(selectedItem, index) => {
                 setSelectedBreed(selectedItem);
               }}

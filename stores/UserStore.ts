@@ -14,6 +14,8 @@ import { IUserUpdateOnbording } from '@/dtos/Interfaces/user/IUserUpdateOnbordin
 import { User } from '@/dtos/classes/user/UserDTO';
 import * as ImagePicker from 'expo-image-picker';
 import { IPet } from '@/dtos/Interfaces/pet/IPet';
+import petStore from './PetStore';
+import { Pet } from '@/dtos/classes/pet/Pet';
 
 
 class UserStore {
@@ -102,6 +104,7 @@ class UserStore {
       const response = await apiClient.get('/users/me', { params: { fuid } }); // Эндпоинт для получения текущего пользователя
       runInAction(() => {
         this.currentUser = new User({...response.data});
+        petStore.currentUserPets = response.data.petProfiles.map((pet: IPet) => new Pet(pet));
       });
 
       AsyncStorage.setItem('currentUser', JSON.stringify(this.currentUser))
@@ -119,7 +122,9 @@ class UserStore {
       const fuid = this.fUser?.user.uid;
       const response = await apiClient.get('/users/me', { params: { fuid } }); // Эндпоинт для получения текущего пользователя
       runInAction(() => {
+        console.log('Пользователь загружен из базы: this.currentUser = new User(response.data);', response.data);
         this.currentUser = new User(response.data);
+        petStore.currentUserPets = response.data.petProfiles.map((pet: IPet) => new Pet(pet));
       });
       
       AsyncStorage.setItem('currentUser', JSON.stringify(this.currentUser))
@@ -337,8 +342,6 @@ class UserStore {
     return this.uploadImage(user.thumbnailUrl!,`users/${this.currentUser?.email}/thumbnail`)
   }
 
-
-
   async uploadImage(image:string, pathToSave:string): Promise<string|undefined> {
     if (!image) return;
     const compressedImage = await this.compressImage(image);
@@ -404,7 +407,7 @@ class UserStore {
     try {
       const storageRef = ref(storage, `${path}`);
       const downloadURL = await getDownloadURL(storageRef);
-      console.log('Image URL:', downloadURL);
+      
       return downloadURL;
     } catch (error) {
       console.error('Error fetching image URL:', error);

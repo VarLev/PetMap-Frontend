@@ -3,8 +3,6 @@ import { useFonts } from 'expo-font';
 import { Stack, SplashScreen } from 'expo-router';
 import React, { useEffect } from 'react';
 import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans';
-import { DrawerProvider } from '@/contexts/DrawerProvider';
-import SidebarUserProfileComponent from '@/components/navigation/SidebarUserProfileComponent';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -33,9 +31,6 @@ const Layout = () => {
     }
   }, [fontsLoaded,error]);
 
-  if (!fontsLoaded) {
-    return null;
-  }
 
   if(!fontsLoaded && !error) return null; 
 

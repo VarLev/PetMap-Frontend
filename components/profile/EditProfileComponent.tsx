@@ -1,18 +1,22 @@
 import React, { useRef, useState } from 'react';
 import { View } from 'react-native';
-import { Button, TextInput, Text, Divider } from 'react-native-paper';
+import { Button, Text, Divider } from 'react-native-paper';
 import userStore from '@/stores/UserStore';
 import { observer } from 'mobx-react-lite';
 import { User } from '@/dtos/classes/user/UserDTO';
-import { INTEREST_TAGS, LANGUAGE_TAGS } from '@/constants/Strings';
+import { GENDERS_TAGS, INTEREST_TAGS, LANGUAGE_TAGS } from '@/constants/Strings';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import PhotoSelector from '../common/PhotoSelector';
-import { setUserAvatarDependOnGender } from '@/utils/utils';
+import { setUserAvatarDependOnGender, translateGender } from '@/utils/utils';
 import AvatarSelector from '../common/AvatarSelector';
 import BottomSheet from '@gorhom/bottom-sheet';
 import BottomSheetComponent from '../common/BottomSheetComponent';
 import { avatarsStringF, avatarsStringM } from '@/constants/Avatars';
 import { GestureHandlerRootView, FlatList } from 'react-native-gesture-handler';
+import CustomOutlineInputText from '../custom/inputs/CustomOutlineInputText';
+
+import MultiTagDropdown from '../custom/selectors/MultiTagDropdown';
+import CustomDropdownList from '../custom/selectors/CustomDropdownList';
 
 const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => void, onCancel: () => void }) => {
   const user: User = userStore.currentUser!;
@@ -42,8 +46,13 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
 
   const DeleteUserPhoto = async () => {
     const newAvatar = SetRandomAvatarDependOnGender();
-    setEditableUser({ ...editableUser, thumbnailUrl: newAvatar });
-    setUserPhoto(newAvatar);
+    userStore.fetchImageUrl(newAvatar).then(resp => {
+      if (resp) {
+        setUserPhoto(resp);
+        setEditableUser({ ...editableUser, thumbnailUrl: resp });
+        handleSheetClose();
+      }
+    });
   };
 
   const SetRandomAvatarDependOnGender = () => {
@@ -89,42 +98,34 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
               />
             </View>
             <View className="p-2">
-              <Text className="text-lg font-nunitoSansBold text-indigo-800">Обо мне</Text>
-              <Divider />
-              <TextInput
-                className="m-2"
-                label="Имя"
-                value={editableUser.name || ''}
-                onChangeText={(text) => handleChange('name', text)}
-                mode="outlined"
+             
+              <CustomOutlineInputText 
+                containerStyles='mt-2' 
+                label='Как вас зовут?' 
+                value={editableUser.name || ''} 
+                handleChange={(text) => handleChange('name', text)}
               />
-              <TextInput
-                className="m-2"
-                label="День рождения"
-                value={editableUser.birthDate ? editableUser.birthDate.toLocaleDateString() : undefined}
-                onChangeText={(text) => handleChange('birthDate', new Date(text))}
-                mode="outlined"
+              <CustomOutlineInputText 
+                containerStyles='mt-4' 
+                label='День рождения' 
+                value={editableUser.birthDate ? editableUser.birthDate.toLocaleDateString() : undefined} 
+                handleChange={(text) => handleChange('birthDate', new Date(text))}
               />
-              <TextInput
-                className="m-2"
-                label="Пол"
-                value={editableUser.gender || ''}
-                onChangeText={(text) => handleChange('gender', text)}
-                mode="outlined"
+              
+              <CustomDropdownList tags={GENDERS_TAGS} label='Пол' initialSelectedTag={ translateGender(editableUser.gender||'N/A')} onChange={(text) => handleChange('gender', text)}/>
+              <CustomOutlineInputText 
+                containerStyles='mt-4' 
+                label='Обо мне' 
+                value={editableUser.description || ''} 
+                handleChange={(text) => handleChange('description', text)} 
+                numberOfLines={7}
               />
-              <TextInput
-                className="m-2"
-                label="Обо мне"
-                value={editableUser.description || ''}
-                onChangeText={(text) => handleChange('description', text)}
-                mode="outlined"
-                numberOfLines={6}
-                multiline
-              />
+              
+             
+              
             </View>
-            <View className="p-2">
+            <View className="p-2 ">
               <Text className="text-lg font-nunitoSansBold text-indigo-800">Интересы</Text>
-              <Divider />
               <CustomTagsSelector
                 tags={INTEREST_TAGS}
                 initialSelectedTags={editableUser.interests || []}
@@ -132,59 +133,57 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 maxSelectableTags={5}
               />
             </View>
+            <Divider className="mt-4"/>
+            
             <View className="p-2">
               <Text className="text-lg font-nunitoSansBold text-indigo-800">Основные</Text>
-              <Divider />
-              <TextInput
-                className="m-2"
-                label="Location"
-                value={''}
-                onChangeText={(text) => {}}
-                mode="outlined"
+              <CustomOutlineInputText 
+                containerStyles='mt-4' 
+                label='Локация' 
+                value={user.location!} 
+                handleChange={(text) => handleChange('location', text)} 
+               
               />
-              <CustomTagsSelector
-                tags={LANGUAGE_TAGS}
-                initialSelectedTags={editableUser.userLanguages || []}
-                onSelectedTagsChange={(selectedTags) => handleChange('userLanguages', selectedTags)}
+
+              <MultiTagDropdown tags={LANGUAGE_TAGS} placeholder='Выберите языки' />
+              <CustomOutlineInputText 
+                containerStyles='mt-4' 
+                label='Профессия' 
+                value={editableUser.work || ''} 
+                handleChange={(text) => handleChange('work', text)} 
+               
               />
-              <TextInput
-                className="m-2"
-                label="Education"
-                value={editableUser.education || ''}
-                onChangeText={(text) => handleChange('education', text)}
-                mode="outlined"
+              <CustomOutlineInputText 
+                containerStyles='mt-4' 
+                label='Образование' 
+                value={editableUser.education || ''} 
+                handleChange={(text) => handleChange('education', text)} 
+               
               />
-              <TextInput
-                className="m-2"
-                label="Work"
-                value={editableUser.work || ''}
-                onChangeText={(text) => handleChange('work', text)}
-                mode="outlined"
-              />
+            
+            <Divider className='mt-5' />
+             
             </View>
             <View className="p-2">
               <Text className="text-lg font-nunitoSansBold text-indigo-800">Социальные сети</Text>
-              <Divider />
-              <TextInput
-                className="m-2"
-                label="Instagram"
-                value={''}
-                onChangeText={(text) => {}}
-                mode="outlined"
+              <CustomOutlineInputText 
+                containerStyles='mt-4' 
+                label='Instagram' 
+                value={user.instagram! } 
+                handleChange={(text) => handleChange('instagram', text)} 
               />
-              <TextInput
-                className="m-2"
-                label="Facebook"
-                value={''}
-                onChangeText={(text) => {}}
-                mode="outlined"
-              />
+              <CustomOutlineInputText 
+                containerStyles='mt-4' 
+                label='Facebook' 
+                value={user.facebook! } 
+                handleChange={(text) => handleChange('facebook', text)}/>
+              
             </View>
-            <Button mode="contained" onPress={handleSave} className='bg-indigo-800'>
-              Save
+            <Button mode="contained" onPress={handleSave} className='mt-5 bg-indigo-800'>
+              Сохранить
             </Button>
             <Button mode="outlined" onPress={onCancel} className='mt-4'>
-              Cancel
+              Отмена
             </Button>
             <View className="h-32"/>
           </View>

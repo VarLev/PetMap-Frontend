@@ -15,7 +15,26 @@ export default function ProfileLayout() {
           headerShown: false,
         }} 
       />
-      <Stack.Screen name="editUser" options={{ title: 'Редактирование профиля' }} />
+      <Stack.Screen 
+        name="editUser" 
+        options={{ title: 'Редактирование профиля' }} 
+      />
+      <Stack.Screen 
+        name="pet/[petId]/index" 
+        options={{ 
+          title: 'Профиль питомца',
+          headerStyle: {
+            backgroundColor: 'transparent', // Прозрачный заголовок
+          },
+          headerShown: false,
+        }} 
+      />
+      <Stack.Screen 
+        name="pet/[petId]/edit" 
+        options={{ 
+          title: 'Редактирование питомца',
+        }} 
+      />
       
     </Stack>
    

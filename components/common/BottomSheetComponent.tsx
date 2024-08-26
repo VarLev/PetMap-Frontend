@@ -21,6 +21,8 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
         handleStyle={styles.handleStyle}
       >
         <BottomSheetFlatList
+          showsHorizontalScrollIndicator={true} 
+          initialNumToRender={2} 
           data={[]}
           renderItem={null}
           ListHeaderComponent={renderContent}

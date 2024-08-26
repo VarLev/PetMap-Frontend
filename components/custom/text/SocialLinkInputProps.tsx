@@ -1,23 +1,23 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Linking } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-interface CustomTextComponentProps {
+interface CustomSocialLinkInputProps {
   text?: string | string[] | null;
   leftIcon?: string;
   rightIcon?: string;
   onRightIconPress?: () => void;
   maxLines?: number;
-  iconSet?: 'material' | 'paper' | 'fontAwesome' | 'simpleLine' | 'ionicons' | 'materialCommunity'; // Добавляем 'ionicons'
+  iconSet?: 'material' | 'paper' | 'fontAwesome' | 'simpleLine' | 'ionicons'; // Поддержка разных наборов иконок
   separator?: string; // Разделитель для массива строк
+  platform: 'instagram' | 'facebook'; // Определяет, какая соцсеть используется
 }
 
-const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
+const CustomSocialLinkInput: React.FC<CustomSocialLinkInputProps> = ({
   text,
   leftIcon,
   rightIcon,
@@ -25,9 +25,23 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
   maxLines = 1,
   iconSet = 'material', // По умолчанию используем Material Icons
   separator = ', ', // По умолчанию разделитель - запятая с пробелом
+  platform,
 }) => {
   // Объединяем массив строк в одну строку с разделителем, если text - массив
   const displayText = Array.isArray(text) ? text.join(separator) : text;
+
+  const handleOpenLink = () => {
+    let url = '';
+    if (platform === 'instagram') {
+      url = `https://instagram.com/${displayText}`;
+    } else if (platform === 'facebook') {
+      url = `https://facebook.com/${displayText}`;
+    }
+
+    if (url) {
+      Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
+    }
+  };
 
   return (
     <View className="p-0 pt-2 pb-2">
@@ -41,25 +55,27 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
             <SimpleLineIcons name={leftIcon} size={20} color="#b39ddb" />
           ) : iconSet === 'ionicons' ? (
             <Ionicons name={leftIcon} size={20} color="#b39ddb" />
-          ) : iconSet === 'materialCommunity' ? (
-            <MaterialCommunityIcons name={leftIcon as any} size={20} color="#b39ddb" />
           ) : (
             <IconButton icon={leftIcon} size={20} />
           )
         )}
-        <Text
-          numberOfLines={maxLines}
-          ellipsizeMode="tail"
-          className="flex-1 pl-2 text-base text-black font-nunitoSansRegular"
-        >
-          {displayText}
-        </Text>
-        <TouchableOpacity onPress={onRightIconPress}>
-         <MaterialIcons name={rightIcon??''} size={20} color="black" />
+        <TouchableOpacity onPress={handleOpenLink} style={{ flex: 1 }}>
+          <Text
+            numberOfLines={maxLines}
+            ellipsizeMode="tail"
+            className="pl-2 text-base text-black font-nunitoSansRegular"
+          >
+            {displayText}
+          </Text>
         </TouchableOpacity>
+        {rightIcon && (
+          <TouchableOpacity onPress={onRightIconPress}>
+            <MaterialIcons name={rightIcon ?? ''} size={20} color="black" />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
 };
 
-export default CustomTextComponent;
+export default CustomSocialLinkInput;

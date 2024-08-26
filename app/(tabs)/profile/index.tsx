@@ -20,6 +20,7 @@ const Profile = observer(() => {
     if (!userStore.currentUser) {
       userStore.loadUser();
     } else {
+      console.log('Профайл пользователя взят из памяти', userStore.currentUser);
       setEditableUser(userStore.currentUser);
       
     }
@@ -47,6 +48,10 @@ const Profile = observer(() => {
     );
   }
 
+  const handlePetOpen = (petId:string) => {
+    router.push(`profile/pet/${petId}`);
+  }
+
   return (
     
       <View>
@@ -54,7 +59,7 @@ const Profile = observer(() => {
           <EmptyUserProfile />
         ) : (
           
-            <ViewProfileComponent onEdit={handleEdit}  />
+            <ViewProfileComponent onEdit={handleEdit} onPetOpen={handlePetOpen}  />
           
         )}
       </View>

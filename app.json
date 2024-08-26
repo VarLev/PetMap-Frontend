@@ -7,6 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "PetMap",
     "userInterfaceStyle": "automatic",
+    "owner": "levromf",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "cover",
@@ -21,6 +22,7 @@
     },
     "android": {
       "googleServicesFile": "./google-services.json",
+      "resourceClass": "medium",
       "package": "com.lightway.petmap",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",

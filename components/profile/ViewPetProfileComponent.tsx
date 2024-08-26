@@ -1,24 +1,144 @@
 import { Pet } from '@/dtos/classes/pet/Pet';
-import React from 'react';
-import { View } from 'react-native';
-import { Text, IconButton, Card, Avatar } from 'react-native-paper';
-import { calculateDogAge, getGenderIcon } from '@/utils/utils';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useRef, useState } from 'react';
+import { StatusBar, View,Image, StyleSheet } from 'react-native';
+import { Text, IconButton, PaperProvider, Menu, Divider } from 'react-native-paper';
+import { calculateDogAge } from '@/utils/utils';
+import BottomSheet from '@gorhom/bottom-sheet';
+import BottomSheetComponent from '../common/BottomSheetComponent';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import CustomTextComponent from '../custom/text/CustomTextComponent';
+import CustomSocialLinkInput from '../custom/text/SocialLinkInputProps';
+import { observer } from 'mobx-react-lite';
+import { StarRatingDisplay } from 'react-native-star-rating-widget';
+import { router } from 'expo-router';
 
-const ViewPetProfileComponent = ({ pet }: { pet: Pet }) => {
+
+const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: () => void,}) => {
+
+  const sheetRef = useRef<BottomSheet>(null);
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const openMenu = () => setMenuVisible(true);
+
+  const closeMenu = () => setMenuVisible(false);
+
+
   return (
-    <Card className="m-2">
-      <Card.Cover source={{ uri: pet.thumbnailUrl || 'https://via.placeholder.com/100' }} className='h-40' />
-      <Card.Title 
-      title={`${pet.petName}`} 
-      subtitle={` ${pet.breed}, ${calculateDogAge(pet.birthDate)}`} 
-      left={(props) =><Ionicons name={getGenderIcon(pet.gender!) as any} size={30} color="indigo"  />}
-      
-      titleStyle={{fontSize:20, marginLeft:-10}} 
-      subtitleStyle={{marginTop:-10, marginLeft:-14}}
-      titleVariant='titleSmall'/>
-    </Card>
+    <GestureHandlerRootView className='h-full'>
+      <PaperProvider>
+        <View style={{ alignItems: 'center'}}>
+          <StatusBar backgroundColor="transparent" translucent />
+          <View className="relative w-full aspect-square">
+            
+            <Image source={{ uri: pet?.thumbnailUrl! }} className="w-full h-full" />
+           <View className='flex-row w-full justify-between items-center pr-3' style={styles.iconBackContainer}>
+            <View className='bg-white rounded-full opacity-70' >
+             <IconButton icon='arrow-left' size={25} iconColor='black'  onPress={()=>{router.back()}}/> 
+            </View>
+            <View >
+              <Menu 
+                style={{marginTop: 25}}
+                visible={menuVisible}
+                onDismiss={closeMenu}
+                contentStyle={{ backgroundColor: 'white' }}
+                anchor={
+                  <IconButton
+                    icon="menu"
+                    size={30}
+                    iconColor="black"
+                    style={styles.menuButton}
+                    onPress={openMenu}
+                  />
+                }
+              >
+                <Menu.Item onPress={onEdit} title="Редактировать" rippleColor='black' titleStyle={{color:'balck'}} leadingIcon='pencil-outline'/>
+                <Menu.Item onPress={closeMenu} title="Выйти" titleStyle={{color:'balck'}} leadingIcon='exit-to-app'/>
+                <Menu.Item onPress={closeMenu} title="Удалить аккаунт" titleStyle={{color:'balck'}} leadingIcon='delete-outline'/>
+              </Menu>
+            </View>
+           </View>
+            
+          </View>
+        </View>
+      </PaperProvider>
+      <BottomSheetComponent ref={sheetRef} enablePanDownToClose={false} snapPoints={['60%','100%']} renderContent={function (): React.ReactNode {
+        return ( 
+        <View className='bg-white h-full'>
+          <Text className='pl-5 text-2xl font-nunitoSansBold'>
+            {pet.petName} {calculateDogAge(pet.birthDate)} 
+          </Text>
+          
+          <View className='pr-3 pl-4'>
+            <View >
+              <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Основное</Text>
+              <CustomTextComponent text="Собака"  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='paw-outline' iconSet='ionicons'/>
+              <CustomTextComponent text={pet.gender}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='transgender-outline' iconSet='ionicons'/>
+              <CustomTextComponent text={pet.breed}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='dog' iconSet='materialCommunity'/>
+              <CustomTextComponent text={pet?.birthDate?.toLocaleDateString()}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='cake-variant-outline' iconSet='materialCommunity'/>
+              <CustomTextComponent text={`${pet.weight} kg, ${pet.size} sm`}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='resize-outline' iconSet='ionicons'/>
+              <Divider />
+            </View>
+            <View >
+              <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Здоровье</Text>
+              <Text className='pt-2 font-nunitoSansRegular text-gray-400 text-center'>We are working on a health passport for your pet, stay tuned for updates.</Text>
+              <Divider className='mt-3' />
+            </View>
+            <View className=''>
+              <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Показатели</Text>
+              
+              <View className='pt-2 flex-row justify-between'>              
+                <Text className='font-nunitoSansRegular text-base'>Темперамент</Text>
+                <StarRatingDisplay rating={4} style={{}} starSize={25} color='#BFA8FF'/>
+              </View>
+              <View className='pt-2 flex-row justify-between'>              
+                <Text className='font-nunitoSansRegular text-base'>Дружелюбность</Text>
+                <StarRatingDisplay rating={4} style={{}} starSize={25} color='#BFA8FF'/>
+              </View>
+              <View className='pt-2 flex-row justify-between'>              
+                <Text className='font-nunitoSansRegular text-base'>Активность</Text>
+                <StarRatingDisplay rating={4} starSize={25} color='#BFA8FF'/>
+              </View>
+              
+              <Divider className='mt-3' />
+            </View>
+            <View>
+              <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Социальные сети</Text>
+              <CustomSocialLinkInput text="" leftIcon='instagram' iconSet='fontAwesome' rightIcon='chevron-right' onRightIconPress={onEdit} platform={'instagram'}/>
+              <CustomSocialLinkInput text="" leftIcon='facebook' iconSet='fontAwesome' rightIcon='chevron-right' onRightIconPress={onEdit} platform={'facebook'} />
+              <Divider className='mt-3' />
+            </View>
+          </View>
+          <View className='h-28'/>
+        </View>)
+      } }/>
+    </GestureHandlerRootView>
   );
-};
+});
 
 export default ViewPetProfileComponent;
+const styles = StyleSheet.create({
+  imageContainer: {
+    position: 'relative',
+    width: '100%',
+    aspectRatio: 1,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  iconContainer: {
+    position: 'absolute',
+    top: StatusBar.currentHeight ? StatusBar.currentHeight + 8 : 8,
+    right: 8,
+  },
+  iconBackContainer: {
+    position: 'absolute',
+    top: StatusBar.currentHeight ? StatusBar.currentHeight + 8 : 8,
+    left: 8,
+  },
+  menuButton: {
+    backgroundColor: 'white',
+    opacity: 0.7,
+  }
+  
+});

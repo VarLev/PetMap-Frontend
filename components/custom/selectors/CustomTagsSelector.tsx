@@ -54,17 +54,17 @@ const CustomTagsSelector: React.FC<CustomTagsSelectorProps> = ({
           selectedTags.length > 0 ? (
             <TouchableOpacity
               key={`${tag}-${index}`}
-              className={`px-4 py-2 m-1 justify-between rounded-full ${selectedTags.includes(tag) ? 'bg-indigo-800' : 'bg-gray-300'}`}
+              className={`px-4 py-2 m-1 justify-between rounded-full ${selectedTags.includes(tag) ? ' bg-purple-100' : 'bg-white border border-indigo-700'}`}
               onPress={onPress}
             >
-              <Text className={`${selectedTags.includes(tag) ? 'text-white' : 'text-black'} text-xs font-nunitoSansRegular`}>{tag}</Text>
+              <Text className={`${selectedTags.includes(tag) ? 'text-black' : 'text-indigo-700'} text-xs font-nunitoSansBold`}>{tag}</Text>
             </TouchableOpacity>
           ) : (
             <View
               key={`${tag}-${index}`}
-              className="px-4 py-2 m-1 justify-between rounded-full bg-purple-100 font-nunitoSansRegular"
+              className="px-4 py-2 m-1 justify-between rounded-full bg-purple-100 font-nunitoSansBold"
             >
-              <Text className="text-black text-sm font-nunitoSansRegular">{tag}</Text>
+              <Text className="text-black text-sm font-nunitoSansBold">{tag}</Text>
             </View>
           )
         )}

@@ -10,9 +10,19 @@
     }
   },
   "include": [
+    // "**/*.ts",
+    // "**/*.tsx",
+    // ".expo/types/**/*.ts",
+    // "expo-env.d.ts",   
+    // "components/auth/OnboardingCarousel.tsx", 
+    // "components/auth/CarouselCardItem.tsx", 
+    // "constants/Icons.tsx"  
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-, "components/auth/OnboardingCarousel.tsx", "components/auth/CarouselCardItem.tsx", "constants/Icons.tsx"  ]
+    "expo-env.d.ts",
+    "components/**/*.tsx",
+    "constants/**/*.tsx",
+    "utils/**/*.ts"
+  ]
 }

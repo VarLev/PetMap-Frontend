@@ -26,7 +26,12 @@ export class User implements IUser {
   photos?: Photo[] | null;
   petProfiles: Pet[] | null;
   avatarUrl: any;
-  age: ReactNode;
+  balance?: number | null ;
+  facebook?: string | null ;
+  instagram?: string | null ;
+  location?: string | null ;
+
+  
 
   constructor(data: Partial<IUser> = {}) {
 
@@ -52,6 +57,10 @@ export class User implements IUser {
     this.userLanguages = data.userLanguages || [];
     this.photos = data.photos || [];
     this.petProfiles = data.petProfiles ? data.petProfiles.map(p => new Pet(p)) : [];
+    this.balance = data.balance || 0;
+    this.facebook = data.facebook;
+    this.instagram = data.instagram;
+    this.location = data.location;
   }
 
  

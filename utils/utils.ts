@@ -8,6 +8,7 @@ import { IUser } from "@/dtos/Interfaces/user/IUser";
  */
 export function calculateDogAge(birthDate?: Date | null): string {
   const today = new Date();
+
   if (!birthDate) return 'Unknown';
 
   let ageYears = today.getFullYear() - birthDate.getFullYear();
@@ -26,6 +27,33 @@ export function calculateDogAge(birthDate?: Date | null): string {
   }
 }
 
+export function calculateHumanAge(birthDate?: Date | null): string {
+  const today = new Date();
+  if (!birthDate) return '';
+
+  let ageYears = today.getFullYear() - birthDate.getFullYear();
+  let ageMonths = today.getMonth() - birthDate.getMonth();
+
+  // Если текущий месяц и день меньше месяца и дня рождения, уменьшаем год и корректируем месяцы
+  if (ageMonths < 0 || (ageMonths === 0 && today.getDate() < birthDate.getDate())) {
+    ageYears--;
+    ageMonths += 12;
+  }
+
+  // Корректируем количество месяцев, если дни не совпадают
+  if (today.getDate() < birthDate.getDate()) {
+    ageMonths--;
+  }
+
+  if (ageYears === 0) {
+    return `${ageMonths} m.`;
+  } else if (ageMonths > 0) {
+    return `${ageYears} y. ${ageMonths} m.`;
+  } else {
+    return ageYears.toString();
+  }
+}
+
 /**
  * Возвращает иконку пола в зависимости от переданного значения.
  * @param gender Пол (male, female или другое).
@@ -39,6 +67,24 @@ export function getGenderIcon(gender: string): string {
       return 'female';
     default:
       return 'paw'; // Универсальная иконка, подходящая для животных
+  }
+}
+
+/**
+ * Преобразует значение гендера в его русскоязычный эквивалент.
+ * @param gender Пол (male, female, N/A).
+ * @returns Строка, содержащая соответствующий гендер на русском языке (Мужской, Женский, N/A).
+ */
+export function translateGender(gender: string): string {
+  switch (gender.toLowerCase()) {
+    case 'male':
+      return 'Мужской';
+    case 'female':
+      return 'Женский';
+    case 'n/a':
+      return 'N/A';
+    default:
+      return 'N/A'; // Если значение не распознано, возвращаем 'N/A'
   }
 }
 

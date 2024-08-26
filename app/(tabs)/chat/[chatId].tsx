@@ -43,7 +43,6 @@ const ChatScreen: React.FC = observer(() => {
   const handleSendPress = (message: MessageType.PartialText) => {
     if (chatId && UserStore.currentUser) {
       ChatStore.sendMessage(chatId, message.text);
-      console.log('ChatStore.messages', ChatStore.messages)
     } else {
       console.error("User or chat ID is not available");
     }

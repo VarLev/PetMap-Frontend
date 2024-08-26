@@ -7,6 +7,7 @@ import userStore from '@/stores/UserStore';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { router } from 'expo-router';
 import { useDrawer } from '@/contexts/DrawerProvider';
+import { AntDesign, Feather } from '@expo/vector-icons';
 
 
 const SidebarUserProfileComponent = () => {
@@ -25,11 +26,10 @@ const SidebarUserProfileComponent = () => {
     <SafeAreaView className='bg-white h-full'>
       <View className="flex-1 p-5 bg-white">
         <View className='flex-row'>
-            <Image source={images.logoWithBack} style={{ width: 32, height: 32 }} />
-            <Text className="ml-2 text-2xl text-gray-800 font-nunitoSansBold">PetMap</Text>
+            <Image source={images.logoWithName} style={{ width: '50%', height: 32 }} />
         </View>
-        <TouchableRipple className='w-full mt-2 -ml-4' onPress={handleProfilePress}>
-          <View className='p-2 flex-row justify-start items-center'>
+        <TouchableRipple className='w-full mt-6 ' onPress={handleProfilePress}>
+          <View className='flex-row justify-start items-center'>
             <Image source={{ uri: currentUser?.thumbnailUrl! }} className='h-20 w-20 rounded-xl' />
             <View className='flex-col ml-3'>
               <Text className="text-xl text-gray-800 font-nunitoSansBold">{currentUser?.name}</Text>
@@ -38,66 +38,74 @@ const SidebarUserProfileComponent = () => {
             </View>
           </View>
         </TouchableRipple>
+        <TouchableRipple className='w-full mt-4 justify-center items-center  ' onPress={handleProfilePress}>
+          <View className='h-9 w-10  flex-row justify-center items-center'>
+            <Image source={images.bonuse} className='h-8 w-8' />
+            <View className='flex-col ml-3'>
+              <Text className="text-xl  text-gray-800 font-nunitoSansBold">{currentUser?.balance}</Text>
+            </View>
+          </View>
+        </TouchableRipple>
   
         {/* Подписка */}
-        <View className="flex-row mt-4 border rounded-2xl h-16 bg-purple-300 content-center items-center">
+        <View className="flex-row mt-4  content-center items-center">
           <Button
             icon={() => <FontAwesome name="diamond" size={20} className='bg-indigo-800' color='#8F00FF' />}>
-            <Text className='font-nunitoSansBold' >Подписка</Text>
+            <Text className='font-nunitoSansBold'>Подписка</Text>
           </Button>
-          <Button mode="elevated" className="items-center content-center align-baseline h-16 -ml-2 text-xs rounded-2xl border text-indigo-800" style={{marginLeft:-5, width:140}}  contentStyle={{ marginTop:10, width:180}}  onPress={() => console.log('7 дней бесплатно')}>
-            7 дней бесплатно
+          <Button mode="elevated" className="bg-purple-100 text-xs rounded-3xl text-indigo-800"  onPress={() => console.log('7 дней бесплатно')}>
+            <Text className='font-nunitoSansBold'>Подписаться</Text>
           </Button>
         </View>
 
         {/* Меню */}
         <List.Section>
           <List.Item
+          className='font-nunitoSansBold'
             title="Задания и бонусы"
-            left={() => <List.Icon icon="star-outline" />}
+            left={() => <List.Icon icon={() => <AntDesign name="staro" size={20} color="#474747"  />} />}
             onPress={() => console.log('Задания и бонусы')}
+            titleStyle={{fontFamily: 'NunitoSans_400Regular'}}
           />
           <List.Item
             title="Мои прогулки"
-            left={() => <List.Icon icon="walk" />}
+            left={() => <List.Icon icon={() => <Feather name="users" size={20} color="#474747"  />} />}
             onPress={() => console.log('Мои прогулки')}
+            titleStyle={{fontFamily: 'NunitoSans_400Regular'}}
           />
           <List.Item
+            className='font-nunitoSansBold'
             title="Мои локации"
-            left={() => <List.Icon icon="map-marker" />}
+            left={() => <List.Icon icon={() => <Feather name="map-pin" size={20} color="#474747"  />} />}
             onPress={() => console.log('Мои локации')}
+            titleStyle={{fontFamily: 'NunitoSans_400Regular'}}
           />
           <List.Item
             title="Мои объявления"
-            left={() => <List.Icon icon="briefcase-outline" />}
+            left={() => <List.Icon icon={() => <Feather name="briefcase" size={20} color="#474747"  />} />}
             onPress={() => console.log('Мои объявления')}
+            titleStyle={{fontFamily: 'NunitoSans_400Regular'}}
           />
           <List.Item
             title="Настройки"
-            left={() => <List.Icon icon="cog-outline" />}
+            left={() => <List.Icon icon={() => <AntDesign name="setting" size={20} color="#474747" />} />}
             onPress={() => console.log('Настройки')}
+            titleStyle={{fontFamily: 'NunitoSans_400Regular'}}
           />
           <List.Item
             title="SOS Оповещения"
-            left={() => <List.Icon icon="bell-outline" />}
+            left={() => <List.Icon icon={() => <Feather name="bell" size={20} color="#474747"  />} />}
             right={() => <Switch value={sosEnabled} onValueChange={handleToggleSos} />}
+            titleStyle={{fontFamily: 'NunitoSans_400Regular'}}
           />
           <List.Item
             title="Поддержка"
-            left={() => <List.Icon icon="help-circle-outline" />}
+            left={() => <List.Icon icon={() => <Feather name="help-circle" size={20} color="#474747"  />} />}
             onPress={() => console.log('Поддержка')}
+            titleStyle={{fontFamily: 'NunitoSans_400Regular'}}
           />
         </List.Section>
 
-        {/* Выйти */}
-        <Button className='mt-8'
-          icon="exit-to-app"
-          mode="text"
-          textColor="red"
-          onPress={() => console.log('Выйти')}
-        >
-          Выйти
-        </Button>
       </View>
     </SafeAreaView>
   );

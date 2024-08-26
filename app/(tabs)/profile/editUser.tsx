@@ -8,10 +8,9 @@ import { User } from '@/dtos/classes/user/UserDTO';
 import { router } from 'expo-router';
 
 const EditUserProfile = observer(() => {
-  const [editableUser, setEditableUser] = useState<User>();
-  const [isEditing, setIsEditing] = useState(false);
+  //const [editableUser, setEditableUser] = useState<User>();
+  //const [isEditing, setIsEditing] = useState(false);
 
- 
   const handleSave = async () => {
     await userStore.loadUser(); 
     router.back();
@@ -20,16 +19,15 @@ const EditUserProfile = observer(() => {
   const handleCancel = () => {
     router.back();
   }
+  
   useEffect(() => {
     // Загрузка данных пользователя, если они еще не загружены
-    if (!userStore.currentUser) {
-      
-    } else {
-      
+    if (!userStore.currentUser) { 
+
+    } else {  
       
     }
   }, []);
-
 
   return (
     <EditProfileComponent onSave={handleSave} onCancel={handleCancel} />

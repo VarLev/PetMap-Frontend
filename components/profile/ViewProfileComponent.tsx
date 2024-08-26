@@ -1,17 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { TouchableOpacity, View,Image, StatusBar, StyleSheet  } from 'react-native';
-import { Text, Card, Divider, IconButton, Menu, Button, PaperProvider } from 'react-native-paper';
+import { Text, Card, Divider, IconButton, Menu, PaperProvider } from 'react-native-paper';
 import { observer } from 'mobx-react-lite';
 import userStore from '@/stores/UserStore';
 import BottomSheetComponent from '../common/BottomSheetComponent';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomTextComponent from '../custom/text/CustomTextComponent';
-import { INTEREST_TAGS } from '@/constants/Strings';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
+import { calculateDogAge, calculateHumanAge } from '@/utils/utils';
+import CustomSocialLinkInput from '../custom/text/SocialLinkInputProps';
 
 
-const ViewProfileComponent = observer(({ onEdit }: { onEdit: () => void }) => {
+
+const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => void, onPetOpen: (petId:string) => void }) => {
   const user = userStore.currentUser!;
   const sheetRef = useRef<BottomSheet>(null);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -28,6 +30,8 @@ const ViewProfileComponent = observer(({ onEdit }: { onEdit: () => void }) => {
   function handleChange(arg0: string, selectedTags: string[]): void {
     throw new Error('Function not implemented.');
   }
+
+
 
   return (
     <GestureHandlerRootView className='h-full'>
@@ -52,9 +56,9 @@ const ViewProfileComponent = observer(({ onEdit }: { onEdit: () => void }) => {
                   />
                 }
               >
-                <Menu.Item onPress={onEdit} title="Редактировать" rippleColor='black' titleStyle={{color:'balck'}} leadingIcon='pen'/>
+                <Menu.Item onPress={onEdit} title="Редактировать" rippleColor='black' titleStyle={{color:'balck'}} leadingIcon='pencil-outline'/>
                 <Menu.Item onPress={closeMenu} title="Выйти" titleStyle={{color:'balck'}} leadingIcon='exit-to-app'/>
-                <Menu.Item onPress={closeMenu} title="Удалить аккаунт" titleStyle={{color:'balck'}} leadingIcon='delete'/>
+                <Menu.Item onPress={closeMenu} title="Удалить аккаунт" titleStyle={{color:'balck'}} leadingIcon='delete-outline'/>
               </Menu>
             </View>
           </View>
@@ -64,19 +68,45 @@ const ViewProfileComponent = observer(({ onEdit }: { onEdit: () => void }) => {
         return ( 
         <View className='bg-white h-full'>
           <Text className='pl-5 text-2xl font-nunitoSansBold'>
-            {user.name}, {user.age}
+            {user.name} {calculateHumanAge(user.birthDate)}
           </Text>
-          <Card className="h-56 m-4 p-4 border-dashed rounded-2xl shadow-lg items-center justify-center" style={{ borderWidth: 3, borderColor: '#D9CBFF'}}>
-            <TouchableOpacity className="items-center">
-              <IconButton
-                icon="plus"
-                size={30}
-                iconColor="black"
-                className="bg-[#F5ECFF] rounded-full"
-              />
-              <Text className="text-base text-black font-nunitoSansRegular">Добавить питомца</Text>
-            </TouchableOpacity>
-          </Card>
+          <FlatList
+            horizontal={true}
+            data={user.petProfiles}
+            keyExtractor={(item, index) => item.id}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 10 }}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={{ alignItems: 'center' }} onPress={()=> onPetOpen(item.id)}>
+                <Card className="w-40 h-62 p-2 m-2 rounded-2xl shadow bg-purple-100">
+                  <Card.Cover source={{ uri: item.thumbnailUrl! }} style={{ height: 150, borderRadius: 14 }} />
+                  <Text className="font-nunitoSansBold text-lg">
+                    {item.petName} {calculateDogAge(item.birthDate)}
+                  </Text>
+                  <Text className="font-nunitoSansRegular">{item.breed} {item.weight}</Text>
+                </Card>
+              </TouchableOpacity>
+            )}
+            ListFooterComponent={() => (
+              <Card
+                className="w-full/2 h-52 m-2 p-2 border-dashed rounded-2xl shadow-lg items-center justify-center"
+                style={{ borderWidth: 3, borderColor: '#D9CBFF', width: 200 }}
+              >
+                <TouchableOpacity style={{ alignItems: 'center' }}>
+                  <IconButton
+                    icon="plus"
+                    size={30}
+                    iconColor="black"
+                    style={{ backgroundColor: '#F5ECFF', borderRadius: 20 }}
+                  />
+                  <Text style={{ fontSize: 16, fontFamily: 'NunitoSans-Regular', marginTop: 8 }}>
+                    Добавить питомца
+                  </Text>
+                </TouchableOpacity>
+              </Card>
+            )}
+          />
+          
           <View className='pr-3 pl-4'>
             <View >
               <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Обо мне</Text>
@@ -95,7 +125,7 @@ const ViewProfileComponent = observer(({ onEdit }: { onEdit: () => void }) => {
             </View>
             <View>
               <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Основное</Text>
-              <CustomTextComponent text={''} leftIcon='location-pin' iconSet='simpleLine' rightIcon='chevron-right' onRightIconPress={onEdit} />
+              <CustomTextComponent text={user.location} leftIcon='location-pin' iconSet='simpleLine' rightIcon='chevron-right' onRightIconPress={onEdit} />
               <CustomTextComponent text={user.userLanguages} leftIcon='language-outline' iconSet='ionicons' rightIcon='chevron-right' onRightIconPress={onEdit}/>
               <CustomTextComponent text={user.work} leftIcon='work-outline' rightIcon='chevron-right' onRightIconPress={onEdit} />
               <CustomTextComponent text={user.education} leftIcon='school-outline' iconSet='ionicons'  rightIcon='chevron-right'onRightIconPress={onEdit} />
@@ -103,8 +133,8 @@ const ViewProfileComponent = observer(({ onEdit }: { onEdit: () => void }) => {
             </View>
             <View>
               <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Социальные сети</Text>
-              <CustomTextComponent text={''} leftIcon='instagram' iconSet='fontAwesome' rightIcon='chevron-right' onRightIconPress={onEdit}/>
-              <CustomTextComponent text={''} leftIcon='facebook' iconSet='fontAwesome'  rightIcon='chevron-right' onRightIconPress={onEdit} />
+              <CustomSocialLinkInput text={user.instagram!} leftIcon='instagram' iconSet='fontAwesome' rightIcon='chevron-right' onRightIconPress={onEdit} platform={'instagram'}/>
+              <CustomSocialLinkInput text={user.facebook!} leftIcon='facebook' iconSet='fontAwesome' rightIcon='chevron-right' onRightIconPress={onEdit} platform={'facebook'} />
               <Divider className='mt-3' />
             </View>
           </View>

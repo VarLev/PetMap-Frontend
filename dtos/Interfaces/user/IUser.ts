@@ -24,4 +24,8 @@ export interface IUser {
   userLanguages?: string[] | null;
   photos?: IPhoto[] | null;
   petProfiles?: IPet[] | null;
+  balance?: number | null;
+  location?: string | null;
+  instagram?: string | null;
+  facebook?: string | null;
 }
