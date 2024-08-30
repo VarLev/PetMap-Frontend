@@ -15,7 +15,7 @@ const CustomButtonPrimary = ({title, handlePress, containerStyles, textStyles, i
       onPress={handlePress}
       activeOpacity={0.8}
       disabled={isLoading}
-      className={`bg-indigo-800 rounded-full min-h-[50px] justify-center items-center mt-2
+      className={`bg-indigo-800 rounded-full min-h-[40px] justify-center items-center mt-2
       ${containerStyles} ${isLoading ? 'opacity-50':''}`}>
         <Text className={`text-white font-nunitoSansRegular text-base ${textStyles}`}>{title}</Text>
     </TouchableOpacity>

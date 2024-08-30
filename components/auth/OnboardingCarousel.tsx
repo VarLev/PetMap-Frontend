@@ -9,22 +9,22 @@ const data = [
   {
     id:1,
     title: 'Заводите новые знакомства с владельцами питомцев. Ходите на совместные прогулки.',
-    image:'https://placehold.co/400x700.png'
+    image: require('@/assets/images/onboarding/OnbordingMap.png')
   },
   {
     id:2,
     title: 'Все полезные локации в одном приложении: ветеринарные клиники, парки и многое другое.',
-    image:'https://placehold.co/400x700.png'
+    image: require('@/assets/images/onboarding/OnbordingLocation.png')
   },
   {
     id:3,
     title: 'Выбирайте проверенных специалистов для различных услуг: груминг, кинолог и др',
-    image:'https://placehold.co/400x700.png'
+    image:require('@/assets/images/onboarding/OnbordingServices.png')
   },
   {
     id:4,
     title: 'Будьте в курсе всех мероприятий для питомцев.',
-    image:'https://placehold.co/400x700.png'
+    image:require('@/assets/images/onboarding/OnboardingEvents.png')
   }
 ];
 
@@ -42,7 +42,7 @@ const OnboardingCarousel: React.FC = () => {
       autoPlayInterval={2500}
       renderItem={({ item }) => (
         <View className='items-center h-full flex-col'> 
-          <Image source={{ uri: item.image }} style={styles.image} />
+          <Image source={ item.image } style={styles.image} />
           <Text variant='titleSmall' className='p-3 text-base text-center font-nunitoSansRegular'>{item.title}</Text>
         </View>
       )}
