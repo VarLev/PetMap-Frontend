@@ -12,8 +12,9 @@ export interface IPet {
   size?: string | null;
   vaccinations?: string[] | null;
   neutered: boolean | null;
-  temperament?: string | null;
-  activityLevel?: string | null;
+  temperament?: number | null;
+  activityLevel?: number | null;
+  friendliness?: number | null;
   playPreferences?: string | null;
   additionalNotes?: string | null;
   userId: string;

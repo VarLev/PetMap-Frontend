@@ -32,6 +32,7 @@ const MapBoxMap = observer(() => {
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const pointAnnotationCurrentUser = useRef<PointAnnotation>(null);
   const { openDrawer } = useDrawer();
+  const [isSheetExpanded, setIsSheetExpanded] = useState(false);
 
   const currentUser = userStore.currentUser;
   
@@ -45,6 +46,7 @@ const MapBoxMap = observer(() => {
       await mapStore.setWalkAdvrts();
     })();
     
+    
   }, []);
 
   const handleAddressChange = (text: string) => {
@@ -57,7 +59,7 @@ const MapBoxMap = observer(() => {
     cameraRef.current?.setCamera({
       centerCoordinate: coordinates,
       
-      animationDuration: 300,
+      animationDuration: 200,
       padding: {
         paddingLeft: 0,
         paddingRight: 0,
@@ -72,16 +74,18 @@ const MapBoxMap = observer(() => {
     setRenderContent(() => (
       <AdvtEditComponent coordinates={coordinates} onAdvrtAddedInvite={handleAdvrtAdded}  />
     ));
-   
-    setTimeout(() => {
-      mapStore.setBottomSheetVisible(true);
-      sheetRef.current?.expand();
-      setIsSheetVisible(true);
-    }, 200);
+
+    if (!isSheetExpanded) {
+      setTimeout(() => {
+        sheetRef.current?.snapToIndex(0);
+        mapStore.setBottomSheetVisible(true);
+        
+        setIsSheetVisible(true);
+      }, 200)
+    }
   };
 
   const onPinPress = async (advrt: IWalkAdvrtDto) => {
-    
     cameraRef.current?.setCamera({
       centerCoordinate: [advrt.latitude!, advrt.longitude!],
       animationDuration: 300,
@@ -89,17 +93,19 @@ const MapBoxMap = observer(() => {
         paddingLeft: 0,
         paddingRight: 0,
         paddingTop: 0,
-        paddingBottom: 500
+        paddingBottom: 400
       }
     })
     setRenderContent(() => (
       <AdvtComponent advrt={advrt} onInvite={handleChatInvite}/>
     ));
-    setTimeout(() => {
-      mapStore.setBottomSheetVisible(true);
-      sheetRef.current?.expand();
-      setIsSheetVisible(true);
-    }, 200);
+    if (!isSheetExpanded) {
+      setTimeout(() => {
+        sheetRef.current?.snapToIndex(0); // Позиция 60% в snapPoints
+        mapStore.setBottomSheetVisible(true);
+        setIsSheetVisible(true);
+      }, 200);
+    }
   };
 
   const handleChatInvite = async (otherUser: IUser) => {
@@ -122,6 +128,15 @@ const MapBoxMap = observer(() => {
     mapStore.setBottomSheetVisible(false);
     setMarkerCoordinate(null);
     setIsSheetVisible(false);
+    setIsSheetExpanded(false);
+  };
+
+  const handleSheetChange = (index: number) => {
+    if (index === 1) {
+      setIsSheetExpanded(true);
+    } else {
+      setIsSheetExpanded(false);
+    }
   };
 
 
@@ -134,9 +149,9 @@ const MapBoxMap = observer(() => {
           <Camera
             ref={cameraRef}
             centerCoordinate={[mapStore.region.longitude, mapStore.region.latitude]}
-            zoomLevel={16}
+            zoomLevel={11}
             animationMode={'flyTo'}
-            animationDuration={2000}
+            animationDuration={1000}
           />
           <UserLocation minDisplacement={10} />
            
@@ -180,7 +195,7 @@ const MapBoxMap = observer(() => {
             </PointAnnotation>
           )}
         </MapView>
-        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: 10,paddingRight:60, flexDirection: 'row' }}>
+        {/* <View style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: 10,paddingRight:60, flexDirection: 'row' }}>
           <TextInput
             className='bg-white h-12 rounded-xl mt-1 pl-3 w-full border border-gray-400'
             placeholder="Enter address"
@@ -188,19 +203,23 @@ const MapBoxMap = observer(() => {
             onChangeText={handleAddressChange}
           />
             <IconButton size={30} icon="filter-variant" onPress={openDrawer} iconColor='#2F00B6'/>
-        </View>
+        </View> */}
        
         {isSheetVisible && (
-          <BottomSheetComponent
-            ref={sheetRef}
-            snapPoints={['60%','100%']}
-            renderContent={() => renderContent}
-            onClose={handleSheetClose} // Обработчик для события закрытия BottomSheet
-            enablePanDownToClose={true}
-          />
+          
+            <BottomSheetComponent
+              ref={sheetRef}
+              snapPoints={['60%','100%']}
+              renderContent={() => renderContent}
+              onClose={handleSheetClose} // Обработчик для события закрытия BottomSheet
+              enablePanDownToClose={true}
+              initialIndex={0} // Начальная позиция - 60%
+               // Добавляем обработчик изменения позиции
+            />
+      
         )}
         
-        {!isSheetVisible && 
+        {/* {!isSheetVisible && 
         <Portal>
           <FAB.Group
             style={{ paddingBottom: 100 }} 
@@ -220,7 +239,7 @@ const MapBoxMap = observer(() => {
               }
             }}
           />
-        </Portal> } 
+        </Portal> }  */}
       </SafeAreaView>
     </Provider>
   );

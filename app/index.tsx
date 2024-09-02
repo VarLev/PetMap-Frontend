@@ -14,7 +14,6 @@ const App = () => {
   const { loading, isLogged, signOut} = useStore();
   signOut();
   console.log('User signed out');
-  
  
   console.log(loading, isLogged);
   if (!loading && isLogged) return <Redirect href="/map" />;

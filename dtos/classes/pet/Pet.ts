@@ -13,8 +13,9 @@ export class Pet implements IPet {
   size?: string | null;
   vaccinations?: string[] | null;
   neutered: boolean | null;
-  temperament?: string | null;
-  activityLevel?: string | null;
+  temperament?: number | null;
+  activityLevel?: number | null;
+  friendliness?: number | null;
   playPreferences?: string | null;
   additionalNotes?: string | null;
   userId: string;
@@ -33,8 +34,9 @@ export class Pet implements IPet {
     this.size = data.size || '';
     this.vaccinations = data.vaccinations || [];
     this.neutered = data.neutered || null;
-    this.temperament = data.temperament || '';
-    this.activityLevel = data.activityLevel || '';
+    this.temperament = data.temperament || 0;
+    this.activityLevel = data.activityLevel || 0;
+    this.friendliness =  data.friendliness || 0;
     this.playPreferences = data.playPreferences || '';
     this.additionalNotes = data.additionalNotes || '';
     this.userId = data.userId!;

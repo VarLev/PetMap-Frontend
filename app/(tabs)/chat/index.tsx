@@ -11,6 +11,7 @@ const ChatListScreen: React.FC = observer(() => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [otherUserId, setOtherUserId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -46,11 +47,12 @@ const ChatListScreen: React.FC = observer(() => {
   };
 
   const deleteChat = async (chatId: string) => {
+    console.log('Deleting chat', ChatStore.chats);
     await ChatStore.deleteChat(chatId);
   };
 
   const renderItem = ({ item }: { item: typeof ChatStore.chats[0] }) => (
-    <TouchableOpacity onPress={() => router.push(`/chat/${item?.id}`)} className='bg-violet-300'>
+    <TouchableOpacity onPress={() => router.push(`/chat/${item?.id}?otherUserId=${item.otherUserId}`)} className='bg-violet-300'>
       <View className='flex-row justify-between p-1 ml-4 items-center h-17 bg-gray-100 rounded-l-xl'>
         <View className='flex-row items-center'>
           <Image source={{ uri: item?.thumbnailUrl ?? 'https://i.pravatar.cc/200' }} className='rounded-xl h-16 w-16' />

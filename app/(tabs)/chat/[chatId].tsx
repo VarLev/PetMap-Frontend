@@ -9,7 +9,7 @@ import CustomMessageComponent from '@/components/chat/CustomMessageComponent';
 import mapStore from '@/stores/MapStore';
 
 const ChatScreen: React.FC = observer(() => {
-  const { chatId } = useLocalSearchParams<{ chatId: string }>();
+  const { chatId, otherUserId } = useLocalSearchParams<{ chatId: string, otherUserId?: string }>();
   const userId = UserStore.currentUser?.id;
   const router = useRouter();
 
@@ -33,7 +33,7 @@ const ChatScreen: React.FC = observer(() => {
       ChatStore.clearMessages();
     }; 
     
-  }, [chatId]);
+  }, [chatId, router]);
 
   const renderMessage = (message: MessageType.Custom) => {
     return <CustomMessageComponent message={message} />; 
@@ -42,7 +42,7 @@ const ChatScreen: React.FC = observer(() => {
 
   const handleSendPress = (message: MessageType.PartialText) => {
     if (chatId && UserStore.currentUser) {
-      ChatStore.sendMessage(chatId, message.text);
+      ChatStore.sendMessage(chatId, message.text, otherUserId);
     } else {
       console.error("User or chat ID is not available");
     }

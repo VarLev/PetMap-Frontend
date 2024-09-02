@@ -5,13 +5,14 @@ type InputTextProps = {
   value?: string;
   placeholder?: string;
   handleChange?: (text: string) => void;
+  handleClick?: () => void;
   containerStyles?: string;
   inputStyles?: string;
   label?: string;
   labelStyles?: string;
 };
 
-const CustomInputText = ({ value, placeholder, handleChange, containerStyles, inputStyles, label, labelStyles }: InputTextProps) => {
+const CustomInputText = ({ value, placeholder, handleChange, handleClick, containerStyles, inputStyles, label, labelStyles }: InputTextProps) => {
   return (
     <View className={`w-full ${containerStyles}`}>
       {label && <Text className={`text-gray-700 text-base font-nunitoSansRegular mb-2 ${labelStyles}`}>{label}</Text>}
@@ -19,6 +20,8 @@ const CustomInputText = ({ value, placeholder, handleChange, containerStyles, in
         value={value}
         placeholder={placeholder}
         onChangeText={handleChange}
+        onFocus={handleClick}
+        
         className={`border border-gray-300 text-base font-nunitoSansRegular rounded-lg px-4 py-2 ${inputStyles}`}
       />
     </View>

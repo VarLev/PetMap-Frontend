@@ -55,10 +55,49 @@ class MapStore {
   }
 
   async setWalkAdvrts() {
-    if(this.walkAdvrts.length === 0) {
+    try {
       const advrts = await this.getAllAdvrt();
-      this.walkAdvrts = advrts;
-      
+      runInAction(() => {
+        this.walkAdvrts = advrts;
+      });
+    } catch (error) {
+      console.error("Error fetching walk advertisements:", error);
+    }
+  }
+
+  async deleteWalkAdvrt(walkId : string) {
+    try {
+      const response = await apiClient.delete(`map/walk/${walkId}`);
+      await this.setWalkAdvrts();
+      // Проверяем статус ответа или используем данные ответа
+      // if (response.status === 200) {
+      //   runInAction(() => {
+      //     this.walkAdvrts = this.walkAdvrts.filter(advrt => advrt.id !== walkId);
+      //     console.log('Delete walk advrt', this.walkAdvrts.length);
+      //   });
+        
+      // }
+    } catch (error) {
+      if (axios.isAxiosError(error)) 
+        {
+          // Подробная информация об ошибке Axios
+          console.error('Axios error:', {
+              message: error.message,
+              name: error.name,
+              //code: error.code,
+              //config: error.config,
+              response: error.response ? {
+                  data: error.response.data.errors,
+                  //status: error.response.status,
+                  //headers: error.response.headers,
+              } : null
+          });
+        } 
+        else {
+          // Общая информация об ошибке
+          console.error('Error:', error);
+        }
+        throw error;
     }
   }
 
@@ -68,8 +107,7 @@ class MapStore {
       runInAction(() => {
         this.walkAdvrts.push(response.data as IWalkAdvrtDto);
       });
-      
-
+      await this.setWalkAdvrts();
     } catch (error) {
       if (axios.isAxiosError(error)) 
         {
@@ -138,15 +176,35 @@ class MapStore {
     }
   }
 
-  async getStringAddressFromCoordinate( location:[ number, number] ) {
+  async getStringAddressFromCoordinate(location: [number, number]) {
     try {
-      const country = "AR";
-      
       const response = await axios.get(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${location[0]},${location[1]}.json?country=${country}&access_token=${MAPBOX_ACCESS_TOKEN}`
+        `https://api.mapbox.com/search/geocode/v6/reverse?longitude=${location[0]}&latitude=${location[1]}&types=address&access_token=${MAPBOX_ACCESS_TOKEN}`
       );
+  
       if (response.data.features && response.data.features.length > 0) {
-        const address = response.data.features[0].place_name;
+        const feature = response.data.features[0];
+        const context = feature.properties.context;
+  
+        // Извлекаем необходимые компоненты
+        const streetName = context.street?.name || '';
+        const addressNumber = context.address?.address_number || '';
+        const neighborhood = context.neighborhood?.name || '';
+        const city = context.place?.name || '';
+        const region = context.region?.name || '';
+  
+        // Формируем сокращенный адрес
+        let address = `${streetName} ${addressNumber}`;
+        if (neighborhood) {
+          address += `, ${neighborhood}`;
+        }
+        if (city) {
+          address += `, ${city}`;
+        }
+        if (region && region !== city) {
+          address += `, ${region}`;
+        }
+  
         this.setAdvrtAddress(address);
       } else {
         console.error("No address found for the provided coordinates.");
@@ -154,10 +212,9 @@ class MapStore {
       }
     } catch (error) {
       console.error("Error fetching address: ", error);
-      this.setAddress("Error fetching address");
+      this.setAdvrtAddress("Error fetching address");
     }
   }
-
   selectAddress(place: any) {
     const { center, place_name } = place;
     this.setRegion({

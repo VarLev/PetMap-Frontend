@@ -1,16 +1,18 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { database } from '@/firebaseConfig';
-import { ref, get, push, update, query, orderByChild, onValue, off, remove } from 'firebase/database';
+import { ref, get, push, update, query, orderByChild, onValue, remove } from 'firebase/database';
 import userStore from '@/stores/UserStore';
 import { MessageType } from '@flyerhq/react-native-chat-ui';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import * as Crypto from 'expo-crypto';
+import { sendPushNotification } from '@/hooks/notifications';
 
 
 interface Chat {
   id: string;
   thumbnailUrl?: string;
   otherUserName?: string;
+  otherUserId?: string;
   lastMessage: string;
   participants: { [key: string]: boolean };
 }
@@ -25,7 +27,6 @@ interface Message {
 class ChatStore {
   chats: Chat[] = [];
   messages: MessageType.Any[] = [];
-  //currentUser = userStore.currentUser; 
  
 
   constructor() {
@@ -58,6 +59,7 @@ class ChatStore {
             lastMessage: chatData.lastMessage,
             participants: chatData.participants,
             otherUserName: otherUserName,
+            otherUserId: otherUserId,
             thumbnailUrl
           });
         }
@@ -89,6 +91,9 @@ class ChatStore {
     };
     const userId1 = userStore.currentUser?.id;
     const userId2 = otherUser?.id;
+
+    console.log('fmcTokenCurrentUser:', userStore.currentUser?.fmcToken);
+    console.log('fmcTokenOtherUser:', otherUser?.fmcToken);
 
     const newUserData1 ={
       name: userStore.currentUser?.name,
@@ -127,7 +132,7 @@ class ChatStore {
         }
       });
 
-      await this.sendInviteMessage(chatId);
+      await this.sendInviteMessage(chatId, otherUser?.id);
 
       return chatId;
     } catch (error) {
@@ -136,8 +141,9 @@ class ChatStore {
     }
   }
 
-  async sendInviteMessage(chatId: string) {
+  async sendInviteMessage(chatId: string, otherUserId: string | undefined) {
     const userId = userStore.currentUser?.id;
+    const recipientExpoPushToken = userStore.users.find(user => user.id === otherUserId)?.fmcToken;
     if (!userId) return;
   
     const initialMessage: MessageType.Custom = {
@@ -157,13 +163,26 @@ class ChatStore {
     try {
       await push(ref(database, `messages/${chatId}`), initialMessage);
       console.log('Initial message sent');
+      if(recipientExpoPushToken){
+      
+        await sendPushNotification(
+          recipientExpoPushToken,
+          'Приглашение на прогулку',
+          userStore?.currentUser?.name?? 'Пользователь',
+          { chatId }
+        );
+      }
+
     } catch (error) {
       console.error('Error sending initial message:', error);
     }
   }
 
-  sendMessage(chatId: string, text: string) {
+  async sendMessage(chatId: string, text: string, otherUserId: string | undefined) {
     const userId = userStore.currentUser?.id;
+    const recipientExpoPushToken = userStore.users.find(user => user.id === otherUserId)?.fmcToken;
+
+   
     if (!userId) {
       console.error("User is not defined");
       return;
@@ -180,6 +199,17 @@ class ChatStore {
       .then(() => console.log('Message sent:', textMessage))
       .catch(error => console.error('Error sending message:', error));
     console.log('MMMMMessage sent:', textMessage);
+    
+    if(recipientExpoPushToken){
+      
+      await sendPushNotification(
+        recipientExpoPushToken,
+        'Новое сообщение',
+        text,
+        { chatId }
+      );
+    }
+      
   }
 
   fetchMessages(chatId: string) {
@@ -191,7 +221,7 @@ class ChatStore {
       const messagesList: MessageType.Any[] = [];
       snapshot.forEach(childSnapshot => {
         const message = childSnapshot.val();
-        console.log('childSnapshot.key:', childSnapshot.key);
+        //console.log('childSnapshot.key:', childSnapshot.key);
       if (message && childSnapshot.key) {
         messagesList.push({
           id: childSnapshot.key,  // Убедитесь, что `id` существует
@@ -224,6 +254,10 @@ class ChatStore {
     try {
       await remove(chatRef);
       await remove(messagesRef);
+      runInAction(() => {
+        this.chats = this.chats.filter(chat => chat.id !== chatId);
+      });
+      
     } catch (error) {
       console.error("Error deleting chat:", error);
     }

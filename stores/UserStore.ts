@@ -21,9 +21,10 @@ import { Pet } from '@/dtos/classes/pet/Pet';
 class UserStore {
   fUser: UserCredential | null = null;
   currentUser: User | null = null;
+  users: User[] = [];
   isLogged: boolean = false;
-  
   loading: boolean = false;
+  
 
   constructor() {
     makeAutoObservable(this, {
@@ -38,9 +39,13 @@ class UserStore {
       singInUser: action,
       registerUser: action,
       updateUserOnbordingData: action,
-      updateOnlyUserData: action
+      updateOnlyUserData: action,
+      loadUsersOnce: action
     });
+
+   
   }
+  
 
   setLoginedUser(user: any) {
     this.fUser = user;
@@ -97,6 +102,28 @@ class UserStore {
     return obj;
   }
 
+  async loadUsersOnce() {
+    if (this.users?.length > 0) {
+      console.log('Пользователи уже загружены.');
+      return this.users; // Возвращаем уже загруженных пользователей
+    }
+
+    try {
+      console.log('Загрузка пользователей');
+      const response = await apiClient.get('/users/all'); // Запрос к серверу
+      runInAction(() => {
+        this.users = response.data.map((user: User) => new User(user));
+      });
+      
+      console.log('Пользователи успешно загружены.',this.users);
+    
+      return this.users;
+    } catch (error) {
+      console.error('Не удалось загрузить пользователей', error);
+      throw error;
+    }
+  }
+
 
   async loadUser() {
     try {
@@ -122,7 +149,7 @@ class UserStore {
       const fuid = this.fUser?.user.uid;
       const response = await apiClient.get('/users/me', { params: { fuid } }); // Эндпоинт для получения текущего пользователя
       runInAction(() => {
-        console.log('Пользователь загружен из базы: this.currentUser = new User(response.data);', response.data);
+        console.log('Пользователь загружен из базы:');
         this.currentUser = new User(response.data);
         petStore.currentUserPets = response.data.petProfiles.map((pet: IPet) => new Pet(pet));
       });

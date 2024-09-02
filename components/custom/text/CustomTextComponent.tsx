@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ViewStyle, StyleProp } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -13,8 +13,9 @@ interface CustomTextComponentProps {
   rightIcon?: string;
   onRightIconPress?: () => void;
   maxLines?: number;
-  iconSet?: 'material' | 'paper' | 'fontAwesome' | 'simpleLine' | 'ionicons' | 'materialCommunity'; // Добавляем 'ionicons'
-  separator?: string; // Разделитель для массива строк
+  iconSet?: 'material' | 'paper' | 'fontAwesome' | 'simpleLine' | 'ionicons' | 'materialCommunity';
+  separator?: string;
+  style?: StyleProp<ViewStyle>; // Добавляем возможность передавать стили для внешнего View
 }
 
 const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
@@ -23,41 +24,41 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
   rightIcon,
   onRightIconPress,
   maxLines = 1,
-  iconSet = 'material', // По умолчанию используем Material Icons
-  separator = ', ', // По умолчанию разделитель - запятая с пробелом
+  iconSet = 'material',
+  separator = ', ',
+  style, // Получаем стили через пропс
 }) => {
-  // Объединяем массив строк в одну строку с разделителем, если text - массив
   const displayText = Array.isArray(text) ? text.join(separator) : text;
 
   return (
-    <View className="p-0 pt-2 pb-2">
-      <View className="flex-row items-center">
-        {leftIcon && (
-          iconSet === 'material' ? (
-            <MaterialIcons name={leftIcon} size={20} color="#b39ddb" />
-          ) : iconSet === 'fontAwesome' ? (
-            <FontAwesome name={leftIcon} size={20} color="#b39ddb" />
-          ) : iconSet === 'simpleLine' ? (
-            <SimpleLineIcons name={leftIcon} size={20} color="#b39ddb" />
-          ) : iconSet === 'ionicons' ? (
-            <Ionicons name={leftIcon} size={20} color="#b39ddb" />
-          ) : iconSet === 'materialCommunity' ? (
-            <MaterialCommunityIcons name={leftIcon as any} size={20} color="#b39ddb" />
-          ) : (
-            <IconButton icon={leftIcon} size={20} />
-          )
-        )}
-        <Text
-          numberOfLines={maxLines}
-          ellipsizeMode="tail"
-          className="flex-1 pl-2 text-base text-black font-nunitoSansRegular"
-        >
-          {displayText}
-        </Text>
+    <View style={[{ paddingVertical: 8, flexDirection: 'row', alignItems: 'center' }, style]}>
+      {leftIcon && (
+        iconSet === 'material' ? (
+          <MaterialIcons name={leftIcon} size={20} color="#b39ddb" />
+        ) : iconSet === 'fontAwesome' ? (
+          <FontAwesome name={leftIcon} size={20} color="#b39ddb" />
+        ) : iconSet === 'simpleLine' ? (
+          <SimpleLineIcons name={leftIcon} size={20} color="#b39ddb" />
+        ) : iconSet === 'ionicons' ? (
+          <Ionicons name={leftIcon} size={20} color="#b39ddb" />
+        ) : iconSet === 'materialCommunity' ? (
+          <MaterialCommunityIcons name={leftIcon as any} size={20} color="#b39ddb" />
+        ) : (
+          <IconButton icon={leftIcon} size={20} />
+        )
+      )}
+      <Text
+        numberOfLines={maxLines}
+        ellipsizeMode="tail"
+        style={{ flex: 1, paddingLeft: 8, fontSize: 16, color: 'black', fontFamily: 'NunitoSans-Regular' }}
+      >
+        {displayText}
+      </Text>
+      {rightIcon && (
         <TouchableOpacity onPress={onRightIconPress}>
-         <MaterialIcons name={rightIcon??''} size={20} color="black" />
+          <MaterialIcons name={rightIcon} size={20} color="black" />
         </TouchableOpacity>
-      </View>
+      )}
     </View>
   );
 };

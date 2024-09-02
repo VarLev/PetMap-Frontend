@@ -39,10 +39,11 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   const [gender, setGender] = useState('');
   const [petGender, setPetGender] = useState('');
   const [petName, setPetName] = useState('');
-  const [age, setAge] = useState(new Date(0));
-  const [petAge, setPetAge] = useState<Date>(new Date(0));
+  const [age, setAge] = useState<Date>(new Date('2000-01-01T12:00:00'));
+  const [petAge, setPetAge] = useState<Date>(new Date('2000-01-01T12:00:00'));
   
-  const [show, setShow] = useState(false);
+  const [showUserAge, setShowUserAge] = useState(false);
+  const [showPetAge, setShowPetAge] = useState(false);
   const [userImage, setUserImage] = useState('');
   const [petImage, setPetImage] = useState('');
   
@@ -64,20 +65,25 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   };
 
   const onAgeChange = (event: DateTimePickerEvent, selectedDate?: Date | undefined) => {
-    setShow(Platform.OS === 'ios');
+    setShowUserAge(Platform.OS === 'ios');
     if (selectedDate) {
       setAge(selectedDate);
     }
   };
 
   const onPetAgeChange = (event: DateTimePickerEvent, selectedDate?: Date | undefined) => {
-    const currentDate = selectedDate || petAge;
-    setShow(Platform.OS === 'ios');
-    setPetAge(currentDate!);
+    setShowPetAge(Platform.OS === 'ios');
+    if(selectedDate)
+      setPetAge(selectedDate);
+    console.log(selectedDate);
   };
 
-  const showDatepicker = () => {
-    setShow(true);
+  const showUserDatepicker = () => {
+    setShowUserAge(true);
+  };
+
+  const showPetDatepicker = () => {
+    setShowPetAge(true);
   };
 
   const handleChange = (field: keyof User, value: any) => {
@@ -227,26 +233,27 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
           <CustomInputText placeholder='Как тебя зовут?' value={name} handleChange={setName} containerStyles='mb-2 mt-4' />
           
           <View className='flex-row items-start justify-between'>
-            <CustomInputText placeholder='Дата рождения' value={age ? age.toLocaleDateString('en-US') : ''} handleChange={showDatepicker} containerStyles='w-1/2 pr-2 mb-2' />
-            {show && (
+            <CustomInputText 
+              placeholder='Дата рождения' 
+              value={age ? age.toLocaleDateString('en-US') : ''} 
+              handleClick={showUserDatepicker} 
+              handleChange={showUserDatepicker} 
+              containerStyles='w-1/2 pr-2 mb-2' 
+            />
+            {showUserAge && (
               <DateTimePicker
-                value={age || new Date()}
+                value={age}
                 mode="date"
                 display="spinner"
                 onChange={onAgeChange}
               />
             )}
-            
             <CustomSegmentedButtons containerStyles='w-[50%]' value={gender} onValueChange={handleGenderChange}/>
-
           </View>
-
           <View className='flex-row justify-between'>
             <CustomButtonOutlined title='Выбрать фото' handlePress={SetUserImage} containerStyles='mr-1 w-1/2 bg-indigo-700 text-white' textStyles = 'text-white' />
             <CustomButtonOutlined title='Выбрать аватар' handlePress={handleSheetOpen} containerStyles='ml-1 w-1/2' />
           </View>
-          
-
         </View>
       ),
     },
@@ -290,28 +297,25 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
             />
               <CustomInputText placeholder='Имя' value={petName} handleChange={setPetName}  containerStyles='mb-2 w-[45%] pl-2' />
           </View>
-        
           <View className='flex-row items-start '>
             <CustomInputText 
               placeholder='Дата рождения' 
               value={petAge ? petAge.toLocaleDateString('en-US') : ''}
-              handleChange={showDatepicker} 
+              handleClick={showPetDatepicker} 
+              handleChange={showPetDatepicker}
               containerStyles='w-[55%]  mb-2' 
             />
-            {show && (
+            {showPetAge && (
               <DateTimePicker
-                value={petAge || new Date()}
+                value={petAge}
                 mode="date"
                 display="spinner"
                 onChange={onPetAgeChange}
               />
             )}
-            
             <CustomSegmentedButtons containerStyles='ml-2 w-[43%]' value={petGender} onValueChange={handlePetGenderChange} showNAButton={false} />
-
           </View>
           <CustomButtonOutlined title='Добавь фотографию' handlePress={SetPetImage} containerStyles='w-full ' />
-          
         </View>
       ),
     },

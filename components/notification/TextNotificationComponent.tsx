@@ -46,7 +46,7 @@ export default function TextNotificationComponent() {
   return (
     <View
       style={{
-       
+
         alignItems: 'center',
         justifyContent: 'space-around',
       }}>

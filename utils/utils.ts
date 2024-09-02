@@ -6,24 +6,32 @@ import { IUser } from "@/dtos/Interfaces/user/IUser";
  * @param birthDate Дата рождения собаки.
  * @returns Возраст собаки в строковом формате.
  */
-export function calculateDogAge(birthDate?: Date | null): string {
-  const today = new Date();
-
+export function calculateDogAge(birthDate?: Date | null | undefined): string {
   if (!birthDate) return 'Unknown';
 
-  let ageYears = today.getFullYear() - birthDate.getFullYear();
-  let ageMonths = today.getMonth() - birthDate.getMonth();
-
-  // Если текущий месяц меньше месяца рождения, уменьшаем год и добавляем месяцам 12
-  if (ageMonths < 0) {
-    ageYears--;
-    ageMonths += 12;
+  // Если birthDate является строкой, преобразуем её в объект Date
+  if (typeof birthDate === 'string') {
+    birthDate = new Date(birthDate);
   }
 
-  if (ageYears === 0) {
-    return `${ageMonths} m.`;
+  // Проверка, что birthDate это объект Date и он валиден
+  if (birthDate instanceof Date && !isNaN(birthDate.getTime())) {
+    const today = new Date();
+    let ageYears = today.getFullYear() - birthDate.getFullYear();
+    let ageMonths = today.getMonth() - birthDate.getMonth();
+
+    if (ageMonths < 0) {
+      ageYears--;
+      ageMonths += 12;
+    }
+
+    if (ageYears === 0) {
+      return `${ageMonths} m.`;
+    } else {
+      return `${ageYears} y.`;
+    }
   } else {
-    return `${ageYears} y.`;
+    return 'Unknown';
   }
 }
 

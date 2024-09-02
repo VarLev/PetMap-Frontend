@@ -4,7 +4,8 @@ export interface IPetWalkAdvrtDto {
   breed?: string | null;
   birthDate: Date | null;
   gender?: string | null;
-  temperament?: string | null;
-  activityLevel?: string | null;
+  temperament?: number | null;
+  activityLevel?: number | null;
+  friendliness?: number | null;
   thumbnailUrl?: string | null;
 }

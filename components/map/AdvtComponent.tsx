@@ -1,20 +1,25 @@
 import React from 'react';
 import { View, Text, Image, ScrollView } from 'react-native';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { Button, Divider, Surface, TouchableRipple } from 'react-native-paper';
- // Обновите путь к вашему User классу
+import { Ionicons } from '@expo/vector-icons';
+import { Button, Surface } from 'react-native-paper';
 import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
 import { StarRatingDisplay } from 'react-native-star-rating-widget';
 import userStore from '@/stores/UserStore';
 import { User } from '@/dtos/classes/user/UserDTO';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
+import CustomTextComponent from '../custom/text/CustomTextComponent';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { calculateDogAge } from '@/utils/utils';
+import { router } from 'expo-router';
+import mapStore from '@/stores/MapStore';
+
 
 interface AdvtProps {
   advrt: IWalkAdvrtDto;
   onInvite: (uid:IUser) => void
 }
 
-const AdvtComponent: React.FC<AdvtProps> = ({ advrt, onInvite}) => {
+const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite }) => {
   const pets = advrt.userPets; // Берем первого питомца из списка
 
   const handleInvite = () => {
@@ -25,80 +30,115 @@ const AdvtComponent: React.FC<AdvtProps> = ({ advrt, onInvite}) => {
     onInvite(user);
   };
 
+  const handleEdit = () => {
+    // Реализуйте редактирование прогулки
+
+  }
+
+  const handleDelete = () => {
+    // Реализуйте удаление прогулки
+    mapStore.deleteWalkAdvrt(advrt.id!);
+    console.log('Delete walk advrt', mapStore.walkAdvrts.length);
+ 
+  }
+
+  const handleUserProfileOpen = () => {
+    if(userStore.currentUser?.id === advrt.userId) {
+      mapStore.setBottomSheetVisible(false);
+      router.push('/profile');
+    }
+  }
+
+  const handlePetProfileOpen = (petId:string) => {
+    if(userStore.currentUser?.id === advrt.userId) {
+      mapStore.setBottomSheetVisible(false);
+      router.push('/profile/pet/'+petId);
+    }
+  }
+
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1 p-2 bg-gray-200">
-      <View className="h-full bg-white rounded-lg p-2">
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1 ">
+      <View className="h-full bg-white px-4">
+        
         <View className="flex-row">
-          <Image source={{ uri: advrt?.userPhoto|| 'https://via.placeholder.com/100' }} className="w-28 h-28 rounded-lg" />
-          <View className="flex-col ml-4">
-            <Text className="text-2xl font-bold">{advrt.userName|| 'Owner'}</Text>
-            <View className="flex-row items-center mt-2">
-              <FontAwesome5 name="calendar-alt" size={20} color="indigo" />
-              <Text className="ml-2 text-base">{advrt?.date ? 'Время' : advrt.date?.toLocaleDateString()}</Text>
-            </View>
-            <View className="flex-row items-center mt-2">
-              <FontAwesome5 name="map-marker-alt" size={20} color="indigo" />
-              <Text className="ml-2 text-base">{advrt.address || 'Место'}</Text>
-            </View>
+          <TouchableOpacity className='rounded-2xl'  onPress={handleUserProfileOpen}>
+            <Image source={{ uri: advrt?.userPhoto|| 'https://via.placeholder.com/100' }} className="w-36 h-36 rounded-2xl" />
+          </TouchableOpacity>
+          <View className="flex-col ml-4 justify-between">
+            <Text className="text-2xl font-nunitoSansBold">{advrt.userName|| 'Owner'}</Text>
+            <CustomTextComponent 
+              text={advrt.date ? new Date(advrt.date).toLocaleTimeString() : 'Дата не указана'} 
+              leftIcon='time-outline' 
+              iconSet='ionicons' 
+              style={{ paddingVertical: 1 }} 
+            />
+            <CustomTextComponent text={advrt.address || 'Место'}  leftIcon='location-pin' iconSet='simpleLine' style={{  paddingVertical: 1 }}/>
+            <View className='h-16 pt-2'>
+              {userStore.currentUser?.id === advrt.userId ? (
+                <View/>
+              ) : (
+                <Button mode="contained" className="mt-2 w-48 bg-indigo-800" onPress={handleInvite}>
+                  <Text className='w-96 font-nunitoSansRegular text-white'>Пригласить</Text>
+                </Button>
+              )}
+            </View>       
           </View>
         </View>
+ 
+        {pets && pets.map((pet, index) => (
+          <Surface key={index} elevation={1} className="mt-4 p-1 flex-row bg-purple-100 rounded-2xl">
+            <View className='p-1 flex-row '>
+              <TouchableOpacity className='rounded-2xl'  onPress={()=> handlePetProfileOpen(pet.id)}>
+                <Image source={{ uri: pet?.thumbnailUrl|| 'https://via.placeholder.com/100' }} className=" w-28 h-28 rounded-xl" />
+              </TouchableOpacity>
+              <View className="ml-2">
+                <View className='flex-col items-start'>
+                    <View className='justify-center items-center flex-row'>
+                      <Ionicons name="male" size={18} color="indigo" />
+                      <Text className="pl-1 text-xl font-nunitoSansBold">{pet.petName || 'Pet'},</Text>
+                    </View>
+                    <Text className="text-sm -mt-1 font-nunitoSansRegular"> {calculateDogAge(pet.birthDate)} {pet.breed || 'Порода'}</Text>
+                </View>
+                <View className='flex-col pt-1 '>
+                  <View className='flex-row justify-between items-center'>              
+                    <Text className='font-nunitoSansRegular text-sm'>Темперамент</Text>
+                    <StarRatingDisplay rating={pet.temperament ?? 0} starSize={15} color='#BFA8FF' starStyle={{marginHorizontal: 2}}/>
+                  </View>
+                  <View className='flex-row justify-between items-center'>              
+                    <Text className='font-nunitoSansRegular text-sm'>Дружелюбность</Text>
+                    <StarRatingDisplay rating={pet.friendliness ?? 0} starSize={15} color='#BFA8FF' starStyle={{marginHorizontal: 2}}/>
+                  </View>
+                  <View className=' flex-row justify-between items-center'>              
+                    <Text className='font-nunitoSansRegular text-sm'>Активность</Text>
+                    <StarRatingDisplay rating={pet.activityLevel ?? 0} starSize={15} color='#BFA8FF' starStyle={{marginHorizontal: 2}}/>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </Surface>
+        ))}
+
         <View className="max-h-28">
           <ScrollView>
             <Text className="mt-2 text-justify text-base text-gray-600">
               {advrt.description || "Описание"}
             </Text>
           </ScrollView>
-          <Divider  />
         </View>
-        {pets && pets.map((pet, index) => (
-          <Surface key={index} elevation={1} className="mt-4 p-1 flex-row bg-gray-100 rounded-lg">
-            <TouchableRipple className='w-full' rippleColor="#c9b2d9" onPress={()=>{}}>
-              <View className='flex-row'>
-              <Image source={{ uri: pet?.thumbnailUrl|| 'https://via.placeholder.com/100' }} className=" w-28 h-28 rounded-lg" />
-              <View className="ml-4 flex-grow">
-                <View className='flex-col'>
-                    <View className='flex-row items-center'>
-                      <Text className="text-xl font-nunitoSansBold">{pet.petName || 'Pet'},</Text>
-                      <Ionicons name="male" size={18} color="indigo" />
-                      <Text className="text-base font-nunitoSansRegular">{pet.breed || 'Порода'}</Text>
-                    </View>
-                  
-                  </View>
-                  <View className="mt-1" >
-                  
-                      <Text className="text-xs font-nunitoSansRegular">Дружелюбность: </Text>
-                      <Divider  />
-                      <StarRatingDisplay rating={4} style={{}} starSize={15} color='indigo'/>
-                
-                  
-                  
-                    <Text className="mt-1 text-xs font-nunitoSansRegular">Активность:</Text>
-                    <Divider  />
-                    <StarRatingDisplay rating={5} starSize={15} color='indigo'/>
-                  </View>
-              </View>
-
-              </View>
-              
-            </TouchableRipple>
-          </Surface>
-        ))}
-        
-        <View className='h-20'>
+        <View className='h-16 pt-2'>
           {userStore.currentUser?.id === advrt.userId ? (
-            <Button mode="contained" className="mt-4">
-              Удалить прогулку
+            <Button mode="contained" className="mt-2 bg-indigo-800" onPress={handleDelete}>
+              <Text className='font-nunitoSansRegular text-white'>Удалить прогулку</Text>
             </Button>
           ) : (
-            <Button mode="contained" className="mt-4" onPress={handleInvite}>
-              Отправить приглашение
-            </Button>
+            <View></View>
           )}
         </View>       
-
       </View>
     </ScrollView>
   );
-};
+});
+
+AdvtComponent.displayName = "AdvtComponent";
 
 export default AdvtComponent;
