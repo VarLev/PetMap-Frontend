@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Image, Text } from 'react-native';
+import { View, ScrollView, Image, Text, Alert } from 'react-native';
 import { Button, Surface, Checkbox, TouchableRipple } from 'react-native-paper';
 import { observer } from 'mobx-react-lite';
 import userStore from '@/stores/UserStore';
@@ -55,7 +55,12 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
   }, [coordinates]);
 
   const handleSave = async () => {
-    const updatedUser :IWalkAdvrtDto = {
+    if (selectedPets.length === 0) {
+      Alert.alert("", "Выберите хотя бы одного питомца для участия в прогулке.");
+      return; // Прекращаем выполнение функции, если питомцы не выбраны
+    }
+
+    const updatedUserWalk :IWalkAdvrtDto = {
       id: undefined,
       isEnabled: true,
       createdAt: new Date(),
@@ -64,7 +69,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
       longitude: coordinates[1],
       participants: [],
       address: address,
-      participantsPetId: [],
+      participantsPetId: selectedPets,
       userId: userStore.currentUser?.id || '',
       description: description,
       petId: undefined,
@@ -75,7 +80,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
       userPets: userStore.currentUser?.petProfiles || []
     };
 
-    await mapStore.addWalkAdvrt(updatedUser);
+    await mapStore.addWalkAdvrt(updatedUserWalk);
     
     onAdvrtAddedInvite();
   };
@@ -147,7 +152,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
        
           {userStore.currentUser?.petProfiles?.map((pet,index) => (
             
-              <Surface key={index}  elevation={1} className=" mt-4 bg-purple-100  rounded-lg">
+              <Surface key={index}  elevation={0} className=" mt-4 bg-purple-100  rounded-lg">
                 <TouchableRipple  rippleColor="#c9b2d9" onPress={() => togglePetSelection(pet.id)}>
                 <View  className="-ml-2 p-1 flex-row items-center">
                   <Checkbox

@@ -16,12 +16,16 @@ import mapStore from '@/stores/MapStore';
 
 interface AdvtProps {
   advrt: IWalkAdvrtDto;
-  onInvite: (uid:IUser) => void
+  onInvite: (uid:IUser) => void;
+  onClose: () => void;
 }
 
-const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite }) => {
-  const pets = advrt.userPets; // Берем первого питомца из списка
+const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClose}) => {
+  const pets = advrt.userPets?.filter(pet=> advrt.participantsPetId?.includes(pet.id)) // Берем первого питомца из списка
 
+  console.log('advrt.userPets', advrt.userPets);
+  console.log('advrt.participants', advrt.participants);
+ 
   const handleInvite = () => {
     var user = new User();
     user.id = advrt.userId!;
@@ -39,7 +43,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite }) => {
     // Реализуйте удаление прогулки
     mapStore.deleteWalkAdvrt(advrt.id!);
     console.log('Delete walk advrt', mapStore.walkAdvrts.length);
- 
+    onClose();
   }
 
   const handleUserProfileOpen = () => {
@@ -86,7 +90,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite }) => {
         </View>
  
         {pets && pets.map((pet, index) => (
-          <Surface key={index} elevation={1} className="mt-4 p-1 flex-row bg-purple-100 rounded-2xl">
+          <Surface key={index} elevation={0} className="mt-4 p-1 flex-row bg-purple-100 rounded-2xl">
             <View className='p-1 flex-row '>
               <TouchableOpacity className='rounded-2xl'  onPress={()=> handlePetProfileOpen(pet.id)}>
                 <Image source={{ uri: pet?.thumbnailUrl|| 'https://via.placeholder.com/100' }} className=" w-28 h-28 rounded-xl" />

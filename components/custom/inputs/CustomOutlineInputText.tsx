@@ -1,8 +1,7 @@
-import { useFonts } from 'expo-font';
 import React, { useState } from 'react';
-import { View, Text } from 'react-native';
 import { TextInput } from 'react-native-paper';
 // import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans';
+import TextInputMask from 'react-native-text-input-mask';
 
 
 type InputTextProps = {
@@ -12,9 +11,10 @@ type InputTextProps = {
   containerStyles?: string;
   label?: string;
   numberOfLines?: number;
+  keyboardType?: 'default' | 'number-pad' | 'decimal-pad' | 'numeric' | 'email-address' | 'phone-pad';
 };
 
-const CustomOutlineInputText = ({ value, placeholder, handleChange, containerStyles, label,numberOfLines  }: InputTextProps) => {
+const CustomOutlineInputText = ({ value, placeholder, handleChange, containerStyles, label,numberOfLines, keyboardType  }: InputTextProps) => {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
@@ -34,6 +34,9 @@ const CustomOutlineInputText = ({ value, placeholder, handleChange, containerSty
         outlineStyle={{
           borderColor: isFocused ? '#7038c9' : '#bababa', // Цвет границы в зависимости от фокуса
         }}
+        keyboardType={keyboardType || 'default'}
+        dataDetectorTypes={'calendarEvent'}
+        
       />  
   );
 };

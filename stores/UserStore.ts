@@ -114,8 +114,6 @@ class UserStore {
       runInAction(() => {
         this.users = response.data.map((user: User) => new User(user));
       });
-      
-      console.log('Пользователи успешно загружены.',this.users);
     
       return this.users;
     } catch (error) {

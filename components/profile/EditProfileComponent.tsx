@@ -25,6 +25,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
   const sheetRef = useRef<BottomSheet>(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
 
+
   const handleChange = (field: keyof User, value: any) => {
     setEditableUser({ ...editableUser, [field]: value });
   };
@@ -36,6 +37,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
     onSave();
   };
 
+ 
   const SetUserPhoto = async () => {
     const image = await userStore.setUserImage();
     if (image) {
@@ -177,14 +179,13 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 label='Facebook' 
                 value={user.facebook! } 
                 handleChange={(text) => handleChange('facebook', text)}/>
-              
-            </View>
-            <Button mode="contained" onPress={handleSave} className='mt-5 bg-indigo-800'>
-              Сохранить
-            </Button>
-            <Button mode="outlined" onPress={onCancel} className='mt-4'>
-              Отмена
-            </Button>
+              </View>
+              <Button mode="contained" onPress={handleSave} className='mt-5 bg-indigo-800'>
+                Сохранить
+              </Button>
+              <Button mode="outlined" onPress={onCancel} className='mt-4'>
+                Отмена
+              </Button>
             <View className="h-32"/>
           </View>
         }

@@ -10,6 +10,9 @@ import CustomTextComponent from '../custom/text/CustomTextComponent';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import { calculateDogAge, calculateHumanAge } from '@/utils/utils';
 import CustomSocialLinkInput from '../custom/text/SocialLinkInputProps';
+import { Pet } from '@/dtos/classes/pet/Pet';
+import { router } from 'expo-router';
+import petStore from '@/stores/PetStore';
 
 
 
@@ -27,11 +30,11 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
 
   const closeMenu = () => setMenuVisible(false);
 
-  function handleChange(arg0: string, selectedTags: string[]): void {
-    throw new Error('Function not implemented.');
+  const handleAddPet = () =>{
+    const newPat = petStore.getEmptyPetProfile('new', user.id)
+    petStore.setPetProfile(newPat);
+    router.push('/profile/pet/new/edit');
   }
-
-
 
   return (
     <GestureHandlerRootView className='h-full'>
@@ -92,7 +95,7 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
                 className="w-full/2 h-52 m-2 p-2 border-dashed rounded-2xl shadow-lg items-center justify-center"
                 style={{ borderWidth: 3, borderColor: '#D9CBFF', width: 200 }}
               >
-                <TouchableOpacity style={{ alignItems: 'center' }}>
+                <TouchableOpacity style={{ alignItems: 'center' }} onPress={handleAddPet}>
                   <IconButton
                     icon="plus"
                     size={30}
@@ -118,7 +121,6 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
               <CustomTagsSelector 
                 tags={user.interests || []} 
                 initialSelectedTags={[]}
-                onSelectedTagsChange={(selectedTags) => handleChange('interests', selectedTags)} 
                 maxSelectableTags={5}
               />
               <Divider className='mt-3' />

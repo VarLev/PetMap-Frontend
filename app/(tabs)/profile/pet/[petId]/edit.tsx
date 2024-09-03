@@ -17,7 +17,7 @@ const EditPetProfile = observer(() => {
     const loadPet = () => {
       if (petId) {
         setIsLoading(true);
-        const pet = petStore.currentUserPets.find(pet=>pet.id === petId)!;
+        const pet = petStore.currentPetProfile!;
         setPet(pet);
       }else{
         setError('Invalid pet ID');
@@ -30,18 +30,24 @@ const EditPetProfile = observer(() => {
   }, [petId]);
 
 
-  const handleSave = async () => {
-    
-    router.back();
+  const handleSave = async (updatedPet: Pet) => {
+    try {
+      await petStore.updatePetProfile(updatedPet);
+      console.log('Profile updated successfully');
+
+      // Возвращаемся на предыдущий экран с обновлением
+      router.back();
+      
+      // Если нужно обновить экран после возвращения
+      router.replace(`/profile/pet/${petId}`);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
   };
 
   const handleCancel = () => {
     router.back();
-  }
-  useEffect(() => {
-    
-    
-  }, []);
+  };
 
   if (isLoading) {
     return (

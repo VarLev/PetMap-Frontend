@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text } from 'react-native';
 import DropDownPicker, { RenderBadgeItemPropsInterface } from 'react-native-dropdown-picker';
 
 type MultiTagDropdownProps = {
   tags: string[]; // Коллекция доступных тегов как массив строк
   initialSelectedTag?: string; // Начальные выбранные теги
   placeholder?: string; // Плейсхолдер для выпадающего списка
-  onChange?: (selectedTags: string) => void; // Обработчик изменения выбранных тегов
+  onChange?: (selectedTags: string | null) => void; // Обработчик изменения выбранных тегов
   searchable?: boolean; // Возможность поиска тегов
   label?: string;
 };
@@ -20,37 +20,25 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
   label
 }) => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState<string>(initialSelectedTag);
+  const [value, setValue] = useState<string | null>(initialSelectedTag);
+
   const items = tags.map(tag => ({ label: tag, value: tag }));
 
-
-   const handleSelectTag = (selectedValue: string) => {
-    setValue(selectedValue);
+  // Используем эффект для вызова onChange при изменении value
+  useEffect(() => {
     if (onChange) {
-      onChange(selectedValue);
+      onChange(value);
     }
-  };
+  }, [value]);
 
-  const renderCustomBadgeItem = ({ label, value }: RenderBadgeItemPropsInterface<string>) => {
-    return (
-      <View
-        key={value}
-        style={{
-          backgroundColor: '#F3E8FF', // Цвет фона бейджа
-          paddingHorizontal: 12,
-          paddingVertical: 8,
-          borderRadius: 20,
-          marginRight: 5,
-          marginBottom: 0,
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}
-      >
-        <Text style={{ color: 'black', marginRight: 5, fontFamily: 'NunitoSans_700Bold', fontSize:12 }}>{label}</Text>
-        
-      </View>
-    );
-  };
+  // const handleSelectTag = (selectedValue: string | null) => {
+  //   if (selectedValue !== value) {
+  //     setValue(selectedValue);
+  //     if (onChange) {
+  //       onChange(selectedValue);
+  //     }
+  //   }
+  // };
 
   return (
     <View className="pt-4">
@@ -61,8 +49,8 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
             fontFamily: 'Arial',
             fontSize: 12,
             position: 'absolute',
-            top: 7, // Смещение лейбла вверх
-            left: 10, // Смещение лейбла вправо
+            top: 7,
+            left: 10,
             backgroundColor: 'white',
             paddingHorizontal: 5,
             zIndex: 3001,
@@ -77,10 +65,8 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
         value={value}
         items={items}
         setOpen={setOpen}
-        labelProps={{ style: { color: '#454545', fontFamily: 'NunitoSans_400Regular', fontSize: 16 } }}
-        labelStyle={{ color: '#454545', fontFamily: 'NunitoSans_400Regular', fontSize: 16 }}
-  
-        setValue={setValue as (callback: any) => void} // Приведение типа к нужному
+        setValue={setValue} // Возвращаем setValue сюда
+        
         placeholder={placeholder}
         placeholderStyle={{ color: '#454545', fontFamily: 'NunitoSans_400Regular', fontSize: 16 }}
         dropDownContainerStyle={{
@@ -92,8 +78,7 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
         mode="BADGE"
         zIndex={3000}
         zIndexInverse={1000}
-        style={{ borderColor: '#bfbfbf', backgroundColor: '#ffffff', borderRadius: 5, }}
-        renderBadgeItem={renderCustomBadgeItem} 
+        style={{ borderColor: '#bfbfbf', backgroundColor: '#ffffff', borderRadius: 5 }}
         searchable={searchable}
         maxHeight={300}
       />

@@ -97,7 +97,7 @@ const MapBoxMap = observer(() => {
       }
     })
     setRenderContent(() => (
-      <AdvtComponent advrt={advrt} onInvite={handleChatInvite}/>
+      <AdvtComponent advrt={advrt} onInvite={handleChatInvite} onClose={handleSheetClose} />
     ));
     if (!isSheetExpanded) {
       setTimeout(() => {
@@ -125,6 +125,9 @@ const MapBoxMap = observer(() => {
   }
 
   const handleSheetClose = () => {
+    
+    sheetRef.current?.close();
+    
     mapStore.setBottomSheetVisible(false);
     setMarkerCoordinate(null);
     setIsSheetVisible(false);
@@ -149,9 +152,8 @@ const MapBoxMap = observer(() => {
           <Camera
             ref={cameraRef}
             centerCoordinate={[mapStore.region.longitude, mapStore.region.latitude]}
-            zoomLevel={11}
-            animationMode={'flyTo'}
-            animationDuration={1000}
+            zoomLevel={10}
+            animationDuration={1}
           />
           <UserLocation minDisplacement={10} />
            

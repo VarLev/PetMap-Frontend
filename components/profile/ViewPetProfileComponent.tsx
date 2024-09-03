@@ -1,5 +1,5 @@
 import { Pet } from '@/dtos/classes/pet/Pet';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StatusBar, View,Image, StyleSheet } from 'react-native';
 import { Text, IconButton, PaperProvider, Menu, Divider } from 'react-native-paper';
 import { calculateDogAge } from '@/utils/utils';
@@ -11,12 +11,18 @@ import CustomSocialLinkInput from '../custom/text/SocialLinkInputProps';
 import { observer } from 'mobx-react-lite';
 import { StarRatingDisplay } from 'react-native-star-rating-widget';
 import { router } from 'expo-router';
+import petStore from '@/stores/PetStore';
 
 
 const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: () => void,}) => {
 
   const sheetRef = useRef<BottomSheet>(null);
   const [menuVisible, setMenuVisible] = useState(false);
+
+  useEffect(() => {
+    petStore.setPetProfile(pet);
+    console.log('pet', pet);
+  }, [pet]);
 
   const openMenu = () => setMenuVisible(true);
 
@@ -88,15 +94,15 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
               
               <View className='pt-2 flex-row justify-between'>              
                 <Text className='font-nunitoSansRegular text-base'>Темперамент</Text>
-                <StarRatingDisplay rating={4} style={{}} starSize={25} color='#BFA8FF'/>
+                <StarRatingDisplay rating={pet.temperament?? 0} style={{}} starSize={25} color='#BFA8FF'/>
               </View>
               <View className='pt-2 flex-row justify-between'>              
                 <Text className='font-nunitoSansRegular text-base'>Дружелюбность</Text>
-                <StarRatingDisplay rating={4} style={{}} starSize={25} color='#BFA8FF'/>
+                <StarRatingDisplay rating={pet.friendliness?? 0} style={{}} starSize={25} color='#BFA8FF'/>
               </View>
               <View className='pt-2 flex-row justify-between'>              
                 <Text className='font-nunitoSansRegular text-base'>Активность</Text>
-                <StarRatingDisplay rating={4} starSize={25} color='#BFA8FF'/>
+                <StarRatingDisplay rating={pet.activityLevel?? 0} starSize={25} color='#BFA8FF'/>
               </View>
               
               <Divider className='mt-3' />
