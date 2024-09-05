@@ -4,6 +4,7 @@ import axios from 'axios';
 // eslint-disable-next-line import/no-unresolved
 import { MAPBOX_ACCESS_TOKEN } from '@env';
 import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
+import { IMapPoint } from '@/dtos/Interfaces/map/IMapPoint';
 import apiClient from '@/hooks/axiosConfig';
 
 class MapStore {
@@ -18,6 +19,7 @@ class MapStore {
   };
   bottomSheetVisible = false;
   walkAdvrts: IWalkAdvrtDto[] = [];
+  mapPoints: IMapPoint[] = [];
 
   marker: [number, number] | null = null;
   selectedFeature: GeoJSON.Feature<GeoJSON.Point> | null = null;
@@ -215,6 +217,7 @@ class MapStore {
       this.setAdvrtAddress("Error fetching address");
     }
   }
+
   selectAddress(place: any) {
     const { center, place_name } = place;
     this.setRegion({
@@ -225,6 +228,17 @@ class MapStore {
     });
     this.setAddress(place_name);
     this.setSuggestions([]);
+  }
+
+  async getAllMapPoints(){
+    try {
+      const response = await apiClient.get('map/point/all/2');
+      runInAction(() => {
+        this.mapPoints = response.data as IMapPoint[];
+      });
+    } catch (error) {
+      console.error('Error fetching map points:', error);
+    }
   }
 }
 

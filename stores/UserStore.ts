@@ -135,6 +135,7 @@ class UserStore {
       AsyncStorage.setItem('currentUser', JSON.stringify(this.currentUser))
         .then(() => console.log('Пользователь сохранен в AsyncStorage'))
         .catch((error) => console.error('Ошибка сохранения пользователя в AsyncStorage', error));
+      
 
     } catch (error) {
       console.error('Failed to load user', error);

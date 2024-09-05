@@ -18,6 +18,8 @@ import { router } from 'expo-router';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import Svg, { Path } from 'react-native-svg';
 import { useDrawer } from '@/contexts/DrawerProvider';
+import { IMapPoint } from '@/dtos/Interfaces/map/IMapPoint';
+import MapPointComonent from './MapPointComonent';
 
 Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
@@ -44,6 +46,7 @@ const MapBoxMap = observer(() => {
         Alert.alert('Permission to access location was denied');
       }
       await mapStore.setWalkAdvrts();
+      await mapStore.getAllMapPoints();
     })();
     
     
@@ -108,6 +111,29 @@ const MapBoxMap = observer(() => {
     }
   };
 
+  const onMapPointPress = async (mapPoint: IMapPoint) => {
+    cameraRef.current?.setCamera({
+      centerCoordinate: [mapPoint.longitude!,mapPoint.latitude!],
+      animationDuration: 300,
+      padding: {
+        paddingLeft: 0,
+        paddingRight: 0,
+        paddingTop: 0,
+        paddingBottom: 400
+      }
+    })
+    setRenderContent(() => (
+      <MapPointComonent mapPoint={mapPoint} onInvite={handleChatInvite} onClose={handleSheetClose} />
+    ));
+    if (!isSheetExpanded) {
+      setTimeout(() => {
+        sheetRef.current?.snapToIndex(0); // Позиция 60% в snapPoints
+        mapStore.setBottomSheetVisible(true);
+        setIsSheetVisible(true);
+      }, 200);
+    }
+  };
+
   const handleChatInvite = async (otherUser: IUser) => {
     try {
       sheetRef.current?.close();
@@ -148,7 +174,6 @@ const MapBoxMap = observer(() => {
     <Provider>
       <SafeAreaView style={{ flex: 1 }}>
         <MapView ref={mapRef} style={{ flex: 1 }} onLongPress={handleLongPress} styleURL={Mapbox.StyleURL.Light}>
-        
           <Camera
             ref={cameraRef}
             centerCoordinate={[mapStore.region.longitude, mapStore.region.latitude]}
@@ -156,8 +181,7 @@ const MapBoxMap = observer(() => {
             animationDuration={1}
           />
           <UserLocation minDisplacement={10} />
-           
-          {mapStore.walkAdvrts.map((advrt, index) => (
+           {mapStore.walkAdvrts.map((advrt, index) => (
             <Mapbox.MarkerView 
               key={`advrt-${advrt.id}`} 
               id={`advrt-${index}`}
@@ -173,7 +197,24 @@ const MapBoxMap = observer(() => {
                   </Svg>
                   <Image className='ml-[3.5px] mt-[3px] rounded-full h-9 w-9 absolute'
                     source={{ uri: advrt?.userPhoto|| 'https://via.placeholder.com/100' }}
-                    
+                  />
+                </View>
+              </Pressable>
+            </Mapbox.MarkerView>  
+          ))} 
+
+          {mapStore.mapPoints.map((point, index) => (
+            <Mapbox.MarkerView 
+              key={`advrt-${point.id}`} 
+              id={`advrt-${index}`}
+              coordinate={[point.longitude!, point.latitude!]}
+              onTouchStart={() => {}}
+              allowOverlap={true}
+            >  
+              <Pressable onPress={() => onMapPointPress(point)}>
+                <View >
+                  <Image className='rounded-full h-9 w-9'
+                    source={{ uri:'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2Fmap%2FpointIcons%2Ftree.png?alt=media&token=2d4f1bb6-0d5a-463d-8bd9-3dae566fdaae' }}
                   />
                 </View>
               </Pressable>
@@ -221,7 +262,7 @@ const MapBoxMap = observer(() => {
       
         )}
         
-        {/* {!isSheetVisible && 
+        {!isSheetVisible && 
         <Portal>
           <FAB.Group
             style={{ paddingBottom: 100 }} 
@@ -241,7 +282,7 @@ const MapBoxMap = observer(() => {
               }
             }}
           />
-        </Portal> }  */}
+        </Portal> }  
       </SafeAreaView>
     </Provider>
   );

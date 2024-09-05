@@ -21,3 +21,5 @@ export const BREEDS_TAGS = [
   "Бельгийская овчарка (малинуа)", "Американский стаффордширский терьер", "Басенджи", "Лабрадудль", "Кане корсо", "Кавалер-кинг-чарльз-спаниель",
   "Пойнтер", "Русский той", "Фокстерьер", "Грейхаунд", "Шелти (Шетландская овчарка)", "Веймаранер"
 ];
+
+export const petUriImage = 'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2Fpet%2Fthumbnail.png?alt=media&token=f6fd6149-8755-4a80-a903-635de3c570eb';

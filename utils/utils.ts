@@ -110,3 +110,22 @@ export function setUserAvatarDependOnGender(user: IUser): string {
     return avatarsStringM[randomIndex];
   }
 }
+
+/**
+ * Преобразует строку в формате YYYY-MM-DD в объект Date.
+ * @param dateString Строка с датой в формате YYYY-MM-DD.
+ * @returns Объект Date, представляющий указанную дату, или null, если формат некорректен.
+ */
+export function parseDateString(dateString: string): Date | null {
+  const [year, month, day] = dateString.split('-').map(Number);
+  
+  // Проверяем, что год, месяц и день являются допустимыми числами
+  if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+    // Проверяем, что месяц и день находятся в допустимом диапазоне
+    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+      return new Date(year, month - 1, day);
+    }
+  }
+
+  return null; // Возвращаем null, если строка не соответствует формату YYYY-MM-DD
+}

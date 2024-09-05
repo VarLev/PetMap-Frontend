@@ -11,11 +11,15 @@ import { IPet } from '@/dtos/Interfaces/pet/IPet';
 import StarRating from 'react-native-star-rating-widget';
 import { BREEDS_TAGS, GENDERS_TAGS, PETTYPES_TAGS } from '@/constants/Strings';
 import petStore from '@/stores/PetStore';
+import { parseDateString } from '@/utils/utils';
+import userStore from '@/stores/UserStore';
+import { router } from 'expo-router';
 
 
 const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet, onSave: (updatedPet: Pet) => void, onCancel: () => void }) => {
   const [editablePet, setEditablePet] = useState<Pet>(new Pet({ ...pet }));
   const [petPhoto, setPetPhoto] = useState(editablePet.thumbnailUrl);
+  const [birthDate, setBirthDate] = useState('');
 
   const [temperament, setTemperament] = useState(0);
   const [friendly, setFriendly] = useState(0);
@@ -58,7 +62,25 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
   };
 
   const handleAddPet = async () => {
-    petStore.createPetProfile(editablePet);
+    // Проверка на обязательные поля
+    if (!editablePet.petName || !birthDate || !editablePet.breed) {
+      // Вывод ошибки, если не все обязательные поля заполнены
+      alert("Пожалуйста, заполните все обязательные поля: Имя, Дата рождения и Порода.");
+      return;
+    }
+  
+    // Преобразуем дату рождения
+    editablePet.birthDate = parseDateString(birthDate);
+  
+    try {
+      const pet = await petStore.createNewPetProfile(editablePet);
+      if (pet) {
+        router.replace('/profile'); // Перенаправление на профиль после добавления питомца
+      }
+    } catch (error) {
+      console.error('Ошибка при создании профиля питомца:', error);
+      alert("Произошла ошибка при добавлении питомца. Пожалуйста, попробуйте снова.");
+    }
   };
 
 
@@ -119,10 +141,11 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
 
       <CustomOutlineInputText
         containerStyles="mt-4"
-        placeholder='YYYY-MM-DD'
+        placeholder='Дата рождения YYYY-MM-DD'
+        mask="9999-99-99"
         label="Дата рождения"
-        value={editablePet.birthDate ? editablePet.birthDate.toString() : ''}
-        handleChange={(text) => handleFieldChange('birthDate', text)}
+        value={birthDate}
+        handleChange={setBirthDate}
         keyboardType='number-pad'
         
       />
@@ -223,7 +246,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
       </Button>
       <View className="h-32" />
     </View>
-  ), [editablePet, temperament, friendly, activity, petPhoto]);
+  ), [editablePet, temperament, friendly, activity, petPhoto, birthDate]);
 
   return (
     <GestureHandlerRootView className="h-full bg-white">

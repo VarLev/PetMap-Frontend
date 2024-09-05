@@ -13,6 +13,7 @@ import CustomSocialLinkInput from '../custom/text/SocialLinkInputProps';
 import { Pet } from '@/dtos/classes/pet/Pet';
 import { router } from 'expo-router';
 import petStore from '@/stores/PetStore';
+import { petUriImage } from '@/constants/Strings';
 
 
 
@@ -23,6 +24,7 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
 
   useEffect(() => {
     sheetRef.current?.expand();
+    
 
   }, []);
 
@@ -34,6 +36,7 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
     const newPat = petStore.getEmptyPetProfile('new', user.id)
     petStore.setPetProfile(newPat);
     router.push('/profile/pet/new/edit');
+
   }
 
   return (
@@ -82,7 +85,7 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
             renderItem={({ item }) => (
               <TouchableOpacity style={{ alignItems: 'center' }} onPress={()=> onPetOpen(item.id)}>
                 <Card className="w-40 h-62 p-2 m-2 rounded-2xl shadow bg-purple-100">
-                  <Card.Cover source={{ uri: item.thumbnailUrl! }} style={{ height: 150, borderRadius: 14 }} />
+                  <Card.Cover source={{ uri: item.thumbnailUrl || petUriImage }} style={{ height: 150, borderRadius: 14 }} />
                   <Text className="font-nunitoSansBold text-lg">
                     {item.petName} {calculateDogAge(item.birthDate)}
                   </Text>

@@ -12,6 +12,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { calculateDogAge } from '@/utils/utils';
 import { router } from 'expo-router';
 import mapStore from '@/stores/MapStore';
+import { petUriImage } from '@/constants/Strings';
 
 
 interface AdvtProps {
@@ -93,7 +94,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
           <Surface key={index} elevation={0} className="mt-4 p-1 flex-row bg-purple-100 rounded-2xl">
             <View className='p-1 flex-row '>
               <TouchableOpacity className='rounded-2xl'  onPress={()=> handlePetProfileOpen(pet.id)}>
-                <Image source={{ uri: pet?.thumbnailUrl|| 'https://via.placeholder.com/100' }} className=" w-28 h-28 rounded-xl" />
+                <Image source={{ uri: pet?.thumbnailUrl|| petUriImage }} className=" w-28 h-28 rounded-xl" />
               </TouchableOpacity>
               <View className="ml-2">
                 <View className='flex-col items-start'>

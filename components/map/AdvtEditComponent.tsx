@@ -9,6 +9,7 @@ import mapStore from '@/stores/MapStore';
 import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
 import CustomOutlineInputText from '../custom/inputs/CustomOutlineInputText';
 import { calculateDogAge } from '@/utils/utils';
+import { petUriImage } from '@/constants/Strings';
 
 interface AdvtEditProps {
   coordinates: [number, number];
@@ -159,7 +160,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
                     status={selectedPets.includes(pet.id) ? 'checked' : 'unchecked'}
                     onPress={() => togglePetSelection(pet.id)}
                   />
-                  <Image source={{ uri: pet.thumbnailUrl || 'https://via.placeholder.com/100'}} width={60} height={60} className="rounded-lg" />
+                  <Image source={{ uri: pet.thumbnailUrl || petUriImage}} width={60} height={60} className="rounded-lg" />
                   <View className='flex-col'>
                     <View className='flex-row items-center ml-3'>
                       <Ionicons name="male" size={18} color="indigo" />

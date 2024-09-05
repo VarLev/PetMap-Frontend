@@ -17,13 +17,12 @@ const Profile = observer(() => {
   
   useEffect(() => {
     // Загрузка данных пользователя, если они еще не загружены
-    if (!userStore.currentUser) {
-      userStore.loadUser();
-    } else {
-      console.log('Профайл пользователя взят из памяти', userStore.currentUser);
-      setEditableUser(userStore.currentUser);
-      
+    async function fetchData() {
+      await userStore.loadUser();
+      setEditableUser(userStore.currentUser as User);
+      console.log('user');
     }
+    fetchData();
   }, []);
 
   const handleEdit = () => {

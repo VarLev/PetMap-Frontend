@@ -12,22 +12,30 @@ import { observer } from 'mobx-react-lite';
 import { StarRatingDisplay } from 'react-native-star-rating-widget';
 import { router } from 'expo-router';
 import petStore from '@/stores/PetStore';
+import { petUriImage } from '@/constants/Strings';
 
 
 const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: () => void,}) => {
-
   const sheetRef = useRef<BottomSheet>(null);
   const [menuVisible, setMenuVisible] = useState(false);
-
+  
   useEffect(() => {
     petStore.setPetProfile(pet);
-    console.log('pet', pet);
   }, [pet]);
 
   const openMenu = () => setMenuVisible(true);
 
-  const closeMenu = () => setMenuVisible(false);
+  const closeMenu = () => {
+    setMenuVisible(false);
+  }
 
+  const onDelete = async () => {
+    setMenuVisible(false);
+    console.log('Delete pet', pet.id);
+    await petStore.deletePetProfile(pet.id);
+    router.replace('/profile'); 
+      
+  }
 
   return (
     <GestureHandlerRootView className='h-full'>
@@ -36,7 +44,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
           <StatusBar backgroundColor="transparent" translucent />
           <View className="relative w-full aspect-square">
             
-            <Image source={{ uri: pet?.thumbnailUrl! }} className="w-full h-full" />
+            <Image source={{ uri: pet?.thumbnailUrl || petUriImage }} className="w-full h-full" />
            <View className='flex-row w-full justify-between items-center pr-3' style={styles.iconBackContainer}>
             <View className='bg-white rounded-full opacity-70' >
              <IconButton icon='arrow-left' size={25} iconColor='black'  onPress={()=>{router.back()}}/> 
@@ -58,8 +66,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
                 }
               >
                 <Menu.Item onPress={onEdit} title="Редактировать" rippleColor='black' titleStyle={{color:'balck'}} leadingIcon='pencil-outline'/>
-                <Menu.Item onPress={closeMenu} title="Выйти" titleStyle={{color:'balck'}} leadingIcon='exit-to-app'/>
-                <Menu.Item onPress={closeMenu} title="Удалить аккаунт" titleStyle={{color:'balck'}} leadingIcon='delete-outline'/>
+                <Menu.Item onPress={onDelete} title="Удалить питомца" titleStyle={{color:'balck'}} leadingIcon='delete-outline'/>
               </Menu>
             </View>
            </View>

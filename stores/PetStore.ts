@@ -7,6 +7,7 @@ import * as Crypto from 'expo-crypto';
 import { IPet} from '@/dtos/Interfaces/pet/IPet';
 import { Pet } from "@/dtos/classes/pet/Pet";
 
+
 class PetStore {
   currentPetProfile: IPet | null = null;
   loading: boolean = false;
@@ -47,6 +48,43 @@ class PetStore {
 
           await apiClient.post('/petprofiles/create', this.currentPetProfile);
           console.log('Pet profile data updated');
+      }
+    } catch (error) 
+    {
+      if (axios.isAxiosError(error)) 
+      {
+        // Подробная информация об ошибке Axios
+        console.error('Axios error:', {
+            message: error.message,
+            name: error.name,
+            code: error.code,
+            config: error.config,
+            response: error.response ? {
+                data: error.response.data,
+                status: error.response.status,
+                headers: error.response.headers,
+            } : null
+        });
+      } 
+      else {
+        // Общая информация об ошибке
+        console.error('Error:', error);
+      }
+      throw error;
+    } 
+  }
+
+  async createNewPetProfile(pet: Partial<IPet>) : Promise<IPet | undefined>
+  {
+    try 
+    {
+      
+      if (this.currentPetProfile) {
+        this.currentPetProfile = { ...this.currentPetProfile, ...pet };
+        this.currentPetProfile.id = Crypto.randomUUID();
+        const response = await apiClient.post('/petprofiles/create-new', this.currentPetProfile);
+        const newPet = new Pet(response.data);
+        return newPet!;
       }
     } catch (error) 
     {
@@ -123,6 +161,22 @@ class PetStore {
       throw error;
     }
   }
+
+  async deletePetProfile(petId: string) {
+    try {
+      if (petId) {
+        await apiClient.delete(`/petprofiles/delete/${petId}`);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Axios error:', error);
+      } else {
+        console.error('Error:', error);
+      }
+      throw error;
+    }
+  }
+
 
   async setPetImage() {
     let result = await ImagePicker.launchImageLibraryAsync({
