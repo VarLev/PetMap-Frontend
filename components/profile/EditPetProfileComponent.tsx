@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { Button, Divider } from 'react-native-paper';
 import { Pet } from '@/dtos/classes/pet/Pet';
@@ -9,11 +9,12 @@ import { observer } from 'mobx-react-lite';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { IPet } from '@/dtos/Interfaces/pet/IPet';
 import StarRating from 'react-native-star-rating-widget';
-import { BREEDS_TAGS, GENDERS_TAGS, PETTYPES_TAGS } from '@/constants/Strings';
+import { BREEDS_TAGS, GENDERS_TAGS, PETHEALTHISSUES_TAGS, PETINTERESTS_TAGS, PETTYPES_TAGS } from '@/constants/Strings';
 import petStore from '@/stores/PetStore';
 import { parseDateString } from '@/utils/utils';
-import userStore from '@/stores/UserStore';
+
 import { router } from 'expo-router';
+import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 
 
 const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet, onSave: (updatedPet: Pet) => void, onCancel: () => void }) => {
@@ -199,10 +200,27 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
       </View>
 
       <Divider className="mt-6" />
+      <View >
+        <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Интересы</Text>
+        <CustomTagsSelector
+          tags={PETINTERESTS_TAGS}
+          initialSelectedTags={editablePet.petInterests || []}
+          onSelectedTagsChange={(selectedTags) => handleFieldChange('petInterests', selectedTags)}
+          maxSelectableTags={5}
+        />
+      </View>
+      <Divider className="mt-6" />
 
       <View>
         <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Здоровье</Text>
         <Text className='pt-2 font-nunitoSansRegular text-gray-400 text-center'>We are working on a health passport for your pet, stay tuned for updates.</Text>
+        <CustomTagsSelector
+          tags={PETHEALTHISSUES_TAGS}
+          initialSelectedTags={editablePet.petInterests || []}
+          onSelectedTagsChange={(selectedTags) => handleFieldChange('petHealthIssues', selectedTags)}
+          maxSelectableTags={5}
+        />
+
         <Divider className='mt-6' />
       </View>
 

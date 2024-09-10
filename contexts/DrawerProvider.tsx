@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useRef, ReactElement } from 'react';
+import React, { createContext, useContext, useRef, ReactElement, useState } from 'react';
 import { DrawerLayoutAndroid } from 'react-native';
 
 type DrawerContextType = {
-  openDrawer: () => void;
+  openDrawer: (component: ReactElement) => void;
   closeDrawer: () => void;
 };
 
@@ -15,16 +15,20 @@ export const useDrawer = () => useContext(DrawerContext);
 
 type DrawerProviderProps = {
   children: React.ReactNode;
-  renderNavigationView: () => ReactElement;
+  defaultComponent?: () => ReactElement;
 };
 
 export const DrawerProvider = ({
   children,
-  renderNavigationView,
+  defaultComponent,
 }: DrawerProviderProps) => {
   const drawer = useRef<DrawerLayoutAndroid>(null);
-
-  const openDrawer = () => {
+  const [drawerComponent, setDrawerComponent] = useState<ReactElement>(
+    defaultComponent || <></>
+  );
+  
+  const openDrawer = (component: ReactElement) => {
+    setDrawerComponent(component);
     drawer.current?.openDrawer();
   };
 
@@ -37,9 +41,9 @@ export const DrawerProvider = ({
     <DrawerContext.Provider value={{ openDrawer, closeDrawer }}>
       <DrawerLayoutAndroid
         ref={drawer}
-        drawerWidth={300}
+        drawerWidth={350}
         drawerPosition="right"
-        renderNavigationView={renderNavigationView}
+        renderNavigationView={() => drawerComponent}
       >
         {children}
       </DrawerLayoutAndroid>

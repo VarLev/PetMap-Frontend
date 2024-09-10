@@ -6,7 +6,7 @@ interface CustomTagsSelectorProps {
   tags: string[];
   initialSelectedTags?: string[];
   onSelectedTagsChange?: (selectedTags: string[]) => void;
-  maxSelectableTags?: number; // Новое свойство для ограничения количества выбранных тегов
+  maxSelectableTags?: number; // Ограничение на количество выбранных тегов
 }
 
 const CustomTagsSelector: React.FC<CustomTagsSelectorProps> = ({
@@ -16,10 +16,10 @@ const CustomTagsSelector: React.FC<CustomTagsSelectorProps> = ({
   maxSelectableTags
 }) => {
   const [selectedTags, setSelectedTags] = useState<string[]>(initialSelectedTags);
+  const [showAll, setShowAll] = useState(false); // Состояние для отображения всех тегов
+  const refTags = React.useRef<Tags>(null);
 
   const handleTagPress = (index: number, tagLabel: string, event: any, deleted: boolean) => {
-    if (!selectedTags.length) return;
-
     let updatedSelectedTags;
 
     if (selectedTags.includes(tagLabel)) {
@@ -37,38 +37,52 @@ const CustomTagsSelector: React.FC<CustomTagsSelectorProps> = ({
     if (onSelectedTagsChange) {
       onSelectedTagsChange(updatedSelectedTags);
     }
+
+    
+    
   };
 
   // Обновляем selectedTags, если initialSelectedTags изменились
   useEffect(() => {
-    setSelectedTags(initialSelectedTags || []);
+    setSelectedTags(initialSelectedTags);
   }, [initialSelectedTags]);
+
+
+  const handleTagShortPress = (showAll: boolean) => {
+    setShowAll(showAll);
+    refTags.current?.setState({ tags: showAll ? tags : tags.slice(0, visibleTagsCount) });
+  }
+
+  // Устанавливаем количество тегов, которые будут видны по умолчанию
+  const visibleTagsCount = 10;
 
   return (
     <View className='items-center pt-2'>
-      <Tags
-        initialTags={tags}
-        readonly={true}
-        onTagPress={handleTagPress}
-        renderTag={({ tag, index, onPress }) => (
-          selectedTags.length > 0 ? (
+      <View >
+        <Tags
+          initialTags={showAll ? tags : tags.slice(0, visibleTagsCount)} // Показываем все теги или только первые 10
+          readonly={true}
+          onTagPress={handleTagPress}
+          ref={refTags}
+          renderTag={({ tag, index, onPress }) => (
             <TouchableOpacity
               key={`${tag}-${index}`}
-              className={`px-4 py-2 m-1 justify-between rounded-full ${selectedTags.includes(tag) ? ' bg-purple-100' : 'bg-white border border-indigo-700'}`}
+              className={`px-2 py-2 m-1 justify-between rounded-full ${selectedTags.includes(tag) ? ' bg-purple-100' : 'bg-white border border-indigo-700'}`}
               onPress={onPress}
             >
               <Text className={`${selectedTags.includes(tag) ? 'text-black' : 'text-indigo-700'} text-xs font-nunitoSansBold`}>{tag}</Text>
-            </TouchableOpacity>
-          ) : (
-            <View
-              key={`${tag}-${index}`}
-              className="px-4 py-2 m-1 justify-between rounded-full bg-purple-100 font-nunitoSansBold"
-            >
-              <Text className="text-black text-sm font-nunitoSansBold">{tag}</Text>
-            </View>
-          )
-        )}
-      />
+            </TouchableOpacity>    
+          )}
+        />
+      </View>
+      {/* Спойлер для показа всех тегов */}
+      {tags.length > visibleTagsCount && (
+        <TouchableOpacity onPress={() => handleTagShortPress(!showAll)} className="mt-2">
+          <Text className="text-indigo-700 text-sm font-nunitoSansBold">
+            {showAll ? 'Свернуть' : `Показать ещё (${tags.length - visibleTagsCount})`}
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

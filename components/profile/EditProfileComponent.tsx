@@ -142,12 +142,12 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
               <CustomOutlineInputText 
                 containerStyles='mt-4' 
                 label='Локация' 
-                value={user.location!} 
+                value={editableUser.location!} 
                 handleChange={(text) => handleChange('location', text)} 
                
               />
 
-              <MultiTagDropdown tags={LANGUAGE_TAGS} placeholder='Выберите языки' />
+              <MultiTagDropdown tags={LANGUAGE_TAGS} initialSelectedTags={editableUser.userLanguages || []} placeholder='Выберите языки' onChange={(text) => handleChange('userLanguages', text)} />
               <CustomOutlineInputText 
                 containerStyles='mt-4' 
                 label='Профессия' 
@@ -171,13 +171,13 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
               <CustomOutlineInputText 
                 containerStyles='mt-4' 
                 label='Instagram' 
-                value={user.instagram! } 
+                value={editableUser.instagram! } 
                 handleChange={(text) => handleChange('instagram', text)} 
               />
               <CustomOutlineInputText 
                 containerStyles='mt-4' 
                 label='Facebook' 
-                value={user.facebook! } 
+                value={editableUser.facebook! } 
                 handleChange={(text) => handleChange('facebook', text)}/>
               </View>
               <Button mode="contained" onPress={handleSave} className='mt-5 bg-indigo-800'>

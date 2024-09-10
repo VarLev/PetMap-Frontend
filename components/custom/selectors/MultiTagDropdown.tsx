@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import DropDownPicker, { RenderBadgeItemPropsInterface } from 'react-native-dropdown-picker';
+import DropDownPicker, { ItemType, RenderBadgeItemPropsInterface } from 'react-native-dropdown-picker';
 
 type MultiTagDropdownProps = {
   tags: string[]; // Коллекция доступных тегов как массив строк
@@ -27,12 +27,19 @@ const MultiTagDropdown: React.FC<MultiTagDropdownProps> = ({
     }
   };
 
-  const handleSelectTag = (selectedValue: string[]) => {
-    setValue(selectedValue);
-    if (onChange) {
-      onChange(selectedValue);
+  const handleSelectTag = (selectedValue: ItemType<string>[]) => {
+    
+    if(selectedValue){
+      const vals = selectedValue.map(v => v.value!)
+      
+      if (onChange) {
+        console.log(vals);
+        onChange(vals);
+      }
     }
+    
   };
+
 
   const renderCustomBadgeItem = ({ label, value }: RenderBadgeItemPropsInterface<string>) => {
     return (
@@ -66,7 +73,8 @@ const MultiTagDropdown: React.FC<MultiTagDropdownProps> = ({
         setOpen={setOpen}
         labelProps={{ style: { color: '#454545', fontFamily: 'NunitoSans_400Regular', fontSize: 16 } }}
         labelStyle={{ color: '#454545', fontFamily: 'NunitoSans_400Regular', fontSize: 16 }}
-        setValue={setValue as (callback: any) => void} // Приведение типа к нужному
+        setValue={setValue}// Приведение типа к нужному
+        onSelectItem={(c)=>handleSelectTag(c as ItemType<string>[])}
         placeholder={placeholder}
         placeholderStyle={{ color: '#454545', fontFamily: 'NunitoSans_400Regular', fontSize: 16 }}
         dropDownContainerStyle={{

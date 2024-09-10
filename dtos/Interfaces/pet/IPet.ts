@@ -20,4 +20,6 @@ export interface IPet {
   userId: string;
   photos?: IPhoto[] | null;
   thumbnailUrl?: string | null;
+  petInterests?: string[] | null;
+  petHealthIssues?: string[] | null;
 }
