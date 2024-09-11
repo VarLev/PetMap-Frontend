@@ -34,7 +34,7 @@ const SidebarUserProfileComponent = () => {
             <View className='flex-col ml-3'>
               <Text className="text-xl text-gray-800 font-nunitoSansBold">{currentUser?.name}</Text>
               <Text className="-mt-1 text-gray-800 font-nunitoSansRegular">{currentUser?.email}</Text>
-              <Text className="mt-1 text-indigo-800 font-nunitoSansBold">Открыть профиль</Text>
+              <Text className="mt-1 text-indigo-800 font-nunitoSansBold">Открыть профиль раз</Text>
             </View>
           </View>
         </TouchableRipple>
