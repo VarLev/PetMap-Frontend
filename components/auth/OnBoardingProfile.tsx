@@ -31,12 +31,14 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import AvatarSelector from "../common/AvatarSelector";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { avatarsStringF, avatarsStringM } from "@/constants/Avatars";
-import { BREEDS_TAGS } from "@/constants/Strings";
+import { BREEDS_TAGS, PETGENDERS_TAGS } from "@/constants/Strings";
+import { getTagsByIndex } from "@/utils/utils";
+import CustomDropdownList from "../custom/selectors/CustomDropdownList";
 
 const { width, height } = Dimensions.get("window");
 
 interface OnBoardingProfileProps {
-  onLanguageSelect: (language: string) => void;
+  onLanguageSelect: (language: number) => void;
   onComplete: (user: IUser) => void; // Добавляем функцию для завершения
 }
 
@@ -48,8 +50,8 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   const [editableUser, setEditableUser] = useState<User>(new User({ ...user }));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [name, setName] = useState("");
-  const [gender, setGender] = useState("");
-  const [petGender, setPetGender] = useState("");
+  const [gender, setGender] = useState(0);
+  const [petGender, setPetGender] = useState(0);
   const [petName, setPetName] = useState("");
   const [age, setAge] = useState<Date>(new Date("2000-01-01T12:00:00"));
   const [petAge, setPetAge] = useState<Date>(new Date("2000-01-01T12:00:00"));
@@ -68,7 +70,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     ? { uri: petImage }
     : undefined;
 
-  const [selectedBreed, setSelectedBreed] = useState<string | null>(null);
+  const [selectedBreed, setSelectedBreed] = useState<number>(0);
   const sheetRef = useRef<BottomSheet>(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [renderContent, setRenderContent] = useState<ReactNode>(() => null);
@@ -142,7 +144,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     }
   };
 
-  const handleLanguageSelection = (language: string) => {
+  const handleLanguageSelection = (language: number) => {
     onLanguageSelect(language);
     handleNext(); // Переключение на следующий слайд после выбора языка
   };
@@ -168,11 +170,11 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     }
   };
 
-  const handleGenderChange = (value: string) => {
+  const handleGenderChange = (value: number) => {
     setGender(value);
   };
 
-  const handlePetGenderChange = (value: string) => {
+  const handlePetGenderChange = (value: number) => {
     setPetGender(value);
   };
 
@@ -212,23 +214,23 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
           <Text className="text-md font-nunitoSansBold text-center">
             Добро пожаловать в PetMap!!!!
           </Text>
-          // text-lg
+          {/* text-lg */}
           <Text className="text-base font-nunitoSansRegular text-center">
             Выберите язык приложения, чтобы мы могли лучше понимать друг друга.
           </Text>
           <CustomButtonOutlined
             title="Английский"
-            handlePress={() => handleLanguageSelection("Английский")}
+            handlePress={() => handleLanguageSelection(2)}
             containerStyles="mt-4 w-full min-h-[45px]"
           />
           <CustomButtonOutlined
             title="Испанский"
-            handlePress={() => handleLanguageSelection("Испанский")}
+            handlePress={() => handleLanguageSelection(0)}
             containerStyles="mt-4 w-full min-h-[45px]"
           />
           <CustomButtonOutlined
             title="Русский"
-            handlePress={() => handleLanguageSelection("Русский")}
+            handlePress={() => handleLanguageSelection(1)}
             containerStyles="mt-4 w-full min-h-[45px]"
           />
         </View>
@@ -364,7 +366,16 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             прогулку.
           </Text>
           <View className="flex-row">
-            <SelectDropdown
+          <CustomDropdownList
+            tags={BREEDS_TAGS}
+            label='Порода'
+            placeholder="Порода"
+            initialSelectedTag={selectedBreed}
+            onChange={(v)=>setSelectedBreed(v as number)}
+            searchable={true}
+            listMode='MODAL'
+          />
+            {/* <SelectDropdown
               data={BREEDS_TAGS}
               onSelect={(selectedItem, index) => {
                 setSelectedBreed(selectedItem);
@@ -398,7 +409,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
               )}
               dropdownStyle={styles.dropdown}
               search={true}
-            />
+            /> */}
             <CustomInputText
               placeholder="Имя"
               value={petName}

@@ -10,7 +10,7 @@ const Onboarding = () => {
   
  
   
-  const handleLanguageSelect = (selectedLanguage: string) => {
+  const handleLanguageSelect = (selectedLanguage: number) => {
     userStore.updateUserOnbordingData({ 
       userLanguages: [selectedLanguage], 
       systemLanguage: selectedLanguage,
