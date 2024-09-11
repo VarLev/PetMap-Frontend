@@ -6,6 +6,7 @@ import TabBarButton from './TabBarButton';
 import { Colors } from '@/constants/Colors';
 import mapStore from '@/stores/MapStore';
 import { useDrawer } from '@/contexts/DrawerProvider';
+import SidebarUserProfileComponent from './SidebarUserProfileComponent';
 
 const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   const primaryColor = Colors.light.primTextButtHigh;
@@ -49,7 +50,7 @@ const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation })
 
         const onPress = () => {
           if (route.name === 'profile') {
-            openDrawer(); // Открыть Drawer при нажатии на "Profile"
+            openDrawer(<SidebarUserProfileComponent/>); // Открыть Drawer при нажатии на "Profile"
           } else {
             const event = navigation.emit({
               type: 'tabPress',

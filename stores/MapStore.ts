@@ -6,6 +6,7 @@ import { MAPBOX_ACCESS_TOKEN } from '@env';
 import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
 import { IMapPoint } from '@/dtos/Interfaces/map/IMapPoint';
 import apiClient from '@/hooks/axiosConfig';
+import { IWalkAdvrtFilterParams } from '@/dtos/Interfaces/filter/IWalkAdvrtFilterParams';
 
 class MapStore {
   address = '';
@@ -20,6 +21,9 @@ class MapStore {
   bottomSheetVisible = false;
   walkAdvrts: IWalkAdvrtDto[] = [];
   mapPoints: IMapPoint[] = [];
+  currentUserCoordinates: [number, number] = [0,0];
+  
+  isAvaliableToCreateWalk = true; // Переменная для проверки возможности создания прогулки
 
   marker: [number, number] | null = null;
   selectedFeature: GeoJSON.Feature<GeoJSON.Point> | null = null;
@@ -61,6 +65,7 @@ class MapStore {
       const advrts = await this.getAllAdvrt();
       runInAction(() => {
         this.walkAdvrts = advrts;
+        this.mapPoints = [];
       });
     } catch (error) {
       console.error("Error fetching walk advertisements:", error);
@@ -181,7 +186,7 @@ class MapStore {
   async getStringAddressFromCoordinate(location: [number, number]) {
     try {
       const response = await axios.get(
-        `https://api.mapbox.com/search/geocode/v6/reverse?longitude=${location[0]}&latitude=${location[1]}&types=address&access_token=${MAPBOX_ACCESS_TOKEN}`
+        `https://api.mapbox.com/search/geocode/v6/reverse?&longitude=${location[0]}&latitude=${location[1]}&types=address&access_token=${MAPBOX_ACCESS_TOKEN}`
       );
   
       if (response.data.features && response.data.features.length > 0) {
@@ -208,21 +213,24 @@ class MapStore {
         }
   
         this.setAdvrtAddress(address);
+        this.isAvaliableToCreateWalk = true;
       } else {
         console.error("No address found for the provided coordinates.");
         this.setAdvrtAddress("Address not found");
+        this.isAvaliableToCreateWalk = false;
       }
     } catch (error) {
       console.error("Error fetching address: ", error);
       this.setAdvrtAddress("Error fetching address");
+      this.isAvaliableToCreateWalk = false;
     }
   }
 
   selectAddress(place: any) {
     const { center, place_name } = place;
     this.setRegion({
-      latitude: center[1],
-      longitude: center[0],
+      latitude: center[0],
+      longitude: center[1],
       latitudeDelta: 0.0922,
       longitudeDelta: 0.0421,
     });
@@ -238,6 +246,75 @@ class MapStore {
       });
     } catch (error) {
       console.error('Error fetching map points:', error);
+    }
+  }
+
+  async getMapPointsByType(filter: string){
+    try {
+      const response = await apiClient.get(`filter/point/all/${filter}`);
+      if (response.data.length === 0) {
+        console.log('No map points found');
+        runInAction(() => {
+          this.mapPoints = response.data as IMapPoint[];
+        });
+      }else{
+        runInAction(() => {
+          this.walkAdvrts = [];
+          this.mapPoints = response.data as IMapPoint[];
+        });
+      }
+      
+    } catch (error) {
+      if (axios.isAxiosError(error)) 
+        {
+          // Подробная информация об ошибке Axios
+          console.error('Axios error:', {
+              message: error.message,
+              name: error.name,
+              //code: error.code,
+              //config: error.config,
+              response: error.response ? {
+                  data: error.response.data.errors,
+                  //status: error.response.status,
+                  //headers: error.response.headers,
+              } : null
+          });
+        } 
+        else {
+          // Общая информация об ошибке
+          console.error('Error:', error);
+        }
+        throw error;
+    }
+  }
+
+  async getFilteredWalks(filter: IWalkAdvrtFilterParams){
+    try {
+      const response = await apiClient.post('filter/walks-filtered',filter );
+      runInAction(() => {
+        this.walkAdvrts = response.data as IWalkAdvrtDto[];
+      });
+    } catch (error) {
+      if (axios.isAxiosError(error)) 
+        {
+          // Подробная информация об ошибке Axios
+          console.error('Axios error:', {
+              message: error.message,
+              name: error.name,
+              code: error.code,
+              config: error.config,
+              response: error.response ? {
+                  data: error.response.data.errors,
+                  status: error.response.status,
+                  headers: error.response.headers,
+              } : null
+          });
+        } 
+        else {
+          // Общая информация об ошибке
+          console.error('Error:', error);
+        }
+        throw error;
     }
   }
 }

@@ -60,6 +60,11 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
       Alert.alert("", "Выберите хотя бы одного питомца для участия в прогулке.");
       return; // Прекращаем выполнение функции, если питомцы не выбраны
     }
+    
+    if(!mapStore.isAvaliableToCreateWalk){
+      Alert.alert("", "В этом месте нельзя создать прогулку.");
+      return; // Прекращаем выполнение функции, если питомцы не выбраны
+    }
 
     const updatedUserWalk :IWalkAdvrtDto = {
       id: undefined,
@@ -120,8 +125,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
           <View className="flex-col ml-2">
             <Text className="ml-1 text-2xl font-nunitoSansBold">{name}</Text> 
             <View className="flex-row items-center -mt-1 ">
-              <Ionicons name="time-outline" size={18} color="indigo" />
-              
+              <Ionicons name="time-outline" size={18} color="indigo" /> 
               <Text className="text-base ml-1 font-nunitoSansRegular">начало {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text> 
               <Button onPress={() => setShowTimePicker(true)} className='font-nunitoSansRegular'>
                 <Text className='font-nunitoSansRegular'>Изменить</Text>
@@ -141,8 +145,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
                 display="default"
                 onChange={onTimeChange}
               />
-            )}
-            
+            )}   
           </View>
         </View>
         <View className="mt-2 justify-start w-full ">
@@ -150,9 +153,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
           <View className='pt-2'/> 
           <CustomOutlineInputText label='Описание' value={description} handleChange={setDescription} numberOfLines={3} />  
         </View>
-       
           {userStore.currentUser?.petProfiles?.map((pet,index) => (
-            
               <Surface key={index}  elevation={0} className=" mt-4 bg-purple-100  rounded-lg">
                 <TouchableRipple  rippleColor="#c9b2d9" onPress={() => togglePetSelection(pet.id)}>
                 <View  className="-ml-2 p-1 flex-row items-center">
@@ -171,9 +172,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
                 </View>
                 </TouchableRipple>
               </Surface>
-            
-          ))}
-   
+          ))}  
         <View className='h-20'>
           <Button mode="contained" className="mt-4 " onPress={handleSave}>
             Разместить на карте

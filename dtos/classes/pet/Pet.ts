@@ -21,6 +21,8 @@ export class Pet implements IPet {
   userId: string;
   photos?: Photo[] | null;
   thumbnailUrl?: string | null;
+  petInterests?: string[] | null;
+  petHealthIssues?: string[] | null;
 
   constructor(data: Partial<IPet> = {}) {
     this.id = data.id!;
@@ -42,5 +44,7 @@ export class Pet implements IPet {
     this.userId = data.userId!;
     this.photos = data.photos || [];
     this.thumbnailUrl = data.thumbnailUrl || '';
+    this.petInterests = data.petInterests || [];
+    this.petHealthIssues = data.petHealthIssues || [];
   }
 }

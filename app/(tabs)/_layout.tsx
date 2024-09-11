@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { router, Tabs, useFocusEffect, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import TabBar from '@/components/navigation/TabBar';
@@ -9,13 +9,16 @@ import { registerForPushNotificationsAsync, setupNotificationListeners, savePush
 import UserStore from '@/stores/UserStore';
 import { Alert, BackHandler } from 'react-native';
 
+import { Pet } from '@/dtos/classes/pet/Pet';
+import FilterComponent from '@/components/filter/FilterComponent';
+
 
 
 
 const Tabslayout = () => {
   const pathname = usePathname();
   const hideTabBar = pathname.includes('/chat/');
-  //const { currentUser} = useStore();
+  
 
   useEffect(() => {
     // Загрузка пользователей при первом монтировании компонента
@@ -75,9 +78,10 @@ const Tabslayout = () => {
 
 
 
+
   return (
     <>
-     <DrawerProvider renderNavigationView={() => <SidebarUserProfileComponent />}> 
+     <DrawerProvider> 
       <Tabs
         tabBar={(props) => !hideTabBar && <TabBar {...props} />}
         screenOptions={{
@@ -128,7 +132,6 @@ const Tabslayout = () => {
             title: 'Profile',
             headerShown: false,
           }}
-          
         />
       </Tabs>
       <StatusBar backgroundColor="#161622" style="light" />

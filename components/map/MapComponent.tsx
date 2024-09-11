@@ -1,9 +1,9 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, TextInput, SafeAreaView, Alert,Image, Pressable} from 'react-native';
+import { View, SafeAreaView, Alert,Image, Pressable} from 'react-native';
 import Mapbox, { MapView, UserLocation, Camera, PointAnnotation } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
-import { FAB, IconButton, Portal, Provider } from 'react-native-paper';
+import { FAB, Portal, Provider  } from 'react-native-paper';
 // eslint-disable-next-line import/no-unresolved
 import { MAPBOX_ACCESS_TOKEN } from '@env';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent'; // Импортируйте новый компонент
@@ -20,6 +20,9 @@ import Svg, { Path } from 'react-native-svg';
 import { useDrawer } from '@/contexts/DrawerProvider';
 import { IMapPoint } from '@/dtos/Interfaces/map/IMapPoint';
 import MapPointComonent from './MapPointComonent';
+import SearchAndTags from '../custom/inputs/FilterSearchAndTagsComponent';
+import FilterComponent from '../filter/FilterComponent';
+
 
 Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
@@ -28,6 +31,7 @@ const MapBoxMap = observer(() => {
   const sheetRef = useRef<BottomSheet>(null);
   const cameraRef = useRef<Camera>(null);
   const mapRef = useRef<Mapbox.MapView>(null);
+  const userLocationRef = useRef<UserLocation>(null);
   const [fabOpen, setFabOpen] = useState(false);
   const [renderContent, setRenderContent] = useState<ReactNode>(() => null);
   const [markerCoordinate, setMarkerCoordinate] = useState<[number, number] | null>(null);
@@ -35,8 +39,10 @@ const MapBoxMap = observer(() => {
   const pointAnnotationCurrentUser = useRef<PointAnnotation>(null);
   const { openDrawer } = useDrawer();
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
-
+  const [selectedTag, setSelectedTag] = useState<string >('');
+  const [userCoordinates, setUserCoordinates] = useState([0, 0]);
   const currentUser = userStore.currentUser;
+  const [modifiedFieldsCount, setModifiedFieldsCount] = useState(0);
   
 
   useEffect(() => {
@@ -46,11 +52,16 @@ const MapBoxMap = observer(() => {
         Alert.alert('Permission to access location was denied');
       }
       await mapStore.setWalkAdvrts();
-      await mapStore.getAllMapPoints();
+      
+      //await mapStore.getAllMapPoints();
     })();
     
     
   }, []);
+
+  const handleFilterChange = (count: number) => {
+    setModifiedFieldsCount(count);
+  };
 
   const handleAddressChange = (text: string) => {
     mapStore.setAddress(text);
@@ -90,7 +101,7 @@ const MapBoxMap = observer(() => {
 
   const onPinPress = async (advrt: IWalkAdvrtDto) => {
     cameraRef.current?.setCamera({
-      centerCoordinate: [advrt.latitude!, advrt.longitude!],
+      centerCoordinate: [advrt.longitude!, advrt.latitude!],
       animationDuration: 300,
       padding: {
         paddingLeft: 0,
@@ -113,7 +124,7 @@ const MapBoxMap = observer(() => {
 
   const onMapPointPress = async (mapPoint: IMapPoint) => {
     cameraRef.current?.setCamera({
-      centerCoordinate: [mapPoint.longitude!,mapPoint.latitude!],
+      centerCoordinate: [ mapPoint.longitude!, mapPoint.latitude!],
       animationDuration: 300,
       padding: {
         paddingLeft: 0,
@@ -151,9 +162,7 @@ const MapBoxMap = observer(() => {
   }
 
   const handleSheetClose = () => {
-    
     sheetRef.current?.close();
-    
     mapStore.setBottomSheetVisible(false);
     setMarkerCoordinate(null);
     setIsSheetVisible(false);
@@ -168,24 +177,50 @@ const MapBoxMap = observer(() => {
     }
   };
 
+  const handleSearchTextChange = () => {
+   
+  };
+
+  const tagSelected = async (type: string) => {
+    if(type === '0') 
+      await mapStore.setWalkAdvrts();
+    else
+      await mapStore.getMapPointsByType(type);
+
+  }
+
+  const handleOpenFilter = () => {
+    openDrawer(<FilterComponent onFilterChange={handleFilterChange}/>);
+  }
+
+  const handleUserLocationUpdate = (location: Mapbox.Location) => {
+    const { coords } = location;
+    if (coords) {
+      // Сохранение координат пользователя
+      mapStore.currentUserCoordinates = [coords.latitude, coords.longitude];
+      setUserCoordinates([coords.latitude, coords.longitude]);
+      console.log('User coordinates:', coords.latitude, coords.longitude);
+    }
+  };
 
   
   return (
     <Provider>
       <SafeAreaView style={{ flex: 1 }}>
         <MapView ref={mapRef} style={{ flex: 1 }} onLongPress={handleLongPress} styleURL={Mapbox.StyleURL.Light}>
+          <UserLocation minDisplacement={10} ref={userLocationRef} onUpdate={handleUserLocationUpdate} />
           <Camera
             ref={cameraRef}
-            centerCoordinate={[mapStore.region.longitude, mapStore.region.latitude]}
+            centerCoordinate={userCoordinates.reverse()}
             zoomLevel={10}
             animationDuration={1}
           />
-          <UserLocation minDisplacement={10} />
+          
            {mapStore.walkAdvrts.map((advrt, index) => (
             <Mapbox.MarkerView 
               key={`advrt-${advrt.id}`} 
               id={`advrt-${index}`}
-              coordinate={[advrt.latitude!, advrt.longitude!]}
+              coordinate={[advrt.longitude!, advrt.latitude!]}
               anchor={{ x: 0.5, y: 1}}
               onTouchStart={() => onPinPress(advrt)}
               allowOverlap={true}
@@ -207,14 +242,15 @@ const MapBoxMap = observer(() => {
             <Mapbox.MarkerView 
               key={`advrt-${point.id}`} 
               id={`advrt-${index}`}
+              anchor={{ x: 0.5, y: 1}}
               coordinate={[point.longitude!, point.latitude!]}
               onTouchStart={() => {}}
-              allowOverlap={true}
+              allowOverlap={false}
             >  
               <Pressable onPress={() => onMapPointPress(point)}>
                 <View >
-                  <Image className='rounded-full h-9 w-9'
-                    source={{ uri:'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2Fmap%2FpointIcons%2Ftree.png?alt=media&token=2d4f1bb6-0d5a-463d-8bd9-3dae566fdaae' }}
+                  <Image className=' h-[31px] w-6'
+                    source={{ uri:'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2Fmap%2FpointIcons%2Ftree.png?alt=media&token=8db7b0c4-ec94-46dc-b25f-fa00cab60277' }}
                   />
                 </View>
               </Pressable>
@@ -238,6 +274,35 @@ const MapBoxMap = observer(() => {
             </PointAnnotation>
           )}
         </MapView>
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: 10}}>
+          <SearchAndTags
+            selectedTag={selectedTag}
+            setSelectedTag={setSelectedTag}
+            onSearchTextChange={handleSearchTextChange}
+            onTagSelected={tagSelected}
+            onOpenFilter={handleOpenFilter}
+            badgeCount={modifiedFieldsCount}
+            
+          />
+          {/* <Searchbar
+            placeholder="Search"
+            onChangeText={setSelectedTag}
+            value={selectedTag}
+            elevation={1}
+            style={{backgroundColor: 'white'}}
+            inputStyle={{color: 'black', fontFamily: 'NunitoSans_400Regular'}}
+            //className='bg-white h-12 '
+          />
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{marginTop:5}}>
+            <View className='flex-row space-x-2'>
+              <CustomButtonWithIcon iconName='people-outline' iconSet='Ionicons' onPress={()=> setSelectedTag('Прогулка') } text={'Прогулка'} buttonStyle='bg-white'/>
+              <CustomButtonWithIcon iconName='tree-outline' iconSet='MaterialCommunityIcons' onPress={()=>{} } text={'Парк'} buttonStyle='bg-white'/>
+              <CustomButtonWithIcon iconName='basketball-outline' iconSet='Ionicons' onPress={()=>{} } text={'Площадки'} buttonStyle='bg-white'/>
+              <CustomButtonWithIcon iconName='people-outline' onPress={()=>{} } text={'Опасность'} buttonStyle='bg-white'/>
+              <CustomButtonWithIcon iconName='people-outline' onPress={()=>{} } text={'Заметка'} buttonStyle='bg-white'/>
+            </View>
+          </ScrollView> */}
+        </View>
         {/* <View style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: 10,paddingRight:60, flexDirection: 'row' }}>
           <TextInput
             className='bg-white h-12 rounded-xl mt-1 pl-3 w-full border border-gray-400'
@@ -249,7 +314,6 @@ const MapBoxMap = observer(() => {
         </View> */}
        
         {isSheetVisible && (
-          
             <BottomSheetComponent
               ref={sheetRef}
               snapPoints={['60%','100%']}
@@ -259,9 +323,7 @@ const MapBoxMap = observer(() => {
               initialIndex={0} // Начальная позиция - 60%
                // Добавляем обработчик изменения позиции
             />
-      
         )}
-        
         {!isSheetVisible && 
         <Portal>
           <FAB.Group
