@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text } from 'react-native';
-import { Button, Divider } from 'react-native-paper';
+import { Button, Checkbox, Divider } from 'react-native-paper';
 import { Pet } from '@/dtos/classes/pet/Pet';
 import CustomOutlineInputText from '../custom/inputs/CustomOutlineInputText';
 import CustomDropdownList from '../custom/selectors/CustomDropdownList';
@@ -9,9 +9,9 @@ import { observer } from 'mobx-react-lite';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { IPet } from '@/dtos/Interfaces/pet/IPet';
 import StarRating from 'react-native-star-rating-widget';
-import { BREEDS_TAGS, GENDERS_TAGS, PETHEALTHISSUES_TAGS, PETINTERESTS_TAGS, PETTYPES_TAGS } from '@/constants/Strings';
+import { BREEDS_TAGS, DOGGAMES_TAGS, DOGVACCINATIONS_TAGS, GENDERS_TAGS, PETGENDERS_TAGS, PETHEALTHISSUES_TAGS, PETTYPES_TAGS } from '@/constants/Strings';
 import petStore from '@/stores/PetStore';
-import { parseDateString } from '@/utils/utils';
+import { parseStringToDate } from '@/utils/utils';
 
 import { router } from 'expo-router';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
@@ -42,13 +42,23 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
     setTemperament(editablePet.temperament?? 0);
     setActivity(editablePet.activityLevel?? 0);
     const size = editablePet.size?.split('х');
-    setLength(size?.[1] ?? '');
-    setHeight(size?.[0] ?? '');
+    setLength(size?.[0] ?? '');
+    setHeight(size?.[1] ?? '');
     if(pet.id === 'new'){
       setIsNewPet(true);
     }
     
   }, [editablePet]);
+
+  const CheckErrors = () => {
+    if (!editablePet.petName || !birthDate || !editablePet.breed) {
+      // Вывод ошибки, если не все обязательные поля заполнены
+      alert("Пожалуйста, заполните все обязательные поля: Имя, Дата рождения и Порода.");
+      return false;
+    }
+    return true;
+
+  }
 
   const SetPetPhoto = async () => {
     const image = await petStore.setPetImage();
@@ -64,14 +74,10 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
 
   const handleAddPet = async () => {
     // Проверка на обязательные поля
-    if (!editablePet.petName || !birthDate || !editablePet.breed) {
-      // Вывод ошибки, если не все обязательные поля заполнены
-      alert("Пожалуйста, заполните все обязательные поля: Имя, Дата рождения и Порода.");
-      return;
-    }
+    if(!CheckErrors()) return;
   
     // Преобразуем дату рождения
-    editablePet.birthDate = parseDateString(birthDate);
+    editablePet.birthDate = parseStringToDate(birthDate);
   
     try {
       const pet = await petStore.createNewPetProfile(editablePet);
@@ -114,7 +120,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
 
   const handleHeight = (height: string) => {
     setHeight(height);
-    const size = `${height}х${length}`;
+    const size = `${length}х${height}`;
     setEditablePet((pet) => ({ ...pet, size: size }));
   }
 
@@ -151,19 +157,20 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
         
       />
 
-      <CustomDropdownList
+      {/* <CustomDropdownList
         tags={PETTYPES_TAGS}
         label='Тип'
         placeholder="Тип"
         initialSelectedTag={editablePet.animalType || 'Собака'}
         onChange={(text) => handleFieldChange('animalType', text)}
-      />
+      /> */}
 
       <CustomDropdownList
-        tags={GENDERS_TAGS}
+        tags={PETGENDERS_TAGS}
         label="Пол"
         placeholder="Выберите пол"
-        initialSelectedTag={editablePet.gender!}
+        initialSelectedTag={editablePet.gender??  'Мальчик'}
+        
         onChange={(selectedGender) => handleFieldChange('gender', selectedGender)}
       />
 
@@ -174,6 +181,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
         initialSelectedTag={editablePet.breed || ''}
         onChange={(text) => handleFieldChange('breed', text)}
         searchable={true}
+        listMode='MODAL'
       />
 
       <View className='flex-row justify-between space-x-4 w-auto'>
@@ -203,9 +211,9 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
       <View >
         <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Интересы</Text>
         <CustomTagsSelector
-          tags={PETINTERESTS_TAGS}
+          tags={DOGGAMES_TAGS}
           initialSelectedTags={editablePet.petInterests || []}
-          onSelectedTagsChange={(selectedTags) => handleFieldChange('petInterests', selectedTags)}
+          onSelectedTagsChange={(selectedTags) => handleFieldChange('playPreferences', selectedTags)}
           maxSelectableTags={5}
         />
       </View>
@@ -214,13 +222,28 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
       <View>
         <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Здоровье</Text>
         <Text className='pt-2 font-nunitoSansRegular text-gray-400 text-center'>We are working on a health passport for your pet, stay tuned for updates.</Text>
+        <Text className='pt-4 -mb-1 text-base font-nunitoSansRegular'>Особенности здоровья</Text>
         <CustomTagsSelector
           tags={PETHEALTHISSUES_TAGS}
-          initialSelectedTags={editablePet.petInterests || []}
+          initialSelectedTags={editablePet.petHealthIssues || []}
           onSelectedTagsChange={(selectedTags) => handleFieldChange('petHealthIssues', selectedTags)}
           maxSelectableTags={5}
         />
-
+        <Text className='pt-4 -mb-1 text-base font-nunitoSansRegular'>Вакцины</Text>
+        <CustomTagsSelector
+          tags={DOGVACCINATIONS_TAGS}
+          initialSelectedTags={editablePet.vaccinations || []}
+          onSelectedTagsChange={(selectedTags) => handleFieldChange('vaccinations', selectedTags)}
+          maxSelectableTags={5}
+        />
+         <View className="pt-4  flex-row items-center">
+            <Checkbox
+              color='#3F00FF'
+              status={editablePet.neutered ? 'checked' : 'unchecked'}
+              onPress={() => handleFieldChange('neutered', !editablePet.neutered)}
+            />
+            <Text className='text-base font-nunitoSansRegular'>Стирилизован?</Text>
+          </View>
         <Divider className='mt-6' />
       </View>
 
@@ -241,6 +264,15 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
         </View>
         <Divider className='mt-3' />
       </View>
+      {/* <View >
+        <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Игровые предпочтения</Text>
+        <CustomTagsSelector
+          tags={DOGGAMES_TAGS}
+          initialSelectedTags={editablePet.playPreferences || []}
+          onSelectedTagsChange={(selectedTags) => handleFieldChange('playPreferences', selectedTags)}
+          maxSelectableTags={5}
+        />
+      </View> */}
 
       <CustomOutlineInputText
         containerStyles="mt-4"

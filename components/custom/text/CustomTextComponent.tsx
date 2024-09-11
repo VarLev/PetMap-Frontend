@@ -8,7 +8,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface CustomTextComponentProps {
-  text?: string | string[] | null;
+  text?: string | number| string[] | null;
   leftIcon?: string;
   rightIcon?: string;
   onRightIconPress?: () => void;
@@ -50,7 +50,8 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
       <Text
         numberOfLines={maxLines}
         ellipsizeMode="tail"
-        style={{ flex: 1, paddingLeft: 8, fontSize: 16, color: 'black', fontFamily: 'NunitoSans-Regular' }}
+        style={{ flex: 1, paddingLeft: 8, fontSize: 16 }}
+        className='font-nunitoSansRegular'
       >
         {displayText}
       </Text>

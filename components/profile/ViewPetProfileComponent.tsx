@@ -12,7 +12,8 @@ import { observer } from 'mobx-react-lite';
 import { StarRatingDisplay } from 'react-native-star-rating-widget';
 import { router } from 'expo-router';
 import petStore from '@/stores/PetStore';
-import { petUriImage } from '@/constants/Strings';
+import { PETHEALTHISSUES_TAGS, petUriImage } from '@/constants/Strings';
+import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 
 
 const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: () => void,}) => {
@@ -94,6 +95,12 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
             <View >
               <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Здоровье</Text>
               <Text className='pt-2 font-nunitoSansRegular text-gray-400 text-center'>We are working on a health passport for your pet, stay tuned for updates.</Text>
+             
+              <CustomTagsSelector 
+                tags={PETHEALTHISSUES_TAGS} 
+                initialSelectedTags={pet.petHealthIssues || []}
+                
+              />
               <Divider className='mt-3' />
             </View>
             <View className=''>

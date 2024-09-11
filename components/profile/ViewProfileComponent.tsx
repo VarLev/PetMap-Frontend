@@ -8,12 +8,12 @@ import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomTextComponent from '../custom/text/CustomTextComponent';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
-import { calculateDogAge, calculateHumanAge } from '@/utils/utils';
+import { calculateDogAge, calculateHumanAge, getTagsByIndex } from '@/utils/utils';
 import CustomSocialLinkInput from '../custom/text/SocialLinkInputProps';
 import { Pet } from '@/dtos/classes/pet/Pet';
 import { router } from 'expo-router';
 import petStore from '@/stores/PetStore';
-import { petUriImage } from '@/constants/Strings';
+import { INTEREST_TAGS, LANGUAGE_TAGS, petUriImage, PROFESSIONS_TAGS } from '@/constants/Strings';
 
 
 
@@ -122,17 +122,18 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
             <View >
               <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Интересы</Text>
               <CustomTagsSelector 
-                tags={user.interests || []} 
-                initialSelectedTags={[]}
+                tags={INTEREST_TAGS} 
+                initialSelectedTags={user.interests}
                 maxSelectableTags={5}
+                readonlyMode = {true}
               />
               <Divider className='mt-3' />
             </View>
             <View>
               <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Основное</Text>
               <CustomTextComponent text={user.location} leftIcon='location-pin' iconSet='simpleLine' rightIcon='chevron-right' onRightIconPress={onEdit} />
-              <CustomTextComponent text={user.userLanguages} leftIcon='language-outline' iconSet='ionicons' rightIcon='chevron-right' onRightIconPress={onEdit}/>
-              <CustomTextComponent text={user.work} leftIcon='work-outline' rightIcon='chevron-right' onRightIconPress={onEdit} />
+              <CustomTextComponent text={getTagsByIndex(LANGUAGE_TAGS, user.userLanguages)} leftIcon='language-outline' iconSet='ionicons' rightIcon='chevron-right' onRightIconPress={onEdit}/>
+              <CustomTextComponent text={getTagsByIndex(PROFESSIONS_TAGS, user.work!)} leftIcon='work-outline' rightIcon='chevron-right' onRightIconPress={onEdit} />
               <CustomTextComponent text={user.education} leftIcon='school-outline' iconSet='ionicons'  rightIcon='chevron-right'onRightIconPress={onEdit} />
               <Divider className='mt-3' />
             </View>

@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
+import DropDownPicker, { ListModeType } from 'react-native-dropdown-picker';
 
 type MultiTagDropdownProps = {
   tags: string[]; // Коллекция доступных тегов как массив строк
-  initialSelectedTag?: string; // Начальные выбранные теги
+  initialSelectedTag?: string | number; // Начально выбранный тег (по индексу или строке)
   placeholder?: string; // Плейсхолдер для выпадающего списка
-  onChange?: (selectedTag: string | null) => void; // Обработчик изменения выбранных тегов
+  onChange?: (selectedTag: string | number | null) => void; // Обработчик изменения выбранного тега
   searchable?: boolean; // Возможность поиска тегов
   label?: string; // Метка для выпадающего списка
+  listMode?: ListModeType;
+
 };
 
 const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
@@ -17,16 +19,25 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
   placeholder = "Выберите теги",
   onChange,
   searchable = false,
-  label
+  label,
+  listMode = 'FLATLIST'
 }) => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState<string | null>(initialSelectedTag);
-  const [items, setItems] = useState(tags.map(tag => ({ label: tag, value: tag })));
+  const [value, setValue] = useState<string | null>(null);
+  const [items, setItems] = useState(tags.map((tag, index) => ({ label: tag, value: index.toString() })));
+
+  // Определение типа начального тега
+  const isInitialTagNumber = typeof initialSelectedTag === 'number';
 
   // Обновляем value при изменении initialSelectedTag
   useEffect(() => {
-    setValue(initialSelectedTag || null);
-  }, [initialSelectedTag]);
+    console.log(initialSelectedTag);
+    if (isInitialTagNumber) {
+      setValue(initialSelectedTag.toString()); // Сохраняем индекс как строку
+    } else {
+      setValue(tags.indexOf(initialSelectedTag as string) !== -1 ? tags.indexOf(initialSelectedTag as string).toString() : null);
+    }
+  }, [initialSelectedTag, tags, isInitialTagNumber]);
 
   return (
     <View style={{ paddingTop: 16 }}>
@@ -67,8 +78,17 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
         zIndex={3000}
         zIndexInverse={1000}
         onChangeValue={(selectedValue) => {
-          if (onChange) onChange(selectedValue);
+          const selectedIndex = parseInt(selectedValue || '', 10); // Преобразуем обратно в число
+          if (!isNaN(selectedIndex)) {
+             // Возвращаем индекс
+            if (onChange) {
+              console.log(tags[selectedIndex]);
+              onChange(selectedIndex); // Возвращаем строку, если начальный тег был строкой
+            }
+          }
         }}
+        modalAnimationType='slide'
+        listMode={listMode}
       />
     </View>
   );

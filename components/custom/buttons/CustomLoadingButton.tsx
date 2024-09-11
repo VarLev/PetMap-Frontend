@@ -28,7 +28,7 @@ const CustomLoadingButton = ({ title, handlePress, containerStyles, textStyles, 
       onPress={onPressHandler}
       activeOpacity={0.8}
       disabled={isLoading || loading}
-      className={`bg-indigo-800 rounded-full min-h-[50px] justify-center items-center mt-2
+      className={`bg-indigo-800 rounded-full min-h-[40px] justify-center items-center mt-2
       ${containerStyles} ${isLoading || loading ? 'opacity-50':''}`}>
         {loading ? (
           <ActivityIndicator size="small" color="#ffffff" />

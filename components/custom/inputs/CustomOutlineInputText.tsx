@@ -69,12 +69,18 @@ const CustomOutlineInputText = ({
           mode="outlined"
           className={`text-base font-nunitoSansBold rounded-lg bg-white ${containerStyles}`}
           contentStyle={{ fontFamily: 'NunitoSans_400Regular', fontSize: 16, color: '#363636' }}
-          style={{ fontFamily: 'NunitoSans_400Regular', fontSize: 16 }}
+          style={{ fontFamily: 'NunitoSans_400Regular', fontSize: 16}}
           numberOfLines={numberOfLines || 1}
           outlineStyle={{
             borderColor: isFocused ? '#7038c9' : '#bababa', // Цвет границы в зависимости от фокуса
           }}
           keyboardType={keyboardType || 'default'}
+          theme={{ 
+            fonts: {      
+              bodyLarge: { fontFamily: 'NunitoSans_400Regular'  }, 
+            } 
+          }
+        }
         />
       )}
     </>

@@ -56,7 +56,7 @@ export function calculateHumanAge(birthDate?: Date | null): string {
   if (ageYears === 0) {
     return `${ageMonths} m.`;
   } else if (ageMonths > 0) {
-    return `${ageYears} y. ${ageMonths} m.`;
+    return `${ageYears} y.`;
   } else {
     return ageYears.toString();
   }
@@ -67,11 +67,11 @@ export function calculateHumanAge(birthDate?: Date | null): string {
  * @param gender Пол (male, female или другое).
  * @returns Иконка в виде строки.
  */
-export function getGenderIcon(gender: string): string {
-  switch (gender.toLowerCase()) {
-    case 'male':
+export function getGenderIcon(gender: number): string {
+  switch (gender) {
+    case 1:
       return 'male';
-    case 'female':
+    case 0:
       return 'female';
     default:
       return 'paw'; // Универсальная иконка, подходящая для животных
@@ -83,13 +83,13 @@ export function getGenderIcon(gender: string): string {
  * @param gender Пол (male, female, N/A).
  * @returns Строка, содержащая соответствующий гендер на русском языке (Мужской, Женский, N/A).
  */
-export function translateGender(gender: string): string {
-  switch (gender.toLowerCase()) {
-    case 'male':
+export function translateGender(gender: number): string {
+  switch (gender) {
+    case 0:
       return 'Мужской';
-    case 'female':
+    case 1:
       return 'Женский';
-    case 'n/a':
+    case 2:
       return 'N/A';
     default:
       return 'N/A'; // Если значение не распознано, возвращаем 'N/A'
@@ -99,7 +99,7 @@ export function translateGender(gender: string): string {
 export function setUserAvatarDependOnGender(user: IUser): string {
   const randomIndex = Math.floor(Math.random() * avatarsStringF.length);
   if(user.gender){
-    if(user.gender.toLowerCase()==='female'){
+    if(user.gender === 1){
       return avatarsStringF[randomIndex];
     }
     else{
@@ -116,7 +116,7 @@ export function setUserAvatarDependOnGender(user: IUser): string {
  * @param dateString Строка с датой в формате YYYY-MM-DD.
  * @returns Объект Date, представляющий указанную дату, или null, если формат некорректен.
  */
-export function parseDateString(dateString: string): Date | null {
+export function parseStringToDate(dateString: string): Date | null {
   const [year, month, day] = dateString.split('-').map(Number);
   
   // Проверяем, что год, месяц и день являются допустимыми числами
@@ -128,4 +128,24 @@ export function parseDateString(dateString: string): Date | null {
   }
 
   return null; // Возвращаем null, если строка не соответствует формату YYYY-MM-DD
+}
+
+export function parseDateToString(date: Date): string {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Месяц добавляем +1, так как индексация месяцев начинается с 0
+  const day = date.getDate().toString().padStart(2, '0'); // Добавляем ведущий 0 для чисел < 10
+
+  return `${year}-${month}-${day}`;
+}
+
+
+export function getTagsByIndex(tagsArray: string[], indexes: number | number[] | undefined): string | string[] |null {
+  if (Array.isArray(indexes)) {
+    // Если передан массив индексов, возвращаем массив соответствующих значений
+    return indexes.map(index => tagsArray[index]);
+  } else if(indexes !== undefined) {
+    // Если передан один индекс, возвращаем одно значение
+    return tagsArray[indexes];
+  }
+  return null;
 }

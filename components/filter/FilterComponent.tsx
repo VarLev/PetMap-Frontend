@@ -4,7 +4,7 @@ import { Checkbox, Divider } from 'react-native-paper';
 import CustomDropdownList from '../custom/selectors/CustomDropdownList';
 import { observer } from 'mobx-react-lite';
 import StarRating from 'react-native-star-rating-widget';
-import { BREEDS_TAGS, GENDERS_TAGS, INTEREST_TAGS, LANGUAGE_TAGS, PETINTERESTS_TAGS } from '@/constants/Strings';
+import { BREEDS_TAGS, DOGGAMES_TAGS, GENDERS_TAGS, INTEREST_TAGS, LANGUAGE_TAGS,  } from '@/constants/Strings';
 import MultiTagDropdown from '../custom/selectors/MultiTagDropdown';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import { FlatList } from 'react-native';
@@ -129,7 +129,7 @@ const FilterComponent:React.FC<FilterComponentProps> = observer(({ onFilterChang
             initialSelectedTag={filter.gender || ''}
             onChange={(selectedGender) => handleFieldChange('gender', selectedGender)}
           />
-          <MultiTagDropdown tags={LANGUAGE_TAGS} initialSelectedTags={filter.language || []} placeholder="Языки" onChange={(selectedLanguage) => handleFieldChange('language', selectedLanguage)} />
+          {/* <MultiTagDropdown tags={LANGUAGE_TAGS} initialSelectedTags={filter.language || []} placeholder="Языки" onChange={(selectedLanguage) => handleFieldChange('language', selectedLanguage)} /> */}
           <View className="pt-4">
             <Text className="text-sm font-nunitoSansBold text-gray-400">Интересы</Text>
             <CustomTagsSelector
@@ -166,7 +166,7 @@ const FilterComponent:React.FC<FilterComponentProps> = observer(({ onFilterChang
           <View className="pt-4">
             <Text className="text-sm font-nunitoSansBold text-gray-400">Интересы</Text>
             <CustomTagsSelector
-              tags={PETINTERESTS_TAGS}
+              tags={DOGGAMES_TAGS}
               initialSelectedTags={filter.petInterests || []}
               onSelectedTagsChange={(interests) => handleFieldChange('petInterests', interests)}
               maxSelectableTags={5}

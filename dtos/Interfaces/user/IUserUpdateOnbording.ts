@@ -5,8 +5,8 @@ export interface IUserUpdateOnbording {
   id: string;
   name?: string | null;
   birthDate?: Date | null;
-  systemLanguage?: string | null;
+  systemLanguage?: number | null;
   thumbnailUrl?: string | null;
-  userLanguages?: string[] | null;
+  userLanguages?: number[] | null;
   petProfiles?: IPet[] | null;
 }

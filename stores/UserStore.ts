@@ -200,6 +200,23 @@ class UserStore {
     }
   }
 
+  async getCurrentUserFromServer(): Promise<IUser> {
+   
+      const userData = await AsyncStorage.getItem('currentUser');
+      if (userData) {
+        const user = JSON.parse(userData);
+        runInAction(() => {
+          this.currentUser = new User(user);
+        });
+        console.log('Пользователь загружен из AsyncStorage:');
+        return user as IUser;
+      } else {
+        console.log('Пользователь не найден');
+        return null as unknown as IUser;
+      }
+    
+  }
+
   async singInUser(email: string, password: string) {
     this.setLoading(true);
     try {
@@ -400,7 +417,7 @@ class UserStore {
           this.currentUser = new User({ ...this.currentUser, ...user });
         });
         console.log('Пользователь собран');
-        
+        //console.log(this.currentUser);
         await apiClient.put('/users/update', this.currentUser);
         console.log('User data updated');
       }

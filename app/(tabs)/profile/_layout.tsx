@@ -4,7 +4,7 @@ import { Stack } from 'expo-router';
 export default function ProfileLayout() {
   return (
     <>
-    <Stack>
+    <Stack >
       <Stack.Screen 
         name="index" 
         options={{ 
@@ -17,7 +17,11 @@ export default function ProfileLayout() {
       />
       <Stack.Screen 
         name="editUser" 
-        options={{ title: 'Редактирование профиля' }} 
+        options={{ 
+          title: 'Редактирование профиля',
+          headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
+        }} 
+        
       />
       <Stack.Screen 
         name="pet/[petId]/index" 
@@ -33,6 +37,7 @@ export default function ProfileLayout() {
         name="pet/[petId]/edit" 
         options={{ 
           title: 'Редактирование питомца',
+          headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
         }} 
       />
       
