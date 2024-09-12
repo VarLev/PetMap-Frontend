@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Dimensions,
   Image,
   StyleSheet,
   TouchableOpacity,
+
 } from "react-native";
 import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
-
 import { Text } from "react-native-paper";
 
 const { width } = Dimensions.get("window");
@@ -49,28 +49,33 @@ const OnboardingCarousel: React.FC = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Carousel
-        loop
-        width={width}
-        ref={ref}
-        height={height * 0.6} // 480
-        autoPlay={true}
-        data={data}
-        onSnapToItem={handleScroll}
-        scrollAnimationDuration={2500}
-        autoPlayInterval={2500}
-        renderItem={({ item }) => (
-          <View className="items-center h-full flex-col">
-            <Image source={item.image} style={styles.image} />
-            <Text
-              variant="titleSmall"
-              className="pt-3 px-3 text-base text-center font-nunitoSansRegular"
-            >
-              {item.title}
-            </Text>
-          </View>
-        )}
-      />
+      
+        <Carousel
+          loop
+          width={width}
+          ref={ref}
+          height={height * 0.6} // 480
+          autoPlay={true}
+          enabled={false}
+          data={data}
+          onSnapToItem={handleScroll}
+          scrollAnimationDuration={2500}
+          autoPlayInterval={2500}
+          renderItem={({ item }) => (
+           
+            <View className="items-center h-full flex-col">
+              <Image source={item.image} style={styles.image} />
+              <Text
+                variant="titleSmall"
+                className="pt-3 px-3 text-base text-center font-nunitoSansRegular"
+              >
+                {item.title}
+              </Text>
+            </View>
+      
+          )}
+        />
+      
       <View style={styles.paginationContainer}>
         {data.map((_, index) => (
           <TouchableOpacity

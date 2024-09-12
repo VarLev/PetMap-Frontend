@@ -8,6 +8,7 @@ import userStore from "@/stores/UserStore";
 import Icon from "react-native-vector-icons/AntDesign";
 import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton";
 import mapStore from "@/stores/MapStore";
+import ArrowHelp from "@/components/auth/arrowHelp";
 
 
 const SignIn = () => {
@@ -40,15 +41,8 @@ const SignIn = () => {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="w-full justify-between h-full px-9 my-10">
           {/* Блок 1: Стрелка и Помощь */}
-          <View className="flex-row justify-between mx-2">
-            <Icon name="arrowleft" size={30} onPress={handleBack} />
-            <Text
-              onPress={() => console.log("press help")}
-              className="text-lg font-nunitoSansBold"
-            >
-              Помощь
-            </Text>
-          </View>
+         
+          <ArrowHelp />
 
           {/* Блок 2: Вход */}
           <View className=" justify-start mb-40 ">
