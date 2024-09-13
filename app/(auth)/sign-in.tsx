@@ -15,8 +15,16 @@ const SignIn = () => {
   const [email, setEmail] = useState("levromf@gmail.com");
   const [password, setPassword] = useState("123456");
   const [isSecure, setIsSecure] = useState(true);
+  const [isValidEmail, setIsValidEmail] = useState(true);
 
   const handleLogin = async () => {
+    const validEmail = validateEmail(email);
+    setIsValidEmail(validEmail);
+
+    if (!validEmail) {
+      return;
+    }
+
     try {
       await userStore.singInUser(email, password);
       await mapStore.setWalkAdvrts();
@@ -35,17 +43,22 @@ const SignIn = () => {
     router.back(); // Возврат на предыдущий экран
   };
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   return (
     <SafeAreaView className="bg-white h-full">
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="w-full justify-between h-full px-9 my-10">
           {/* Блок 1: Стрелка и Помощь */}
-         
+         <View>
           <ArrowHelp />
 
           {/* Блок 2: Вход */}
-          <View className=" justify-start mb-40 ">
+          <View className=" justify-start mt-10 ">
             <View className="flex-col items-start justify-center">
               <Text
                 variant="titleSmall"
@@ -66,11 +79,15 @@ const SignIn = () => {
               label="Email"
               value={email}
               onChangeText={setEmail}
+              onBlur={() => setIsValidEmail(validateEmail(email))}
               keyboardType="email-address"
               autoCapitalize="none"
               theme={{ roundness: 10 }}
               className="mb-2"
             />
+              {!isValidEmail && (
+              <Text style={{ marginTop: -10 }} className="text-red-500 ml-1 mb-2">Введите корректный email</Text>
+            )}
             <TextInput
               mode="outlined"
               label="Password"
@@ -89,12 +106,13 @@ const SignIn = () => {
 
             <View className="items-center pt-5">
               <Link
-                href="/sign-up"
+                href="/sign-up.mailvalidation"
                 className="pt-4 text-base text-indigo-800 font-nunitoSansBold"
               >
                 Забыли пароль
               </Link>
             </View>
+          </View>
           </View>
 
           {/* Блок 3: Регистрация */}

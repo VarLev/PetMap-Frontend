@@ -8,18 +8,16 @@ import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton
 import ArrowHelp from "@/components/auth/arrowHelp";
 import PasswordPrompt from "@/components/auth/passwordPrompt";
 
-const SignUp = () => {
+const SignUpPasswordReset = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSecure, setIsSecure] = useState(true);
-  const [isChecked, setIsChecked] = useState(false);
 
   const [isActive, setIsActive] = useState(false);
 
   const [isSamePassword, setIsSamePassword] = useState(true);
-  const [checkBoxAlert, setCheckBoxAlert] = useState(true);
-  const [isValidEmail, setIsValidEmail] = useState(true);
+
   const handleRegister = async () => {
     if (password !== confirmPassword) {
       setIsSamePassword(false);
@@ -27,18 +25,6 @@ const SignUp = () => {
     }
     if (password === confirmPassword) {
       setIsSamePassword(true);
-    }
-
-    if (!isChecked) {
-      setCheckBoxAlert(false);
-      // Alert.alert("Error", "You must agree to the data processing policy");
-      return;
-    }
-    const validEmail = validateEmail(email);
-    setIsValidEmail(validEmail);
-
-    if (!validEmail) {
-      return;
     }
 
     try {
@@ -72,51 +58,29 @@ const SignUp = () => {
     setStrength(strengthScore / 4);
   };
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
   return (
     <SafeAreaView className="bg-white h-full">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="w-full justify-between px-9 my-10 flex-1">
+        <View className="w-full  justify-between grow px-9 my-10">
           <View>
             <ArrowHelp />
-            <View className=" justify-start mt-10 ">
-              <View className="flex-col items-start justify-center">
+            <View className=" justify-start mt-10">
+              <View className="flex-col items-start justify-center ">
                 <Text
                   variant="titleSmall"
                   className="text-lg font-nunitoSansBold"
                 >
-                  Станьте частью PetMap!
+                  Сброс пароля
                 </Text>
                 <Text
                   variant="titleSmall"
                   className="mb-4 text-sm font-nunitoSansRegular"
                 >
-                  Введите данные, чтобы создать аккаунт.
+                  Введите новый пароль, чтобы завершить сброс пароля и войти в
+                  ваш аккаунт.
                 </Text>
               </View>
-              <TextInput
-                mode="outlined"
-                label="Email"
-                value={email}
-                onChangeText={setEmail}
-                onBlur={() => setIsValidEmail(validateEmail(email))}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                className="mb-2"
-                theme={{ roundness: 10 }}
-              />
-              {!isValidEmail && (
-                <Text
-                  style={{ marginTop: -10 }}
-                  className="text-red-500 ml-1 mb-2"
-                >
-                  Введите корректный email
-                </Text>
-              )}
+
               <TextInput
                 mode="outlined"
                 label="Password"
@@ -156,32 +120,9 @@ const SignUp = () => {
                   Пароли не совпадают
                 </Text>
               )}
-              <View
-                style={{ marginHorizontal: 20 }}
-                className="flex-row items-center justify-center gap-3 py-1"
-              >
-                <Checkbox
-                  status={isChecked ? "checked" : "unchecked"}
-                  onPress={() => {
-                    setIsChecked(!isChecked);
-                    setCheckBoxAlert(true);
-                  }}
-                  color="#3730a3"
-                />
-                <Text
-                  variant="titleSmall"
-                  className="mb-4 p-2 font-nunitoSansRegular text-xs"
-                >
-                  Я согласен с Политикой обработки данных сервиса
-                </Text>
-              </View>
-              {!checkBoxAlert && (
-                <Text style={{ marginTop: -20 }} className="text-red-500 mb-2">
-                  Согласитесь с политикой обработки данных
-                </Text>
-              )}
+
               <CustomLoadingButton
-                title="Зарегистрироваться"
+                title="Сохранить"
                 handlePress={handleRegister}
                 containerStyles="w-full"
               />
@@ -189,15 +130,15 @@ const SignUp = () => {
           </View>
 
           <View>
-            <View className="justify-center pt-5 flex-row gap-2">
+            <View className="justify-center flex-row gap-2">
               <Text className="text-base text-gray-500 font-nunitoSansRegular">
-                У вас уже есть аккаунт,
+                Ещё нет аккаунта?
               </Text>
               <Link
                 href="/sign-in"
                 className="text-base text-indigo-800 font-nunitoSansBold"
               >
-                Войти!
+                Зарегистрироваться
               </Link>
             </View>
           </View>
@@ -207,4 +148,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignUpPasswordReset;
