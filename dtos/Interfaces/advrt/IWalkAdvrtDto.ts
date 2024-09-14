@@ -1,10 +1,10 @@
-import { IPetWalkAdvrtDto } from "./IPetWalkAdvrtDto";
+import { Pet } from "@/dtos/classes/pet/Pet";
 
 export interface IWalkAdvrtDto {
   id?: string;
   userPhoto?:  string;
   userName?: string;
-  userPets?: IPetWalkAdvrtDto[];
+  userPets?: Pet[];
   petId?: string[];
   address?: string;
 

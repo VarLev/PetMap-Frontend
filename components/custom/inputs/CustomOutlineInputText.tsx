@@ -64,10 +64,12 @@ const CustomOutlineInputText = ({
           value={value !== undefined ? String(value) : ''}
           placeholder={placeholder}
           onChangeText={handleChange}
+          onEndEditing={(d)=> handleTextChange(d.nativeEvent.text)}
+          //onChange={() =>handleChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           mode="outlined"
-          className={`text-base font-nunitoSansBold rounded-lg bg-white ${containerStyles}`}
+          className={`mt-1 text-base font-nunitoSansBold bg-white ${containerStyles}`}
           contentStyle={{ fontFamily: 'NunitoSans_400Regular', fontSize: 16, color: '#363636' }}
           style={{ fontFamily: 'NunitoSans_400Regular', fontSize: 16}}
           numberOfLines={numberOfLines || 1}
@@ -78,7 +80,8 @@ const CustomOutlineInputText = ({
           theme={{ 
             fonts: {      
               bodyLarge: { fontFamily: 'NunitoSans_400Regular'  }, 
-            } 
+            },
+            roundness: 8, 
           }
         }
         />

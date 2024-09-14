@@ -3,9 +3,12 @@ import axios from 'axios';
 import apiClient from '@/hooks/axiosConfig';
 import * as ImagePicker from 'expo-image-picker';
 import * as Crypto from 'expo-crypto';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 import { IPet} from '@/dtos/Interfaces/pet/IPet';
 import { Pet } from "@/dtos/classes/pet/Pet";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "@/firebaseConfig";
 
 
 class PetStore {
@@ -190,6 +193,32 @@ class PetStore {
     if (!result.canceled) {
       return result.assets[0].uri;
     }
+  };
+
+  async uploadUserThumbnailImage(pet: IPet): Promise<string|undefined> {
+    return this.uploadImage(pet.thumbnailUrl!,`pets/${pet.id}/thumbnail`)
+  }
+
+  async uploadImage(image:string, pathToSave:string): Promise<string|undefined> {
+    if (!image) return;
+    const compressedImage = await this.compressImage(image);
+    const response = await fetch(compressedImage);
+    const blob = await response.blob();
+    const storageRef = ref(storage, `${pathToSave}`);
+
+    await uploadBytes(storageRef, blob);
+
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+  };
+
+  async compressImage (uri: string): Promise<string> {
+    const manipResult = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize: { width: 400 } }], // Изменение размера изображения
+      { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    return manipResult.uri;
   };
 }
 

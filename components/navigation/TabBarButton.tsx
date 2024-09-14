@@ -57,7 +57,8 @@ const styles = StyleSheet.create({
     },
     mapIconContainer: {
       width: 50, 
-      height: 50, 
+      height: 50,
+      marginBottom: 3, 
       borderRadius: 25, 
       backgroundColor: '#F5ECFF', // Устанавливаем пурпурный цвет фона
       justifyContent: 'center', 

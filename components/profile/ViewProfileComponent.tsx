@@ -4,7 +4,7 @@ import { Text, Card, Divider, IconButton, Menu, PaperProvider } from 'react-nati
 import { observer } from 'mobx-react-lite';
 import userStore from '@/stores/UserStore';
 import BottomSheetComponent from '../common/BottomSheetComponent';
-import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { FlatList, GestureHandlerRootView, RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomTextComponent from '../custom/text/CustomTextComponent';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
@@ -13,20 +13,37 @@ import CustomSocialLinkInput from '../custom/text/SocialLinkInputProps';
 import { Pet } from '@/dtos/classes/pet/Pet';
 import { router } from 'expo-router';
 import petStore from '@/stores/PetStore';
-import { INTEREST_TAGS, LANGUAGE_TAGS, petUriImage, PROFESSIONS_TAGS } from '@/constants/Strings';
+import { BREEDS_TAGS, INTEREST_TAGS, LANGUAGE_TAGS, PETGENDERS_TAGS, petUriImage, PROFESSIONS_TAGS } from '@/constants/Strings';
+import { User } from '@/dtos/classes/user/UserDTO';
+import { IUser } from '@/dtos/Interfaces/user/IUser';
+import AddCard from '../custom/buttons/AddCard';
+
 
 
 
 const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => void, onPetOpen: (petId:string) => void }) => {
-  const user = userStore.currentUser!;
+  //const user = userStore.currentUser!;
+  const [user, setUser] = useState<IUser>(userStore.currentUser!);
   const sheetRef = useRef<BottomSheet>(null);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     sheetRef.current?.expand();
-    
-
+    loadData();
   }, []);
+
+  const loadData = async () => {
+    await userStore.loadUser();
+    setUser(userStore.currentUser as User);
+    
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadData(); // Обновляем данные
+    setRefreshing(false); // Отключаем индикатор обновления
+  };
 
   const openMenu = () => setMenuVisible(true);
 
@@ -38,37 +55,41 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
     router.push('/profile/pet/new/edit');
 
   }
-
   return (
-    <GestureHandlerRootView className='h-full'>
+    <GestureHandlerRootView className='h-full' >
       <PaperProvider>
-        <View style={{ alignItems: 'center'}}>
-          <StatusBar  backgroundColor="transparent" translucent />
-          <View className="relative w-full aspect-square">
-            <Image source={{ uri: user?.thumbnailUrl! }} className="w-full h-full" />
-            <View style={styles.iconContainer}>
-              <Menu 
-                style={{marginTop: 25}}
-                visible={menuVisible}
-                onDismiss={closeMenu}
-                contentStyle={{ backgroundColor: 'white' }}
-                anchor={
-                  <IconButton
-                    icon="menu"
-                    size={30}
-                    iconColor="black"
-                    style={styles.menuButton}
-                    onPress={openMenu}
-                  />
-                }
-              >
-                <Menu.Item onPress={onEdit} title="Редактировать" rippleColor='black' titleStyle={{color:'balck'}} leadingIcon='pencil-outline'/>
-                <Menu.Item onPress={closeMenu} title="Выйти" titleStyle={{color:'balck'}} leadingIcon='exit-to-app'/>
-                <Menu.Item onPress={closeMenu} title="Удалить аккаунт" titleStyle={{color:'balck'}} leadingIcon='delete-outline'/>
-              </Menu>
+        <ScrollView refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={['#6200ee']} />       
+        }>
+          <View style={{ alignItems: 'center'}}>
+            <StatusBar  backgroundColor="transparent" translucent />
+            <View className="relative w-full aspect-square">
+              <Image source={{ uri: user?.thumbnailUrl! }} className="w-full h-full" />
+              <View style={styles.iconContainer}>
+                <Menu 
+                  style={{marginTop: 25}}
+                  visible={menuVisible}
+                  onDismiss={closeMenu}
+                  contentStyle={{ backgroundColor: 'white' }}
+                  anchor={
+                    <IconButton
+                      icon="menu"
+                      size={30}
+                      iconColor="black"
+                      style={styles.menuButton}
+                      onPress={openMenu}
+                    />
+                  }
+                >
+                  <Menu.Item onPress={onEdit} title="Редактировать" rippleColor='black' titleStyle={{color:'balck', fontFamily:'NunitoSans_400Regular'}} leadingIcon='pencil-outline'/>
+                  <Menu.Item onPress={closeMenu} title="Выйти" titleStyle={{color:'balck', fontFamily:'NunitoSans_400Regular'}} leadingIcon='exit-to-app'/>
+                  <Menu.Item onPress={closeMenu} title="Удалить аккаунт" titleStyle={{color:'balck', fontFamily:'NunitoSans_400Regular'}} leadingIcon='delete-outline'/>
+                </Menu>
+              </View>
             </View>
           </View>
-        </View>
+        </ScrollView>
+        
       </PaperProvider>
       <BottomSheetComponent ref={sheetRef} enablePanDownToClose={false} snapPoints={['60%','100%']} renderContent={function (): React.ReactNode {
         return ( 
@@ -84,32 +105,18 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
             contentContainerStyle={{ paddingHorizontal: 10 }}
             renderItem={({ item }) => (
               <TouchableOpacity style={{ alignItems: 'center' }} onPress={()=> onPetOpen(item.id)}>
-                <Card className="w-40 h-62 p-2 m-2 rounded-2xl shadow bg-purple-100">
+                <Card className="w-48 h-62 p-2 m-2 rounded-2xl shadow bg-purple-100">
                   <Card.Cover source={{ uri: item.thumbnailUrl || petUriImage }} style={{ height: 150, borderRadius: 14 }} />
                   <Text className="font-nunitoSansBold text-lg">
                     {item.petName} {calculateDogAge(item.birthDate)}
                   </Text>
-                  <Text className="font-nunitoSansRegular">{item.breed} {item.weight}</Text>
+                  <Text className="font-nunitoSansRegular">{getTagsByIndex(BREEDS_TAGS, item.breed!)}</Text>
+                  <Text className="font-nunitoSansRegular">{getTagsByIndex(PETGENDERS_TAGS, item.gender!)}, {item.weight}kg</Text>
                 </Card>
               </TouchableOpacity>
             )}
             ListFooterComponent={() => (
-              <Card
-                className="w-full/2 h-52 m-2 p-2 border-dashed rounded-2xl shadow-lg items-center justify-center"
-                style={{ borderWidth: 3, borderColor: '#D9CBFF', width: 200 }}
-              >
-                <TouchableOpacity style={{ alignItems: 'center' }} onPress={handleAddPet}>
-                  <IconButton
-                    icon="plus"
-                    size={30}
-                    iconColor="black"
-                    style={{ backgroundColor: '#F5ECFF', borderRadius: 20 }}
-                  />
-                  <Text style={{ fontSize: 16, fontFamily: 'NunitoSans-Regular', marginTop: 8 }}>
-                    Добавить питомца
-                  </Text>
-                </TouchableOpacity>
-              </Card>
+              <AddCard buttonText='Добавить питомца' onPress={handleAddPet}/>
             )}
           />
           
@@ -123,7 +130,7 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
               <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Интересы</Text>
               <CustomTagsSelector 
                 tags={INTEREST_TAGS} 
-                initialSelectedTags={user.interests}
+                initialSelectedTags={user.interests!}
                 maxSelectableTags={5}
                 readonlyMode = {true}
               />
@@ -132,7 +139,7 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
             <View>
               <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Основное</Text>
               <CustomTextComponent text={user.location} leftIcon='location-pin' iconSet='simpleLine' rightIcon='chevron-right' onRightIconPress={onEdit} />
-              <CustomTextComponent text={getTagsByIndex(LANGUAGE_TAGS, user.userLanguages)} leftIcon='language-outline' iconSet='ionicons' rightIcon='chevron-right' onRightIconPress={onEdit}/>
+              <CustomTextComponent text={getTagsByIndex(LANGUAGE_TAGS, user.userLanguages!)} leftIcon='language-outline' iconSet='ionicons' rightIcon='chevron-right' onRightIconPress={onEdit}/>
               <CustomTextComponent text={getTagsByIndex(PROFESSIONS_TAGS, user.work!)} leftIcon='work-outline' rightIcon='chevron-right' onRightIconPress={onEdit} />
               <CustomTextComponent text={user.education} leftIcon='school-outline' iconSet='ionicons'  rightIcon='chevron-right'onRightIconPress={onEdit} />
               <Divider className='mt-3' />

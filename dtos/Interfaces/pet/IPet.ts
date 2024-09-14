@@ -22,4 +22,6 @@ export interface IPet {
   thumbnailUrl?: string | null;
   petInterests?: number[] | null;
   petHealthIssues?: number[] | null;
+  instagram?: string | null;
+  facebook?: string | null;
 }

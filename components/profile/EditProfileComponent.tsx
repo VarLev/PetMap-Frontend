@@ -78,7 +78,6 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
   useEffect(() => {
     const fetchUser = async () => {
       const thisUser = await userStore.getCurrentUserFromServer();
-      console.log(thisUser);
       setEditableUser(new User({ ...thisUser }));
     };
   
@@ -266,7 +265,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 label='Facebook' 
                 value={editableUser.facebook || ''} 
                 handleChange={(text) => handleChange('facebook', text)}/>
-              </View>
+            </View>
               <CustomLoadingButton title='Сохранит' handlePress={handleSave} />
               {/* <Button mode="contained" onPress={handleSave} className='mt-5 bg-indigo-800'>
                 Сохранить

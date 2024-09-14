@@ -72,7 +72,7 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
           zIndex: 3005,
         }}
         textStyle={{ color: '#454545', fontFamily: 'NunitoSans_400Regular', fontSize: 16 }}
-        style={{ borderColor: '#bfbfbf', backgroundColor: '#ffffff', borderRadius: 5 }}
+        style={{ borderColor: '#bfbfbf', backgroundColor: '#ffffff', borderRadius: 8 }}
         searchable={searchable}
         maxHeight={300}
         zIndex={3000}
