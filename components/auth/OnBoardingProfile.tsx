@@ -365,58 +365,25 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             Профиль питомца будет доступен другим пользователям при отклике на
             прогулку.
           </Text>
-          <View className="flex-row">
-          <CustomDropdownList
-            tags={BREEDS_TAGS}
-            label='Порода'
-            placeholder="Порода"
-            initialSelectedTag={selectedBreed}
-            onChange={(v)=>setSelectedBreed(v as number)}
-            searchable={true}
-            listMode='MODAL'
-          />
-            {/* <SelectDropdown
-              data={BREEDS_TAGS}
-              onSelect={(selectedItem, index) => {
-                setSelectedBreed(selectedItem);
-              }}
-              showsVerticalScrollIndicator={true}
-              renderButton={(selectedItem, isOpened) => (
-                <View style={styles.dropdownButton}>
-                  {selectedItem ? (
-                    <Text className="text-base font-nunitoSansRegular text-center">
-                      {selectedItem}
-                    </Text>
-                  ) : (
-                    <Text className="text-base font-nunitoSansRegular text-center">
-                      Порода
-                    </Text>
-                  )}
-                </View>
-              )}
-              searchPlaceHolder="Поиск..."
-              renderItem={(item, index, isSelected) => (
-                <View
-                  style={[
-                    styles.dropdownItem,
-                    isSelected && { backgroundColor: "#D2D9DF" },
-                  ]}
-                >
-                  <Text className="text-base font-nunitoSansRegular">
-                    {item}
-                  </Text>
-                </View>
-              )}
-              dropdownStyle={styles.dropdown}
-              search={true}
-            /> */}
-            <CustomInputText
+        
+          <CustomInputText
               placeholder="Имя"
               value={petName}
               handleChange={setPetName}
-              containerStyles="mb-2 w-[45%] pl-2"
+              containerStyles="-mb-2"
             />
+          <View className="pb-2">
+            <CustomDropdownList
+              tags={BREEDS_TAGS}
+              label=''
+              placeholder="Порода"
+              initialSelectedTag={selectedBreed}
+              onChange={(v)=>setSelectedBreed(v as number)}
+              searchable={true}
+              listMode='MODAL'
+            /> 
           </View>
+        
           <View className="flex-row items-start ">
             <CustomInputText
               placeholder="Дата рождения"
@@ -478,7 +445,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                 }}
                 style={styles.navigationButton}
               >
-                Пропустить
+                <Text className="font-nunitoSansBold text-indigo-800">Пропустить</Text>
               </Button>
               <View style={styles.indicatorContainer}>
                 {data.map((_, index) => (
@@ -494,7 +461,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                 ))}
               </View>
               <Button onPress={handleNext} style={styles.navigationButton}>
-                {currentIndex === data.length - 1 ? "Завершить" : "Далее"}
+              <Text className="font-nunitoSansBold text-indigo-800">{currentIndex === data.length - 1 ? "Завершить" : "Далее"}</Text>
               </Button>
             </View>
           </View>
@@ -592,7 +559,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   navigationButton: {
-    width: 100,
+    width: 130,
+    
   },
   indicatorContainer: {
     flexDirection: "row",

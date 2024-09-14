@@ -1,13 +1,13 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, SafeAreaView, Alert,Image, Pressable} from 'react-native';
+import { View, SafeAreaView, Alert, Image, Pressable, Text } from 'react-native';
 import Mapbox, { MapView, UserLocation, Camera, PointAnnotation } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
-import { FAB, Portal, Provider  } from 'react-native-paper';
+import {  Icon, Provider  } from 'react-native-paper';
 // eslint-disable-next-line import/no-unresolved
 import { MAPBOX_ACCESS_TOKEN } from '@env';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent'; // Импортируйте новый компонент
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import BottomSheet from '@gorhom/bottom-sheet';
 import AdvtComponent from './AdvtComponent';
 import userStore from '@/stores/UserStore';
@@ -18,11 +18,22 @@ import { router } from 'expo-router';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import Svg, { Path } from 'react-native-svg';
 import { useDrawer } from '@/contexts/DrawerProvider';
-import { IMapPoint } from '@/dtos/Interfaces/map/IMapPoint';
 import MapPointComonent from './MapPointComonent';
 import SearchAndTags from '../custom/inputs/FilterSearchAndTagsComponent';
 import FilterComponent from '../filter/FilterComponent';
-
+import { IPointEntityDTO } from '@/dtos/Interfaces/map/IPointEntityDTO';
+import { MapPointType } from '@/dtos/enum/MapPointType';
+import FabGroupComponent from './FabGroupComponent';
+import EditDangerPoint from './point/EditDangerPoint';
+import { DANGERTYPE_TAGS } from '@/constants/Strings';
+import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
+import { DangerLevel } from '@/dtos/enum/DangerLevel';
+import { DangerType } from '@/dtos/enum/DangerType';
+import { MapPointStatus } from '@/dtos/enum/MapPointStatus';
+import * as Crypto from "expo-crypto";
+import IconSelectorComponent from '../custom/icons/IconSelectorComponent';
+import { BG_COLORS } from '@/constants/Colors';
+import ViewDangerPoint from './point/ViewDangerPoint';
 
 Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
@@ -35,15 +46,16 @@ const MapBoxMap = observer(() => {
   const [fabOpen, setFabOpen] = useState(false);
   const [renderContent, setRenderContent] = useState<ReactNode>(() => null);
   const [markerCoordinate, setMarkerCoordinate] = useState<[number, number] | null>(null);
+  const [markerPointCoordinate, setMarkerPointCoordinate] = useState<[number, number] | null>(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const pointAnnotationCurrentUser = useRef<PointAnnotation>(null);
   const { openDrawer } = useDrawer();
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
   const [selectedTag, setSelectedTag] = useState<string >('');
-  const [userCoordinates, setUserCoordinates] = useState([0, 0]);
+  const [userCoordinates, setUserCoordinates] = useState([0,0]);
   const currentUser = userStore.currentUser;
   const [modifiedFieldsCount, setModifiedFieldsCount] = useState(0);
-  
+  const [currentPointType, setCurrentPointType] = useState(8);
 
   useEffect(() => {
     (async () => {
@@ -53,9 +65,8 @@ const MapBoxMap = observer(() => {
       }
       await mapStore.setWalkAdvrts();
       
-      //await mapStore.getAllMapPoints();
     })();
-    
+    setUserCoordinates([-34.6037,-58.3816]);
     
   }, []);
 
@@ -69,26 +80,49 @@ const MapBoxMap = observer(() => {
   };
 
   const handleLongPress = (event: any) => {
+
     const coordinates = event.geometry.coordinates;
+    
     cameraRef.current?.setCamera({
       centerCoordinate: coordinates,
-      
       animationDuration: 200,
       padding: {
         paddingLeft: 0,
         paddingRight: 0,
         paddingTop: 0,
-        paddingBottom: 500
+        paddingBottom: 350
       }
     })
-    setMarkerCoordinate(coordinates);
-    mapStore.setMarker(coordinates);
-    
-    
-    setRenderContent(() => (
-      <AdvtEditComponent coordinates={coordinates} onAdvrtAddedInvite={handleAdvrtAdded}  />
-    ));
 
+    if(currentPointType === MapPointType.Walk){
+      setMarkerCoordinate(coordinates);
+      mapStore.setMarker(coordinates);
+      setRenderContent(() => (
+        <AdvtEditComponent coordinates={coordinates} onAdvrtAddedInvite={handleAdvrtAdded}  />
+      ));
+    }
+    else if(currentPointType === MapPointType.Danger){ 
+
+      const mapPoint: IPointDangerDTO = {
+        dangerLevel: DangerLevel.Low,
+        dangerType: DangerType.Other,
+        availableHours: 0,
+        id: Crypto.randomUUID(),
+        mapPointType: MapPointType.Danger,
+        status: MapPointStatus.InMap,
+        latitude: coordinates[1],
+        longitude: coordinates[0],
+        createdAt: new Date().toISOString(),
+        photos: [],
+        userId: currentUser?.id ,
+      };
+
+      setMarkerPointCoordinate(coordinates);
+      mapStore.setMarker(coordinates);
+      setRenderContent(() => (
+        <EditDangerPoint mapPoint={mapPoint} onClose={handleSheetClose} />
+      ));
+    }
     if (!isSheetExpanded) {
       setTimeout(() => {
         sheetRef.current?.snapToIndex(0);
@@ -122,7 +156,7 @@ const MapBoxMap = observer(() => {
     }
   };
 
-  const onMapPointPress = async (mapPoint: IMapPoint) => {
+  const onMapPointPress = async (mapPoint: IPointEntityDTO ) => {
     cameraRef.current?.setCamera({
       centerCoordinate: [ mapPoint.longitude!, mapPoint.latitude!],
       animationDuration: 300,
@@ -133,9 +167,20 @@ const MapBoxMap = observer(() => {
         paddingBottom: 400
       }
     })
-    setRenderContent(() => (
-      <MapPointComonent mapPoint={mapPoint} onInvite={handleChatInvite} onClose={handleSheetClose} />
-    ));
+    console.log('mapPoint', mapStore.mapPoints );
+    if(mapPoint.mapPointType === MapPointType.Park){
+      setRenderContent(() => (
+        <MapPointComonent mapPoint={mapPoint} onInvite={handleChatInvite} onClose={handleSheetClose} />
+      ));
+    }
+    else if(mapPoint.mapPointType === MapPointType.Danger){
+      const pointDanger = mapPoint as IPointDangerDTO;
+      console.log('pointDanger', pointDanger);
+      setRenderContent(() => (
+        <ViewDangerPoint mapPoint={pointDanger} />
+      ));
+    }
+   
     if (!isSheetExpanded) {
       setTimeout(() => {
         sheetRef.current?.snapToIndex(0); // Позиция 60% в snapPoints
@@ -181,8 +226,8 @@ const MapBoxMap = observer(() => {
    
   };
 
-  const tagSelected = async (type: string) => {
-    if(type === '0') 
+  const tagSelected = async (type: number) => {
+    if(type === MapPointType.Walk) 
       await mapStore.setWalkAdvrts();
     else
       await mapStore.getMapPointsByType(type);
@@ -208,7 +253,8 @@ const MapBoxMap = observer(() => {
     <Provider>
       <SafeAreaView style={{ flex: 1 }}>
         <MapView ref={mapRef} style={{ flex: 1 }} onLongPress={handleLongPress} styleURL={Mapbox.StyleURL.Light}>
-          <UserLocation minDisplacement={10} ref={userLocationRef} onUpdate={handleUserLocationUpdate} />
+          {/* <UserLocation minDisplacement={10} ref={userLocationRef} onUpdate={handleUserLocationUpdate} /> */}
+          <UserLocation minDisplacement={10} ref={userLocationRef}  />
           <Camera
             ref={cameraRef}
             centerCoordinate={userCoordinates.reverse()}
@@ -247,7 +293,7 @@ const MapBoxMap = observer(() => {
               onTouchStart={() => {}}
               allowOverlap={false}
             >  
-              <Pressable onPress={() => onMapPointPress(point)}>
+              <Pressable onPress={() => onMapPointPress(point as IPointDangerDTO)}>
                 <View >
                   <Image className=' h-[31px] w-6'
                     source={{ uri:'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2Fmap%2FpointIcons%2Ftree.png?alt=media&token=8db7b0c4-ec94-46dc-b25f-fa00cab60277' }}
@@ -273,6 +319,23 @@ const MapBoxMap = observer(() => {
               </View>
             </PointAnnotation>
           )}
+          {markerPointCoordinate && isSheetVisible && (
+            <PointAnnotation
+              ref={pointAnnotationCurrentUser}
+              id='currentUserMarker'
+              coordinate={markerPointCoordinate}
+              anchor={{ x: 0.5, y: 0.5}}
+            >
+              <View className='bg-rose-500 rounded-full h-6 w-6'>
+                <IconSelectorComponent
+                  iconName='alert-octagram-outline'
+                  iconSet='MaterialCommunityIcons'
+                  size={24}
+                  color='white' 
+                /> 
+              </View>
+            </PointAnnotation>
+          )}
         </MapView>
         <View style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: 10}}>
           <SearchAndTags
@@ -282,26 +345,7 @@ const MapBoxMap = observer(() => {
             onTagSelected={tagSelected}
             onOpenFilter={handleOpenFilter}
             badgeCount={modifiedFieldsCount}
-            
-          />
-          {/* <Searchbar
-            placeholder="Search"
-            onChangeText={setSelectedTag}
-            value={selectedTag}
-            elevation={1}
-            style={{backgroundColor: 'white'}}
-            inputStyle={{color: 'black', fontFamily: 'NunitoSans_400Regular'}}
-            //className='bg-white h-12 '
-          />
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{marginTop:5}}>
-            <View className='flex-row space-x-2'>
-              <CustomButtonWithIcon iconName='people-outline' iconSet='Ionicons' onPress={()=> setSelectedTag('Прогулка') } text={'Прогулка'} buttonStyle='bg-white'/>
-              <CustomButtonWithIcon iconName='tree-outline' iconSet='MaterialCommunityIcons' onPress={()=>{} } text={'Парк'} buttonStyle='bg-white'/>
-              <CustomButtonWithIcon iconName='basketball-outline' iconSet='Ionicons' onPress={()=>{} } text={'Площадки'} buttonStyle='bg-white'/>
-              <CustomButtonWithIcon iconName='people-outline' onPress={()=>{} } text={'Опасность'} buttonStyle='bg-white'/>
-              <CustomButtonWithIcon iconName='people-outline' onPress={()=>{} } text={'Заметка'} buttonStyle='bg-white'/>
-            </View>
-          </ScrollView> */}
+          />    
         </View>
         {/* <View style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: 10,paddingRight:60, flexDirection: 'row' }}>
           <TextInput
@@ -311,40 +355,23 @@ const MapBoxMap = observer(() => {
             onChangeText={handleAddressChange}
           />
             <IconButton size={30} icon="filter-variant" onPress={openDrawer} iconColor='#2F00B6'/>
-        </View> */}
+        </View> 
+        */}
        
         {isSheetVisible && (
-            <BottomSheetComponent
-              ref={sheetRef}
-              snapPoints={['60%','100%']}
-              renderContent={() => renderContent}
-              onClose={handleSheetClose} // Обработчик для события закрытия BottomSheet
-              enablePanDownToClose={true}
-              initialIndex={0} // Начальная позиция - 60%
-               // Добавляем обработчик изменения позиции
-            />
+          <BottomSheetComponent
+            ref={sheetRef}
+            snapPoints={['60%','100%']}
+            renderContent={() => renderContent}
+            onClose={handleSheetClose} // Обработчик для события закрытия BottomSheet
+            enablePanDownToClose={true}
+            initialIndex={0} // Начальная позиция - 60%
+              // Добавляем обработчик изменения позиции
+          />
         )}
         {!isSheetVisible && 
-        <Portal>
-          <FAB.Group
-            style={{ paddingBottom: 100 }} 
-            open={fabOpen}
-            visible={true}
-            icon={fabOpen ? 'close' : 'plus'}
-            actions={[
-              { icon: 'walk', label: 'Прогулка', onPress: () => console.log('Pressed Прогулка') },
-              { icon: () => <MaterialCommunityIcons name="map-marker" size={24} color="white" />, label: 'Личная заметка', onPress: () => console.log('Pressed Личная заметка') },
-              { icon: 'note-multiple', label: 'Публичная заметка', onPress: () => console.log('Pressed Публичная заметка') },
-              { icon: 'alert', label: 'Опасность', onPress: () => console.log('Pressed Опасность') },
-            ]}
-            onStateChange={({ open }) => setFabOpen(open)}
-            onPress={() => {
-              if (fabOpen) {
-                // Do something if the FAB is open
-              }
-            }}
-          />
-        </Portal> }  
+          <FabGroupComponent selectedNumber={currentPointType} setSelectedNumber={setCurrentPointType}  />
+        }  
       </SafeAreaView>
     </Provider>
   );

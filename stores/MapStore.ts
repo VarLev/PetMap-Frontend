@@ -7,6 +7,10 @@ import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
 import { IMapPoint } from '@/dtos/Interfaces/map/IMapPoint';
 import apiClient from '@/hooks/axiosConfig';
 import { IWalkAdvrtFilterParams } from '@/dtos/Interfaces/filter/IWalkAdvrtFilterParams';
+import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
+import { IPointEntityDTO } from '@/dtos/Interfaces/map/IPointEntityDTO';
+import { IPointParkDTO } from '@/dtos/Interfaces/map/IPointParkDTO';
+import { MapPointType } from '@/dtos/enum/MapPointType';
 
 class MapStore {
   address = '';
@@ -20,7 +24,7 @@ class MapStore {
   };
   bottomSheetVisible = false;
   walkAdvrts: IWalkAdvrtDto[] = [];
-  mapPoints: IMapPoint[] = [];
+  mapPoints: IPointEntityDTO[] = [];
   currentUserCoordinates: [number, number] = [0,0];
   
   isAvaliableToCreateWalk = true; // Переменная для проверки возможности создания прогулки
@@ -238,30 +242,30 @@ class MapStore {
     this.setSuggestions([]);
   }
 
-  async getAllMapPoints(){
-    try {
-      const response = await apiClient.get('map/point/all/2');
-      runInAction(() => {
-        this.mapPoints = response.data as IMapPoint[];
-      });
-    } catch (error) {
-      console.error('Error fetching map points:', error);
-    }
-  }
-
-  async getMapPointsByType(filter: string){
+  
+  async getMapPointsByType(filter: number){
     try {
       const response = await apiClient.get(`filter/point/all/${filter}`);
       if (response.data.length === 0) {
         console.log('No map points found');
         runInAction(() => {
-          this.mapPoints = response.data as IMapPoint[];
+          this.mapPoints = response.data as IPointEntityDTO[];
         });
       }else{
-        runInAction(() => {
-          this.walkAdvrts = [];
-          this.mapPoints = response.data as IMapPoint[];
-        });
+        if(filter === MapPointType.Danger){
+          runInAction(() => {
+            this.walkAdvrts = [];
+            this.mapPoints = response.data as IPointDangerDTO[];
+            console.log('Danger points', this.mapPoints);
+          });
+        }
+        else if(filter === MapPointType.Park){
+          runInAction(() => {
+            this.walkAdvrts = [];
+            this.mapPoints = response.data as IPointParkDTO[];
+          });
+        }
+        
       }
       
     } catch (error) {
@@ -296,25 +300,55 @@ class MapStore {
       });
     } catch (error) {
       if (axios.isAxiosError(error)) 
-        {
-          // Подробная информация об ошибке Axios
-          console.error('Axios error:', {
-              message: error.message,
-              name: error.name,
-              code: error.code,
-              config: error.config,
-              response: error.response ? {
-                  data: error.response.data.errors,
-                  status: error.response.status,
-                  headers: error.response.headers,
-              } : null
-          });
-        } 
-        else {
-          // Общая информация об ошибке
-          console.error('Error:', error);
-        }
-        throw error;
+      {
+        // Подробная информация об ошибке Axios
+        console.error('Axios error:', {
+            message: error.message,
+            name: error.name,
+            code: error.code,
+            config: error.config,
+            response: error.response ? {
+                data: error.response.data.errors,
+                status: error.response.status,
+                headers: error.response.headers,
+            } : null
+        });
+      } 
+      else {
+        // Общая информация об ошибке
+        console.error('Error:', error);
+      }
+      throw error;
+    }
+  }
+
+  async addPointDanger(point: IPointDangerDTO){
+    try {
+      const response = await apiClient.post('map/add-point-danger', point);
+      runInAction(() => {
+        this.mapPoints.push(response.data as IPointDangerDTO);
+      });
+    } catch (error) {
+      if (axios.isAxiosError(error)) 
+      {
+        // Подробная информация об ошибке Axios
+        console.error('Axios error:', {
+            message: error.message,
+            name: error.name,
+            code: error.code,
+            config: error.config,
+            response: error.response ? {
+                data: error.response.data.errors,
+                status: error.response.status,
+                headers: error.response.headers,
+            } : null
+        });
+      } 
+      else {
+        // Общая информация об ошибке
+        console.error('Error:', error);
+      }
+      throw error;
     }
   }
 }

@@ -1,0 +1,27 @@
+export enum AmenitiesType
+{
+  OffLeashArea = 0,
+  FullyFenced = 1,
+  DogFriendlyTrail = 2,
+  OpenField = 3,
+  SwimmingArea = 4,
+  OnLeashOnly = 5,
+  CampingArea = 6,
+  Wildlife = 7,
+  BigSmallDogSeparation = 8,
+  Obstacles = 9,
+  DoubleGatedEntrance = 10,
+  WaterFountain = 11,
+  FreeEntry = 12,
+  MembersOnly = 13,
+  FreeParkingNearby = 14,
+  WheelchairAccessible = 15,
+  SeatingArea = 16,
+  ShadedArea = 17,
+  PoopBags = 18,
+  DogToysAllowed = 19,
+  LightAtNight = 20,
+  Hose = 21,
+  BreedSpecificLegislation = 22,
+  CollarCuttingSafetyKit = 23
+}

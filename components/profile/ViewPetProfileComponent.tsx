@@ -2,7 +2,7 @@ import { Pet } from '@/dtos/classes/pet/Pet';
 import React, { useEffect, useRef, useState } from 'react';
 import { StatusBar, View,Image, StyleSheet } from 'react-native';
 import { Text, IconButton, PaperProvider, Menu, Divider } from 'react-native-paper';
-import { calculateDogAge } from '@/utils/utils';
+import { calculateDogAge, getTagsByIndex } from '@/utils/utils';
 import BottomSheet from '@gorhom/bottom-sheet';
 import BottomSheetComponent from '../common/BottomSheetComponent';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -12,7 +12,7 @@ import { observer } from 'mobx-react-lite';
 import { StarRatingDisplay } from 'react-native-star-rating-widget';
 import { router } from 'expo-router';
 import petStore from '@/stores/PetStore';
-import { PETHEALTHISSUES_TAGS, petUriImage } from '@/constants/Strings';
+import { BREEDS_TAGS, DOGGAMES_TAGS, DOGVACCINATIONS_TAGS, PETGENDERS_TAGS, PETHEALTHISSUES_TAGS, petUriImage } from '@/constants/Strings';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 
 
@@ -86,20 +86,26 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
             <View >
               <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Основное</Text>
               <CustomTextComponent text="Собака"  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='paw-outline' iconSet='ionicons'/>
-              <CustomTextComponent text={pet.gender}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='transgender-outline' iconSet='ionicons'/>
-              <CustomTextComponent text={pet.breed}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='dog' iconSet='materialCommunity'/>
+              <CustomTextComponent text={getTagsByIndex(PETGENDERS_TAGS, pet.gender!)}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='transgender-outline' iconSet='ionicons'/>
+              <CustomTextComponent text={getTagsByIndex(BREEDS_TAGS, pet.breed!)}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='dog' iconSet='materialCommunity'/>
               <CustomTextComponent text={pet?.birthDate?.toLocaleDateString()}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='cake-variant-outline' iconSet='materialCommunity'/>
-              <CustomTextComponent text={`${pet.weight} kg, ${pet.size} sm`}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='resize-outline' iconSet='ionicons'/>
+              <CustomTextComponent text={`${pet.weight|| ''} kg, ${pet.size} sm`}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='resize-outline' iconSet='ionicons'/>
               <Divider />
             </View>
             <View >
               <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Здоровье</Text>
               <Text className='pt-2 font-nunitoSansRegular text-gray-400 text-center'>We are working on a health passport for your pet, stay tuned for updates.</Text>
-             
+              <Text className='pt-4 -mb-1 text-sm font-nunitoSansBold text-indigo-700'>Особенности здоровья</Text>
               <CustomTagsSelector 
                 tags={PETHEALTHISSUES_TAGS} 
                 initialSelectedTags={pet.petHealthIssues || []}
-                
+                readonlyMode
+              />
+              <Text className='pt-4 -mb-1 text-sm font-nunitoSansBold text-indigo-700'>Вакцины</Text>
+              <CustomTagsSelector 
+                tags={DOGVACCINATIONS_TAGS} 
+                initialSelectedTags={pet.vaccinations || []}
+                readonlyMode
               />
               <Divider className='mt-3' />
             </View>
@@ -121,10 +127,28 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
               
               <Divider className='mt-3' />
             </View>
+            <View className=''>
+              <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Игровые предпочтения</Text>
+              <CustomTagsSelector 
+                tags={DOGGAMES_TAGS} 
+                initialSelectedTags={pet.playPreferences || []}
+                readonlyMode
+              />
+            
+              
+              <Divider className='mt-3' />
+            </View>
+            <View className=''>
+              <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>О питомце</Text>
+              <CustomTextComponent text={pet.additionalNotes}  rightIcon='chevron-right' onRightIconPress={onEdit}/>
+            
+              
+              <Divider className='mt-3' />
+            </View>
             <View>
               <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Социальные сети</Text>
-              <CustomSocialLinkInput text="" leftIcon='instagram' iconSet='fontAwesome' rightIcon='chevron-right' onRightIconPress={onEdit} platform={'instagram'}/>
-              <CustomSocialLinkInput text="" leftIcon='facebook' iconSet='fontAwesome' rightIcon='chevron-right' onRightIconPress={onEdit} platform={'facebook'} />
+              <CustomSocialLinkInput text={pet.instagram!} leftIcon='instagram' iconSet='fontAwesome' rightIcon='chevron-right' onRightIconPress={onEdit} platform={'instagram'}/>
+              <CustomSocialLinkInput text={pet.facebook!} leftIcon='facebook' iconSet='fontAwesome' rightIcon='chevron-right' onRightIconPress={onEdit} platform={'facebook'} />
               <Divider className='mt-3' />
             </View>
           </View>

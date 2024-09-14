@@ -10,7 +10,7 @@ import SidebarUserProfileComponent from './SidebarUserProfileComponent';
 
 const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   const primaryColor = Colors.light.primTextButtHigh;
-  const greyColor = Colors.light.primTextButtDefault;
+  //const greyColor = Colors.light.primTextButtDefault;
   const { openDrawer } = useDrawer();
   const [isVisible, setIsVisible] = useState(true);
 

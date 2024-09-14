@@ -3,13 +3,14 @@ import { View, ScrollView } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import CustomButtonWithIcon from '../buttons/CustomButtonWithIcon';
 import CustomBudgeButton from '../buttons/CustomBudgeButton';
+import { MapPointType } from '@/dtos/enum/MapPointType';
  // Предполагаем, что кастомная кнопка находится в этом файле
 
 interface SearchAndTagsProps {
   selectedTag: string;
   setSelectedTag: (tag: string) => void;
   onSearchTextChange: (text: string) => void;
-  onTagSelected: (tag: string) => void;
+  onTagSelected: (tag: number) => void;
   onOpenFilter: () => void;
   badgeCount: number;
 }
@@ -28,7 +29,7 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
   const handleSelectTag = (name: string, type: number = 0) => {
     setSelectedTag(name);
     setIsTagSelected(true);
-    onTagSelected(type.toString());
+    onTagSelected(type);
   }
 
   const handleClearTag = () => {
@@ -59,14 +60,14 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
             <CustomButtonWithIcon
               iconName='people-outline'
               iconSet='Ionicons'
-              onPress={() => handleSelectTag('Прогулка')}
+              onPress={() => handleSelectTag('Прогулка', MapPointType.Walk)}
               text={'Прогулка'}
               buttonStyle='bg-white'
             />
             <CustomButtonWithIcon
               iconName='tree-outline'
               iconSet='MaterialCommunityIcons'
-              onPress={() => handleSelectTag('Парк', 2)}
+              onPress={() => handleSelectTag('Парк', MapPointType.Park)}
               text={'Парк'}
               buttonStyle='bg-white'
             />
@@ -79,13 +80,13 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
             />
             <CustomButtonWithIcon
               iconName='people-outline'
-              onPress={() => handleSelectTag('Опасность', 1)}
+              onPress={() => handleSelectTag('Опасность', MapPointType.Danger)}
               text={'Опасность'}
               buttonStyle='bg-white'
             />
             <CustomButtonWithIcon
               iconName='people-outline'
-              onPress={() => handleSelectTag('Заметка', 7)}
+              onPress={() => handleSelectTag('Заметка', MapPointType.Note)}
               text={'Заметка'}
               buttonStyle='bg-white'
             />

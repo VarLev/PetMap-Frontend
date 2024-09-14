@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, BackHandler, Alert } from 'react-native';
 import { Button, Checkbox, Divider } from 'react-native-paper';
 import { Pet } from '@/dtos/classes/pet/Pet';
 import CustomOutlineInputText from '../custom/inputs/CustomOutlineInputText';
@@ -9,41 +9,67 @@ import { observer } from 'mobx-react-lite';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { IPet } from '@/dtos/Interfaces/pet/IPet';
 import StarRating from 'react-native-star-rating-widget';
-import { BREEDS_TAGS, DOGGAMES_TAGS, DOGVACCINATIONS_TAGS, GENDERS_TAGS, PETGENDERS_TAGS, PETHEALTHISSUES_TAGS, PETTYPES_TAGS } from '@/constants/Strings';
+import { BREEDS_TAGS, DOGGAMES_TAGS, DOGVACCINATIONS_TAGS, PETGENDERS_TAGS, PETHEALTHISSUES_TAGS } from '@/constants/Strings';
 import petStore from '@/stores/PetStore';
-import { parseStringToDate } from '@/utils/utils';
-
+import { parseDateToString, parseStringToDate } from '@/utils/utils';
 import { router } from 'expo-router';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
+import CustomLoadingButton from '../custom/buttons/CustomLoadingButton';
 
 
 const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet, onSave: (updatedPet: Pet) => void, onCancel: () => void }) => {
   const [editablePet, setEditablePet] = useState<Pet>(new Pet({ ...pet }));
   const [petPhoto, setPetPhoto] = useState(editablePet.thumbnailUrl);
-  const [birthDate, setBirthDate] = useState('');
+  const [birthDate, setBirthDate] = useState(parseDateToString(editablePet.birthDate || new Date()));
 
   const [temperament, setTemperament] = useState(0);
   const [friendly, setFriendly] = useState(0);
   const [activity, setActivity] = useState(0);
-  const [length, setLength] = useState('');
-  const [height, setHeight] = useState('');
+  const [length, setLength] = useState(editablePet.size?.split('х')[0] ?? '');
+  const [height, setHeight] = useState(editablePet.size?.split('х')[1] ?? '');
   const [isNewPet, setIsNewPet] = useState(false);
+
+  useEffect(() => {
+    
+    // Функция, которая срабатывает при нажатии кнопки "назад"
+    const backAction = () => {
+      Alert.alert("Подтверждение", "Вы уверены, что хотите выйти?", [
+        {
+          text: "Отмена",
+          onPress: () => null, // Ничего не делать, просто закрыть диалог
+          style: "cancel"
+        },
+        { 
+          text: "Да", 
+          onPress: () => router.back() // Выйти из приложения
+        }
+      ]);
+      return true; // Возвращаем true, чтобы предотвратить стандартное поведение (закрытие экрана)
+    };
+
+    // Подписываемся на событие нажатия кнопки "назад"
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    // Возвращаем функцию для очистки эффекта (отписка от события)
+    return () => backHandler.remove();
+  }, []);
 
   const handleFieldChange = (field: keyof Pet, value: any) => {
     setEditablePet((prevPet) => {
       const updatedPet = { ...prevPet, [field]: value };  
       return updatedPet;
     });
-};
+  };
 
     // Debugging useEffect to see the changes in editablePet
   useEffect(() => {
     setFriendly(editablePet.friendliness?? 0);
     setTemperament(editablePet.temperament?? 0);
     setActivity(editablePet.activityLevel?? 0);
-    const size = editablePet.size?.split('х');
-    setLength(size?.[0] ?? '');
-    setHeight(size?.[1] ?? '');
+    console.log('EditablePet:', editablePet);
     if(pet.id === 'new'){
       setIsNewPet(true);
     }
@@ -56,8 +82,16 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
       alert("Пожалуйста, заполните все обязательные поля: Имя, Дата рождения и Порода.");
       return false;
     }
+    else
+    {
+      // Проверка корректности введенной даты
+      const date = parseStringToDate(birthDate);
+      if (!date) {
+        alert("Некорректная дата рождения. Пожалуйста, введите дату в формате YYYY-MM-DD.");
+        return false;
+      }
+    }
     return true;
-
   }
 
   const SetPetPhoto = async () => {
@@ -69,6 +103,16 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
   };
 
   const handleSave = async () => {
+    if(!CheckErrors()) return;
+    const resp = await petStore.uploadUserThumbnailImage(editablePet);
+    editablePet.thumbnailUrl = resp;
+    editablePet.birthDate = parseStringToDate(birthDate);
+    try {
+      await petStore.updatePetProfile(editablePet);
+    } catch (error) {
+      console.error('Ошибка при создании профиля питомца:', error);
+      alert("Произошла ошибка при добавлении питомца. Пожалуйста, попробуйте снова.");
+    }
     onSave(editablePet);
   };
 
@@ -77,8 +121,10 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
     if(!CheckErrors()) return;
   
     // Преобразуем дату рождения
+    
+    const resp = await petStore.uploadUserThumbnailImage(editablePet);
+    editablePet.thumbnailUrl = resp;
     editablePet.birthDate = parseStringToDate(birthDate);
-  
     try {
       const pet = await petStore.createNewPetProfile(editablePet);
       if (pet) {
@@ -197,6 +243,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
           label="Высота"
           value={height || ''}
           handleChange={handleHeight}
+          
         />
 
         <CustomOutlineInputText
@@ -212,7 +259,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
         <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Интересы</Text>
         <CustomTagsSelector
           tags={DOGGAMES_TAGS}
-          initialSelectedTags={editablePet.petInterests || []}
+          initialSelectedTags={editablePet.playPreferences || []}
           onSelectedTagsChange={(selectedTags) => handleFieldChange('playPreferences', selectedTags)}
           maxSelectableTags={5}
         />
@@ -282,14 +329,25 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
         numberOfLines={4}
       />
 
+      <View className="p-2">
+        <Text className="text-lg font-nunitoSansBold text-indigo-800">Социальные сети</Text>
+        <CustomOutlineInputText 
+          containerStyles='mt-4' 
+          label='Instagram' 
+          value={editablePet.instagram || ''} 
+          handleChange={(text) => handleFieldChange('instagram', text)} 
+        />
+        <CustomOutlineInputText 
+          containerStyles='mt-4' 
+          label='Facebook' 
+          value={editablePet.facebook || ''} 
+          handleChange={(text) => handleFieldChange('facebook', text)}/>
+      </View>
+
       {isNewPet ?  (
-        <Button mode="contained" onPress={handleAddPet} className='mt-5 bg-indigo-800'>
-          Добавить
-        </Button>
+        <CustomLoadingButton title='Добавить' handlePress={handleAddPet} />
         ):(
-        <Button mode="contained" onPress={handleSave} className='mt-5 bg-indigo-800'>
-          Сохранить
-        </Button>
+        <CustomLoadingButton title='Сохранит' handlePress={handleSave} />
       )} 
       <Button mode="outlined" onPress={onCancel} className="mt-4">
         Отмена

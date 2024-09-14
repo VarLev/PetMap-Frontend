@@ -32,7 +32,6 @@ const EditPetProfile = observer(() => {
 
   const handleSave = async (updatedPet: Pet) => {
     try {
-      await petStore.updatePetProfile(updatedPet);
       console.log('Profile updated successfully');
 
       // Возвращаемся на предыдущий экран с обновлением

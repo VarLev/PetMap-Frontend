@@ -1,38 +1,44 @@
 import React from 'react';
 import { View, Text, ScrollView, Linking, Alert } from 'react-native';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
-import CustomTextComponent from '../custom/text/CustomTextComponent';
-import { IMapPoint } from '@/dtos/Interfaces/map/IMapPoint';
 import { Button } from 'react-native-paper';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 
-interface MapPointProps {
-  onInvite: (uid:IUser) => void;
+// Обобщенный интерфейс для типа mapPoint, где T - тип, наследующий родительский интерфейс
+interface MapPointProps<T> {
+  onInvite: (uid: IUser) => void;
   onClose: () => void;
-  mapPoint: IMapPoint
+  mapPoint: T; // Обобщенный тип для точки
 }
 
-const MapPointComonent: React.FC<MapPointProps> = React.memo(({mapPoint, onInvite, onClose}) => {
+// Указываем, что компонент принимает любой тип, унаследованный от базовой точки
+const MapPointComonent = <T extends { id: string; latitude: number; longitude: number; createdAt: string }>({
+  mapPoint,
+  onInvite,
+  onClose,
+}: MapPointProps<T>) => {
 
   const handleInvite = () => {
-    
+    // Логика для приглашения пользователя
   };
 
   const handleDelete = () => {
     onClose();
-  }
+  };
 
   const handleUserProfileOpen = () => {
-    
-  }
+    // Логика для открытия профиля пользователя
+  };
 
-  const handlePetProfileOpen = (petId:string) => {
-    
-  }
+  const handlePetProfileOpen = (petId: string) => {
+    // Логика для открытия профиля питомца
+  };
 
   const handleOpenMap = () => {
-    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapPoint?.address || 'Unknown Location')}`;
-    
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      mapPoint?.latitude + ',' + mapPoint?.longitude || 'Unknown Location'
+    )}`;
+
     // Проверка, может ли устройство открыть URL
     Linking.canOpenURL(mapUrl)
       .then((supported) => {
@@ -50,28 +56,36 @@ const MapPointComonent: React.FC<MapPointProps> = React.memo(({mapPoint, onInvit
       <View className="h-full bg-white px-4">
         <View className="flex-row">
           <View className="flex-col ml-4 justify-between">
-          <Text className="text-2xl font-nunitoSansBold">{mapPoint?.name|| 'Owner'}</Text>
-          <Text className="text-sm font-nunitoSansRegular">{mapPoint?.description|| 'Owner'}</Text> 
-            
+            {/* Используем name и description только если они есть */}
+            {('name' in mapPoint) && (
+              <Text className="text-2xl font-nunitoSansBold">
+                {(mapPoint as any).name || 'Point Name'}
+              </Text>
+            )}
+            {('description' in mapPoint) && (
+              <Text className="text-sm font-nunitoSansRegular">
+                {(mapPoint as any).description || 'No Description'}
+              </Text>
+            )}
           </View>
-
         </View>
-        <Button mode="contained" onPress={handleOpenMap} className='mt-5 bg-indigo-800'>
+        <Button mode="contained" onPress={handleOpenMap} className="mt-5 bg-indigo-800">
           <Text className="text-white text-center">Открыть в Google Maps</Text>
         </Button>
-        <View >
-          <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Удобства</Text>
-          <CustomTagsSelector 
-            tags={mapPoint.amenities || []} 
-            initialSelectedTags={[]}
-            maxSelectableTags={5}
-          />
-        </View>
+        {/* Проверяем наличие удобств (amenities) перед отображением */}
+        {'amenities' in mapPoint && (
+          <View>
+            <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Удобства</Text>
+            <CustomTagsSelector
+              tags={(mapPoint as any).amenities || []}
+              initialSelectedTags={[]}
+              maxSelectableTags={5}
+            />
+          </View>
+        )}
       </View>
     </ScrollView>
   );
-});
+};
 
-MapPointComonent.displayName = "MapPointComonent";
-
-export default MapPointComonent;
+export default React.memo(MapPointComonent);
