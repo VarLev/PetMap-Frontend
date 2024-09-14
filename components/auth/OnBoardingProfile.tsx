@@ -31,8 +31,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import AvatarSelector from "../common/AvatarSelector";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { avatarsStringF, avatarsStringM } from "@/constants/Avatars";
-import { BREEDS_TAGS, PETGENDERS_TAGS } from "@/constants/Strings";
-import { getTagsByIndex } from "@/utils/utils";
+import { BREEDS_TAGS } from "@/constants/Strings";
 import CustomDropdownList from "../custom/selectors/CustomDropdownList";
 
 const { width, height } = Dimensions.get("window");

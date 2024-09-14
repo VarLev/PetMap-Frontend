@@ -9,6 +9,8 @@ import CustomTextComponent from '@/components/custom/text/CustomTextComponent';
 import { getTagsByIndex } from '@/utils/utils';
 import CustomButtonPrimary from '@/components/custom/buttons/CustomButtonPrimary';
 import { Divider } from 'react-native-paper';
+import ImageView from "react-native-image-viewing";
+import ImageModalViewer from '@/components/common/ImageModalViewer';
 
 interface CompositeFormProps {
   mapPoint: IPointDangerDTO;
@@ -38,16 +40,17 @@ const ViewDangerPoint: React.FC<CompositeFormProps> = ({mapPoint }) => {
       <Text className='text-xl font-nunitoSansBold'>Опасность</Text>
       <View className='flex-col'>
         {mapPoint.thumbnailUrl ? (
-          <Image source={{ uri: mapPoint.thumbnailUrl }} className='w-80 h-40 rounded-2xl' />
+          // <Image source={{ uri: mapPoint.thumbnailUrl }} className='w-80 h-40 rounded-2xl' />
+          <ImageModalViewer images={[{ uri: mapPoint.thumbnailUrl }]} imageHeight={150} imageWidth={320}/>
         ) : null}
-        <Divider className='mt-4 bg-slate-400'/>
-        <Text className="pt-4 text-lg font-nunitoSansBold text-indigo-700">Тип опасности</Text>
+        <Divider className='mt-2 bg-slate-400'/>
+        <Text className="pt-2 text-lg font-nunitoSansBold text-indigo-700">Тип опасности</Text>
         <Text className="text-base font-nunitoSansRegular">
           {getTagsByIndex(DANGERTYPE_TAGS, mapPoint.dangerType)} 
         </Text>
-        <Divider className='mt-4 bg-slate-400'/>
-        <Text className="mt-4 text-lg font-nunitoSansBold text-indigo-700">Описание</Text>
-        <Text className="pt-4 text-base font-nunitoSansRegular">
+        <Divider className='mt-2 bg-slate-400'/>
+        <Text className="mt-2 text-lg font-nunitoSansBold text-indigo-700">Описание</Text>
+        <Text className="pb-2 text-base font-nunitoSansRegular">
           {mapPoint.description}
         </Text>
         <CustomButtonPrimary title='Открыть в Google Maps' handlePress={handleOpenMap}/>

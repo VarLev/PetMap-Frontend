@@ -11,6 +11,8 @@ import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
 import { IPointEntityDTO } from '@/dtos/Interfaces/map/IPointEntityDTO';
 import { IPointParkDTO } from '@/dtos/Interfaces/map/IPointParkDTO';
 import { MapPointType } from '@/dtos/enum/MapPointType';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { storage } from '@/firebaseConfig';
 
 class MapStore {
   address = '';
@@ -351,6 +353,26 @@ class MapStore {
       throw error;
     }
   }
+
+  async uploaPiontThumbnailImage(point: IPointEntityDTO, pointType: MapPointType): Promise<string|undefined> {
+    if(pointType === MapPointType.Danger){
+      if(!(point as IPointDangerDTO).thumbnailUrl) return;
+      return this.uploadImage((point as IPointDangerDTO).thumbnailUrl!,`points/dangers/${point.id}/thumbnail`)
+    }
+  }
+
+  async uploadImage(image:string, pathToSave:string): Promise<string|undefined> {
+    if (!image) return;
+   
+    const response = await fetch(image);
+    const blob = await response.blob();
+    const storageRef = ref(storage, `${pathToSave}`);
+
+    await uploadBytes(storageRef, blob);
+
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+  };
 }
 
 const mapStore = new MapStore();
