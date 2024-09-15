@@ -63,7 +63,7 @@ const SignUp = () => {
 
   const [strength, setStrength] = useState(0);
 
-  const calculatePasswordStrength = (password) => {
+  const calculatePasswordStrength = (password: string) => {
     let strengthScore = 0;
     if (password.length >= 8) strengthScore += 1;
     if (/[A-Z]/.test(password)) strengthScore += 1;
@@ -72,7 +72,7 @@ const SignUp = () => {
     setStrength(strengthScore / 4);
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
@@ -156,10 +156,7 @@ const SignUp = () => {
                   Пароли не совпадают
                 </Text>
               )}
-              <View
-                style={{ marginHorizontal: 20 }}
-                className="flex-row items-center justify-center gap-3 py-1"
-              >
+              <View className="flex-row items-center justify-start gap-3 py-1 px-1.5">
                 <Checkbox
                   status={isChecked ? "checked" : "unchecked"}
                   onPress={() => {

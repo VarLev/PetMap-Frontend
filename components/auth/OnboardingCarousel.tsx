@@ -56,7 +56,7 @@ const OnboardingCarousel: React.FC = () => {
           ref={ref}
           height={height * 0.6} // 480
           autoPlay={true}
-          enabled={false}
+          enabled={true}
           data={data}
           onSnapToItem={handleScroll}
           scrollAnimationDuration={2500}
@@ -81,13 +81,13 @@ const OnboardingCarousel: React.FC = () => {
           <TouchableOpacity
             key={index}
             style={[styles.dot, currentIndex === index && styles.activeDot]}
-            onPress={() => {
-              ref.current?.scrollTo({
-                count: index - currentIndex,
-                animated: true,
-              });
-              setCurrentIndex(index);
-            }}
+            // onPress={() => {
+            //   ref.current?.scrollTo({
+            //     count: index - currentIndex,
+            //     animated: true,
+            //   });
+            //   setCurrentIndex(index);
+            // }}
           />
         ))}
       </View>

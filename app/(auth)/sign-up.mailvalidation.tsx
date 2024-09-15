@@ -48,7 +48,7 @@ const SignUpMailValidation = () => {
 
 
   
-  const validateEmail = (email) => {
+  const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
@@ -58,9 +58,12 @@ const SignUpMailValidation = () => {
   return (
     <SafeAreaView className="bg-white h-full">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="w-full justify-between h-full px-9 my-10">
+        <View className="w-full justify-between flex-1 px-9 my-10">
+          <View>
+
+          
           <ArrowHelp />
-          <View className=" justify-start mb-80 ">
+          <View className=" justify-start mt-10 ">
             <View className="flex-col items-start justify-center">
               <Text
                 variant="titleSmall"
@@ -98,17 +101,18 @@ const SignUpMailValidation = () => {
           </View>
           <Link
                 href="/sign-up.passwordreset"
-                className="text-base absolute top-1/2 left-1/3 transform -translate-x-1/2 -translate-y-1/3"
+                className="text-base mt-20"
               >
-                переход на сброс пароля (временная)
+                ссылка на экран  сброс пароля (временная) эмитация нажания кнопки Подтвердить
               </Link>
-          <View className="pb-20">
+              </View>
+          <View>
             <View className="justify-center pt-5 flex-row gap-2">
               <Text className="text-base text-gray-500 font-nunitoSansRegular">
               Ещё нет аккаунта?
               </Text>
               <Link
-                href="/sign-in"
+                href="/sign-up"
                 className="text-base text-indigo-800 font-nunitoSansBold"
               >
                Зарегистрироваться
