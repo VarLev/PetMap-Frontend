@@ -48,7 +48,7 @@ const EditDangerPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) =>
         const thumb = await mapStore.uploaPiontThumbnailImage(editablePoint, MapPointType.Danger);
         editablePoint.thumbnailUrl = thumb;
         
-        await mapStore.addPointDanger(editablePoint);
+        await mapStore.addPoint(editablePoint);
         await mapStore.getMapPointsByType(MapPointType.Danger);
         
         onClose();

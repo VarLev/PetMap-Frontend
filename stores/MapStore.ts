@@ -13,6 +13,7 @@ import { IPointParkDTO } from '@/dtos/Interfaces/map/IPointParkDTO';
 import { MapPointType } from '@/dtos/enum/MapPointType';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from '@/firebaseConfig';
+import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
 
 class MapStore {
   address = '';
@@ -324,12 +325,24 @@ class MapStore {
     }
   }
 
-  async addPointDanger(point: IPointDangerDTO){
+  async addPoint(point: IPointEntityDTO){
     try {
-      const response = await apiClient.post('map/add-point-danger', point);
-      runInAction(() => {
-        this.mapPoints.push(response.data as IPointDangerDTO);
-      });
+      if(point.mapPointType === MapPointType.Danger){
+        const response = await apiClient.post('map/add-point-danger', point);
+        runInAction(() => {
+          this.mapPoints.push(response.data as IPointDangerDTO);
+        });
+      }
+      else if(point.mapPointType === MapPointType.UsersCustomPoint){
+        const response = await apiClient.post('map/add-point-user', point);
+        if(response.data){
+          runInAction(() => {
+            this.mapPoints.push(response.data as IPointUserDTO);
+          });
+        }
+       
+      }
+      
     } catch (error) {
       if (axios.isAxiosError(error)) 
       {
@@ -358,6 +371,13 @@ class MapStore {
     if(pointType === MapPointType.Danger){
       if(!(point as IPointDangerDTO).thumbnailUrl) return;
       return this.uploadImage((point as IPointDangerDTO).thumbnailUrl!,`points/dangers/${point.id}/thumbnail`)
+    }
+    else if(pointType === MapPointType.Park){
+      
+    }
+    else if(pointType === MapPointType.UsersCustomPoint){
+      if(!(point as IPointUserDTO).thumbnailUrl) return;
+      return this.uploadImage((point as IPointUserDTO).thumbnailUrl!,`points/users/${point.id}/thumbnail`)
     }
   }
 

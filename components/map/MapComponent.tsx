@@ -34,6 +34,8 @@ import * as Crypto from "expo-crypto";
 import IconSelectorComponent from '../custom/icons/IconSelectorComponent';
 import { BG_COLORS } from '@/constants/Colors';
 import ViewDangerPoint from './point/ViewDangerPoint';
+import EditUserPoint from './point/EditUserPoint';
+import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
 
 Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN);
 
@@ -122,6 +124,25 @@ const MapBoxMap = observer(() => {
       setRenderContent(() => (
         <EditDangerPoint mapPoint={mapPoint} onClose={handleSheetClose} />
       ));
+    }
+    else if(currentPointType === MapPointType.UsersCustomPoint){
+      const mapPoint: IPointUserDTO = {
+        id: Crypto.randomUUID(),
+        mapPointType: MapPointType.UsersCustomPoint,
+        status: MapPointStatus.Pending,
+        latitude: coordinates[1],
+        longitude: coordinates[0],
+        createdAt: new Date().toISOString(),
+        photos: [],
+        userId: currentUser?.id,
+        UserPointType: 0,
+      };
+      setMarkerCoordinate(coordinates);
+      mapStore.setMarker(coordinates);
+      setRenderContent(() => (
+        <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose}  />
+      ));
+
     }
     if (!isSheetExpanded) {
       setTimeout(() => {

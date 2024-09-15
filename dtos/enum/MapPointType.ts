@@ -7,5 +7,6 @@ export enum MapPointType {
   Veterinary = 5,    // Ветеринария
   PetStore = 6,      // Магазин для животных
   Note = 7,          // Примечание
-  Walk = 8          // Прогулка
+  Walk = 8,           // Прогулка
+  UsersCustomPoint = 9 // Пользовательская точка
 }
