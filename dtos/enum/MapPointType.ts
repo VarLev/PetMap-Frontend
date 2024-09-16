@@ -1,12 +1,14 @@
 export enum MapPointType {
   Other = 0,
-  Danger = 1,        // Опасность
-  Park = 2,          // Парк
-  Playground = 3,    // Площадка
-  Cafe = 4,          // Кафе
-  Veterinary = 5,    // Ветеринария
-  PetStore = 6,      // Магазин для животных
-  Note = 7,          // Примечание
-  Walk = 8,           // Прогулка
-  UsersCustomPoint = 9 // Пользовательская точка
+  Danger = 1,        
+  Park = 2,
+  Playground = 3,
+  DogArea = 4,   
+  Cafe = 5, 
+  Restaurant = 6,        
+  Veterinary = 7,   
+  PetStore = 8,      
+  Note = 9,         
+  Walk = 10,
+  UsersCustomPoint = 11
 }

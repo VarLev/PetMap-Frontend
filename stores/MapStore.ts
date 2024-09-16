@@ -267,6 +267,11 @@ class MapStore {
             this.walkAdvrts = [];
             this.mapPoints = response.data as IPointParkDTO[];
           });
+        }else{
+          runInAction(() => {
+            this.walkAdvrts = [];
+            this.mapPoints = response.data as IPointEntityDTO[];
+          });
         }
         
       }

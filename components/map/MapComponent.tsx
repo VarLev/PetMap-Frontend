@@ -137,7 +137,7 @@ const MapBoxMap = observer(() => {
         userId: currentUser?.id,
         UserPointType: 0,
       };
-      setMarkerCoordinate(coordinates);
+      setMarkerPointCoordinate(coordinates);
       mapStore.setMarker(coordinates);
       setRenderContent(() => (
         <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose}  />
@@ -231,6 +231,7 @@ const MapBoxMap = observer(() => {
     sheetRef.current?.close();
     mapStore.setBottomSheetVisible(false);
     setMarkerCoordinate(null);
+    setMarkerPointCoordinate(null);
     setIsSheetVisible(false);
     setIsSheetExpanded(false);
   };
@@ -269,6 +270,15 @@ const MapBoxMap = observer(() => {
     }
   };
 
+  const hangleSetSelectedNumberPoint = (number: number) => {
+    
+    setCurrentPointType(number);
+    tagSelected(number);
+    
+    
+  }
+
+
   
   return (
     <Provider>
@@ -283,7 +293,7 @@ const MapBoxMap = observer(() => {
             animationDuration={1}
           />
           
-           {mapStore.walkAdvrts.map((advrt, index) => (
+          {mapStore.walkAdvrts.map((advrt, index) => (
             <Mapbox.MarkerView 
               key={`advrt-${advrt.id}`} 
               id={`advrt-${index}`}
@@ -391,7 +401,7 @@ const MapBoxMap = observer(() => {
           />
         )}
         {!isSheetVisible && 
-          <FabGroupComponent selectedNumber={currentPointType} setSelectedNumber={setCurrentPointType}  />
+          <FabGroupComponent selectedNumber={currentPointType} setSelectedNumber={hangleSetSelectedNumberPoint}  />
         }  
       </SafeAreaView>
     </Provider>

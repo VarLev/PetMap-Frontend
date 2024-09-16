@@ -59,7 +59,7 @@ const EditUserPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
 
   return (
     <View className='px-7'>
-      <Text className='px-2 text-lg font-nunitoSansBold'>Опасность</Text>
+      <Text className='px-2 text-lg font-nunitoSansBold'>Публичная метка</Text>
       <View className='flex-col'>
         <AddPhotoButton buttonText='Добавить фото' onImageSelected={(photo) => handleFieldChange('thumbnailUrl',photo)}/>
         <CustomDropdownList tags={USERSPOINTTYPE_TAGS} listMode='MODAL' onChange={(tag) => handleFieldChange('UserPointType', tag)}/>
