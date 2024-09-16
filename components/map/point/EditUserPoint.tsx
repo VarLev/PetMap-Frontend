@@ -29,7 +29,7 @@ const EditUserPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
   };
 
   const CheckErrors = () => {
-    if (!editablePoint.UserPointType || !editablePoint.description) {
+    if (!editablePoint.userPointType || !editablePoint.description) {
       // Вывод ошибки, если не все обязательные поля заполнены
       alert("Пожалуйста, заполните все обязательные поля: Тип, Описание.");
       return false;
@@ -45,9 +45,11 @@ const EditUserPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
       if(CheckErrors()){
         const thumb = await mapStore.uploaPiontThumbnailImage(editablePoint, MapPointType.UsersCustomPoint);
         editablePoint.thumbnailUrl = thumb;
-        
+        editablePoint.mapPointType = editablePoint.userPointType as number;
+        console.log(editablePoint.userPointType as number);
+        console.log(editablePoint.mapPointType);
         await mapStore.addPoint(editablePoint);
-        await mapStore.getMapPointsByType(MapPointType.UsersCustomPoint);
+        await mapStore.getMapPointsByType(editablePoint.mapPointType);
         
         onClose();
       } 
@@ -62,7 +64,7 @@ const EditUserPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
       <Text className='px-2 text-lg font-nunitoSansBold'>Публичная метка</Text>
       <View className='flex-col'>
         <AddPhotoButton buttonText='Добавить фото' onImageSelected={(photo) => handleFieldChange('thumbnailUrl',photo)}/>
-        <CustomDropdownList tags={USERSPOINTTYPE_TAGS} listMode='MODAL' onChange={(tag) => handleFieldChange('UserPointType', tag)}/>
+        <CustomDropdownList tags={USERSPOINTTYPE_TAGS} listMode='MODAL' onChange={(tag) => handleFieldChange('userPointType', tag)} disabledInexes={[0,1,9,10,11]}/>
         <CustomOutlineInputText label='Название' value={editablePoint.name} handleChange={(text) => handleFieldChange('name',text)}/>
         <CustomOutlineInputText label='Адрес' value={editablePoint.address} handleChange={(text) => handleFieldChange('address',text)}/>
         <CustomOutlineInputText label='Описание' value={editablePoint.description} handleChange={(text) => handleFieldChange('description',text)}/>

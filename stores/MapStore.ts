@@ -338,7 +338,7 @@ class MapStore {
           this.mapPoints.push(response.data as IPointDangerDTO);
         });
       }
-      else if(point.mapPointType === MapPointType.UsersCustomPoint){
+      else {
         const response = await apiClient.post('map/add-point-user', point);
         if(response.data){
           runInAction(() => {

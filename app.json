@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "PetMap",
+    "scheme": "com.lightway.petmap",
     "userInterfaceStyle": "automatic",
     "owner": "levromf",
     "splash": {
@@ -22,7 +22,6 @@
     },
     "android": {
       "googleServicesFile": "./google-services.json",
-      "resourceClass": "medium",
       "package": "com.lightway.petmap",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",

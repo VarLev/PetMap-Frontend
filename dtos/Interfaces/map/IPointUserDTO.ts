@@ -5,7 +5,7 @@ import { AmenitiesType } from "@/dtos/enum/AmenitiesType";
 
 // DTO для точки опасности, расширяет PointEntityDTO
 export interface IPointUserDTO extends IPointEntityDTO {
-  UserPointType: UserPointType;        // Уровень опасности (низкий, средний, высокий)
+  userPointType: UserPointType;        // Уровень опасности (низкий, средний, высокий)
   photos?: Photo[];
   thumbnailUrl?: string;           // Массив фотографий, связанных с точкой
   description?: string;            // Описание точки

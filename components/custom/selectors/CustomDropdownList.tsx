@@ -10,6 +10,7 @@ type MultiTagDropdownProps = {
   searchable?: boolean; // Возможность поиска тегов
   label?: string; // Метка для выпадающего списка
   listMode?: ListModeType;
+  disabledInexes?: number[]; // Индексы тегов, которые нужно заблокировать  
 
 };
 
@@ -20,11 +21,12 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
   onChange,
   searchable = false,
   label,
-  listMode = 'FLATLIST'
+  listMode = 'FLATLIST',
+  disabledInexes = []
 }) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<string | null>(null);
-  const [items, setItems] = useState(tags.map((tag, index) => ({ label: tag, value: index.toString() })));
+  const [items, setItems] = useState(tags.map((tag, index) => ({ label: tag, value: index.toString(), disabled: disabledInexes.includes(index) })));
 
   // Определение типа начального тега
   const isInitialTagNumber = typeof initialSelectedTag === 'number';
@@ -71,6 +73,8 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
           borderColor: '#5e5e5e',
           zIndex: 3005,
         }}
+        disabledItemLabelStyle={{ color: '#d5d5d5', fontFamily: 'NunitoSans_400Regular', fontSize: 16 }}
+        
         textStyle={{ color: '#454545', fontFamily: 'NunitoSans_400Regular', fontSize: 16 }}
         style={{ borderColor: '#bfbfbf', backgroundColor: '#ffffff', borderRadius: 8 }}
         searchable={searchable}
