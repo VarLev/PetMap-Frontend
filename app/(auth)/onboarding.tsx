@@ -27,11 +27,11 @@ const Onboarding = () => {
 
 
   return (
-    <SafeAreaView className='bg-violet-100 h-full'>
-        <OnboardingProfile 
-          onLanguageSelect={handleLanguageSelect}
-          onComplete={handleComplete}/>     
-    </SafeAreaView>
+      <SafeAreaView className='bg-violet-100 h-full'>
+          <OnboardingProfile 
+            onLanguageSelect={handleLanguageSelect}
+            onComplete={handleComplete}/>    
+      </SafeAreaView>
   );
 };
 

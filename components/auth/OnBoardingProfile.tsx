@@ -14,7 +14,6 @@ import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
-import SelectDropdown from "react-native-select-dropdown";
 import * as ImagePicker from "expo-image-picker";
 import { Avatar } from "@rneui/themed";
 import { IUser } from "@/dtos/Interfaces/user/IUser";

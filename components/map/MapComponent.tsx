@@ -533,7 +533,7 @@ const styles = {
     iconImage: 'clusterIcon',
     iconSize: 1,
     textField: '{point_count}',
-    textSize: 18,
+    textSize: 12,
     textColor: '#fff',
     textHaloColor: 'gray',
     textHaloWidth: 1,

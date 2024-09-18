@@ -10,10 +10,13 @@ import { useDrawer } from '@/contexts/DrawerProvider';
 import { AntDesign, Feather } from '@expo/vector-icons';
 
 
+
 const SidebarUserProfileComponent = () => {
   const [sosEnabled, setSosEnabled] = useState(false);
   const currentUser = userStore.currentUser;
   const { closeDrawer } = useDrawer();
+
+
 
   const handleToggleSos = () => setSosEnabled(!sosEnabled);
 
@@ -39,7 +42,7 @@ const SidebarUserProfileComponent = () => {
           </View>
         </TouchableRipple>
         <TouchableRipple className='w-full mt-4 justify-center items-center  ' onPress={handleProfilePress}>
-          <View className='h-9 w-10  flex-row justify-center items-center'>
+          <View className='h-9 w-16  flex-row justify-center items-center'>
             <Image source={images.bonuse} className='h-8 w-8' />
             <View className='flex-col ml-3'>
               <Text className="text-xl  text-gray-800 font-nunitoSansBold">{currentUser?.balance}</Text>

@@ -1,3 +1,4 @@
+import { Job } from "@/dtos/classes/job/Job";
 import { IPhoto } from "../IPhoto";
 import { IPet } from "../pet/IPet";
 
@@ -28,4 +29,5 @@ export interface IUser {
   location?: string | null;
   instagram?: string | null;
   facebook?: string | null;
+  jobs?: Job[] | null;
 }
