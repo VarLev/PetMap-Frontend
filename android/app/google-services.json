@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "938397449309",
+    "firebase_url": "https://petmeetar-default-rtdb.firebaseio.com",
+    "project_id": "petmeetar",
+    "storage_bucket": "petmeetar.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:938397449309:android:daf24194bd96ef9a4be1b4",
+        "android_client_info": {
+          "package_name": "com.lightway.petmap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAea7JrQvrAAjBqucbztppaZTTQUF4V-bc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "938397449309-ltb5gigk34m3qgovgvu8olm7u1cc34go.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.feotokis.petmap"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:938397449309:android:0163e1a24fe64bb54be1b4",
+        "android_client_info": {
+          "package_name": "io.cordova.hellocordova"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAea7JrQvrAAjBqucbztppaZTTQUF4V-bc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "938397449309-ltb5gigk34m3qgovgvu8olm7u1cc34go.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.feotokis.petmap"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

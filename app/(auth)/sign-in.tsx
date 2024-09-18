@@ -12,8 +12,11 @@ import ArrowHelp from "@/components/auth/arrowHelp";
 
 
 const SignIn = () => {
-  const [email, setEmail] = useState("levromf@gmail.com");
+  const [email, setEmail] = useState("sergey.shpak79@yahoo.com");
   const [password, setPassword] = useState("123456");
+  // const [email, setEmail] = useState("levromf@gmail.com");
+  // const [password, setPassword] = useState("123456");
+  
   const [isSecure, setIsSecure] = useState(true);
   const [isValidEmail, setIsValidEmail] = useState(true);
 

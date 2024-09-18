@@ -7,6 +7,7 @@ import {
   ImageSourcePropType,
   Image,
   FlatList,
+  TouchableOpacity,
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { Button, Text } from "react-native-paper";
@@ -34,6 +35,7 @@ import { avatarsStringF, avatarsStringM } from "@/constants/Avatars";
 import { BREEDS_TAGS, PETGENDERS_TAGS } from "@/constants/Strings";
 import { getTagsByIndex } from "@/utils/utils";
 import CustomDropdownList from "../custom/selectors/CustomDropdownList";
+
 
 const { width, height } = Dimensions.get("window");
 
@@ -211,27 +213,30 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             className="h-[60%]"
             resizeMode="center"
           />
-          <Text className="text-md font-nunitoSansBold text-center">
-            Добро пожаловать в PetMap!!!!
+          <Text className="text-lg font-nunitoSansBold text-center">
+            Добро пожаловать в PetMap!
           </Text>
           {/* text-lg */}
-          <Text className="text-base font-nunitoSansRegular text-center">
+          <Text className=" leading-tight text-md font-nunitoSansRegular text-center">
             Выберите язык приложения, чтобы мы могли лучше понимать друг друга.
           </Text>
           <CustomButtonOutlined
             title="Английский"
             handlePress={() => handleLanguageSelection(2)}
-            containerStyles="mt-4 w-full min-h-[45px]"
+            containerStyles="mt-4 w-full min-h-[42px] bg-[#2F00B6]"
+            textStyles="text-white"
           />
           <CustomButtonOutlined
             title="Испанский"
             handlePress={() => handleLanguageSelection(0)}
-            containerStyles="mt-4 w-full min-h-[45px]"
+            containerStyles="mt-4 w-full min-h-[42px] bg-[#2F00B6]"
+            textStyles="text-white"
           />
           <CustomButtonOutlined
             title="Русский"
             handlePress={() => handleLanguageSelection(1)}
-            containerStyles="mt-4 w-full min-h-[45px]"
+            containerStyles="mt-4 w-full min-h-[42px] bg-[#2F00B6]"
+            textStyles="text-white"
           />
         </View>
       ),
@@ -245,10 +250,10 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             className="h-[80%]"
             resizeMode="center"
           />
-          <Text className="pl-4 pr-4 text-lg font-nunitoSansBold text-center">
+          <Text className="px-4 leading-tight text-[18px] font-nunitoSansBold text-center mb-1">
             Начните настройку профиля прямо сейчас
           </Text>
-          <Text className="text-base font-nunitoSansRegular text-center">
+          <Text className=" text-md font-nunitoSansRegular text-center">
             И получите первые бонусы, после прохождения регистрации, чтобы
             обменять их на подарки
           </Text>
@@ -281,22 +286,25 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
               resizeMode="center"
             />
           )}
-          <Text className="pl-4 pr-4 text-lg font-nunitoSansBold text-center">
+          <Text className="px-4 leading-tight text-[18px] font-nunitoSansBold text-center my-2">
             Расскажите немного о себе
           </Text>
-          <Text className="text-base font-nunitoSansRegular text-center">
+          <Text className="text-md font-nunitoSansRegular text-center">
             Ваш профиль будет отображаться другим пользователям с питомцами.
           </Text>
           <CustomInputText
-            placeholder="Как тебя зовут?"
+            // placeholder="Как тебя зовут?"
             value={name}
             handleChange={setName}
-            containerStyles="mb-2 mt-4"
+            containerStyles="my-4"
+            labelInput="Как вас зовут?"   
+             
+                       
           />
 
-          <View className="flex-row items-start justify-between">
+          <View className="flex-row items-center justify-between">
             <CustomInputText
-              placeholder="Дата рождения"
+              labelInput="Дата рождения"
               value={age ? age.toLocaleDateString("en-US") : ""}
               handleClick={showUserDatepicker}
               handleChange={showUserDatepicker}
@@ -311,12 +319,12 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
               />
             )}
             <CustomSegmentedButtons
-              containerStyles="w-[50%]"
+              containerStyles="w-1/2 mb-1"
               value={gender}
               onValueChange={handleGenderChange}
             />
           </View>
-          <View className="flex-row justify-between">
+          <View className="flex-row justify-between mt-2">
             <CustomButtonOutlined
               title="Выбрать фото"
               handlePress={SetUserImage}
@@ -365,25 +373,25 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             Профиль питомца будет доступен другим пользователям при отклике на
             прогулку.
           </Text>
-        
+
           <CustomInputText
-              placeholder="Имя"
-              value={petName}
-              handleChange={setPetName}
-              containerStyles="-mb-2"
-            />
+            placeholder="Имя"
+            value={petName}
+            handleChange={setPetName}
+            containerStyles="-mb-2"
+          />
           <View className="pb-2">
             <CustomDropdownList
               tags={BREEDS_TAGS}
-              label=''
+              label=""
               placeholder="Порода"
               initialSelectedTag={selectedBreed}
-              onChange={(v)=>setSelectedBreed(v as number)}
+              onChange={(v) => setSelectedBreed(v as number)}
               searchable={true}
-              listMode='MODAL'
-            /> 
+              listMode="MODAL"
+            />
           </View>
-        
+
           <View className="flex-row items-start ">
             <CustomInputText
               placeholder="Дата рождения"
@@ -419,6 +427,13 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <View className="mt-6 mr-6 flex items-end">
+      <TouchableOpacity onPress={() => {
+                  router.replace("/map");
+                }}>
+      <Text className="text-md font-nunitoSansBold">Пропустить</Text>
+    </TouchableOpacity>
+      </View>
       <FlatList
         data={[{ key: "carousel" }]}
         renderItem={() => (
@@ -440,12 +455,17 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             />
             <View style={styles.bottomNavigationContainer}>
               <Button
-                onPress={() => {
-                  router.replace("/map");
+                onPress={() => {                 
+                  (carouselRef.current as any)?.scrollTo({
+                    index: currentIndex -1,
+                    animated: true,
+                  });
                 }}
                 style={styles.navigationButton}
               >
-                <Text className="font-nunitoSansBold text-indigo-800">Пропустить</Text>
+                <Text className="font-nunitoSansBold text-black">
+                  {currentIndex === 0 ? "" : "Назад"}
+                </Text>
               </Button>
               <View style={styles.indicatorContainer}>
                 {data.map((_, index) => (
@@ -461,7 +481,9 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                 ))}
               </View>
               <Button onPress={handleNext} style={styles.navigationButton}>
-              <Text className="font-nunitoSansBold text-indigo-800">{currentIndex === data.length - 1 ? "Завершить" : "Далее"}</Text>
+                <Text className="font-nunitoSansBold text-black">
+                  {currentIndex === data.length - 1 ? "Завершить" : "Далее"}
+                </Text>
               </Button>
             </View>
           </View>
@@ -489,6 +511,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     width: "100%",
     alignItems: "center",
+    marginTop: -15,
   },
   titleText: {
     fontSize: 24,
@@ -555,12 +578,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 100,
-    paddingHorizontal: 20,
+    height: 50,
+    paddingHorizontal: 0,
   },
   navigationButton: {
     width: 130,
-    
   },
   indicatorContainer: {
     flexDirection: "row",
@@ -570,13 +592,14 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    marginHorizontal: 5,
+    marginHorizontal: 7,
+    
   },
   activeIndicator: {
-    backgroundColor: "black",
+    backgroundColor: "#2F00B6",
   },
   inactiveIndicator: {
-    backgroundColor: "gray",
+    backgroundColor: "#D9CBFF",
   },
 });
 

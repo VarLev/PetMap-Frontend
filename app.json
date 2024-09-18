@@ -8,7 +8,7 @@
     "scheme": "PetMap",
     "userInterfaceStyle": "automatic",
     "owner": "levromf",
-    "splash": {
+       "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"

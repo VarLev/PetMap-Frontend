@@ -21,13 +21,13 @@ const CustomSegmentedButtons: React.FC<CustomSegmentedButtonsProps> = ({ value, 
   }
 
   return (
-    <View className={`flex-row h-[45px] mb-2 border border-gray-300 rounded-lg overflow-hidden ${containerStyles}`}>
+    <View className={`flex-row h-[51px] border border-gray-300 rounded-[10px] overflow-hidden ${containerStyles}`}>
       {buttons.map((button, index) => (
         <TouchableOpacity
           key={index} // Используем индекс как ключ
           className={`flex-1 p-2 items-center justify-center border-r border-gray-300 ${
             value === index ? 'bg-indigo-800 border-indigo-800' : 'bg-white'
-          } ${index === 0 ? 'rounded-l-lg' : ''} ${index === buttons.length - 1 ? 'rounded-r-lg border-r-0' : ''} ${buttonClassName}`}
+          } ${index === 0 ? 'rounded-l-[8px]' : ''} ${index === buttons.length - 1 ? 'rounded-r-[8px] border-r-0' : ''} ${buttonClassName}`}
           onPress={() => onValueChange(index)} // Передаем индекс наружу
         >
           <Ionicons name={button.icon} size={20} color={value === index ? 'white' : 'black'} />
