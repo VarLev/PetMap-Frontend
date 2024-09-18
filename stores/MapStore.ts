@@ -11,6 +11,9 @@ import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
 import { IPointEntityDTO } from '@/dtos/Interfaces/map/IPointEntityDTO';
 import { IPointParkDTO } from '@/dtos/Interfaces/map/IPointParkDTO';
 import { MapPointType } from '@/dtos/enum/MapPointType';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { storage } from '@/firebaseConfig';
+import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
 
 class MapStore {
   address = '';
@@ -264,6 +267,11 @@ class MapStore {
             this.walkAdvrts = [];
             this.mapPoints = response.data as IPointParkDTO[];
           });
+        }else{
+          runInAction(() => {
+            this.walkAdvrts = [];
+            this.mapPoints = response.data as IPointEntityDTO[];
+          });
         }
         
       }
@@ -322,12 +330,24 @@ class MapStore {
     }
   }
 
-  async addPointDanger(point: IPointDangerDTO){
+  async addPoint(point: IPointEntityDTO){
     try {
-      const response = await apiClient.post('map/add-point-danger', point);
-      runInAction(() => {
-        this.mapPoints.push(response.data as IPointDangerDTO);
-      });
+      if(point.mapPointType === MapPointType.Danger){
+        const response = await apiClient.post('map/add-point-danger', point);
+        runInAction(() => {
+          this.mapPoints.push(response.data as IPointDangerDTO);
+        });
+      }
+      else {
+        const response = await apiClient.post('map/add-point-user', point);
+        if(response.data){
+          runInAction(() => {
+            this.mapPoints.push(response.data as IPointUserDTO);
+          });
+        }
+       
+      }
+      
     } catch (error) {
       if (axios.isAxiosError(error)) 
       {
@@ -351,6 +371,33 @@ class MapStore {
       throw error;
     }
   }
+
+  async uploaPiontThumbnailImage(point: IPointEntityDTO, pointType: MapPointType): Promise<string|undefined> {
+    if(pointType === MapPointType.Danger){
+      if(!(point as IPointDangerDTO).thumbnailUrl) return;
+      return this.uploadImage((point as IPointDangerDTO).thumbnailUrl!,`points/dangers/${point.id}/thumbnail`)
+    }
+    else if(pointType === MapPointType.Park){
+      
+    }
+    else if(pointType === MapPointType.UsersCustomPoint){
+      if(!(point as IPointUserDTO).thumbnailUrl) return;
+      return this.uploadImage((point as IPointUserDTO).thumbnailUrl!,`points/users/${point.id}/thumbnail`)
+    }
+  }
+
+  async uploadImage(image:string, pathToSave:string): Promise<string|undefined> {
+    if (!image) return;
+   
+    const response = await fetch(image);
+    const blob = await response.blob();
+    const storageRef = ref(storage, `${pathToSave}`);
+
+    await uploadBytes(storageRef, blob);
+
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+  };
 }
 
 const mapStore = new MapStore();

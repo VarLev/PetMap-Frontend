@@ -1,6 +1,7 @@
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import { Pet } from '../pet/Pet';
 import { Photo } from '../Photo';
+import { Job } from '../job/Job';
 
 export class User implements IUser {
   id: string;
@@ -30,11 +31,11 @@ export class User implements IUser {
   facebook?: string | null ;
   instagram?: string | null ;
   location?: string | null ;
+  jobs?: Job[] | null;
 
   
 
   constructor(data: Partial<IUser> = {}) {
-
     this.id = data.id ||'';
     this.firebaseUid = data.firebaseUid || '';
     this.name = data.name;
@@ -61,7 +62,6 @@ export class User implements IUser {
     this.facebook = data.facebook;
     this.instagram = data.instagram;
     this.location = data.location;
+    this.jobs = data.jobs || [];
   }
-
- 
 }

@@ -6,6 +6,7 @@ import EditProfileComponent from '@/components/profile/EditProfileComponent';
 
 import { User } from '@/dtos/classes/user/UserDTO';
 import { router } from 'expo-router';
+import { BonusProvider } from '@/contexts/BonusContex';
 
 const EditUserProfile = observer(() => {
   //const [editableUser, setEditableUser] = useState<User>();
@@ -30,7 +31,9 @@ const EditUserProfile = observer(() => {
   }, []);
 
   return (
-    <EditProfileComponent onSave={handleSave} onCancel={handleCancel} />
+    <BonusProvider>
+      <EditProfileComponent onSave={handleSave} onCancel={handleCancel} />
+    </BonusProvider>
   );
 });
 

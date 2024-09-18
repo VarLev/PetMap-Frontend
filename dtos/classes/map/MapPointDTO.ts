@@ -1,3 +1,4 @@
+import { AmenitiesType } from "@/dtos/enum/AmenitiesType";
 import { MapPointType } from "@/dtos/enum/MapPointType";
 import { IMapPoint } from "@/dtos/Interfaces/map/IMapPoint";
 
@@ -16,7 +17,7 @@ export class MapPointDTO implements IMapPoint {
   isApproved?: boolean; // Одобрена ли точка
   thumbnailUrl?: string; // Ссылка на изображение точки
   note?: string; // Примечание к точке
-  amenities?: string[] | undefined;
+  amenities?: AmenitiesType[] | undefined;
   
 
   constructor(
@@ -34,7 +35,7 @@ export class MapPointDTO implements IMapPoint {
       isApproved?: boolean,
       thumbnailUrl?: string,
       note?: string,
-      amenities?: string[]
+      amenities?: AmenitiesType[]
   ) {
       this.id = id;
       this.referenceId = referenceId;

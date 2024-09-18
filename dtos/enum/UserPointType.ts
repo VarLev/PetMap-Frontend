@@ -1,4 +1,4 @@
-export enum MapPointType {
+export enum UserPointType {
   Other = 0,
   Danger = 1,        
   Park = 2,

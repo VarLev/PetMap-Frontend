@@ -116,7 +116,7 @@ const FabGroupComponent: React.FC<FabGroupProps> = ({ selectedNumber, setSelecte
                 'note-alert-outline',
                 'MaterialCommunityIcons'
               ); // Изменяем иконку FAB
-              handleActionPress(MapPointType.Playground); // Обновляем число
+              handleActionPress(MapPointType.UsersCustomPoint); // Обновляем число
             },
             style: { backgroundColor: '#9076ea' },
           },

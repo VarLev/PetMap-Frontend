@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Alert, BackHandler, View } from 'react-native';
 import { Button, Text, Divider } from 'react-native-paper';
 import userStore from '@/stores/UserStore';
@@ -7,19 +7,36 @@ import { User } from '@/dtos/classes/user/UserDTO';
 import { GENDERS_TAGS, INTEREST_TAGS, LANGUAGE_TAGS, PROFESSIONS_TAGS } from '@/constants/Strings';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import PhotoSelector from '../common/PhotoSelector';
-import { getTagsByIndex, parseDateToString, parseStringToDate, setUserAvatarDependOnGender, translateGender } from '@/utils/utils';
+import { parseDateToString, parseStringToDate, setUserAvatarDependOnGender } from '@/utils/utils';
 import AvatarSelector from '../common/AvatarSelector';
 import BottomSheet from '@gorhom/bottom-sheet';
 import BottomSheetComponent from '../common/BottomSheetComponent';
 import { avatarsStringF, avatarsStringM } from '@/constants/Avatars';
 import { GestureHandlerRootView, FlatList } from 'react-native-gesture-handler';
 import CustomOutlineInputText from '../custom/inputs/CustomOutlineInputText';
-
-
 import MultiTagDropdown from '../custom/selectors/MultiTagDropdown';
 import CustomDropdownList from '../custom/selectors/CustomDropdownList';
 import { router } from 'expo-router';
 import CustomLoadingButton from '../custom/buttons/CustomLoadingButton';
+import { useControl } from '@/hooks/useBonusControl';
+import { BonusContex } from '@/contexts/BonusContex';
+
+const TASK_IDS = {
+  userEdit:{
+    name: 1,
+    birthDate: 2,
+    gender: 3,
+    description: 4,
+    interests: 5,
+    location: 6,
+    userLanguages: 7,
+    work: 8,
+    education: 9,
+    instagram: 10,
+    facebook: 11,
+    thumbnailUrl: 12,
+  } 
+};
 
 const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => void, onCancel: () => void }) => {
   const user: User = userStore.currentUser!;
@@ -29,6 +46,22 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [birthDate, setBirthDate] = useState(parseDateToString(user.birthDate || new Date()));
 
+  const { completedJobs } = useContext(BonusContex)!;
+
+  // Используем useControl для каждого поля
+  useControl('name', editableUser.name, {id : TASK_IDS.userEdit.name, description:'name'});
+  useControl('birthDate', birthDate, {id:TASK_IDS.userEdit.birthDate, description:'birthDate'});
+  useControl('gender', editableUser.gender, { id: TASK_IDS.userEdit.gender, description:'gender' });
+  useControl('description', editableUser.description, { id: TASK_IDS.userEdit.description, description:'description' });
+  useControl('interests', editableUser.interests, { id: TASK_IDS.userEdit.interests, description:'interests' });
+  useControl('location', editableUser.location, { id: TASK_IDS.userEdit.location, description:'location' });
+  useControl('userLanguages', editableUser.userLanguages, { id: TASK_IDS.userEdit.userLanguages, description:'userLanguages' });
+  useControl('work', editableUser.work, { id: TASK_IDS.userEdit.work, description:'work' });
+  useControl('education', editableUser.education, { id: TASK_IDS.userEdit.education, description:'education' });
+  useControl('instagram', editableUser.instagram, { id: TASK_IDS.userEdit.instagram, description:'instagram' });
+  useControl('facebook', editableUser.facebook, { id: TASK_IDS.userEdit.facebook, description:'facebook' });
+  useControl('thumbnailUrl', editableUser.thumbnailUrl, { id: TASK_IDS.userEdit.thumbnailUrl, description:'thumbnailUrl' });
+  
   useEffect(() => {
     
     // Функция, которая срабатывает при нажатии кнопки "назад"
@@ -57,6 +90,15 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
     return () => backHandler.remove();
   }, []);
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const thisUser = await userStore.getCurrentUserFromServer();
+      setEditableUser(new User({ ...thisUser }));
+    };
+  
+    fetchUser(); 
+  }, []);
+
   const CheckErrors = () => {
     if (!editableUser.name || !birthDate ) {
       // Вывод ошибки, если не все обязательные поля заполнены
@@ -75,27 +117,26 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
 
   }
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const thisUser = await userStore.getCurrentUserFromServer();
-      setEditableUser(new User({ ...thisUser }));
-    };
-  
-    fetchUser(); 
-  }, []);
-
-
   const handleChange = (field: keyof User, value: any) => {
     setEditableUser({ ...editableUser, [field]: value });
   };
 
   const handleSave = async () => {
     if (!CheckErrors()) return;
-    const resp = await userStore.uploadUserThumbnailImage(editableUser);
-    editableUser.thumbnailUrl = resp;
+
+    // Обновляем фото пользователя
+    if (editableUser.thumbnailUrl !== user.thumbnailUrl) {
+      const resp = await userStore.uploadUserThumbnailImage(editableUser);
+      editableUser.thumbnailUrl = resp;
+    }
+
+     // Парсим дату рождения
     editableUser.birthDate = parseStringToDate(birthDate);
-    console.log(editableUser);
+    editableUser.jobs = completedJobs;
+
+    // Вызываем метод в userStore для обновления данных пользователя и выполнения заданий
     await userStore.updateOnlyUserData(editableUser);
+
     onSave();
   };
 
@@ -162,7 +203,6 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
               />
             </View>
             <View className="p-2">
-             
               <CustomOutlineInputText 
                 containerStyles='mt-2' 
                 label='Как вас зовут?' 
@@ -184,14 +224,12 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 value={editableUser.birthDate ? editableUser.birthDate.toLocaleDateString() : undefined} 
                 handleChange={(text) => handleChange('birthDate', new Date(text))}
               /> */}
-              
               <CustomDropdownList 
                 tags={GENDERS_TAGS} 
                 label='Пол' 
                 initialSelectedTag={editableUser.gender!} 
                 onChange={(text) => handleChange('gender', text)}
               />
-              
               <CustomOutlineInputText 
                 containerStyles='mt-4' 
                 label='Обо мне' 
@@ -199,9 +237,6 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 handleChange={(text) => handleChange('description', text)} 
                 numberOfLines={7}
               />
-              
-             
-              
             </View>
             <View className="p-2 ">
               <Text className="text-lg font-nunitoSansBold text-indigo-800">Интересы</Text>
@@ -213,7 +248,6 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
               />
             </View>
             <Divider className="mt-4"/>
-            
             <View className="p-2">
               <Text className="text-lg font-nunitoSansBold text-indigo-800">Основные</Text>
               <CustomOutlineInputText 
@@ -223,7 +257,6 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 handleChange={(text) => handleChange('location', text)} 
                
               />
-
               <MultiTagDropdown tags={LANGUAGE_TAGS} initialSelectedTags={editableUser.userLanguages} label='Язык' onChange={(text) => handleChange('userLanguages', text)} />
               {/* <CustomOutlineInputText 
                 containerStyles='mt-4' 
@@ -240,7 +273,6 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 searchable={true}
                 onChange={(text) => handleChange('work', text)}
               /> */}
-             
               <CustomOutlineInputText 
                 containerStyles='mt-4' 
                 label='Образование' 
@@ -248,7 +280,6 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 handleChange={(text) => handleChange('education', text)} 
                
               />
-            
             <Divider className='mt-5' />
              
             </View>

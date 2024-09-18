@@ -15,7 +15,6 @@ import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
-import SelectDropdown from "react-native-select-dropdown";
 import * as ImagePicker from "expo-image-picker";
 import { Avatar } from "@rneui/themed";
 import { IUser } from "@/dtos/Interfaces/user/IUser";
@@ -32,8 +31,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import AvatarSelector from "../common/AvatarSelector";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { avatarsStringF, avatarsStringM } from "@/constants/Avatars";
-import { BREEDS_TAGS, PETGENDERS_TAGS } from "@/constants/Strings";
-import { getTagsByIndex } from "@/utils/utils";
+import { BREEDS_TAGS } from "@/constants/Strings";
 import CustomDropdownList from "../custom/selectors/CustomDropdownList";
 
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TextInput } from 'react-native-paper';
 import { TextInputMask } from 'react-native-masked-text';
 
+
 type InputTextProps = {
   value?: string | number;
   placeholder?: string;

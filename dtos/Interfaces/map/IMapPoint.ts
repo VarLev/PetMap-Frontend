@@ -1,3 +1,4 @@
+import { AmenitiesType } from "@/dtos/enum/AmenitiesType";
 import { MapPointType } from "@/dtos/enum/MapPointType";
 
 export interface IMapPoint {
@@ -29,6 +30,6 @@ export interface IMapPoint {
 
   note?: string; // Примечание к точке
 
-  amenities?: string[]; // Удобства в точке
+  amenities?: AmenitiesType[]; // Удобства в точке
 }
 
