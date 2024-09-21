@@ -24,12 +24,17 @@ const SidebarUserProfileComponent = () => {
     router.replace('/profile');
     closeDrawer();
   }
+
+  const handleJobPress = () => {
+    router.replace('/profile/jobs');
+    closeDrawer();
+  }
  
   return (
     <SafeAreaView className='bg-white h-full'>
       <View className="flex-1 p-5 bg-white">
         <View className='flex-row'>
-            <Image source={images.logoWithName} style={{ width: '50%', height: 32 }} />
+            <Image source={images.logoWithName} style={{ width: 175, height: 43 }} />
         </View>
         <TouchableRipple className='w-full mt-6 ' onPress={handleProfilePress}>
           <View className='flex-row justify-start items-center'>
@@ -37,7 +42,7 @@ const SidebarUserProfileComponent = () => {
             <View className='flex-col ml-3'>
               <Text className="text-xl text-gray-800 font-nunitoSansBold">{currentUser?.name}</Text>
               <Text className="-mt-1 text-gray-800 font-nunitoSansRegular">{currentUser?.email}</Text>
-              <Text className="mt-1 text-indigo-800 font-nunitoSansBold">Открыть профиль раз</Text>
+              <Text className="mt-1 text-indigo-800 font-nunitoSansBold">Открыть профиль</Text>
             </View>
           </View>
         </TouchableRipple>
@@ -67,7 +72,7 @@ const SidebarUserProfileComponent = () => {
           className='font-nunitoSansBold'
             title="Задания и бонусы"
             left={() => <List.Icon icon={() => <AntDesign name="staro" size={20} color="#474747"  />} />}
-            onPress={() => console.log('Задания и бонусы')}
+            onPress={handleJobPress}
             titleStyle={{fontFamily: 'NunitoSans_400Regular'}}
           />
           <List.Item

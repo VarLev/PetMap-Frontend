@@ -48,6 +48,11 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
   const openMenu = () => setMenuVisible(true);
 
   const closeMenu = () => setMenuVisible(false);
+  
+  const logOut = () => {
+    closeMenu();
+    router.replace('/(auth)/sign-in');
+  }
 
   const handleAddPet = () =>{
     const newPat = petStore.getEmptyPetProfile('new', user.id)
@@ -82,7 +87,7 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
                   }
                 >
                   <Menu.Item onPress={onEdit} title="Редактировать" rippleColor='black' titleStyle={{color:'balck', fontFamily:'NunitoSans_400Regular'}} leadingIcon='pencil-outline'/>
-                  <Menu.Item onPress={closeMenu} title="Выйти" titleStyle={{color:'balck', fontFamily:'NunitoSans_400Regular'}} leadingIcon='exit-to-app'/>
+                  <Menu.Item onPress={logOut} title="Выйти" titleStyle={{color:'balck', fontFamily:'NunitoSans_400Regular'}} leadingIcon='exit-to-app'/>
                   <Menu.Item onPress={closeMenu} title="Удалить аккаунт" titleStyle={{color:'balck', fontFamily:'NunitoSans_400Regular'}} leadingIcon='delete-outline'/>
                 </Menu>
               </View>

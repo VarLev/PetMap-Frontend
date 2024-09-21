@@ -32,6 +32,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { avatarsStringF, avatarsStringM } from "@/constants/Avatars";
 import { BREEDS_TAGS } from "@/constants/Strings";
 import CustomDropdownList from "../custom/selectors/CustomDropdownList";
+import { setUserAvatarDependOnGender } from "@/utils/utils";
 
 const { width, height } = Dimensions.get("window");
 
@@ -72,7 +73,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   const sheetRef = useRef<BottomSheet>(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [renderContent, setRenderContent] = useState<ReactNode>(() => null);
-  //const [userAvatar, setUserAvatar] = useState<string | null>(null);
 
   const handleIndex = (index: number) => {
     setCurrentIndex(index);
@@ -135,7 +135,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       currentUser!.name = name;
       currentUser!.gender = gender;
       currentUser!.birthDate = age;
-      currentUser!.thumbnailUrl = userImage;
+      currentUser!.thumbnailUrl = userImage?? SetRandomAvatarDependOnGender();
       currentUser!.petProfiles = [newPetProfile as IPet];
 
       onComplete(currentUser as IUser);
@@ -153,6 +153,10 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
         setUserImage(resp);
       }
     });
+  };
+
+  const SetRandomAvatarDependOnGender = () => {
+    return setUserAvatarDependOnGender(user);
   };
 
   const SetPetImage = async () => {
@@ -190,6 +194,23 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       }
     });
   };
+
+  const handleEscape = () => {
+      const currentUser = userStore.currentUser!;
+      currentUser.gender = 0;
+      if(userImage === ''){
+        const newAvatar = SetRandomAvatarDependOnGender();
+        userStore.fetchImageUrl(newAvatar).then(resp => {
+          if (resp) {
+            currentUser.thumbnailUrl = resp;
+          }
+        });
+      }
+      else 
+        currentUser.thumbnailUrl = userImage;
+      router.replace('/(tabs)/map');
+      //onComplete(currentUser);
+  }
 
   const handleSheetOpen = () => {
     setIsSheetVisible(true);
@@ -438,9 +459,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             />
             <View style={styles.bottomNavigationContainer}>
               <Button
-                onPress={() => {
-                  router.replace("/map");
-                }}
+                onPress={handleEscape}
                 style={styles.navigationButton}
               >
                 <Text className="font-nunitoSansBold text-indigo-800">Пропустить</Text>
@@ -579,3 +598,5 @@ const styles = StyleSheet.create({
 });
 
 export default OnBoardingProfile;
+
+

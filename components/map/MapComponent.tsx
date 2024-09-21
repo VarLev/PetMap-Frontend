@@ -5,7 +5,7 @@ import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, Sy
 import mapStore from '@/stores/MapStore';
 import { Provider  } from 'react-native-paper';
 // eslint-disable-next-line import/no-unresolved
-import { MAPBOX_ACCESS_TOKEN } from '@env';
+//import { MAPBOX_ACCESS_TOKEN } from '@env';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent'; // Импортируйте новый компонент
 
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -38,7 +38,7 @@ import { Feature, FeatureCollection, Point } from 'geojson';
 import ViewUserPoint from './point/ViewUserPoint';
 
 
-Mapbox.setAccessToken(MAPBOX_ACCESS_TOKEN);
+
 
 
 
@@ -60,12 +60,13 @@ const MapBoxMap = observer(() => {
   const [userCoordinates, setUserCoordinates] = useState([0,0]);
   const currentUser = userStore.currentUser;
   const [modifiedFieldsCount, setModifiedFieldsCount] = useState(0);
-  const [currentPointType, setCurrentPointType] = useState(8);
+  const [currentPointType, setCurrentPointType] = useState(MapPointType.Walk);
   
   const [geoJSONData, setGeoJSONData] = useState<FeatureCollection<Point> | null>(null);
   const [scrollEnabled, setScrollEnabled] = useState(true);
 
-
+  Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
+  
   useEffect(() => {
     (async () => {
       const granted = await Mapbox.requestAndroidLocationPermissions();
@@ -150,7 +151,7 @@ const MapBoxMap = observer(() => {
       }
     })
 
-    if(currentPointType === MapPointType.Walk){
+    if(currentPointType === MapPointType.Walk ){
       setMarkerCoordinate(coordinates);
       mapStore.setMarker(coordinates);
       setRenderContent(() => (
@@ -340,10 +341,10 @@ const MapBoxMap = observer(() => {
   }
 
 
-const handlePressOut = () => {
-  // Включаем перемещение карты
-  setScrollEnabled(true);
-};
+  const handlePressOut = () => {
+    // Включаем перемещение карты
+    setScrollEnabled(true);
+  };
 
 
   

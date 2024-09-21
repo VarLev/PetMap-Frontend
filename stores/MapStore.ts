@@ -2,7 +2,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import axios from 'axios';
 // eslint-disable-next-line import/no-unresolved
-import { MAPBOX_ACCESS_TOKEN } from '@env';
+//import { MAPBOX_ACCESS_TOKEN } from '@env';
 import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
 import { IMapPoint } from '@/dtos/Interfaces/map/IMapPoint';
 import apiClient from '@/hooks/axiosConfig';
@@ -179,7 +179,7 @@ class MapStore {
       try {
         const country = "AR";
         const response = await axios.get(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?country=${country}&access_token=${MAPBOX_ACCESS_TOKEN}`
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${text}.json?country=${country}&access_token=${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}`
         );
         this.setSuggestions(response.data.features);
       } catch (error) {
@@ -193,7 +193,7 @@ class MapStore {
   async getStringAddressFromCoordinate(location: [number, number]) {
     try {
       const response = await axios.get(
-        `https://api.mapbox.com/search/geocode/v6/reverse?&longitude=${location[0]}&latitude=${location[1]}&types=address&access_token=${MAPBOX_ACCESS_TOKEN}`
+        `https://api.mapbox.com/search/geocode/v6/reverse?&longitude=${location[0]}&latitude=${location[1]}&types=address&access_token=${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}`
       );
   
       if (response.data.features && response.data.features.length > 0) {

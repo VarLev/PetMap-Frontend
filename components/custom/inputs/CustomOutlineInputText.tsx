@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TextInput } from 'react-native-paper';
 import { TextInputMask } from 'react-native-masked-text';
+import { View, Text } from 'react-native';
 
 
 type InputTextProps = {
@@ -36,28 +37,51 @@ const CustomOutlineInputText = ({
   return (
     <>
       {mask ? (
-        <TextInputMask
-          type={'custom'}
-          options={{
-            mask: mask
-          }}
-          value={value !== undefined ? String(value) : ''}
-          onChangeText={handleTextChange}
-          placeholder={placeholder}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          style={{
-            fontFamily: 'NunitoSans_400Regular',
-            fontSize: 16,
-            color: '#363636',
-            borderColor: isFocused ? '#7038c9' : '#bababa',
-            borderRadius: 5,
-            backgroundColor: '#ffffff',
-            padding: 10, // добавляем padding для текстового инпута
-          }}
-          className='mt-4 border'
-          keyboardType={keyboardType || 'default'}
-        />
+        <View>
+          {label && (
+            <Text className='font-nunitoSansRegular' style={{
+              color: '#bdbcbc',
+              fontFamily: 'NunitoSans_400Regular',
+              fontSize: 12,
+              position: 'absolute',
+              top: 8,
+              left: 22,
+              backgroundColor: '#fff',
+              paddingHorizontal: 4,
+              
+              zIndex: 3001
+            }}>
+              {label}
+            </Text>
+          )}
+          <TextInputMask
+            type={'custom'}
+            options={{
+              mask: mask
+            }}
+            value={value !== undefined ? String(value) : ''}
+            onChangeText={handleTextChange}
+            placeholder={placeholder}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            style={{
+              fontFamily: 'NunitoSans_400Regular',
+              fontSize: 16,
+              color: '#363636',
+              borderColor: isFocused ? '#7038c9' : '#bababa',
+              borderRadius: 8,
+              borderWidth: isFocused? 2:1,
+              marginTop: 18,
+              backgroundColor: '#ffffff',
+              padding: 10, // добавляем padding для текстового инпута
+              
+            }}
+            
+            className={`text-base font-nunitoSansBold bg-white ${containerStyles}`}
+            keyboardType={keyboardType || 'default'}
+          />
+        </View>
+        
       ) : (
         <TextInput
           multiline={!!numberOfLines && numberOfLines > 1}

@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-unresolved
-import { F_TOKEN, CURRENT_USER } from '@env';
+//import { F_TOKEN, CURRENT_USER } from '@env';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import { IUserRegister } from '@/dtos/Interfaces/user/IUserRegisterDTO';
 import { UserCredential } from 'firebase/auth';
@@ -16,11 +16,12 @@ import * as ImagePicker from 'expo-image-picker';
 import { IPet } from '@/dtos/Interfaces/pet/IPet';
 import petStore from './PetStore';
 import { Pet } from '@/dtos/classes/pet/Pet';
+import { JobTypeDto } from '@/dtos/Interfaces/job/IJob';
 
 
 class UserStore {
   fUser: UserCredential | null = null;
-  currentUser: User | null = null;
+  currentUser: User  = new User({});
   users: User[] = [];
   isLogged: boolean = false;
   loading: boolean = false;
@@ -223,7 +224,8 @@ class UserStore {
       
       const userCred = await signInWithEmailAndPassword(email, password);
       const token = await userCred.user.getIdToken();
-      await AsyncStorage.setItem(F_TOKEN, token);
+      console.log('Token:', process.env.EXPO_PUBLIC_F_TOKEN);
+      await AsyncStorage.setItem(process.env.EXPO_PUBLIC_F_TOKEN!, token);
       runInAction(() => {this.setLoginedUser(userCred);});
       await this.loadUserAfterSignIn();
       runInAction(() => {this.setLogged(true);});
@@ -271,7 +273,7 @@ class UserStore {
       };
 
       const token = await userCred.user.getIdToken();
-      await AsyncStorage.setItem(F_TOKEN, token);
+      await AsyncStorage.setItem(process.env.EXPO_PUBLIC_F_TOKEN!, token);
 
       const response = await apiClient.post('/users/register', userRegisterDTO);
       const registeredUser = response.data as IUser;
@@ -325,10 +327,14 @@ class UserStore {
       if (this.currentUser) 
       {
         // Обновление локального состояния
-        console.log(this.currentUser?.email);
+        
         if(user.thumbnailUrl && this.currentUser?.email){
           const thumUrl = await this.uploadUserThumbnailImage(new User({ ...this.currentUser, ...user }));
-          this.currentUser.thumbnailUrl = thumUrl;
+
+          runInAction(() => {
+            this.currentUser.thumbnailUrl = thumUrl;
+          });
+          
           user.thumbnailUrl = thumUrl;
           console.log('user thumbnailUrl updated');
         }
@@ -338,16 +344,18 @@ class UserStore {
           this.currentUser = new User({ ...this.currentUser, ...user });
         });
         let thumUrl;
-        if(user.petProfiles![0].thumbnailUrl){
-          thumUrl = await this.uploadImage(user.petProfiles![0].thumbnailUrl, `pets/${user.petProfiles![0].id}/thumbnail`);
-          
-        }else{
-          const petAvatarUrl = await this.fetchImageUrl(`assets/images/pet/thumbnail`);
-          thumUrl = await this.uploadImage(petAvatarUrl!, `pets/${user.petProfiles![0].id}/thumbnail`);
+        if((user.petProfiles ?? []).length > 0 ){
+          if(user.petProfiles![0].thumbnailUrl){
+            thumUrl = await this.uploadImage(user.petProfiles![0].thumbnailUrl, `pets/${user.petProfiles![0].id}/thumbnail`);
+          }else{
+            const petAvatarUrl = await this.fetchImageUrl(`assets/images/pet/thumbnail`);
+            thumUrl = await this.uploadImage(petAvatarUrl!, `pets/${user.petProfiles![0].id}/thumbnail`);
+          }
+          this.currentUser.petProfiles![0].thumbnailUrl = thumUrl;
+          user.petProfiles![0].thumbnailUrl = thumUrl;
+          console.log('pet thumbnailUrl updated');
         }
-        this.currentUser.petProfiles![0].thumbnailUrl = thumUrl;
-        user.petProfiles![0].thumbnailUrl = thumUrl;
-        console.log('pet thumbnailUrl updated');
+       
           
         runInAction(() => {
           this.currentUser = new User({ ...this.currentUser, ...user });
@@ -461,8 +469,8 @@ class UserStore {
   async signOut() {
     try {
       
-      await AsyncStorage.removeItem(F_TOKEN);
-      await AsyncStorage.removeItem(CURRENT_USER);
+      await AsyncStorage.removeItem(process.env.EXPO_PUBLIC_F_TOKEN!);
+      await AsyncStorage.removeItem(process.env.EXPO_PUBLIC_CURRENT_USER!);
       signOut();
     } catch (error) {
       console.error('Failed to sign out', error);     
@@ -483,6 +491,19 @@ class UserStore {
     }
   };
 
+  async getUserJobs(userId: string): Promise<JobTypeDto[]> {
+    try {
+      const response = await apiClient.get(`/job/user/${userId}`);
+      if(response.data.length > 0){
+        return response.data;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.error('Failed to load user jobs', error);
+      return [];
+    }
+  }
 
 }
 

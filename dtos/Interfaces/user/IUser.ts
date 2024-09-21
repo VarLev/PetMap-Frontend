@@ -13,7 +13,7 @@ export interface IUser {
   interests: number[] | null;
   work?: number[] | null;
   education?: string | null;
-  passwordHash?: string | null;
+  //passwordHash?: string | null;
   fmcToken?: string | null;
   provider?: string | null;
   isEmailVerified?: boolean | null;

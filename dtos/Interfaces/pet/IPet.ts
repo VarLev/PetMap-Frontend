@@ -9,7 +9,6 @@ export interface IPet {
   gender?: number | null;
   weight: number | null;
   color?: number | null;
-  size?: string | null;
   vaccinations?: number[] | null;
   neutered: boolean | null;
   temperament?: number | null;
@@ -24,4 +23,5 @@ export interface IPet {
   petHealthIssues?: number[] | null;
   instagram?: string | null;
   facebook?: string | null;
+  size?: number | null;
 }

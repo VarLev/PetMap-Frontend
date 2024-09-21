@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // eslint-disable-next-line import/no-unresolved
-import { F_TOKEN } from '@env';
+//import { F_TOKEN } from '@env';
 
 const apiClient = axios.create({
   //baseURL: 'http://10.113.1.31:5142/api',
@@ -12,7 +12,7 @@ const apiClient = axios.create({
 //baseURL: 'http://192.168.0.98:5142/api'
 apiClient.interceptors.request.use(
     async config => {
-        const token = await AsyncStorage.getItem(F_TOKEN);
+        const token = await AsyncStorage.getItem(process.env.EXPO_PUBLIC_F_TOKEN!);
         if (token) {
             // Использование токена в заголовке Authorization
             config.headers['Authorization'] = `Bearer ${token}`;

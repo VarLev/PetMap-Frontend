@@ -22,7 +22,7 @@ interface AdvtProps {
 }
 
 const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClose}) => {
-  const pets = advrt.userPets?.filter(pet=> advrt.participantsPetId?.includes(pet.id)) // Берем первого питомца из списка
+  const pets = advrt.userPets;// Берем первого питомца из списка
 
   console.log('advrt.userPets', advrt.userPets);
   console.log('advrt.participants', advrt.participants);
@@ -57,7 +57,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
   const handlePetProfileOpen = (petId:string) => {
     if(userStore.currentUser?.id === advrt.userId) {
       mapStore.setBottomSheetVisible(false);
-      router.push('/profile/pet/'+petId);
+      router.push({ pathname: '/profile/pet/[petId]', params: { petId: petId } });
     }
   }
 

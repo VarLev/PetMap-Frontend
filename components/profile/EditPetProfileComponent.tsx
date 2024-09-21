@@ -25,8 +25,8 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
   const [temperament, setTemperament] = useState(0);
   const [friendly, setFriendly] = useState(0);
   const [activity, setActivity] = useState(0);
-  const [length, setLength] = useState(editablePet.size?.split('х')[0] ?? '');
-  const [height, setHeight] = useState(editablePet.size?.split('х')[1] ?? '');
+  //const [length, setLength] = useState(editablePet.size?.split('х')[0] ?? '');
+  //const [height, setHeight] = useState(editablePet.size?.split('х')[1] ?? '');
   const [isNewPet, setIsNewPet] = useState(false);
 
   useEffect(() => {
@@ -69,7 +69,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
     setFriendly(editablePet.friendliness?? 0);
     setTemperament(editablePet.temperament?? 0);
     setActivity(editablePet.activityLevel?? 0);
-    console.log('EditablePet:', editablePet);
+     
     if(pet.id === 'new'){
       setIsNewPet(true);
     }
@@ -158,17 +158,17 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
     setEditablePet((petEdit) => ({ ...petEdit, activityLevel: rating }));
   }
 
-  const handleLengh = (lenth: string) => {
-    setLength(lenth);
-    const size = `${length}х${height}`;
-    setEditablePet((pet) => ({ ...pet, size: size }));
-  }
+  // const handleLengh = (lenth: string) => {
+  //   setLength(lenth);
+  //   const size = `${length}х${height}`;
+  //   setEditablePet((pet) => ({ ...pet, size: size }));
+  // }
 
-  const handleHeight = (height: string) => {
-    setHeight(height);
-    const size = `${length}х${height}`;
-    setEditablePet((pet) => ({ ...pet, size: size }));
-  }
+  // const handleHeight = (height: string) => {
+  //   setHeight(height);
+  //   const size = `${length}х${height}`;
+  //   setEditablePet((pet) => ({ ...pet, size: size }));
+  // }
 
   
 
@@ -238,20 +238,20 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
           handleChange={(text) => handleFieldChange('weight', text)}
         />
 
-        <CustomOutlineInputText
+        {/* <CustomOutlineInputText
           containerStyles="mt-4 w-1/3 flex-1 mr-1"
           label="Высота"
           value={height || ''}
           handleChange={handleHeight}
           
-        />
+        /> */}
 
-        <CustomOutlineInputText
+        {/* <CustomOutlineInputText
           containerStyles="mt-4 w-1/3 flex-1 mr-1"
           label="Длина"
           value={length || ''}
           handleChange={handleLengh}
-        />
+        /> */}
       </View>
 
       <Divider className="mt-6" />

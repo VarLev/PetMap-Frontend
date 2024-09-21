@@ -40,6 +40,13 @@ export default function ProfileLayout() {
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
         }} 
       />
+      <Stack.Screen 
+        name="jobs" 
+        options={{ 
+          title: 'Задания и бонусы',
+          headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
+        }} 
+      />
       
     </Stack>
    

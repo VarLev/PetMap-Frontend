@@ -46,7 +46,7 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
       {label && (
         <Text style={{
           color: '#454545',
-          fontFamily: 'Arial',
+          fontFamily:'NunitoSans_400Regular',
           fontSize: 12,
           position: 'absolute',
           top: 8,
@@ -54,7 +54,9 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
           backgroundColor: '#fff',
           paddingHorizontal: 4,
           zIndex: 3001
-        }}>
+        }}
+
+        >
           {label}
         </Text>
       )}
@@ -74,7 +76,6 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
           zIndex: 3005,
         }}
         disabledItemLabelStyle={{ color: '#d5d5d5', fontFamily: 'NunitoSans_400Regular', fontSize: 16 }}
-        
         textStyle={{ color: '#454545', fontFamily: 'NunitoSans_400Regular', fontSize: 16 }}
         style={{ borderColor: '#bfbfbf', backgroundColor: '#ffffff', borderRadius: 8 }}
         searchable={searchable}

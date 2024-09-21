@@ -1,33 +1,22 @@
 import { Pet } from "@/dtos/classes/pet/Pet";
+import { IUserAdvrt } from "../user/IUserAdvrt";
+import { AdvrtType } from "@/dtos/enum/AdvrtType";
+import { WalkAdvrtStatus } from "@/dtos/enum/WalkAdvrtStatus";
 
 export interface IWalkAdvrtDto {
   id?: string;
   userPhoto?:  string;
   userName?: string;
   userPets?: Pet[];
-  petId?: string[];
   address?: string;
-
-  participants?: string[];
-  participantsPetId?: string[];
-
+  participants?: IUserAdvrt[];
   description?: string;
-
   latitude?: number;
-
   longitude?: number;
-
   date?: Date;
-
   createdAt?: Date;
-
-  type?: string;
-
+  type?: AdvrtType;
   userId?: string;
-
-  status?: string;
-
+  status?: WalkAdvrtStatus;
   isEnabled?: boolean;
-
-  
 }

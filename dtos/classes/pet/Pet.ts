@@ -10,7 +10,7 @@ export class Pet implements IPet {
   gender?: number | null;
   weight: number | null;
   color?: number | null;
-  size?: string | null;
+  size?: number | null;
   vaccinations?: number[] | null;
   neutered: boolean | null;
   temperament?: number | null;
@@ -35,7 +35,7 @@ export class Pet implements IPet {
     this.gender = data.gender || null;
     this.weight = data.weight || null;
     this.color = data.color || null;
-    this.size = data.size || '';
+    this.size = data.size || null;
     this.vaccinations = data.vaccinations || [];
     this.neutered = data.neutered || null;
     this.temperament = data.temperament || 0;

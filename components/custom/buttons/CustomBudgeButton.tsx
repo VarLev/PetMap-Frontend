@@ -18,11 +18,11 @@ const BadgeIconButton: React.FC<BadgeIconButtonProps> = ({
   onPress,
 }) => {
   return (
-    <View className="relative">
+    <View className="relative" >
       <IconButton
-        icon={() => <IconSelectorComponent iconSet={iconSet} iconName={iconName} />}
+        icon={() => <IconSelectorComponent iconSet={iconSet} iconName={iconName}  />}
         onPress={onPress}
-        className="bg-white w-11 h-11 rounded-full"
+        className="bg-white w-11 h-11 rounded-full" 
         size={40}
       />
       {badgeCount > 0 && (
