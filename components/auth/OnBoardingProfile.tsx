@@ -195,21 +195,25 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     });
   };
 
-  const handleEscape = () => {
+  const handleEscape = async () => {
       const currentUser = userStore.currentUser!;
       currentUser.gender = 0;
-      if(userImage === ''){
+      if(userImage === '' || userImage === null || userImage === undefined) {
+        
         const newAvatar = SetRandomAvatarDependOnGender();
-        userStore.fetchImageUrl(newAvatar).then(resp => {
-          if (resp) {
-            currentUser.thumbnailUrl = resp;
-          }
-        });
+        
+        const resp = await userStore.fetchImageUrl(newAvatar)
+        if (resp) {
+          console.log('resp',resp);
+          currentUser.thumbnailUrl = resp;
+        }
+        
       }
       else 
         currentUser.thumbnailUrl = userImage;
-      router.replace('/(tabs)/map');
-      //onComplete(currentUser);
+      //router.replace('/(tabs)/map');
+      
+      onComplete(currentUser);
   }
 
   const handleSheetOpen = () => {

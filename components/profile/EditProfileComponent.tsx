@@ -112,7 +112,17 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
         alert("Некорректная дата рождения. Пожалуйста, введите дату в формате YYYY-MM-DD.");
         return false;
       }
+      else{
+        const today = new Date();
+        const birthDateObj = new Date(date);
+        const age = today.getFullYear() - birthDateObj.getFullYear();
+        if (age < 14 ) {
+          alert("Не корректная дата рождения");
+          return false;
+        }
+      }
     }
+    
     return true;
 
   }

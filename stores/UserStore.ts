@@ -17,6 +17,7 @@ import { IPet } from '@/dtos/Interfaces/pet/IPet';
 import petStore from './PetStore';
 import { Pet } from '@/dtos/classes/pet/Pet';
 import { JobTypeDto } from '@/dtos/Interfaces/job/IJob';
+import { handleAxiosError } from '@/utils/axiosUtils';
 
 
 class UserStore {
@@ -182,6 +183,16 @@ class UserStore {
         throw error;
     }
   }
+
+  async getUserById(id:string): Promise<IUser> {
+    try {
+      const response = await apiClient.get(`/users/${id}`);
+      return response.data as IUser;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+    
+  }
   
   async getCurrentUser(): Promise<IUser> {
     if(this.currentUser?.id) {
@@ -195,7 +206,7 @@ class UserStore {
         console.log('Пользователь загружен из AsyncStorage:');
         return user as IUser;
       } else {
-        console.log('Пользователь не найден');
+        console.log('Пользователь не найден1');
         return null as unknown as IUser;
       }
     }
@@ -212,7 +223,7 @@ class UserStore {
         console.log('Пользователь загружен из AsyncStorage:');
         return user as IUser;
       } else {
-        console.log('Пользователь не найден');
+        console.log('Пользователь не найден2');
         return null as unknown as IUser;
       }
     
@@ -224,7 +235,7 @@ class UserStore {
       
       const userCred = await signInWithEmailAndPassword(email, password);
       const token = await userCred.user.getIdToken();
-      console.log('Token:', process.env.EXPO_PUBLIC_F_TOKEN);
+      console.log('Token:', token);
       await AsyncStorage.setItem(process.env.EXPO_PUBLIC_F_TOKEN!, token);
       runInAction(() => {this.setLoginedUser(userCred);});
       await this.loadUserAfterSignIn();
@@ -385,7 +396,6 @@ class UserStore {
         // Общая информация об ошибке
         console.error('Error:', error);
       }
-      throw error;
     } 
   }
 

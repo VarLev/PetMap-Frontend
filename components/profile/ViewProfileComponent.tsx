@@ -10,7 +10,6 @@ import CustomTextComponent from '../custom/text/CustomTextComponent';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import { calculateDogAge, calculateHumanAge, getTagsByIndex } from '@/utils/utils';
 import CustomSocialLinkInput from '../custom/text/SocialLinkInputProps';
-import { Pet } from '@/dtos/classes/pet/Pet';
 import { router } from 'expo-router';
 import petStore from '@/stores/PetStore';
 import { BREEDS_TAGS, INTEREST_TAGS, LANGUAGE_TAGS, PETGENDERS_TAGS, petUriImage, PROFESSIONS_TAGS } from '@/constants/Strings';
@@ -21,12 +20,13 @@ import AddCard from '../custom/buttons/AddCard';
 
 
 
-const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => void, onPetOpen: (petId:string) => void }) => {
+const ViewProfileComponent = observer(({ onEdit, onPetOpen, loadedUser }: { onEdit: () => void, onPetOpen: (petId:string) => void, loadedUser: IUser }) => {
   //const user = userStore.currentUser!;
-  const [user, setUser] = useState<IUser>(userStore.currentUser!);
+  const [user, setUser] = useState<IUser>(loadedUser);
   const sheetRef = useRef<BottomSheet>(null);
   const [menuVisible, setMenuVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
 
   useEffect(() => {
     sheetRef.current?.expand();
@@ -34,8 +34,17 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
   }, []);
 
   const loadData = async () => {
-    await userStore.loadUser();
-    setUser(userStore.currentUser as User);
+    if (user.id === userStore.currentUser?.id) {
+      // Загружаем текущего пользователя
+      //await userStore.loadUser();
+      setUser(user);
+      setIsCurrentUser(true);
+    } else {
+      // Загружаем другого пользователя
+      const otherUser = await userStore.getUserById(loadedUser.id);
+      setUser(otherUser as User);
+      setIsCurrentUser(false);
+    }
     
   };
 
@@ -71,7 +80,8 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
             <View className="relative w-full aspect-square">
               <Image source={{ uri: user?.thumbnailUrl! }} className="w-full h-full" />
               <View style={styles.iconContainer}>
-                <Menu 
+                {isCurrentUser && (
+                  <Menu 
                   style={{marginTop: 25}}
                   visible={menuVisible}
                   onDismiss={closeMenu}
@@ -90,6 +100,8 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
                   <Menu.Item onPress={logOut} title="Выйти" titleStyle={{color:'balck', fontFamily:'NunitoSans_400Regular'}} leadingIcon='exit-to-app'/>
                   <Menu.Item onPress={closeMenu} title="Удалить аккаунт" titleStyle={{color:'balck', fontFamily:'NunitoSans_400Regular'}} leadingIcon='delete-outline'/>
                 </Menu>
+                )}
+                
               </View>
             </View>
           </View>
@@ -120,8 +132,9 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen}: { onEdit: () => voi
                 </Card>
               </TouchableOpacity>
             )}
+            
             ListFooterComponent={() => (
-              <AddCard buttonText='Добавить питомца' onPress={handleAddPet}/>
+              isCurrentUser ? <AddCard buttonText='Добавить питомца' onPress={handleAddPet} /> : null
             )}
           />
           

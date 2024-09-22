@@ -16,12 +16,18 @@ import { BREEDS_TAGS, DOGGAMES_TAGS, DOGVACCINATIONS_TAGS, PETGENDERS_TAGS, PETH
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 
 
-const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: () => void,}) => {
+const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: () => void}) => {
   const sheetRef = useRef<BottomSheet>(null);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [isCurrentUser, setIsCurrentUser] = useState( false);
   
   useEffect(() => {
     petStore.setPetProfile(pet);
+    petStore.currentUserPets?.forEach((p) => {
+      if(p.id === pet.id){
+        setIsCurrentUser(true);
+      }
+    });
   }, [pet]);
 
   const openMenu = () => setMenuVisible(true);
@@ -44,14 +50,14 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
         <View style={{ alignItems: 'center'}}>
           <StatusBar backgroundColor="transparent" translucent />
           <View className="relative w-full aspect-square">
-            
+ 
             <Image source={{ uri: pet?.thumbnailUrl || petUriImage }} className="w-full h-full" />
            <View className='flex-row w-full justify-between items-center pr-3' style={styles.iconBackContainer}>
             <View className='bg-white rounded-full opacity-70' >
              <IconButton icon='arrow-left' size={25} iconColor='black'  onPress={()=>{router.back()}}/> 
             </View>
             <View >
-              <Menu 
+              {isCurrentUser &&(<Menu 
                 style={{marginTop: 25}}
                 visible={menuVisible}
                 onDismiss={closeMenu}
@@ -68,7 +74,8 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
               >
                 <Menu.Item onPress={onEdit} title="Редактировать" rippleColor='black' titleStyle={{color:'balck'}} leadingIcon='pencil-outline'/>
                 <Menu.Item onPress={onDelete} title="Удалить питомца" titleStyle={{color:'balck'}} leadingIcon='delete-outline'/>
-              </Menu>
+              </Menu>)}
+              
             </View>
            </View>
             

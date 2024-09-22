@@ -15,7 +15,7 @@ apiClient.interceptors.request.use(
         const token = await AsyncStorage.getItem(process.env.EXPO_PUBLIC_F_TOKEN!);
         if (token) {
             // Использование токена в заголовке Authorization
-            config.headers['Authorization'] = `Bearer ${token}`;
+            config.headers.Authorization = `Bearer ${token}`;
         } else {
             // Использование токена в параметре запроса
             config.params = config.params || {};

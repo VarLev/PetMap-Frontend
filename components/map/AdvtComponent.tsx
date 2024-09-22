@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, Image, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Button, Surface } from 'react-native-paper';
@@ -9,10 +9,13 @@ import { User } from '@/dtos/classes/user/UserDTO';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import CustomTextComponent from '../custom/text/CustomTextComponent';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { calculateDogAge } from '@/utils/utils';
+import { calculateDogAge, getTagsByIndex } from '@/utils/utils';
 import { router } from 'expo-router';
 import mapStore from '@/stores/MapStore';
-import { petUriImage } from '@/constants/Strings';
+import { BREEDS_TAGS, petUriImage } from '@/constants/Strings';
+import { IUserAdvrt } from '@/dtos/Interfaces/user/IUserAdvrt';
+import { WalkRequestStatus } from '@/dtos/enum/WalkRequestStatus';
+import CustomConfirmAlert from '../custom/alert/CustomConfirmAlert';
 
 
 interface AdvtProps {
@@ -23,17 +26,34 @@ interface AdvtProps {
 
 const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClose}) => {
   const pets = advrt.userPets;// Берем первого питомца из списка
-
-  console.log('advrt.userPets', advrt.userPets);
-  console.log('advrt.participants', advrt.participants);
+  const [participants, setParticipants] = React.useState<IUserAdvrt[]>([]);
+  const [requestVisible, setRequestVisible] = React.useState(false);
+  
+  useEffect(() => {
+      const fetchParticipants = async () => {
+        if(advrt.id){
+          const users = await mapStore.getAllWalkParticipants(advrt.id);
+          setParticipants(users);
+          advrt.participants = users;
+        }
+          
+      };
+      fetchParticipants();
+  }, [advrt.id]);
+  
  
-  const handleInvite = () => {
+  const handleInvite = async () => {
+    setRequestVisible(true);
+  };
+
+  const handleConfirmInvite = async () => {
     var user = new User();
     user.id = advrt.userId!;
     user.name = advrt.userName!;
     user.thumbnailUrl = advrt.userPhoto?? 'https://via.placeholder.com/100';
+    await mapStore.requestJoinWalk(advrt.id!, userStore.currentUser?.id);
     onInvite(user);
-  };
+  }
 
   const handleEdit = () => {
     // Реализуйте редактирование прогулки
@@ -43,22 +63,28 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
   const handleDelete = () => {
     // Реализуйте удаление прогулки
     mapStore.deleteWalkAdvrt(advrt.id!);
-    console.log('Delete walk advrt', mapStore.walkAdvrts.length);
     onClose();
   }
 
   const handleUserProfileOpen = () => {
     if(userStore.currentUser?.id === advrt.userId) {
-      mapStore.setBottomSheetVisible(false);
+      
       router.push('/profile');
     }
+    else{
+      router.push({ pathname: `/(tabs)/profile/${advrt.userId}` as '/(tabs)profile[id]' });
+    }
+    mapStore.setBottomSheetVisible(false);
   }
 
   const handlePetProfileOpen = (petId:string) => {
     if(userStore.currentUser?.id === advrt.userId) {
-      mapStore.setBottomSheetVisible(false);
+      
       router.push({ pathname: '/profile/pet/[petId]', params: { petId: petId } });
+    }else{
+      router.push({ pathname: '/(tabs)/profile/pet/[petId]', params: { petId: petId } });
     }
+    mapStore.setBottomSheetVisible(false);
   }
 
   return (
@@ -67,28 +93,51 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
         
         <View className="flex-row">
           <TouchableOpacity className='rounded-2xl'  onPress={handleUserProfileOpen}>
-            <Image source={{ uri: advrt?.userPhoto|| 'https://via.placeholder.com/100' }} className="w-36 h-36 rounded-2xl" />
+            <Image source={{ uri: advrt?.userPhoto|| 'https://via.placeholder.com/100' }} className="w-24 h-24 rounded-2xl" />
           </TouchableOpacity>
-          <View className="flex-col ml-4 justify-between">
-            <Text className="text-2xl font-nunitoSansBold">{advrt.userName|| 'Owner'}</Text>
+          <View className="w-60 ml-4 justify-between">
+            <Text className="w-full text-2xl font-nunitoSansBold">{advrt.userName|| 'Owner'}</Text>
             <CustomTextComponent 
               text={advrt.date ? new Date(advrt.date).toLocaleTimeString() : 'Дата не указана'} 
               leftIcon='time-outline' 
               iconSet='ionicons' 
-              style={{ paddingVertical: 1 }} 
+              className_='p-0'
             />
-            <CustomTextComponent text={advrt.address || 'Место'}  leftIcon='location-pin' iconSet='simpleLine' style={{  paddingVertical: 1 }}/>
-            <View className='h-16 pt-2'>
-              {userStore.currentUser?.id === advrt.userId ? (
-                <View/>
-              ) : (
-                <Button mode="contained" className="mt-2 w-48 bg-indigo-800" onPress={handleInvite}>
-                  <Text className='w-96 font-nunitoSansRegular text-white'>Пригласить</Text>
-                </Button>
-              )}
-            </View>       
+            <CustomTextComponent text={advrt.address || 'Место'}  leftIcon='location-pin' iconSet='simpleLine' className_='p-0' />
+  
           </View>
         </View>
+        <Text className="text-sm text-gray-500 font-nunitoSansBold">Учасники</Text>
+        <View className="flex-row items-center">
+          
+        {participants && participants
+          .filter((p) => p.status === WalkRequestStatus.Pending || p.status === WalkRequestStatus.Approved) // Фильтруем участников по статусу
+          .map((p, index) => (
+            <View className="pt-1 items-center w-14 h-14 overflow-hidden" key={index}>
+              <Image 
+                source={{ uri: p?.thumbnailUrl || 'https://via.placeholder.com/100'  }} 
+                className="w-10 h-10 rounded-full"
+                style={p.status === 0 ? { opacity: 0.5 } : {}} // Добавляем полупрозрачность для статуса 0
+              />
+              <Text className="text-xs text-gray-500 font-nunitoSansBold text-center">{p?.name}</Text>
+            </View>
+          ))
+        }
+          
+        </View>
+
+
+        {(userStore.currentUser?.id === advrt.userId || advrt.participants?.find(p => p.id === userStore.currentUser?.id)) ? (
+            <Button disabled mode="contained" className="mt-2 bg-gray-400" onPress={handleInvite}>
+              <Text  className='font-nunitoSansRegular text-white'>Присоединиться к прогулке</Text>
+            </Button>
+          ) : (
+            <View className='h-16 pt-2'>
+            <Button mode="contained" className="mt-2 bg-indigo-800" onPress={handleInvite}>
+              <Text className='font-nunitoSansRegular text-white'>Присоединиться к прогулке</Text>
+            </Button>
+            </View> 
+        )}
  
         {pets && pets.map((pet, index) => (
           <Surface key={index} elevation={0} className="mt-4 p-1 flex-row bg-purple-100 rounded-2xl">
@@ -102,7 +151,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
                       <Ionicons name="male" size={18} color="indigo" />
                       <Text className="pl-1 text-xl font-nunitoSansBold">{pet.petName || 'Pet'},</Text>
                     </View>
-                    <Text className="text-sm -mt-1 font-nunitoSansRegular"> {calculateDogAge(pet.birthDate)} {pet.breed || 'Порода'}</Text>
+                    <Text className="text-sm -mt-1 font-nunitoSansRegular"> {calculateDogAge(pet.birthDate)} {getTagsByIndex(BREEDS_TAGS, pet.breed!)  || 'Порода'}</Text>
                 </View>
                 <View className='flex-col pt-1 '>
                   <View className='flex-row justify-between items-center'>              
@@ -140,6 +189,14 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
           )}
         </View>       
       </View>
+      <CustomConfirmAlert 
+        isVisible={requestVisible} 
+        onClose={()=>{setRequestVisible(false)}} 
+        onConfirm={()=>{handleConfirmInvite}} 
+        message='Между вами и владельцем питомца будет создан чат и отправлен запрос на присоединение к прогулке' 
+        title='Отправка запроса' 
+        confirmText='Ок' 
+        cancelText='Отмена'/>
     </ScrollView>
   );
 });

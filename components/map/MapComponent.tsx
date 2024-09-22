@@ -36,10 +36,7 @@ import EditUserPoint from './point/EditUserPoint';
 import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
 import { Feature, FeatureCollection, Point } from 'geojson';
 import ViewUserPoint from './point/ViewUserPoint';
-
-
-
-
+import CustomAlert from '../custom/alert/CustomAlert';
 
 
 const MapBoxMap = observer(() => {
@@ -64,6 +61,9 @@ const MapBoxMap = observer(() => {
   
   const [geoJSONData, setGeoJSONData] = useState<FeatureCollection<Point> | null>(null);
   const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [alertType, setAlertType] = useState<'error' | 'info'>('info');
+  const [alertText, setAlertText] = useState<string>('');
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
   
@@ -152,11 +152,17 @@ const MapBoxMap = observer(() => {
     })
 
     if(currentPointType === MapPointType.Walk ){
-      setMarkerCoordinate(coordinates);
-      mapStore.setMarker(coordinates);
-      setRenderContent(() => (
-        <AdvtEditComponent coordinates={coordinates} onAdvrtAddedInvite={handleAdvrtAdded}  />
-      ));
+      if((currentUser.petProfiles ?? []).length > 0){
+        setMarkerCoordinate(coordinates);
+        mapStore.setMarker(coordinates);
+        setRenderContent(() => (
+          <AdvtEditComponent coordinates={coordinates} onAdvrtAddedInvite={handleAdvrtAdded}  />
+        ));
+      }else{
+        setAlertText('Для создания прогулки необходимо заполнить профиль и добавить питомца');
+        showAlert('info');
+        return;
+      }
     }
     else if(currentPointType === MapPointType.Danger){ 
 
@@ -346,6 +352,11 @@ const MapBoxMap = observer(() => {
     setScrollEnabled(true);
   };
 
+  const showAlert = (type: 'error' | 'info') => {
+    setAlertType(type);
+    setModalVisible(true);
+  };
+
 
   
   return (
@@ -524,6 +535,13 @@ const MapBoxMap = observer(() => {
         {!isSheetVisible && 
           <FabGroupComponent selectedNumber={currentPointType} setSelectedNumber={hangleSetSelectedNumberPoint}  />
         }  
+        <CustomAlert
+          isVisible={isModalVisible}
+          onClose={() => setModalVisible(false)}
+          message={alertText}
+          type={alertType}
+          title={alertType === 'error' ? 'Ошибка' : 'Информация'}
+        />
       </SafeAreaView>
     </Provider>
   );

@@ -16,6 +16,7 @@ const CustomInputText = ({ value, placeholder, handleChange, handleClick, contai
   return (
     <View className={`w-full ${containerStyles}`}>
       {label && <Text className={`text-gray-700 text-base font-nunitoSansRegular mb-2 ${labelStyles}`}>{label}</Text>}
+      
       <TextInput
         value={value}
         placeholder={placeholder}
