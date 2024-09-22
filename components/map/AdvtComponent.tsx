@@ -28,6 +28,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
   const pets = advrt.userPets;// Берем первого питомца из списка
   const [participants, setParticipants] = React.useState<IUserAdvrt[]>([]);
   const [requestVisible, setRequestVisible] = React.useState(false);
+  const [userIsOwner, setUserIsOwner] = React.useState(false);
   
   useEffect(() => {
       const fetchParticipants = async () => {
@@ -35,6 +36,9 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
           const users = await mapStore.getAllWalkParticipants(advrt.id);
           setParticipants(users);
           advrt.participants = users;
+          if(userStore.currentUser?.id === advrt.userId){
+            setUserIsOwner(true);
+          }
         }
           
       };
@@ -66,19 +70,18 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
     onClose();
   }
 
-  const handleUserProfileOpen = () => {
-    if(userStore.currentUser?.id === advrt.userId) {
-      
+  const handleUserProfileOpen = (userId:string) => {
+    if(advrt.userId === userId) {
       router.push('/profile');
     }
     else{
-      router.push({ pathname: `/(tabs)/profile/${advrt.userId}` as '/(tabs)profile[id]' });
+      router.push({ pathname: `/(tabs)/profile/${userId}` as '/(tabs)profile[id]' });
     }
     mapStore.setBottomSheetVisible(false);
   }
 
   const handlePetProfileOpen = (petId:string) => {
-    if(userStore.currentUser?.id === advrt.userId) {
+    if(userIsOwner) {
       
       router.push({ pathname: '/profile/pet/[petId]', params: { petId: petId } });
     }else{
@@ -92,7 +95,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
       <View className="h-full bg-white px-4">
         
         <View className="flex-row">
-          <TouchableOpacity className='rounded-2xl'  onPress={handleUserProfileOpen}>
+          <TouchableOpacity className='rounded-2xl'  onPress={()=> handleUserProfileOpen(advrt.userId!)}>
             <Image source={{ uri: advrt?.userPhoto|| 'https://via.placeholder.com/100' }} className="w-24 h-24 rounded-2xl" />
           </TouchableOpacity>
           <View className="w-60 ml-4 justify-between">
@@ -110,32 +113,34 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
         <Text className="text-sm text-gray-500 font-nunitoSansBold">Учасники</Text>
         <View className="flex-row items-center">
           
-        {participants && participants
+        {userIsOwner && participants && participants
           .filter((p) => p.status === WalkRequestStatus.Pending || p.status === WalkRequestStatus.Approved) // Фильтруем участников по статусу
           .map((p, index) => (
-            <View className="pt-1 items-center w-14 h-14 overflow-hidden" key={index}>
-              <Image 
-                source={{ uri: p?.thumbnailUrl || 'https://via.placeholder.com/100'  }} 
-                className="w-10 h-10 rounded-full"
-                style={p.status === 0 ? { opacity: 0.5 } : {}} // Добавляем полупрозрачность для статуса 0
-              />
-              <Text className="text-xs text-gray-500 font-nunitoSansBold text-center">{p?.name}</Text>
-            </View>
+            <TouchableOpacity key={index} onPress={()=> handleUserProfileOpen(p.id)}>
+              <View className="pt-1 items-center w-14 h-14 overflow-hidden" key={index}>
+                <Image 
+                  source={{ uri: p?.thumbnailUrl || 'https://via.placeholder.com/100'  }} 
+                  className="w-10 h-10 rounded-full"
+                  style={p.status === 0 ? { opacity: 0.5 } : {}} // Добавляем полупрозрачность для статуса 0
+                />
+                <Text className="text-xs text-gray-500 font-nunitoSansBold text-center">{p?.name}</Text>
+              </View>
+            </TouchableOpacity>
           ))
         }
           
         </View>
 
 
-        {(userStore.currentUser?.id === advrt.userId || advrt.participants?.find(p => p.id === userStore.currentUser?.id)) ? (
+        {(userIsOwner || advrt.participants?.find(p => p.id === userStore.currentUser?.id)) ? (
             <Button disabled mode="contained" className="mt-2 bg-gray-400" onPress={handleInvite}>
               <Text  className='font-nunitoSansRegular text-white'>Присоединиться к прогулке</Text>
             </Button>
           ) : (
             <View className='h-16 pt-2'>
-            <Button mode="contained" className="mt-2 bg-indigo-800" onPress={handleInvite}>
-              <Text className='font-nunitoSansRegular text-white'>Присоединиться к прогулке</Text>
-            </Button>
+              <Button mode="contained" className="mt-2 bg-indigo-800" onPress={handleInvite}>
+                <Text className='font-nunitoSansRegular text-white'>Присоединиться к прогулке</Text>
+              </Button>
             </View> 
         )}
  
@@ -180,7 +185,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
           </ScrollView>
         </View>
         <View className='h-16 pt-2'>
-          {userStore.currentUser?.id === advrt.userId ? (
+          {userIsOwner ? (
             <Button mode="contained" className="mt-2 bg-indigo-800" onPress={handleDelete}>
               <Text className='font-nunitoSansRegular text-white'>Удалить прогулку</Text>
             </Button>
@@ -192,7 +197,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
       <CustomConfirmAlert 
         isVisible={requestVisible} 
         onClose={()=>{setRequestVisible(false)}} 
-        onConfirm={()=>{handleConfirmInvite}} 
+        onConfirm={()=>handleConfirmInvite()} 
         message='Между вами и владельцем питомца будет создан чат и отправлен запрос на присоединение к прогулке' 
         title='Отправка запроса' 
         confirmText='Ок' 

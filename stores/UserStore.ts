@@ -112,10 +112,10 @@ class UserStore {
 
     try {
       console.log('Загрузка пользователей');
-      const response = await apiClient.get('/users/all'); // Запрос к серверу
-      runInAction(() => {
-        this.users = response.data.map((user: User) => new User(user));
-      });
+      //const response = await apiClient.get('/users/all'); // Запрос к серверу
+      // runInAction(() => {
+      //   this.users = response.data.map((user: User) => new User(user));
+      // });
     
       return this.users;
     } catch (error) {
