@@ -22,8 +22,9 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
   const [isCurrentUser, setIsCurrentUser] = useState( false);
   
   useEffect(() => {
-    petStore.setPetProfile(pet);
+    //console.log(pet);
     petStore.currentUserPets?.forEach((p) => {
+      console.log(p.id, pet.id);
       if(p.id === pet.id){
         setIsCurrentUser(true);
       }
@@ -193,3 +194,7 @@ const styles = StyleSheet.create({
   }
   
 });
+
+function loadUser() {
+  throw new Error('Function not implemented.');
+}

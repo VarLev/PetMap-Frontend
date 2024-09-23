@@ -1,4 +1,4 @@
-import { View, Text} from 'react-native';
+import { View, Text, ActivityIndicator} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import userStore from '@/stores/UserStore';
@@ -8,16 +8,20 @@ import EmptyUserProfile from '@/components/profile/EmptyUserProfile';
 import { router } from 'expo-router';
 
 const Profile = observer(() => {
-  const [editableUser, setEditableUser] = useState<User>(userStore.currentUser!);
+  const [editableUser, setEditableUser] = useState<User>();
   const [isEmpty, setIsEmpty] = useState(false);
  
   useEffect(() => {
-    setEditableUser(userStore.currentUser!);
-    if(!editableUser?.name || editableUser?.name === '' || editableUser?.name === null) {
-      console.log(editableUser);
-      setIsEmpty(true);
-    }
-  }, []);
+    const loadUser = async () => {
+      const loadedUser = await userStore.loadUser();
+      setEditableUser(loadedUser as User);
+      if(!loadedUser?.name || loadedUser?.name === '' || loadedUser?.name === null) {
+        console.log(editableUser);
+        setIsEmpty(true);
+      }
+    };
+    loadUser();
+    }, []);
 
   const handleEdit = () => {
     router.push('/profile/editUser');
@@ -29,12 +33,13 @@ const Profile = observer(() => {
   }
 
   if (!editableUser) {
-    
     return (
       <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="#0000ff" />
         <Text>Loading...</Text>
       </View>
     );
+    
   }
 
   return (

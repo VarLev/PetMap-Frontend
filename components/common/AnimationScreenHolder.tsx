@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
-import { Button, StyleSheet, View, Image} from 'react-native';
+import { StyleSheet, View, Image} from 'react-native';
 import LottieView from 'lottie-react-native';
+import { router } from 'expo-router';
 
 export default function AnimationScreenHolder() {
   const animation = useRef<LottieView>(null);
@@ -18,8 +19,9 @@ export default function AnimationScreenHolder() {
         style={{width: "100%", height: "100%", backgroundColor:'transparent'}}
         // Find more Lottie files at https://lottiefiles.com/featured
         source={require('@/assets/animations/screensaver.json')}
-        imageAssetsFolder='assets/animations/images'
+        imageAssetsFolder={'assets/animations/images'}
         loop = {false}
+        onAnimationFinish={()=>{router.replace('/map')}}
       />
       
     </View>

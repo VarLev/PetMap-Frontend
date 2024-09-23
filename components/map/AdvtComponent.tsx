@@ -71,11 +71,13 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
   }
 
   const handleUserProfileOpen = (userId:string) => {
-    if(advrt.userId === userId) {
+    if(userIsOwner) {
+      console.log('userIsOwner', userIsOwner);
       router.push('/profile');
     }
     else{
-      router.push({ pathname: `/(tabs)/profile/${userId}` as '/(tabs)profile[id]' });
+      console.log('userIsOwner', userIsOwner);
+      router.push(`/(tabs)/profile/${userId}`);
     }
     mapStore.setBottomSheetVisible(false);
   }

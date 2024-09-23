@@ -1,4 +1,4 @@
-import React, { ReactNode, useRef, useState } from "react";
+import React, { ReactNode, useContext, useRef, useState } from "react";
 import {
   View,
   Dimensions,
@@ -33,6 +33,8 @@ import { avatarsStringF, avatarsStringM } from "@/constants/Avatars";
 import { BREEDS_TAGS } from "@/constants/Strings";
 import CustomDropdownList from "../custom/selectors/CustomDropdownList";
 import { setUserAvatarDependOnGender } from "@/utils/utils";
+import { BonusContex } from "@/contexts/BonusContex";
+import { useControl } from "@/hooks/useBonusControl";
 
 const { width, height } = Dimensions.get("window");
 
@@ -40,6 +42,21 @@ interface OnBoardingProfileProps {
   onLanguageSelect: (language: number) => void;
   onComplete: (user: IUser) => void; // Добавляем функцию для завершения
 }
+
+const TASK_IDS = {
+  userEdit:{
+    user_name: 13,
+    user_birthDate: 14,
+    user_gender: 15,
+    user_photo: 16,
+    dog_name: 17,
+    dog_breed: 18,
+    dog_birthDate: 19,
+    dog_gender: 20,
+    dog_photo: 21
+  } 
+};
+
 
 const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   onLanguageSelect,
@@ -73,6 +90,20 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   const sheetRef = useRef<BottomSheet>(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [renderContent, setRenderContent] = useState<ReactNode>(() => null);
+
+  const { completedJobs } = useContext(BonusContex)!;
+
+  // Используем useControl для каждого поля
+  useControl('user_name', editableUser.name, {id : TASK_IDS.userEdit.user_name, description:'user name'});
+  useControl('user_birthDate', age, {id:TASK_IDS.userEdit.user_birthDate, description:'user birthDate'});
+  useControl('user_gender', gender, { id: TASK_IDS.userEdit.user_gender, description:'user gender' });
+  useControl('user_photo', source, { id: TASK_IDS.userEdit.user_photo, description:'user photo' });
+  useControl('dog_name', petName, { id: TASK_IDS.userEdit.dog_name, description:'dog name' });
+  useControl('dog_breed', selectedBreed, { id: TASK_IDS.userEdit.dog_breed, description:'dog breed' });
+  useControl('dog_birthDate', petAge, { id: TASK_IDS.userEdit.dog_birthDate, description:'dog birthDate' });
+  useControl('dog_gender', petGender, { id: TASK_IDS.userEdit.dog_gender, description:'dog gender' });
+  useControl('dog_photo', sourcePet, { id: TASK_IDS.userEdit.dog_photo, description:'dog photo' });
+  
 
   const handleIndex = (index: number) => {
     setCurrentIndex(index);
@@ -110,6 +141,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   };
 
   const handleNext = () => {
+    
     if (currentIndex < data.length - 1) {
       const nextIndex = currentIndex + 1;
       setCurrentIndex(nextIndex);
@@ -135,10 +167,26 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       currentUser!.name = name;
       currentUser!.gender = gender;
       currentUser!.birthDate = age;
-      currentUser!.thumbnailUrl = userImage?? SetRandomAvatarDependOnGender();
-      currentUser!.petProfiles = [newPetProfile as IPet];
-
-      onComplete(currentUser as IUser);
+      if(userImage === '' || userImage === null || userImage === undefined) {
+        const newAvatar = SetRandomAvatarDependOnGender();
+        userStore.fetchImageUrl(newAvatar).then((resp) => {
+          if (resp) {
+            console.log('resp', resp);
+            currentUser.thumbnailUrl = resp;
+          }
+          currentUser!.petProfiles = [newPetProfile as IPet];
+          currentUser.jobs = completedJobs;
+          // Продолжает выполнение onComplete после получения результата
+          onComplete(currentUser as IUser);
+        });
+      }
+      else {
+        currentUser.thumbnailUrl = userImage;
+        currentUser!.petProfiles = [newPetProfile as IPet];
+        currentUser.jobs = completedJobs;
+        onComplete(currentUser as IUser);
+      }
+      router.replace('/screenholder');
     }
   };
 
@@ -196,24 +244,25 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   };
 
   const handleEscape = async () => {
-      const currentUser = userStore.currentUser!;
-      currentUser.gender = 0;
-      if(userImage === '' || userImage === null || userImage === undefined) {
-        
-        const newAvatar = SetRandomAvatarDependOnGender();
-        
-        const resp = await userStore.fetchImageUrl(newAvatar)
-        if (resp) {
-          console.log('resp',resp);
-          currentUser.thumbnailUrl = resp;
-        }
-        
-      }
-      else 
-        currentUser.thumbnailUrl = userImage;
-      //router.replace('/(tabs)/map');
+    router.replace('/screenholder');
+    const currentUser = userStore.currentUser!;
+    currentUser.gender = 0;
+    if(userImage === '' || userImage === null || userImage === undefined) {
       
-      onComplete(currentUser);
+      const newAvatar = SetRandomAvatarDependOnGender();
+      
+      const resp = await userStore.fetchImageUrl(newAvatar)
+      if (resp) {
+        console.log('resp',resp);
+        currentUser.thumbnailUrl = resp;
+      }
+      
+    }
+    else 
+      currentUser.thumbnailUrl = userImage;
+    //router.replace('/(tabs)/map');
+    
+    onComplete(currentUser);
   }
 
   const handleSheetOpen = () => {

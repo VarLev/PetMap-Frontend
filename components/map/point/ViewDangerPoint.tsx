@@ -24,15 +24,10 @@ const ViewDangerPoint: React.FC<CompositeFormProps> = ({mapPoint }) => {
     )}`;
 
     // Проверка, может ли устройство открыть URL
-    Linking.canOpenURL(mapUrl)
-      .then((supported) => {
-        if (supported) {
-          Linking.openURL(mapUrl);
-        } else {
-          Alert.alert('Ошибка', 'Не удается открыть карту.');
-        }
-      })
-      .catch((err) => console.error('Ошибка при попытке открыть URL:', err));
+    Linking.openURL(mapUrl).catch((err) => {
+      Alert.alert('Ошибка', 'Не удается открыть карту.');
+      console.error('Ошибка при попытке открыть URL:', err);
+    });
   };
 
   return (

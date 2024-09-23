@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import OnboardingProfile from '@/components/auth/OnBoardingProfile';
 import userStore from '@/stores/UserStore';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
+import { BonusProvider } from '@/contexts/BonusContex';
 
 const Onboarding = () => {
 
@@ -20,18 +21,21 @@ const Onboarding = () => {
   const handleComplete = async (user: IUser) => {
     
     await userStore.updateUserOnbordingData(user);
-    router.replace('/map');
+    
+    //router.replace('/map');
   
     
   };
 
 
   return (
+    <BonusProvider>
       <SafeAreaView className='bg-violet-100 h-full'>
           <OnboardingProfile 
             onLanguageSelect={handleLanguageSelect}
             onComplete={handleComplete}/>    
       </SafeAreaView>
+    </BonusProvider>
   );
 };
 

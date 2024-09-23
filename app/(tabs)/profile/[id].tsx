@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import userStore from '@/stores/UserStore';
@@ -9,11 +9,16 @@ import { IUser } from '@/dtos/Interfaces/user/IUser';
 
 const UserProfile = observer(() => {
   const { id } = useLocalSearchParams(); // Получаем id из параметров маршрута
-  const [editableUser, setEditableUser] = useState<IUser>();
+  const [editableUser, setEditableUser] = useState<IUser | null>(null);
   const [isEmpty, setIsEmpty] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
+      setLoading(true); // Устанавливаем состояние загрузки
+      setEditableUser(null); // Очищаем данные предыдущего пользователя
+      setIsEmpty(false); // Сбрасываем состояние пустого профиля
+
       if (id) {
         const user = await userStore.getUserById(id as string); // Получаем пользователя по ID
         setEditableUser(user);
@@ -21,19 +26,21 @@ const UserProfile = observer(() => {
           setIsEmpty(true);
         }
       }
+      setLoading(false); // Выключаем состояние загрузки
     };
 
     fetchUser();
-  }, [id]);
+  }, [id]); // Добавляем зависимость на изменение id
 
   const handlePetOpen = (petId:string) => {
     router.push(`/profile/pet/${petId}`);
   }
 
-  if (!editableUser) {
+  if (loading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <Text>Загрузка...</Text>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading...</Text>
       </View>
     );
   }
@@ -44,7 +51,7 @@ const UserProfile = observer(() => {
         <EmptyUserProfile />
       ) : (
         <ViewProfileComponent
-          loadedUser={editableUser}
+          loadedUser={editableUser!}
           onEdit={() => {}}
           onPetOpen={(petId:string) => handlePetOpen(petId)}
         />

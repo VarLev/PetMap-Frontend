@@ -125,7 +125,7 @@ class UserStore {
   }
 
 
-  async loadUser() {
+  async loadUser(): Promise<IUser> {
     try {
       const fuid = this.fUser?.user.uid;
       const response = await apiClient.get('/users/me', { params: { fuid } }); // Эндпоинт для получения текущего пользователя
@@ -138,10 +138,12 @@ class UserStore {
         .then(() => console.log('Пользователь сохранен в AsyncStorage'))
         .catch((error) => console.error('Ошибка сохранения пользователя в AsyncStorage', error));
       
+        return this.currentUser;
 
     } catch (error) {
       console.error('Failed to load user', error);
     }
+    return {} as IUser;
   }
 
   async loadUserAfterSignIn() {
@@ -359,7 +361,7 @@ class UserStore {
           if(user.petProfiles![0].thumbnailUrl){
             thumUrl = await this.uploadImage(user.petProfiles![0].thumbnailUrl, `pets/${user.petProfiles![0].id}/thumbnail`);
           }else{
-            const petAvatarUrl = await this.fetchImageUrl(`assets/images/pet/thumbnail`);
+            const petAvatarUrl = await this.fetchImageUrl(`assets/images/pet/thumbnail.png`);
             thumUrl = await this.uploadImage(petAvatarUrl!, `pets/${user.petProfiles![0].id}/thumbnail`);
           }
           this.currentUser.petProfiles![0].thumbnailUrl = thumUrl;
