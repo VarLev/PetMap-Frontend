@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ViewStyle, StyleProp } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -8,14 +8,14 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface CustomTextComponentProps {
-  text?: string | number| string[] | null;
+  text?: string | number | string[] | null;
   leftIcon?: string;
   rightIcon?: string;
   onRightIconPress?: () => void;
   maxLines?: number;
   iconSet?: 'material' | 'paper' | 'fontAwesome' | 'simpleLine' | 'ionicons' | 'materialCommunity';
   separator?: string;
-  style?: StyleProp<ViewStyle>; // Добавляем возможность передавать стили для внешнего View
+  className_?: string; // Используем className для стилизации через NativeWind
 }
 
 const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
@@ -23,15 +23,15 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
   leftIcon,
   rightIcon,
   onRightIconPress,
-  maxLines = 1,
+  maxLines = 2, // Устанавливаем максимум 2 строки по умолчанию
   iconSet = 'material',
   separator = ', ',
-  style, // Получаем стили через пропс
+  className_='', // Используем className для стилизации через NativeWind
 }) => {
   const displayText = Array.isArray(text) ? text.join(separator) : text;
 
   return (
-    <View style={[{ paddingVertical: 8, flexDirection: 'row', alignItems: 'center' }, style]}>
+    <View className={`py-2 flex-row items-center ${className_}`}>
       {leftIcon && (
         iconSet === 'material' ? (
           <MaterialIcons name={leftIcon} size={20} color="#b39ddb" />
@@ -50,8 +50,7 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
       <Text
         numberOfLines={maxLines}
         ellipsizeMode="tail"
-        style={{ flex: 1, paddingLeft: 8, fontSize: 16 }}
-        className='font-nunitoSansRegular'
+        className="flex-1 pl-2 text-base font-nunitoSansRegular"
       >
         {displayText}
       </Text>

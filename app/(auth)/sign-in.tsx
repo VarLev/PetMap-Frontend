@@ -32,7 +32,7 @@ const SignIn = () => {
       await userStore.singInUser(email, password);
       await mapStore.setWalkAdvrts();
       //router.replace('/screenholder');
-      router.replace("/onboarding");
+      router.replace("/(tabs)/map");
     } catch (error: any) {
       Alert.alert("Login Error", error.message.replace("Firebase:", ""));
     }

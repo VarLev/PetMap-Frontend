@@ -1,13 +1,10 @@
 import React from 'react';
 import { View, Text, Image } from 'react-native';
-import { Button } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
 import { useStore } from '@/contexts/StoreProvider';
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
 import { router } from 'expo-router';
 
 export default function EmptyUserProfile() {
-  const navigation = useNavigation();
   const { currentUser } = useStore();
   
   const handleCompleteProfile = () => {
@@ -25,7 +22,7 @@ export default function EmptyUserProfile() {
           Чтобы продолжить необходимо заполнить данные профиля.
         </Text>
         <Image
-          source={require('@/assets/images/onboardingProfile/3user.webp')} // Замените на путь к вашему изображению
+          source={require('../../assets/images/onboardingProfile/3user.webp')} // Замените на путь к вашему изображению
           className="h-64 mb-6"
           resizeMode="contain"
         />

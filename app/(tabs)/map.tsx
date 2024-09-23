@@ -1,12 +1,20 @@
 import MapBoxMap from '@/components/map/MapComponent';
-import React from 'react';
+import userStore from '@/stores/UserStore';
+import { router } from 'expo-router';
+import React, { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
+const Map = () => {
 
+  useEffect(() => {
+    if(!userStore.currentUser.name || userStore.currentUser.name === '' || userStore.currentUser.name === null) {
+      router.push('/(tabs)/profile/');
+    }
+   
+  }, []);
 
-const map = () => {
   return (
    
     <SafeAreaView className='bg-violet-100 h-full'>
@@ -18,4 +26,4 @@ const map = () => {
   )
 }
 
-export default map;
+export default Map;

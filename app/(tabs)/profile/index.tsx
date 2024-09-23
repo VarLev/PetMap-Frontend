@@ -42,7 +42,7 @@ const Profile = observer(() => {
       {isEmpty ? (
         <EmptyUserProfile />
       ) : (
-        <ViewProfileComponent onEdit={handleEdit} onPetOpen={handlePetOpen} />
+        <ViewProfileComponent onEdit={handleEdit} onPetOpen={handlePetOpen} loadedUser={editableUser} />
       )}
     </View>
   );

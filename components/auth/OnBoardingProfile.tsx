@@ -198,20 +198,26 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     });
   };
 
-  const handleEscape = () => {
-    const currentUser = userStore.currentUser!;
-    currentUser.gender = 0;
-    if (userImage === "") {
-      const newAvatar = SetRandomAvatarDependOnGender();
-      userStore.fetchImageUrl(newAvatar).then((resp) => {
+  const handleEscape = async () => {
+      const currentUser = userStore.currentUser!;
+      currentUser.gender = 0;
+      if(userImage === '' || userImage === null || userImage === undefined) {
+        
+        const newAvatar = SetRandomAvatarDependOnGender();
+        
+        const resp = await userStore.fetchImageUrl(newAvatar)
         if (resp) {
+          console.log('resp',resp);
           currentUser.thumbnailUrl = resp;
         }
-      });
-    } else currentUser.thumbnailUrl = userImage;
-    router.replace("/(tabs)/map");
-    //onComplete(currentUser);
-  };
+        
+      }
+      else 
+        currentUser.thumbnailUrl = userImage;
+      //router.replace('/(tabs)/map');
+      
+      onComplete(currentUser);
+  }
 
   const handleSheetOpen = () => {
     setIsSheetVisible(true);

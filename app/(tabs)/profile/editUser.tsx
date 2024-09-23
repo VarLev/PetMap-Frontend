@@ -14,7 +14,7 @@ const EditUserProfile = observer(() => {
 
   const handleSave = async () => {
     await userStore.loadUser(); 
-    router.back();
+    router.push('/(tabs)/profile');
   };
 
   const handleCancel = () => {

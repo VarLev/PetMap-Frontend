@@ -16,6 +16,12 @@ export default function ProfileLayout() {
         }} 
       />
       <Stack.Screen 
+        name="[id]" 
+        options={{ 
+          headerShown: false,
+        }} 
+      />
+      <Stack.Screen 
         name="editUser" 
         options={{ 
           title: 'Редактирование профиля',

@@ -14,6 +14,7 @@ import { MapPointType } from '@/dtos/enum/MapPointType';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from '@/firebaseConfig';
 import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
+import { IUserAdvrt } from '@/dtos/Interfaces/user/IUserAdvrt';
 
 class MapStore {
   address = '';
@@ -398,6 +399,66 @@ class MapStore {
     const downloadURL = await getDownloadURL(storageRef);
     return downloadURL;
   };
+
+  async requestJoinWalk(walkId: string, userId: string) {
+    try {
+      console.log('Request join walk', walkId, userId);
+      const response = await apiClient.post(`walkadvrt/join/${walkId}`, {
+        userId: userId // Передаем как объект
+      } );
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) 
+      {
+        // Подробная информация об ошибке Axios
+        console.error('Axios error:', {
+            message: error.message,
+            name: error.name,
+            code: error.code,
+            config: error.config,
+            response: error.response ? {
+                data: error.response.data.errors,
+                status: error.response.status,
+                headers: error.response.headers,
+            } : null
+        });
+      } 
+      else {
+        // Общая информация об ошибке
+        console.error('Error:', error);
+      }
+    }
+  }
+
+  async getAllWalkParticipants(walkId: string): Promise<IUserAdvrt[]> {
+    try {
+      console.log('Get all walk participants', walkId);
+      const response = await apiClient.get(`walkadvrt/participants/${walkId}`);
+      console.log('Participants:', response.data);
+      return response.data as IUserAdvrt[];
+    } catch (error) {
+      if (axios.isAxiosError(error)) 
+      {
+        // Подробная информация об ошибке Axios
+        console.error('Axios error:', {
+            message: error.message,
+            name: error.name,
+            code: error.code,
+            config: error.config,
+            response: error.response ? {
+                data: error.response.data.errors,
+                status: error.response.status,
+                headers: error.response.headers,
+            } : null
+        });
+      } 
+      else {
+        // Общая информация об ошибке
+        console.error('Error:', error);
+      }
+      throw error;
+    }
+  }
 }
 
 const mapStore = new MapStore();

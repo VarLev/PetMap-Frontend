@@ -37,7 +37,9 @@ export function calculateDogAge(birthDate?: Date | null | undefined): string {
 
 export function calculateHumanAge(birthDate?: Date | null): string {
   const today = new Date();
-  if (!birthDate) return '';
+  if (!birthDate || !(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
+    return ''; // Возвращаем пустую строку, если birthDate некорректный
+  }
 
   let ageYears = today.getFullYear() - birthDate.getFullYear();
   let ageMonths = today.getMonth() - birthDate.getMonth();
