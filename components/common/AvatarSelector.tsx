@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { FlatList, Pressable, View, Image } from 'react-native';
-import { femaleAvatars, maleAvatars } from '@/constants/Avatars';
-import { Button, Text, Switch } from 'react-native-paper';
+import React, { useState } from "react";
+import { FlatList, Pressable, View, Image } from "react-native";
+import { femaleAvatars, maleAvatars } from "@/constants/Avatars";
+import { Button, Text, Switch } from "react-native-paper";
+import { ScrollView } from "react-native-gesture-handler";
 
 interface AvatarSelectorProps {
-  onAvatarSelect: (avatar: number, isMail:boolean) => void;
+  onAvatarSelect: (avatar: number, isMail: boolean) => void;
 }
 
 const AvatarSelector: React.FC<AvatarSelectorProps> = ({ onAvatarSelect }) => {
@@ -31,18 +32,19 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({ onAvatarSelect }) => {
         <Text className="text-xl ml-2">Мужские</Text>
       </View>
 
-      <Text className="text-center text-xl mb-4">
-        Выберите своего аватара!
+      <Text className="text-center text-xl mb-4">Выберите своего аватара!</Text>
+      <Text className=" leading-tight text-md font-nunitoSansRegular text-center">
+        Данное изображение будет отображаться в вашем профиле и его будут видеть
+        другие пользователи.
       </Text>
 
       <FlatList
         data={avatars}
-        
         renderItem={({ item, index }) => (
           <Pressable
             onPress={() => handleAvatarSelect(index)}
             className={`m-2 p-2 rounded ${
-              selectedAvatar === index ? 'border-2 border-purple-500' : ''
+              selectedAvatar === index ? "border-2 border-purple-500" : ""
             }`}
           >
             <Image
@@ -58,7 +60,7 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({ onAvatarSelect }) => {
       <Button
         mode="contained"
         onPress={() => {
-          console.log('Selected avatar index:', selectedAvatar);
+          console.log("Selected avatar index:", selectedAvatar);
         }}
         className="mt-4 bg-indigo-700"
       >
