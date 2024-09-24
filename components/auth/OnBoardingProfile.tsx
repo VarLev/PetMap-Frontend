@@ -22,20 +22,24 @@ import userStore from "@/stores/UserStore";
 import { IPet } from "@/dtos/Interfaces/pet/IPet";
 import CustomInputText from "../custom/inputs/CustomInputText";
 import * as Crypto from "expo-crypto";
-
 import { User } from "@/dtos/classes/user/UserDTO";
 import CustomSegmentedButtons from "../custom/buttons/CustomSegmentedButtons";
 import { router } from "expo-router";
 import BottomSheetComponent from "../common/BottomSheetComponent";
 import BottomSheet from "@gorhom/bottom-sheet";
 import AvatarSelector from "../common/AvatarSelector";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  GestureHandlerRootView,
+  ScrollView,
+} from "react-native-gesture-handler";
 import { avatarsStringF, avatarsStringM } from "@/constants/Avatars";
 import { BREEDS_TAGS } from "@/constants/Strings";
 import CustomDropdownList from "../custom/selectors/CustomDropdownList";
 import { setUserAvatarDependOnGender } from "@/utils/utils";
 import { BonusContex } from "@/contexts/BonusContex";
 import { useControl } from "@/hooks/useBonusControl";
+import CustomTagsSelector from "../custom/selectors/CustomTagsSelector";
+import { INTEREST_TAGS } from "@/constants/Strings";
 
 const { width, height } = Dimensions.get("window");
 
@@ -45,7 +49,7 @@ interface OnBoardingProfileProps {
 }
 
 const TASK_IDS = {
-  userEdit:{
+  userEdit: {
     user_name: 13,
     user_birthDate: 14,
     user_gender: 15,
@@ -54,10 +58,9 @@ const TASK_IDS = {
     dog_breed: 18,
     dog_birthDate: 19,
     dog_gender: 20,
-    dog_photo: 21
-  } 
+    dog_photo: 21,
+  },
 };
-
 
 const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   onLanguageSelect,
@@ -95,16 +98,42 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   const { completedJobs } = useContext(BonusContex)!;
 
   // Используем useControl для каждого поля
-  useControl('user_name', editableUser.name, {id : TASK_IDS.userEdit.user_name, description:'user name'});
-  useControl('user_birthDate', age, {id:TASK_IDS.userEdit.user_birthDate, description:'user birthDate'});
-  useControl('user_gender', gender, { id: TASK_IDS.userEdit.user_gender, description:'user gender' });
-  useControl('user_photo', source, { id: TASK_IDS.userEdit.user_photo, description:'user photo' });
-  useControl('dog_name', petName, { id: TASK_IDS.userEdit.dog_name, description:'dog name' });
-  useControl('dog_breed', selectedBreed, { id: TASK_IDS.userEdit.dog_breed, description:'dog breed' });
-  useControl('dog_birthDate', petAge, { id: TASK_IDS.userEdit.dog_birthDate, description:'dog birthDate' });
-  useControl('dog_gender', petGender, { id: TASK_IDS.userEdit.dog_gender, description:'dog gender' });
-  useControl('dog_photo', sourcePet, { id: TASK_IDS.userEdit.dog_photo, description:'dog photo' });
-  
+  useControl("user_name", editableUser.name, {
+    id: TASK_IDS.userEdit.user_name,
+    description: "user name",
+  });
+  useControl("user_birthDate", age, {
+    id: TASK_IDS.userEdit.user_birthDate,
+    description: "user birthDate",
+  });
+  useControl("user_gender", gender, {
+    id: TASK_IDS.userEdit.user_gender,
+    description: "user gender",
+  });
+  useControl("user_photo", source, {
+    id: TASK_IDS.userEdit.user_photo,
+    description: "user photo",
+  });
+  useControl("dog_name", petName, {
+    id: TASK_IDS.userEdit.dog_name,
+    description: "dog name",
+  });
+  useControl("dog_breed", selectedBreed, {
+    id: TASK_IDS.userEdit.dog_breed,
+    description: "dog breed",
+  });
+  useControl("dog_birthDate", petAge, {
+    id: TASK_IDS.userEdit.dog_birthDate,
+    description: "dog birthDate",
+  });
+  useControl("dog_gender", petGender, {
+    id: TASK_IDS.userEdit.dog_gender,
+    description: "dog gender",
+  });
+  useControl("dog_photo", sourcePet, {
+    id: TASK_IDS.userEdit.dog_photo,
+    description: "dog photo",
+  });
 
   const handleIndex = (index: number) => {
     setCurrentIndex(index);
@@ -141,10 +170,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     setEditableUser({ ...editableUser, [field]: value });
   };
 
-  
-
   const handleNext = () => {
-    
     if (currentIndex < data.length - 1) {
       const nextIndex = currentIndex + 1;
       setCurrentIndex(nextIndex);
@@ -170,11 +196,11 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       currentUser!.name = name;
       currentUser!.gender = gender;
       currentUser!.birthDate = age;
-      if(userImage === '' || userImage === null || userImage === undefined) {
+      if (userImage === "" || userImage === null || userImage === undefined) {
         const newAvatar = SetRandomAvatarDependOnGender();
         userStore.fetchImageUrl(newAvatar).then((resp) => {
           if (resp) {
-            console.log('resp', resp);
+            console.log("resp", resp);
             currentUser.thumbnailUrl = resp;
           }
           currentUser!.petProfiles = [newPetProfile as IPet];
@@ -182,14 +208,13 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
           // Продолжает выполнение onComplete после получения результата
           onComplete(currentUser as IUser);
         });
-      }
-      else {
+      } else {
         currentUser.thumbnailUrl = userImage;
         currentUser!.petProfiles = [newPetProfile as IPet];
         currentUser.jobs = completedJobs;
         onComplete(currentUser as IUser);
       }
-      router.replace('/screenholder');
+      router.replace("/screenholder");
     }
   };
 
@@ -247,26 +272,22 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   };
 
   const handleEscape = async () => {
-    router.replace('/screenholder');
+    router.replace("/screenholder");
     const currentUser = userStore.currentUser!;
     currentUser.gender = 0;
-    if(userImage === '' || userImage === null || userImage === undefined) {
-      
+    if (userImage === "" || userImage === null || userImage === undefined) {
       const newAvatar = SetRandomAvatarDependOnGender();
-      
-      const resp = await userStore.fetchImageUrl(newAvatar)
+
+      const resp = await userStore.fetchImageUrl(newAvatar);
       if (resp) {
-        console.log('resp',resp);
+        console.log("resp", resp);
         currentUser.thumbnailUrl = resp;
       }
-      
-    }
-    else 
-      currentUser.thumbnailUrl = userImage;
+    } else currentUser.thumbnailUrl = userImage;
     //router.replace('/(tabs)/map');
-    
+
     onComplete(currentUser);
-  }
+  };
 
   const handleSheetOpen = () => {
     setIsSheetVisible(true);
@@ -440,7 +461,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
           <Text className="px-4 leading-tight text-[18px] font-nunitoSansBold text-center my-2">
             Настройте профиль своего питомца
           </Text>
-          <Text className="text-md font-nunitoSansRegular text-center mb-4" >
+          <Text className="text-md font-nunitoSansRegular text-center mb-4">
             Профиль питомца будет доступен другим пользователям при отклике на
             прогулку.
           </Text>
@@ -495,86 +516,109 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
         </View>
       ),
     },
+    {
+      id: 5,
+      content: (
+        <ScrollView>
+          <View className="items-center w-full h-full justify-start">
+            <Text className="text-lg font-nunitoSansBold text-center my-2 mt-10">
+              Выберите темы, которые вам интересны
+            </Text>
+            <Text className=" leading-tight text-md font-nunitoSansRegular text-center mb-4">
+              Это поможет в настройке системы по подбору персонального контента.
+            </Text>
+            <CustomTagsSelector
+              tags={INTEREST_TAGS}
+              initialSelectedTags={[]}
+              //  onSelectedTagsChange={(interests) => handleFieldChange('interests', interests)}
+              maxSelectableTags={20}
+            />
+          </View>
+        </ScrollView>
+      ),
+    },
   ];
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View className="flex-1 h-full">
-      <View className="mt-6 mr-6 flex items-end">
-        <TouchableOpacity
-          onPress={() => {
-            router.replace("/map");
-          }}
-        >
-          <Text className="text-md font-nunitoSansBold">Пропустить</Text>
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        data={[{ key: "carousel" }]}
-        renderItem={() => (
-          <View style={styles.container}>
-            <Carousel
-              ref={carouselRef}
-              width={width}
-              height={height - 100}
-              data={data}
-              pagingEnabled={true}
-              loop={false}
-              // enabled={false}  // отключение скрола 
-              // onProgressChange={(_, absoluteProgress) => {
-              //   handleIndex(Math.round(absoluteProgress));
-              // }}  // эта функция работает не корректно на пагинации
-               onSnapToItem={(index) => setCurrentIndex(index)}
-              renderItem={({ item }) => (
-                <View style={styles.carouselItemContainer}>{item.content}</View>
-              )}
-            />
-             <View style={styles.bottomNavigationContainer}>
-              <Button
-                onPress={() => {
-                  (carouselRef.current as any)?.scrollTo({
-                    index: currentIndex - 1,
-                    animated: true,
-                  });
-                }}
-                style={styles.navigationButton}
-              >
-                <Text className="font-nunitoSansBold text-black">
-                  {currentIndex === 0 ? "" : "Назад"}
-                </Text>
-              </Button>
-              <View style={styles.indicatorContainer}>
-                {data.map((_, index) => (
-                  <View
-                    key={index}
-                    style={[
-                      styles.indicator,
-                      currentIndex === index
-                        ? styles.activeIndicator
-                        : styles.inactiveIndicator,
-                    ]}
-                  />
-                ))}
+        <View className="mt-6 mr-6 flex items-end">
+          <TouchableOpacity
+            onPress={() => {
+              router.replace("/map");
+            }}
+          >
+            <Text className="text-md font-nunitoSansBold">Пропустить</Text>
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={[{ key: "carousel" }]}
+          renderItem={() => (
+            <View style={styles.container}>
+              <Carousel
+                ref={carouselRef}
+                width={width}
+                height={height - 100}
+                data={data}
+                pagingEnabled={true}
+                loop={false}
+                enabled={false} // отключение скрола
+                // onProgressChange={(_, absoluteProgress) => {
+                //   handleIndex(Math.round(absoluteProgress));
+                // }}  // эта функция работает не корректно на пагинации
+                onSnapToItem={(index) => setCurrentIndex(index)}
+                renderItem={({ item }) => (
+                  <View style={styles.carouselItemContainer}>
+                    {item.content}
+                  </View>
+                )}
+              />
+              <View style={styles.bottomNavigationContainer}>
+                <Button
+                  onPress={() => {
+                    (carouselRef.current as any)?.scrollTo({
+                      index: currentIndex - 1,
+                      animated: true,
+                    });
+                  }}
+                  style={styles.navigationButton}
+                >
+                  <Text className="font-nunitoSansBold text-black">
+                    {currentIndex === 0 ? "" : "Назад"}
+                  </Text>
+                </Button>
+                <View style={styles.indicatorContainer}>
+                  {data.map((_, index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.indicator,
+                        currentIndex === index
+                          ? styles.activeIndicator
+                          : styles.inactiveIndicator,
+                      ]}
+                    />
+                  ))}
+                </View>
+                <Button onPress={handleNext} style={styles.navigationButton}>
+                  <Text className="font-nunitoSansBold text-black">
+                    {currentIndex === data.length - 1 ? "Завершить" : "Далее"}
+                  </Text>
+                </Button>
               </View>
-              <Button onPress={handleNext} style={styles.navigationButton}>
-                <Text className="font-nunitoSansBold text-black">
-                  {currentIndex === data.length - 1 ? "Завершить" : "Далее"}
-                </Text>
-              </Button>
             </View>
-          </View>
-        )}
-        keyExtractor={(item) => item.key}
-      />
-      {isSheetVisible && (
-        <BottomSheetComponent
-          ref={sheetRef}
-          snapPoints={["60%", "100%"]}
-          renderContent={() => renderContent}
-          onClose={handleSheetClose}
-          enablePanDownToClose={true}
+          )}
+          keyExtractor={(item) => item.key}
         />
-      )}
+        {isSheetVisible && (
+          <BottomSheetComponent
+            ref={sheetRef}
+            snapPoints={["60%", "100%"]}
+            renderContent={() => renderContent}
+            onClose={handleSheetClose}
+            enablePanDownToClose={true}
+          />
+        )}
       </View>
     </GestureHandlerRootView>
   );
@@ -656,7 +700,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 50,
     paddingHorizontal: 20,
-    marginTop: -10
+    marginTop: -10,
   },
   navigationButton: {
     width: 130,
@@ -669,7 +713,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    marginHorizontal: 7,
+    marginHorizontal: 5,
   },
   activeIndicator: {
     backgroundColor: "#2F00B6",
