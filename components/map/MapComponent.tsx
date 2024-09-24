@@ -37,6 +37,7 @@ import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
 import { Feature, FeatureCollection, Point } from 'geojson';
 import ViewUserPoint from './point/ViewUserPoint';
 import CustomAlert from '../custom/alert/CustomAlert';
+import MapPointIcon from './point/MapPointIscon';
 
 
 const MapBoxMap = observer(() => {
@@ -440,11 +441,7 @@ const MapBoxMap = observer(() => {
               allowOverlap={false}
             >  
               <Pressable onPress={() => onMapPointPress(point as IPointDangerDTO)}>
-                <View >
-                  <Image className=' h-[31px] w-6'
-                    source={{ uri:'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2Fmap%2FpointIcons%2Ftree.png?alt=media&token=8db7b0c4-ec94-46dc-b25f-fa00cab60277' }}
-                  />
-                </View>
+              <MapPointIcon mapPointType={point.mapPointType}/>
               </Pressable>
             </Mapbox.MarkerView>  
           ))}
@@ -478,22 +475,22 @@ const MapBoxMap = observer(() => {
               {currentPointType === MapPointType.Danger ? (
                 // Условие если добавляется опасность
                  <View className='bg-rose-500 rounded-full h-6 w-6'>
-                 <IconSelectorComponent
-                   iconName='alert-octagram-outline'
-                   iconSet='MaterialCommunityIcons'
-                   size={24}
-                   color='white' 
-                 /> 
+                  <IconSelectorComponent
+                    iconName='alert-octagram-outline'
+                    iconSet='MaterialCommunityIcons'
+                    size={24}
+                    color='white' 
+                  /> 
                </View>
               ) : (
                 // Условие если добавляется пользовательский поинт
                 <View className='bg-indigo-700 rounded-full h-6 w-6'>
-                <IconSelectorComponent
-                  iconName='help-circle-outline'
-                  iconSet='Ionicons'
-                  size={24}
-                  color='white' 
-                /> 
+                  <IconSelectorComponent
+                    iconName='help-circle-outline'
+                    iconSet='Ionicons'
+                    size={24}
+                    color='white' 
+                  /> 
               </View>
               )}
             </PointAnnotation>

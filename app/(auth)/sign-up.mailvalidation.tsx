@@ -1,7 +1,7 @@
 import { View, ScrollView, Alert } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TextInput, Text, Checkbox } from "react-native-paper";
+import { TextInput, Text } from "react-native-paper";
 import { Link, router } from "expo-router";
 import userStore from "@/stores/UserStore";
 import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton";
@@ -43,25 +43,17 @@ const SignUpMailValidation = () => {
     }
   };
 
-
-
-
-
   
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-
-
   return (
     <SafeAreaView className="bg-white h-full">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="w-full justify-between flex-1 px-9 my-10">
           <View>
-
-          
           <ArrowHelp />
           <View className=" justify-start mt-10 ">
             <View className="flex-col items-start justify-center">

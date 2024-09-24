@@ -5,14 +5,12 @@ import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router";
 import userStore from "@/stores/UserStore";
-import Icon from "react-native-vector-icons/AntDesign";
 import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton";
-import mapStore from "@/stores/MapStore";
 import ArrowHelp from "@/components/auth/arrowHelp";
 
 
 const SignIn = () => {
-  const [email, setEmail] = useState("sergey.shpak79@yahoo.com");
+  const [email, setEmail] = useState("levromf@gmail.com");
   const [password, setPassword] = useState("123456");
   // const [email, setEmail] = useState("levromf@gmail.com");
   // const [password, setPassword] = useState("123456");
@@ -30,10 +28,10 @@ const SignIn = () => {
 
     try {
       await userStore.singInUser(email, password);
-      await mapStore.setWalkAdvrts();
-      //router.replace('/screenholder');
+      //await mapStore.setWalkAdvrts();
+      router.replace('/screenholder');
       //router.replace("/(tabs)/map");
-      router.replace("/(auth)/onboarding");
+      //router.replace("/(auth)/onboarding");
     } catch (error: any) {
       Alert.alert("Login Error", error.message.replace("Firebase:", ""));
     }
