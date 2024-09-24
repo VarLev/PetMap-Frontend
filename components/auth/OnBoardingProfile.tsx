@@ -7,7 +7,7 @@ import {
   ImageSourcePropType,
   Image,
   FlatList,
-  TouchableOpacity,
+  TouchableOpacity, 
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { Button, Text } from "react-native-paper";
@@ -40,6 +40,7 @@ import { BonusContex } from "@/contexts/BonusContex";
 import { useControl } from "@/hooks/useBonusControl";
 import CustomTagsSelector from "../custom/selectors/CustomTagsSelector";
 import { INTEREST_TAGS } from "@/constants/Strings";
+import { Link } from "expo-router";
 
 const { width, height } = Dimensions.get("window");
 
@@ -167,6 +168,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   };
 
   const handleChange = (field: keyof User, value: any) => {
+    console.log(field, value);
     setEditableUser({ ...editableUser, [field]: value });
   };
 
@@ -519,22 +521,29 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     {
       id: 5,
       content: (
-        <ScrollView>
-          <View className="items-center w-full h-full justify-start">
-            <Text className="text-lg font-nunitoSansBold text-center my-2 mt-10">
-              Выберите темы, которые вам интересны
-            </Text>
-            <Text className=" leading-tight text-md font-nunitoSansRegular text-center mb-4">
-              Это поможет в настройке системы по подбору персонального контента.
-            </Text>
-            <CustomTagsSelector
-              tags={INTEREST_TAGS}
-              initialSelectedTags={[]}
-              //  onSelectedTagsChange={(interests) => handleFieldChange('interests', interests)}
-              maxSelectableTags={20}
-            />
-          </View>
-        </ScrollView>
+        <View className="items-center w-full h-full justify-start">
+          <Text className="text-lg font-nunitoSansBold text-center my-2 mt-10">
+            Выберите темы, которые вам интересны
+          </Text>
+          <Text className=" leading-tight text-md font-nunitoSansRegular text-center mb-4">
+            Это поможет в настройке системы по подбору персонального контента.
+          </Text>
+          <ScrollView>
+            <View>
+              <CustomTagsSelector
+                tags={INTEREST_TAGS}
+                initialSelectedTags={editableUser.interests || []}
+                onSelectedTagsChange={(selectedTags) =>
+                  handleChange("interests", selectedTags)
+                }
+                maxSelectableTags={10}
+              />
+              <Link href="/congrats" className="text-base mt-20">
+              ссылка на финальный экран Приветствия!
+            </Link>
+            </View>
+          </ScrollView>
+        </View>
       ),
     },
   ];
