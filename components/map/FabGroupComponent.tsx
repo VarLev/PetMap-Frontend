@@ -7,9 +7,10 @@ import { BG_COLORS } from '@/constants/Colors';
 interface FabGroupProps {
   selectedNumber: number;
   setSelectedNumber: (number: number) => void;
+  isVisible: boolean;
 }
 
-const FabGroupComponent: React.FC<FabGroupProps> = ({ selectedNumber, setSelectedNumber }) => {
+const FabGroupComponent: React.FC<FabGroupProps> = ({ selectedNumber, setSelectedNumber, isVisible }) => {
   const [fabOpen, setFabOpen] = useState(false);
   const [fabIcon, setFabIcon] = useState(
     <IconSelectorComponent
@@ -45,7 +46,7 @@ const FabGroupComponent: React.FC<FabGroupProps> = ({ selectedNumber, setSelecte
       <FAB.Group
         style={{ paddingBottom: 90 }}
         open={fabOpen}
-        visible={true}
+        visible={isVisible}
         icon={fabOpen ? 'close' : () => fabIcon} // Используем кастомную иконку или иконку "close" при открытии
         color='white'
         backdropColor='rgba(47, 30, 150, 0.9)'
@@ -53,6 +54,7 @@ const FabGroupComponent: React.FC<FabGroupProps> = ({ selectedNumber, setSelecte
           backgroundColor: '#2F00B6',
           borderColor: 'white',
           borderWidth: 5,
+          
         }}
         theme={{
           colors: { backdrop: 'black', text: 'black' },

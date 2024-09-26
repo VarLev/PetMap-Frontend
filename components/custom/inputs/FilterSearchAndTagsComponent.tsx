@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native';
-import { Searchbar } from 'react-native-paper';
+import { IconButton, Searchbar } from 'react-native-paper';
 import CustomButtonWithIcon from '../buttons/CustomButtonWithIcon';
 import CustomBudgeButton from '../buttons/CustomBudgeButton';
 import { MapPointType } from '@/dtos/enum/MapPointType';
+import IconSelectorComponent from '../icons/IconSelectorComponent';
+import { TouchableOpacity } from 'react-native-gesture-handler';
  // Предполагаем, что кастомная кнопка находится в этом файле
 
 interface SearchAndTagsProps {
@@ -12,6 +14,7 @@ interface SearchAndTagsProps {
   onSearchTextChange: (text: string) => void;
   onTagSelected: (tag: number) => void;
   onOpenFilter: () => void;
+  onOpenCardView: () => void;
   badgeCount: number;
 }
 
@@ -21,10 +24,12 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
   onSearchTextChange,
   onTagSelected,
   onOpenFilter,
+  onOpenCardView,
   badgeCount 
 }) => {
 
   const[isTagSelected, setIsTagSelected] = React.useState(false);
+  const[isCardView, setIsCardView] = React.useState(false);
 
   const handleSelectTag = (name: string, type: number = 0) => {
     setSelectedTag(name);
@@ -37,9 +42,14 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
     setIsTagSelected(false);
   }
 
+  const hadleOpenCardView =() => {
+    setIsCardView(!isCardView);
+    onOpenCardView();
+  }
+
 
   return (
-    <View style={{ position: 'absolute', top: 0, left: 0, right: 0}}>
+    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex:1}}>
       <View className='flex-row w-full pt-3 px-3 justify-center items-center'>
         <Searchbar
           placeholder="Search"
@@ -53,7 +63,17 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
           className='flex-1 h-12'
           
         />
-          <CustomBudgeButton iconSet={'Ionicons'} iconName={'filter'} badgeCount={badgeCount} onPress={onOpenFilter}/>
+          <CustomBudgeButton iconSet={'Ionicons'} iconName={'filter'} badgeCount={badgeCount} onPress={onOpenFilter} />
+          <TouchableOpacity onPress={hadleOpenCardView} activeOpacity={0.7}  >
+            <View className="bg-white justify-center items-center w-11 h-11 rounded-full"  style={{elevation: 3}}>
+              {isCardView ? 
+              (<IconSelectorComponent iconSet='Ionicons' iconName='map-outline'  />)
+              :
+              (<IconSelectorComponent iconSet='Ionicons' iconName='list-outline'  />)}
+            </View>
+          </TouchableOpacity>
+          
+          
       </View>
       
       {!isTagSelected && ( 

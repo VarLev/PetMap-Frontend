@@ -15,6 +15,7 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from '@/firebaseConfig';
 import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
 import { IUserAdvrt } from '@/dtos/Interfaces/user/IUserAdvrt';
+import { IPagedAdvrtDto } from '@/dtos/Interfaces/advrt/IPagedAdvrtDto';
 
 class MapStore {
   address = '';
@@ -149,7 +150,7 @@ class MapStore {
 
   async getAllAdvrt(): Promise<IWalkAdvrtDto[]> {
     try {
-      const response = await apiClient.get('map/walk/all');
+      const response = await apiClient.get('walkadvrt/walk/all');
       return response.data as IWalkAdvrtDto[];
     } catch (error) {
       if (axios.isAxiosError(error)) 
@@ -304,9 +305,39 @@ class MapStore {
   async getFilteredWalks(filter: IWalkAdvrtFilterParams){
     try {
       const response = await apiClient.post('filter/walks-filtered',filter );
+
       runInAction(() => {
-        this.walkAdvrts = response.data as IWalkAdvrtDto[];
+        this.walkAdvrts = response.data as IWalkAdvrtDto[]; 
       });
+    } catch (error) {
+      if (axios.isAxiosError(error)) 
+      {
+        // Подробная информация об ошибке Axios
+        console.error('Axios error:', {
+            message: error.message,
+            name: error.name,
+            code: error.code,
+            config: error.config,
+            response: error.response ? {
+                data: error.response.data.errors,
+                status: error.response.status,
+                headers: error.response.headers,
+            } : null
+        });
+      } 
+      else {
+        // Общая информация об ошибке
+        console.error('Error:', error);
+      }
+      throw error;
+    }
+  }
+
+  async getPagenatedWalks(page: number, pageSize: number): Promise<IPagedAdvrtDto> {
+    try {
+      const response = await apiClient.get(`walkadvrt/walk-paginated?page=${page}&pageSize=${pageSize}`);
+  
+      return response.data as IPagedAdvrtDto;
     } catch (error) {
       if (axios.isAxiosError(error)) 
       {

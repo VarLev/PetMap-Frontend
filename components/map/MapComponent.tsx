@@ -38,6 +38,8 @@ import { Feature, FeatureCollection, Point } from 'geojson';
 import ViewUserPoint from './point/ViewUserPoint';
 import CustomAlert from '../custom/alert/CustomAlert';
 import MapPointIcon from './point/MapPointIscon';
+import SlidingOverlay from '../navigation/SlidingOverlay';
+import AdvrtsList from '../navigation/advrts/AdvrtsList';
 
 
 const MapBoxMap = observer(() => {
@@ -65,6 +67,7 @@ const MapBoxMap = observer(() => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [alertType, setAlertType] = useState<'error' | 'info'>('info');
   const [alertText, setAlertText] = useState<string>('');
+  const [isCardView, setisCardView] = useState<boolean>(false);
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
   
@@ -340,11 +343,8 @@ const MapBoxMap = observer(() => {
   };
 
   const hangleSetSelectedNumberPoint = (number: number) => {
-    
     setCurrentPointType(number);
     tagSelected(number);
-    
-    
   }
 
 
@@ -363,6 +363,10 @@ const MapBoxMap = observer(() => {
   return (
     <Provider>
       <SafeAreaView style={{ flex: 1 }}>
+        <SlidingOverlay visible={isCardView}>
+          <View className='h-24'/>
+          <AdvrtsList/>
+        </SlidingOverlay>
         <MapView 
           ref={mapRef} 
           style={{ flex: 1 }} 
@@ -373,7 +377,11 @@ const MapBoxMap = observer(() => {
           
           scaleBarEnabled={false}
           onTouchEnd={handlePressOut}
-          scrollEnabled={scrollEnabled}
+          scrollEnabled={!isCardView}
+          pitchEnabled={!isCardView}
+          zoomEnabled={!isCardView}
+          rotateEnabled={!isCardView}
+          
           >
           {/* <UserLocation minDisplacement={10} ref={userLocationRef} onUpdate={handleUserLocationUpdate} /> */}
           <UserLocation minDisplacement={10} ref={userLocationRef}  />
@@ -385,7 +393,7 @@ const MapBoxMap = observer(() => {
           />
 
           {/* Добавдяем цифры, когда маркеры накладываются друг на друга */}
-          {geoJSONData && (
+          {!isCardView && geoJSONData && (
             <ShapeSource
               id="points"
               shape={geoJSONData}
@@ -408,7 +416,7 @@ const MapBoxMap = observer(() => {
           )}
 
           {/* Маркеры прогулок */}
-          {mapStore.walkAdvrts.map((advrt, index) => (
+          {!isCardView && mapStore.walkAdvrts.map((advrt, index) => (
             <Mapbox.MarkerView 
               key={`advrt-${advrt.id}`} 
               id={`advrt-${index}`}
@@ -431,7 +439,7 @@ const MapBoxMap = observer(() => {
           ))} 
           
           {/* Маркеры поинтов */}
-          {mapStore.mapPoints.map((point, index) => (
+          {!isCardView && mapStore.mapPoints.map((point, index) => (
             <Mapbox.MarkerView 
               key={`advrt-${point.id}`} 
               id={`advrt-${index}`}
@@ -504,6 +512,7 @@ const MapBoxMap = observer(() => {
             onSearchTextChange={handleSearchTextChange}
             onTagSelected={tagSelected}
             onOpenFilter={handleOpenFilter}
+            onOpenCardView={() => setisCardView(!isCardView)}
             badgeCount={modifiedFieldsCount}
           />    
         </View>
@@ -530,7 +539,7 @@ const MapBoxMap = observer(() => {
           />
         )}
         {!isSheetVisible && 
-          <FabGroupComponent selectedNumber={currentPointType} setSelectedNumber={hangleSetSelectedNumberPoint}  />
+          <FabGroupComponent selectedNumber={currentPointType} setSelectedNumber={hangleSetSelectedNumberPoint} isVisible={!isCardView}  />
         }  
         <CustomAlert
           isVisible={isModalVisible}
