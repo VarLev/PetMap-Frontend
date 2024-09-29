@@ -37,8 +37,8 @@ const CustomLoadingButton = ({
       className={`bg-indigo-800 rounded-full min-h-[40px] justify-center items-center mt-2
       ${containerStyles} ${isLoading || loading ? "opacity-50" : ""}`}
     >
-      {loading ? (
-        <ActivityIndicator size="small" color="#ffffff" />
+      {loading ||isLoading ? (
+        <ActivityIndicator size="small" color="#2F00B6" />
       ) : (
         <Text
           className={`text-white font-nunitoSansRegular text-base ${textStyles}`}

@@ -2,14 +2,12 @@
 
 import React from 'react';
 import { Alert, Linking, View } from 'react-native';
-import { Text, Image } from 'react-native';
+import { Text } from 'react-native';
 import { DANGERTYPE_TAGS } from '@/constants/Strings';
 import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
-import CustomTextComponent from '@/components/custom/text/CustomTextComponent';
 import { getTagsByIndex } from '@/utils/utils';
 import CustomButtonPrimary from '@/components/custom/buttons/CustomButtonPrimary';
 import { Divider } from 'react-native-paper';
-import ImageView from "react-native-image-viewing";
 import ImageModalViewer from '@/components/common/ImageModalViewer';
 
 interface CompositeFormProps {

@@ -10,13 +10,12 @@ import {
   TouchableOpacity, 
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
-import { Button, Text } from "react-native-paper";
+import { Avatar, Button, Text } from "react-native-paper";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
 import * as ImagePicker from "expo-image-picker";
-import { Avatar } from "@rneui/themed";
 import { IUser } from "@/dtos/Interfaces/user/IUser";
 import userStore from "@/stores/UserStore";
 import { IPet } from "@/dtos/Interfaces/pet/IPet";
@@ -24,7 +23,7 @@ import CustomInputText from "../custom/inputs/CustomInputText";
 import * as Crypto from "expo-crypto";
 import { User } from "@/dtos/classes/user/UserDTO";
 import CustomSegmentedButtons from "../custom/buttons/CustomSegmentedButtons";
-import { router } from "expo-router";
+//import { router } from "expo-router";
 import BottomSheetComponent from "../common/BottomSheetComponent";
 import BottomSheet from "@gorhom/bottom-sheet";
 import AvatarSelector from "../common/AvatarSelector";
@@ -40,13 +39,18 @@ import { BonusContex } from "@/contexts/BonusContex";
 import { useControl } from "@/hooks/useBonusControl";
 import CustomTagsSelector from "../custom/selectors/CustomTagsSelector";
 import { INTEREST_TAGS } from "@/constants/Strings";
-import { Link } from "expo-router";
+import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
+import BonusSlider from "../custom/sliders/BonusSlider";
+import { set } from "firebase/database";
+import CustomLoadingButton from "../custom/buttons/CustomLoadingButton";
+//import { set } from "firebase/database";
 
 const { width, height } = Dimensions.get("window");
 
 interface OnBoardingProfileProps {
   onLanguageSelect: (language: number) => void;
   onComplete: (user: IUser) => void; // Добавляем функцию для завершения
+  onEscape: (user: IUser) => void;
 }
 
 const TASK_IDS = {
@@ -66,9 +70,10 @@ const TASK_IDS = {
 const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   onLanguageSelect,
   onComplete,
+  onEscape
 }) => {
   const user: User = userStore.currentUser!;
-  const [editableUser, setEditableUser] = useState<User>(new User({ ...user }));
+  //const [editableUser, setEditableUser] = useState<User>(new User({ ...user }));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [name, setName] = useState("");
   const [gender, setGender] = useState(0);
@@ -76,11 +81,15 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   const [petName, setPetName] = useState("");
   const [age, setAge] = useState<Date>(new Date("2000-01-01T12:00:00"));
   const [petAge, setPetAge] = useState<Date>(new Date("2000-01-01T12:00:00"));
+  const [interests , setInterests] = useState<number[]>([]);
 
   const [showUserAge, setShowUserAge] = useState(false);
   const [showPetAge, setShowPetAge] = useState(false);
   const [userImage, setUserImage] = useState("");
   const [petImage, setPetImage] = useState("");
+  const [alertEscapeVisible, setAlertEscapeVisible] = useState(false);
+  const [petPageBonuses, setPetPageBonuses] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const carouselRef = useRef(null);
 
@@ -95,11 +104,12 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   const sheetRef = useRef<BottomSheet>(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [renderContent, setRenderContent] = useState<ReactNode>(() => null);
-
+  const [sliderValue, setSliderValue] = useState(0);
+  
   const { completedJobs } = useContext(BonusContex)!;
 
   // Используем useControl для каждого поля
-  useControl("user_name", editableUser.name, {
+  useControl("user_name", interests,{
     id: TASK_IDS.userEdit.user_name,
     description: "user name",
   });
@@ -167,12 +177,12 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     setShowPetAge(true);
   };
 
-  const handleChange = (field: keyof User, value: any) => {
-    console.log(field, value);
-    setEditableUser({ ...editableUser, [field]: value });
-  };
+  // const handleChange = (field: keyof User, value: any) => {
+  //   console.log(field, value);
+  //   setEditableUser({ ...editableUser, [field]: value });
+  // };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentIndex < data.length - 1) {
       const nextIndex = currentIndex + 1;
       setCurrentIndex(nextIndex);
@@ -180,9 +190,28 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
         index: nextIndex,
         animated: true,
       });
+      if(currentIndex === 2){
+        let updatedValue = 200;
+        if(name)
+          updatedValue += 100;
+        if(userImage)
+          updatedValue += 300;
+        setSliderValue(updatedValue);
+      }
+      
+      if(currentIndex === 3){
+        let updatedValue = 300;
+        if(petName)
+          updatedValue += 100;
+        if(petImage)
+          updatedValue += 300;
+        setPetPageBonuses(updatedValue)
+        setSliderValue(updatedValue + sliderValue);
+      } 
     }
 
     if (currentIndex === data.length - 1) {
+      setIsLoading(true);
       const currentUser = userStore.currentUser;
 
       const newPetProfile: Partial<IPet> = {
@@ -198,6 +227,11 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       currentUser!.name = name;
       currentUser!.gender = gender;
       currentUser!.birthDate = age;
+      currentUser.interests = interests;
+      console.log("interests", interests);
+      if(interests.length > 0)
+        setSliderValue(sliderValue + 100);
+      
       if (userImage === "" || userImage === null || userImage === undefined) {
         const newAvatar = SetRandomAvatarDependOnGender();
         userStore.fetchImageUrl(newAvatar).then((resp) => {
@@ -214,10 +248,31 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
         currentUser.thumbnailUrl = userImage;
         currentUser!.petProfiles = [newPetProfile as IPet];
         currentUser.jobs = completedJobs;
-        onComplete(currentUser as IUser);
+        
+         onComplete(currentUser as IUser);
+        
       }
-      router.replace("/screenholder");
+     
+      //router.replace("/screenholder");
     }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      const prevIndex = currentIndex - 1;
+      setCurrentIndex(prevIndex);
+      (carouselRef.current as any)?.scrollTo({
+        index: prevIndex,
+        animated: true,
+      });
+    }
+    if(currentIndex === 3){
+      setSliderValue(0);
+    }
+    if(currentIndex === 4){
+      setSliderValue(sliderValue - petPageBonuses);
+    }
+
   };
 
   const handleLanguageSelection = (language: number) => {
@@ -274,7 +329,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   };
 
   const handleEscape = async () => {
-    router.replace("/screenholder");
     const currentUser = userStore.currentUser!;
     currentUser.gender = 0;
     if (userImage === "" || userImage === null || userImage === undefined) {
@@ -287,8 +341,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       }
     } else currentUser.thumbnailUrl = userImage;
     //router.replace('/(tabs)/map');
-
-    onComplete(currentUser);
+    onEscape(currentUser);
   };
 
   const handleSheetOpen = () => {
@@ -298,6 +351,8 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     ));
     sheetRef.current?.expand();
   };
+
+  
 
   const data = [
     {
@@ -312,26 +367,23 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
           <Text className="text-lg font-nunitoSansBold text-center">
             Добро пожаловать в PetMap!
           </Text>
-          <Text className=" leading-tight text-md font-nunitoSansRegular text-center">
+          <Text className="leading-tight text-md font-nunitoSansRegular text-center">
             Выберите язык приложения, чтобы мы могли лучше понимать друг друга.
           </Text>
           <CustomButtonOutlined
             title="Английский"
             handlePress={() => handleLanguageSelection(2)}
-            containerStyles="mt-4 w-full min-h-[42px] bg-[#2F00B6]"
-            textStyles="text-white"
+            containerStyles="mt-4 w-full min-h-[42px]"
           />
           <CustomButtonOutlined
             title="Испанский"
             handlePress={() => handleLanguageSelection(0)}
-            containerStyles="mt-4 w-full min-h-[42px] bg-[#2F00B6]"
-            textStyles="text-white"
+            containerStyles="mt-4 w-full min-h-[42px]"
           />
           <CustomButtonOutlined
             title="Русский"
             handlePress={() => handleLanguageSelection(1)}
-            containerStyles="mt-4 w-full min-h-[42px] bg-[#2F00B6]"
-            textStyles="text-white"
+            containerStyles="mt-4 w-full min-h-[42px]"
           />
         </View>
       ),
@@ -360,20 +412,21 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       content: (
         <View className="items-center w-full h-full justify-center">
           {source ? (
-            <Avatar
-              source={source}
-              rounded
-              size={200}
-              containerStyle={{
-                backgroundColor: "#BDBDBD",
-                marginTop: 10,
-                borderColor: "white",
-                borderWidth: 3,
-                shadowColor: "black",
-                elevation: 4,
-              }}
-              icon={{ name: "user", type: "font-awesome", color: "white" }}
-            />
+             <Avatar.Image size={200} source={source} />
+            // <Avatar
+            //   source={source}
+            //   rounded
+            //   size={200}
+            //   containerStyle={{
+            //     backgroundColor: "#BDBDBD",
+            //     marginTop: 10,
+            //     borderColor: "white",
+            //     borderWidth: 3,
+            //     shadowColor: "black",
+            //     elevation: 4,
+            //   }}
+            //   icon={{ name: "user", type: "font-awesome", color: "white" }}
+            // />
           ) : (
             <Image
               source={require("@/assets/images/onboardingProfile/3user.webp")}
@@ -388,7 +441,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             Ваш профиль будет отображаться другим пользователям с питомцами.
           </Text>
           <CustomInputText
-            // placeholder="Как тебя зовут?"
             value={name}
             handleChange={setName}
             containerStyles="my-4"
@@ -439,20 +491,21 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       content: (
         <View className="items-center w-full h-full justify-center">
           {sourcePet ? (
-            <Avatar
-              source={sourcePet}
-              rounded
-              size={200}
-              containerStyle={{
-                backgroundColor: "#BDBDBD",
-                marginTop: 20,
-                borderColor: "white",
-                borderWidth: 3,
-                shadowColor: "black",
-                elevation: 4,
-              }}
-              icon={{ name: "dog", type: "font-awesome-5", color: "white" }}
-            />
+             <Avatar.Image size={200} source={sourcePet} />
+            // <Avatar
+            //   source={sourcePet}
+            //   rounded
+            //   size={200}
+            //   containerStyle={{
+            //     backgroundColor: "#BDBDBD",
+            //     marginTop: 20,
+            //     borderColor: "white",
+            //     borderWidth: 3,
+            //     shadowColor: "black",
+            //     elevation: 4,
+            //   }}
+            //   icon={{ name: "dog", type: "font-awesome-5", color: "white" }}
+            // />
           ) : (
             <Image
               source={require("@/assets/images/onboardingProfile/4pet.webp")}
@@ -522,25 +575,22 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       id: 5,
       content: (
         <View className="items-center w-full h-full justify-start">
-          <Text className="text-lg font-nunitoSansBold text-center my-2 mt-10">
-            Выберите темы, которые вам интересны
+          <Text className="text-lg font-nunitoSansBold text-center ">
+            Что вам интересно?
           </Text>
           <Text className=" leading-tight text-md font-nunitoSansRegular text-center mb-4">
-            Это поможет в настройке системы по подбору персонального контента.
+            Это поможет с поиском подходящего контента
           </Text>
           <ScrollView>
             <View>
               <CustomTagsSelector
                 tags={INTEREST_TAGS}
-                initialSelectedTags={editableUser.interests || []}
-                onSelectedTagsChange={(selectedTags) =>
-                  handleChange("interests", selectedTags)
-                }
-                maxSelectableTags={10}
+                initialSelectedTags={interests || []}
+                maxSelectableTags={5}
+
+                onSelectedTagsChange={(tags) => setInterests(tags as number[])}
+                
               />
-              <Link href="/congrats" className="text-base mt-20">
-              ссылка на финальный экран Приветствия!
-            </Link>
             </View>
           </ScrollView>
         </View>
@@ -551,12 +601,9 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View className="flex-1 h-full">
-        <View className="mt-6 mr-6 flex items-end">
-          <TouchableOpacity
-            onPress={() => {
-              router.replace("/map");
-            }}
-          >
+        <BonusSlider min={0} max={1200} value={sliderValue}/>
+        <View className="mr-6 items-end"> 
+          <TouchableOpacity onPress={() => setAlertEscapeVisible(true)}>
             <Text className="text-md font-nunitoSansBold">Пропустить</Text>
           </TouchableOpacity>
         </View>
@@ -583,15 +630,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                 )}
               />
               <View style={styles.bottomNavigationContainer}>
-                <Button
-                  onPress={() => {
-                    (carouselRef.current as any)?.scrollTo({
-                      index: currentIndex - 1,
-                      animated: true,
-                    });
-                  }}
-                  style={styles.navigationButton}
-                >
+                <Button onPress={handlePrev} style={styles.navigationButton}>
                   <Text className="font-nunitoSansBold text-black">
                     {currentIndex === 0 ? "" : "Назад"}
                   </Text>
@@ -609,11 +648,12 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                     />
                   ))}
                 </View>
-                <Button onPress={handleNext} style={styles.navigationButton}>
+                <CustomLoadingButton title="Далее" containerStyles="-mt-1 w-1/3 bg-white" textStyles="text-black text-sm font-nunitoSansBold"  handlePress={handleNext} isLoading={isLoading} />
+                {/* <Button onPress={handleNext} style={styles.navigationButton}>
                   <Text className="font-nunitoSansBold text-black">
                     {currentIndex === data.length - 1 ? "Завершить" : "Далее"}
                   </Text>
-                </Button>
+                </Button> */}
               </View>
             </View>
           )}
@@ -628,6 +668,11 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             enablePanDownToClose={true}
           />
         )}
+        <CustomConfirmAlert 
+          isVisible={alertEscapeVisible} 
+          onClose={() => setAlertEscapeVisible(false)} 
+          onConfirm={handleEscape} 
+          message={"Если вы пропустите онбординг, то вам не будут начислены бонусы, и вы не сможете пользоваться картой до тех пор пока не заполните профиль."}/>
       </View>
     </GestureHandlerRootView>
   );

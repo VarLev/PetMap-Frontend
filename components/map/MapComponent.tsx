@@ -39,7 +39,8 @@ import ViewUserPoint from './point/ViewUserPoint';
 import CustomAlert from '../custom/alert/CustomAlert';
 import MapPointIcon from './point/MapPointIscon';
 import SlidingOverlay from '../navigation/SlidingOverlay';
-import AdvrtsList from '../navigation/advrts/AdvrtsList';
+import AdvrtsList from '../navigation/advrts/MapItemList';
+import MapItemList from '../navigation/advrts/MapItemList';
 
 
 const MapBoxMap = observer(() => {
@@ -321,6 +322,7 @@ const MapBoxMap = observer(() => {
   };
 
   const tagSelected = async (type: number) => {
+    setCurrentPointType(type);
     if(type === MapPointType.Walk) 
       await mapStore.setWalkAdvrts();
     else
@@ -363,9 +365,8 @@ const MapBoxMap = observer(() => {
   return (
     <Provider>
       <SafeAreaView style={{ flex: 1 }}>
-        <SlidingOverlay visible={isCardView}>
-          <View className='h-24'/>
-          <AdvrtsList/>
+        <SlidingOverlay visible={isCardView}>      
+          <MapItemList renderType={currentPointType}/>
         </SlidingOverlay>
         <MapView 
           ref={mapRef} 
@@ -381,8 +382,7 @@ const MapBoxMap = observer(() => {
           pitchEnabled={!isCardView}
           zoomEnabled={!isCardView}
           rotateEnabled={!isCardView}
-          
-          >
+        >
           {/* <UserLocation minDisplacement={10} ref={userLocationRef} onUpdate={handleUserLocationUpdate} /> */}
           <UserLocation minDisplacement={10} ref={userLocationRef}  />
           <Camera
@@ -449,7 +449,7 @@ const MapBoxMap = observer(() => {
               allowOverlap={false}
             >  
               <Pressable onPress={() => onMapPointPress(point as IPointDangerDTO)}>
-              <MapPointIcon mapPointType={point.mapPointType}/>
+                <MapPointIcon mapPointType={point.mapPointType}/>
               </Pressable>
             </Mapbox.MarkerView>  
           ))}

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { FlatList, Pressable, View, Image } from "react-native";
 import { femaleAvatars, maleAvatars } from "@/constants/Avatars";
 import { Button, Text, Switch } from "react-native-paper";
-import { ScrollView } from "react-native-gesture-handler";
 
 interface AvatarSelectorProps {
   onAvatarSelect: (avatar: number, isMail: boolean) => void;

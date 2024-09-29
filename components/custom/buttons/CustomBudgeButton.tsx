@@ -1,10 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
-import { IconButton, Badge, TouchableRipple } from 'react-native-paper';
+import { Badge } from 'react-native-paper';
 import IconSelectorComponent from '../icons/IconSelectorComponent';
-import { TouchableHighlight } from 'react-native-gesture-handler';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
-
 
 interface BadgeIconButtonProps {
   iconSet: 'Ionicons' | 'FontAwesome' | 'MaterialIcons' | 'MaterialCommunityIcons';

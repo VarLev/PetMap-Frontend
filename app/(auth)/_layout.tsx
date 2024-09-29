@@ -1,6 +1,5 @@
 import React from "react";
-import { Stack, router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import { Stack } from "expo-router";
 
 const AuthLayout = () => {
   return (
@@ -13,7 +12,6 @@ const AuthLayout = () => {
         <Stack.Screen name="sign-up.mailvalidation" options={{ headerShown: false }} />
         <Stack.Screen name="sign-up.passwordreset" options={{ headerShown: false }} />
         <Stack.Screen name="congrats" options={{ headerShown: false }} />
-
       </Stack>
       {/* <StatusBar backgroundColor='#161622' style='light'/> */}
     </>

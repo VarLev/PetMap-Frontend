@@ -108,12 +108,14 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
                 tags={PETHEALTHISSUES_TAGS} 
                 initialSelectedTags={pet.petHealthIssues || []}
                 readonlyMode
+                visibleTagsCount={10}
               />
               <Text className='pt-4 -mb-1 text-sm font-nunitoSansBold text-indigo-700'>Вакцины</Text>
               <CustomTagsSelector 
                 tags={DOGVACCINATIONS_TAGS} 
                 initialSelectedTags={pet.vaccinations || []}
                 readonlyMode
+                visibleTagsCount={10}
               />
               <Divider className='mt-3' />
             </View>
@@ -141,6 +143,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
                 tags={DOGGAMES_TAGS} 
                 initialSelectedTags={pet.playPreferences || []}
                 readonlyMode
+                visibleTagsCount={10}
               />
             
               

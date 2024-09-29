@@ -4,8 +4,7 @@ import { Checkbox, Divider } from 'react-native-paper';
 import CustomDropdownList from '../custom/selectors/CustomDropdownList';
 import { observer } from 'mobx-react-lite';
 import StarRating from 'react-native-star-rating-widget';
-import { BREEDS_TAGS, DOGGAMES_TAGS, GENDERS_TAGS, INTEREST_TAGS, LANGUAGE_TAGS,  } from '@/constants/Strings';
-import MultiTagDropdown from '../custom/selectors/MultiTagDropdown';
+import { BREEDS_TAGS, DOGGAMES_TAGS, GENDERS_TAGS, INTEREST_TAGS } from '@/constants/Strings';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import { FlatList } from 'react-native';
 import TimeSlider from '../custom/sliders/TimeSlider';
@@ -137,6 +136,7 @@ const FilterComponent:React.FC<FilterComponentProps> = observer(({ onFilterChang
               initialSelectedTags={filter.interests || []}
               onSelectedTagsChange={(interests) => handleFieldChange('interests', interests)}
               maxSelectableTags={5}
+              visibleTagsCount={10}
             />
           </View>
           <Divider className="mt-6" />
@@ -170,6 +170,7 @@ const FilterComponent:React.FC<FilterComponentProps> = observer(({ onFilterChang
               initialSelectedTags={filter.petInterests || []}
               onSelectedTagsChange={(interests) => handleFieldChange('petInterests', interests)}
               maxSelectableTags={5}
+              visibleTagsCount={10}
             />
           </View>
           

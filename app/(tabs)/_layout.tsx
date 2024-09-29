@@ -1,19 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { router, Tabs, useFocusEffect, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import TabBar from '@/components/navigation/TabBar';
 import { DrawerProvider } from '@/contexts/DrawerProvider';
-import SidebarUserProfileComponent from '@/components/navigation/SidebarUserProfileComponent';
 import { registerForPushNotificationsAsync, setupNotificationListeners, savePushTokenToServer } from '@/hooks/notifications';
-//import { useStore } from '@/contexts/StoreProvider';
 import UserStore from '@/stores/UserStore';
-import { Alert, BackHandler } from 'react-native';
-
-import { Pet } from '@/dtos/classes/pet/Pet';
-import FilterComponent from '@/components/filter/FilterComponent';
-
-
-
+import { BackHandler } from 'react-native';
 
 const Tabslayout = () => {
   const pathname = usePathname();

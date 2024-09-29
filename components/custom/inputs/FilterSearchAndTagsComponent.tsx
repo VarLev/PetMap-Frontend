@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native';
-import { IconButton, Searchbar } from 'react-native-paper';
+import { Searchbar } from 'react-native-paper';
 import CustomButtonWithIcon from '../buttons/CustomButtonWithIcon';
 import CustomBudgeButton from '../buttons/CustomBudgeButton';
 import { MapPointType } from '@/dtos/enum/MapPointType';
@@ -94,7 +94,7 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
               buttonStyle='bg-white'
             />
             <CustomButtonWithIcon
-              iconName='flower-outline'
+              iconName='leaf-outline'
               iconSet='Ionicons'
               onPress={() => handleSelectTag('Парк', MapPointType.Park)}
               text={'Парк'}

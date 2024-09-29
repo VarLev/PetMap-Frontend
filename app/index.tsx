@@ -1,6 +1,6 @@
 import React from "react";
 import { TouchableOpacity, View, Image } from "react-native";
-import { Divider, IconButton, Icon, Text } from "react-native-paper";
+import { Text } from "react-native-paper";
 import OnboardingCarousel from "../components/auth/OnboardingCarousel";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native";

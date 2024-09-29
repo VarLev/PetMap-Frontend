@@ -1,13 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import userStore from '@/stores/UserStore';
-
 import EditProfileComponent from '@/components/profile/EditProfileComponent';
-
-import { User } from '@/dtos/classes/user/UserDTO';
 import { router } from 'expo-router';
 import { BonusProvider } from '@/contexts/BonusContex';
-
 const EditUserProfile = observer(() => {
   //const [editableUser, setEditableUser] = useState<User>();
   //const [isEditing, setIsEditing] = useState(false);

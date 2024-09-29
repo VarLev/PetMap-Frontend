@@ -8,9 +8,6 @@ import { BonusProvider } from '@/contexts/BonusContex';
 
 const Onboarding = () => {
 
-  
- 
-  
   const handleLanguageSelect = (selectedLanguage: number) => {
     userStore.updateUserOnbordingData({ 
       userLanguages: [selectedLanguage], 
@@ -19,21 +16,22 @@ const Onboarding = () => {
   };
 
   const handleComplete = async (user: IUser) => {
-    
     await userStore.updateUserOnbordingData(user);
-    
-    //router.replace('/map');
-  
-    
+    router.replace('/congrats');
   };
 
+  const handleEscape = async (user: IUser) => {
+    userStore.updateUserOnbordingData(user);
+    router.replace('/map');
+  };
 
   return (
     <BonusProvider>
       <SafeAreaView className='bg-white h-full'>
           <OnboardingProfile 
             onLanguageSelect={handleLanguageSelect}
-            onComplete={handleComplete}/>    
+            onComplete={handleComplete}  
+            onEscape={handleEscape}/>      
       </SafeAreaView>
     </BonusProvider>
   );

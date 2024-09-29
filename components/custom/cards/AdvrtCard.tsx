@@ -1,74 +1,77 @@
-import React from 'react';
-import { View, Text, Image, Dimensions } from 'react-native';
-import { Button } from 'react-native-paper';
-import Carousel from "react-native-reanimated-carousel";
-
+import React, { useEffect } from 'react';
+import { View, Text, Image } from 'react-native';
+import { Card } from 'react-native-paper';
 import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
-import { IPetAdvrtShortDto } from '@/dtos/Interfaces/pet/IPetAdvrtShortDto';
+import CustomTextComponent from '../text/CustomTextComponent';
+import CustomButtonPrimary from '../buttons/CustomButtonPrimary';
+import CustomButtonOutlined from '../buttons/CustomButtonOutlined';
+import userStore from '@/stores/UserStore';
+import { BREEDS_TAGS, PET_IMAGE } from '@/constants/Strings';
+import { getTagsByIndex } from '@/utils/utils';
+import ImageModalViewer from '@/components/common/ImageModalViewer';
 
 interface AdCardProps {
   ad: IWalkAdvrtShortDto;
 }
 
 const AdvrtCard: React.FC<AdCardProps> = ({ ad }) => {
-  const renderPetItem = ({ item }: { item: IPetAdvrtShortDto }) => {
-    return (
-      <View className="items-center mt-2.5">
-        {item.thumbnailUrl ? (
-          <Image source={{ uri: item.thumbnailUrl }} className="w-[150px] h-[150px] rounded-lg" />
-        ) : (
-          <View className="w-[150px] h-[150px] rounded-lg bg-gray-200" />
-        )}
-        <Text className="mt-1.5 text-lg font-bold">{item.petName}</Text>
-        <Text className="text-sm text-gray-600">Порода: {item.breed ?? 'Не указано'}</Text>
-        <Text className="text-sm text-gray-600">Пол: {item.gender === 1 ? 'Мальчик' : 'Девочка'}</Text>
-        <Text className="text-sm text-gray-600">
-          {/* Возраст: {item.birthDate ? calculateAge(item.birthDate) : 'Не указано'} */}
-        </Text>
-      </View>
-    );
-  };
+  const [petImage, setPetImage] = React.useState<string>();
+  
+  useEffect(() => {
+    getPetImage().then((url) => setPetImage(url));
+  } ,[]);
 
-  const calculateAge = (birthDate: Date): string => {
-    const ageDifMs = Date.now() - birthDate.getTime();
-    const ageDate = new Date(ageDifMs);
-    return `${Math.abs(ageDate.getUTCFullYear() - 1970)} лет`;
-  };
+  const getPetImage = async () : Promise<string> => {
+    const petImage = await userStore.fetchImageUrl(PET_IMAGE);
+    return petImage || 'https://placehold.it/100x100';
+  }
 
   return (
-    <View className="m-2.5 p-3.5 bg-white rounded-xl shadow-lg elevation-3">
+    <Card className="p-2 mx-4 mt-5 -mb-2 bg-white rounded-2xl" elevation={5} >
       {/* Информация о пользователе */}
-      <View className="flex-row items-center">
-        <Image source={{ uri: ad.userPhoto }} className="w-[60px] h-[60px] rounded-full" />
-        <View className="ml-2.5">
-          <Text className="text-lg font-bold">{ad.userName}</Text>
-          <Text className="text-sm text-gray-500">
-            {ad.date ? new Date(ad.date).toLocaleDateString() : ''}
-          </Text>
+      <View className="flex-row items-start">
+        <Image source={{ uri: ad.userPhoto }} className="w-20 h-20 rounded-xl" />
+        {ad.userPets && ad.userPets.length > 0 && (
+          <View className="absolute top-8 left-8 rounded-full ">
+            <ImageModalViewer images={[{ uri: ad.userPets[0].thumbnailUrl || petImage || 'https://placehold.it/100x100' }]} imageHeight={60} imageWidth={60} borderRadius={4} className_='rounded-full' />
+            
+          </View>
+          
+        )}
+       
+        <View className="ml-8 w-full">
+          <Text className="-ml-4 text-lg font-nunitoSansBold">{ad.userName}</Text>
+          <CustomTextComponent 
+              text={ad.date ? new Date(ad.date).toLocaleTimeString() : 'Дата не указана'} 
+              leftIcon='time-outline' 
+              iconSet='ionicons' 
+              className_='p-0'
+            />
+            <CustomTextComponent 
+              text={'2км 500м'} 
+              leftIcon='paper-plane-outline' 
+              iconSet='ionicons' 
+              className_='p-0'
+            />
+            {ad.userPets && ad.userPets.length > 0 && (
+              <CustomTextComponent 
+                text={`${ad.userPets[0].petName}, ${getTagsByIndex(BREEDS_TAGS, ad.userPets[0].breed!) }`} 
+                leftIcon='paw-outline' 
+                iconSet='ionicons' 
+                className_='p-0 pt-1'
+              />)
+            }
         </View>
       </View>
 
       {/* Детали объявления */}
-      <Text className="mt-2.5 text-base text-gray-700">{ad.address}</Text>
-      <Text className="mt-2.5 text-sm text-gray-800">{ad.description}</Text>
-
-      {/* Карусель питомцев */}
-      {ad.userPets && ad.userPets.length > 0 && (
-        <Carousel
-          data={ad.userPets}
-          renderItem={renderPetItem}
-          width={Dimensions.get('window').width}
-          height={150}
-          loop={false}
-          
-        />
-      )}
-
-      {/* Кнопка "Присоединиться к прогулке" */}
-      <Button mode="contained" onPress={() => {}}>
-        Присоединиться к прогулке
-      </Button>
-    </View>
+      {ad.description && <Text className="m-2 text-sm text-gray-800">{ad.description}</Text>}
+      <View className='flex-row w-full justify-between px-1'>
+        <CustomButtonPrimary title='Пригласить' containerStyles='w-1/2 -mx-1'/>
+        <CustomButtonOutlined title='Профиль' containerStyles='w-1/2 -mx-1'/>
+      </View>
+      
+    </Card>
   );
 };
 

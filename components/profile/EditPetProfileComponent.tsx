@@ -262,6 +262,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
           initialSelectedTags={editablePet.playPreferences || []}
           onSelectedTagsChange={(selectedTags) => handleFieldChange('playPreferences', selectedTags)}
           maxSelectableTags={5}
+          visibleTagsCount={10}
         />
       </View>
       <Divider className="mt-6" />
@@ -275,6 +276,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
           initialSelectedTags={editablePet.petHealthIssues || []}
           onSelectedTagsChange={(selectedTags) => handleFieldChange('petHealthIssues', selectedTags)}
           maxSelectableTags={5}
+          visibleTagsCount={10}
         />
         <Text className='pt-4 -mb-1 text-base font-nunitoSansRegular'>Вакцины</Text>
         <CustomTagsSelector
@@ -282,6 +284,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
           initialSelectedTags={editablePet.vaccinations || []}
           onSelectedTagsChange={(selectedTags) => handleFieldChange('vaccinations', selectedTags)}
           maxSelectableTags={5}
+          visibleTagsCount={10}
         />
          <View className="pt-4  flex-row items-center">
             <Checkbox

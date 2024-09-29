@@ -75,6 +75,7 @@ const MapPointComonent = <T extends { id: string; latitude: number; longitude: n
               tags={(mapPoint as any).amenities || []}
               initialSelectedTags={[]}
               maxSelectableTags={5}
+              visibleTagsCount={10}
             />
           </View>
         )}

@@ -255,6 +255,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 initialSelectedTags={editableUser.interests || []}
                 onSelectedTagsChange={(selectedTags) => handleChange('interests', selectedTags)}
                 maxSelectableTags={5}
+                visibleTagsCount={10}
               />
             </View>
             <Divider className="mt-4"/>

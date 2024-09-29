@@ -6,19 +6,19 @@ import { Link, router } from "expo-router";
 import userStore from "@/stores/UserStore";
 import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton";
 import ArrowHelp from "@/components/auth/arrowHelp";
-import PasswordPrompt from "@/components/auth/passwordPrompt";
+//import PasswordPrompt from "@/components/auth/passwordPrompt";
 
 const SignUpMailValidation = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isSecure, setIsSecure] = useState(true);
-  const [isChecked, setIsChecked] = useState(false);
+  // const [confirmPassword, setConfirmPassword] = useState("");
+  // const [isSecure, setIsSecure] = useState(true);
+  // const [isChecked, setIsChecked] = useState(false);
 
-  const [isActive, setIsActive] = useState(false);
+  // const [isActive, setIsActive] = useState(false);
 
-  const [isSamePassword, setIsSamePassword] = useState(true);
-  const [checkBoxAlert, setCheckBoxAlert] = useState(true);
+  // const [isSamePassword, setIsSamePassword] = useState(true);
+  // const [checkBoxAlert, setCheckBoxAlert] = useState(true);
   const [isValidEmail, setIsValidEmail] = useState(true);
   const handleSubmit = async () => {
     const validEmail = validateEmail(email);

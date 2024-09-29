@@ -1,7 +1,7 @@
 import { View, ScrollView, Alert } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TextInput, Text, Checkbox } from "react-native-paper";
+import { TextInput, Text } from "react-native-paper";
 import { Link, router } from "expo-router";
 import userStore from "@/stores/UserStore";
 import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton";

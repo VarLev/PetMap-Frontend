@@ -4,11 +4,19 @@ import ImageView from 'react-native-image-viewing';
 
 interface ImageModalViewerProps {
   images: { uri: string }[];  // Массив объектов с URI изображений
-  imageWidth?: number;  // Ширина изображения, по умолчанию 96 (w-24)
-  imageHeight?: number; // Высота изображения, по умолчанию 96 (h-24)
+  imageWidth?: number;  // Ширина изображения, по умолчанию 130
+  imageHeight?: number; // Высота изображения, по умолчанию 130
+  className_?: string;   // Внешний класс для кастомизации
+  borderRadius?: number;  // Радиус скругления изображения, по умолчанию 8
 }
 
-const ImageModalViewer: React.FC<ImageModalViewerProps> = ({ images, imageWidth = 130, imageHeight = 130 }) => {
+const ImageModalViewer: React.FC<ImageModalViewerProps> = ({
+  images,
+  imageWidth = 130,
+  imageHeight = 130,
+  className_ = '',
+  borderRadius = 2,
+}) => {
   const [visible, setVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
@@ -22,16 +30,15 @@ const ImageModalViewer: React.FC<ImageModalViewerProps> = ({ images, imageWidth 
   };
 
   return (
-    <View className="flex-1 items-center justify-center">
+    <View className={`flex-1 items-center justify-center ${className_}`}>
       {/* Отображение миниатюр изображений */}
       <View className="flex-row flex-wrap justify-center">
         {images.map((image, index) => (
           <TouchableOpacity key={index} onPress={() => openModal(index)} className="m-2">
             <Image
               source={{ uri: image.uri }}
-              className="rounded-lg"
-              height={imageHeight}
-              width={imageWidth}
+              style={{ width: imageWidth, height: imageHeight, borderWidth: borderRadius, borderColor: 'white' }}
+              className={`rounded-lg ${className_}`}
             />
           </TouchableOpacity>
         ))}

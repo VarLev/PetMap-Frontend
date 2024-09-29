@@ -4,7 +4,6 @@ import axios from 'axios';
 // eslint-disable-next-line import/no-unresolved
 //import { MAPBOX_ACCESS_TOKEN } from '@env';
 import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
-import { IMapPoint } from '@/dtos/Interfaces/map/IMapPoint';
 import apiClient from '@/hooks/axiosConfig';
 import { IWalkAdvrtFilterParams } from '@/dtos/Interfaces/filter/IWalkAdvrtFilterParams';
 import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
@@ -261,7 +260,6 @@ class MapStore {
           runInAction(() => {
             this.walkAdvrts = [];
             this.mapPoints = response.data as IPointDangerDTO[];
-            console.log('Danger points', this.mapPoints);
           });
         }
         else if(filter === MapPointType.Park){
@@ -333,9 +331,9 @@ class MapStore {
     }
   }
 
-  async getPagenatedWalks(page: number, pageSize: number): Promise<IPagedAdvrtDto> {
+  async getPagenatedPointItems(type: MapPointType,page: number, pageSize: number): Promise<IPagedAdvrtDto> {
     try {
-      const response = await apiClient.get(`walkadvrt/walk-paginated?page=${page}&pageSize=${pageSize}`);
+      const response = await apiClient.get(`map/get-points-paginated?type=${type}&page=${page}&pageSize=${pageSize}`);
   
       return response.data as IPagedAdvrtDto;
     } catch (error) {

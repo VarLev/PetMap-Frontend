@@ -50,7 +50,7 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
         </Text>
         <View>
           <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Удобства</Text>
-            <CustomTagsSelector tags={AMENITIES_TAGS} initialSelectedTags={mapPoint.amenities} readonlyMode/>
+            <CustomTagsSelector tags={AMENITIES_TAGS} initialSelectedTags={mapPoint.amenities} readonlyMode visibleTagsCount={10}/>
           </View>
         <View className="h-10"/>
       </View>

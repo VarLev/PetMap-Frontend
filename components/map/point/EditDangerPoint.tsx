@@ -1,5 +1,4 @@
 // CompositeFormComponent.tsx
-
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import CustomOutlineInputText from '../../custom/inputs/CustomOutlineInputText';
@@ -9,7 +8,6 @@ import { DANGERTYPE_TAGS } from '@/constants/Strings';
 import CustomDropdownList from '../../custom/selectors/CustomDropdownList';
 import CustomButtonPrimary from '../../custom/buttons/CustomButtonPrimary';
 import mapStore from '@/stores/MapStore';
-
 import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
 import { MapPointType } from '@/dtos/enum/MapPointType';
 

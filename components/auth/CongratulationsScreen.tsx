@@ -1,11 +1,20 @@
-import { View, Text, Image, ImageBackground } from "react-native";
+import { View, Text, Image, StyleSheet } from "react-native";
 import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
+import React, { useEffect, useRef } from "react";
+import LottieView from "lottie-react-native";
 
 function CongratulationsScreen() {
+  const confettiRef = useRef<LottieView>(null);
+
+  useEffect(() => {
+    // Запускаем анимацию конфетти при открытии экрана
+    confettiRef.current?.play();
+  }, []);
+
   return (
     <>
-      <View className="flex-1">
+      <View className="h-full">
         <Svg height="100%" width="100%" className="absolute">
           <Defs>
             <RadialGradient
@@ -24,8 +33,16 @@ function CongratulationsScreen() {
           </Defs>
           <Rect x="0" y="0" width="100%" height="100%" fill="url(#grad)" />
         </Svg>
+        <LottieView
+          ref={confettiRef}
+          source={require('@/assets/animations/confetti.json')} // путь к анимации конфетти
+          autoPlay={false}
+          loop={false}
+          style={styles.lottie}
+          resizeMode="cover"
+        />
 
-        <View className="">
+        <View className="-mt-10 h-full">
           <View className="h-[30%]">
             <Image
               className="w-full"
@@ -48,7 +65,7 @@ function CongratulationsScreen() {
                 resizeMode="contain"
               />
               <Text className="text-[60px] color-white font-nunitoSansBold">
-                50
+                1200
               </Text>
             </View>
             <Text className="color-white text-[16px] font-nunitoSansBold text-center mb-2">
@@ -57,24 +74,32 @@ function CongratulationsScreen() {
             <CustomButtonOutlined
               title="Забрать бонусы"
               handlePress={() => console.log("Pressed")}
-              containerStyles="w-full  bg-[#ACFFB9] my-4"
-              textStyles=""
+              containerStyles="w-full bg-[#ACFFB9] my-4"
             />
-            <Text className="color-white text-[15px] font-nunitoSansBold text-center mt-2">
-              Перейти в профиль
-            </Text>
           </View>
-          <View className="h-[10%] mt-[-50px]">
-          <Image
-            className="w-full"
-            source={require("@/assets/images/FrameBottom.png")}
-            resizeMode="contain"
-          />
+          <View className="h-[10%]">
+            <Image
+              className="w-full"
+              source={require("@/assets/images/FrameBottom.png")}
+              resizeMode="contain"
+            />
           </View>
         </View>
       </View>
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  lottie: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1000, 
+    pointerEvents: 'none'
+  },
+});
 
 export default CongratulationsScreen;

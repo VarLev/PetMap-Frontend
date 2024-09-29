@@ -10,7 +10,6 @@ import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
 import CustomOutlineInputText from '../custom/inputs/CustomOutlineInputText';
 import { calculateDogAge } from '@/utils/utils';
 import { petUriImage } from '@/constants/Strings';
-import CustomDropdownList from '../custom/selectors/CustomDropdownList';
 import Modal from "react-native-modal";
 import { WalkAdvrtStatus } from '@/dtos/enum/WalkAdvrtStatus';
 import { AdvrtType } from '@/dtos/enum/AdvrtType';

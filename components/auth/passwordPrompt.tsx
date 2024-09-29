@@ -1,9 +1,14 @@
-import React, { useState } from "react";
-import { Text, ProgressBar, MD3Colors } from "react-native-paper";
+import React from "react";
+import { Text, ProgressBar } from "react-native-paper";
 import { View } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 
-function PasswordPrompt({ strengthScore, password }) {
+interface PasswordPromptProps {
+  strengthScore: number;
+  password: string;
+}
+
+function PasswordPrompt({ strengthScore, password }: PasswordPromptProps) {
   const passComplexity =
     strengthScore > 0.7
       ? "Надежный"

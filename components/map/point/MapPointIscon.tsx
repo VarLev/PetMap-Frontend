@@ -103,7 +103,7 @@ const MapPointIcon: React.FC<MapPointIconProps> = ({ mapPointType }) => {
         return (
           <View className='bg-white border-2 border-violet-400 rounded-full h-6 w-6 justify-center items-center'>
             <IconSelectorComponent
-              iconName='flower-outline'
+              iconName='leaf-outline'
               iconSet='Ionicons'
               size={15}
               color='#383838'

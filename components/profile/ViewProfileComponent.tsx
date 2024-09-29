@@ -151,6 +151,7 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen, loadedUser }: { onEd
                 initialSelectedTags={user.interests!}
                 maxSelectableTags={5}
                 readonlyMode = {true}
+                visibleTagsCount={10}
               />
               <Divider className='mt-3' />
             </View>
