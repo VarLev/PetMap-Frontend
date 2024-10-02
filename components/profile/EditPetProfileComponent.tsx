@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useContext } from 'react';
 import { View, Text, BackHandler, Alert } from 'react-native';
 import { Button, Checkbox, Divider } from 'react-native-paper';
 import { Pet } from '@/dtos/classes/pet/Pet';
@@ -15,7 +15,31 @@ import { parseDateToString, parseStringToDate } from '@/utils/utils';
 import { router } from 'expo-router';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import CustomLoadingButton from '../custom/buttons/CustomLoadingButton';
+import { BonusContex } from '@/contexts/BonusContex';
+import { useControl } from '@/hooks/useBonusControl';
+import userStore from '@/stores/UserStore';
 
+
+const TASK_IDS = {
+  petEdit:{
+    dog_name: 22,
+    dog_birthDate: 23,
+    dog_gender: 24,
+    dog_breed: 25,
+    dog_weight: 26,
+    dog_interests: 27,
+    dog_health: 28,
+    dog_vaccines: 29,
+    dog_sterilized: 30,
+    dog_temperament: 31,
+    dog_friendliness: 32,
+    dog_activity: 33,
+    dog_notes: 34,
+    dog_instagram: 35,
+    dog_facebook: 36,
+    dog_photo: 37
+  } 
+};
 
 const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet, onSave: (updatedPet: Pet) => void, onCancel: () => void }) => {
   const [editablePet, setEditablePet] = useState<Pet>(new Pet({ ...pet }));
@@ -28,6 +52,26 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
   //const [length, setLength] = useState(editablePet.size?.split('х')[0] ?? '');
   //const [height, setHeight] = useState(editablePet.size?.split('х')[1] ?? '');
   const [isNewPet, setIsNewPet] = useState(false);
+  const currentUser = userStore.currentUser!;
+  const { completedJobs } = useContext(BonusContex)!;
+
+  useControl('petName', editablePet.petName, {id : TASK_IDS.petEdit.dog_name, description:'name'});
+  useControl('birthDate', birthDate, {id : TASK_IDS.petEdit.dog_birthDate, description:'birthDate'});
+  useControl('gender', editablePet.gender, {id : TASK_IDS.petEdit.dog_gender, description:'gender'});
+  useControl('breed', editablePet.breed, {id : TASK_IDS.petEdit.dog_breed, description:'breed'});
+  useControl('weight', editablePet.weight, {id : TASK_IDS.petEdit.dog_weight, description:'weight'});
+  useControl('playPreferences', editablePet.playPreferences, {id : TASK_IDS.petEdit.dog_interests, description:'interests'});
+  useControl('petHealthIssues', editablePet.petHealthIssues, {id : TASK_IDS.petEdit.dog_health, description:'health'});
+  useControl('vaccinations', editablePet.vaccinations, {id : TASK_IDS.petEdit.dog_vaccines, description:'vaccines'});
+  useControl('neutered', editablePet.neutered, {id : TASK_IDS.petEdit.dog_sterilized, description:'sterilized'});
+  useControl('temperament', editablePet.temperament, {id : TASK_IDS.petEdit.dog_temperament, description:'temperament'});
+  useControl('friendliness', editablePet.friendliness, {id : TASK_IDS.petEdit.dog_friendliness, description:'friendliness'});
+  useControl('activityLevel', editablePet.activityLevel, {id : TASK_IDS.petEdit.dog_activity, description:'activity'});
+  useControl('additionalNotes', editablePet.additionalNotes, {id : TASK_IDS.petEdit.dog_notes, description:'notes'});
+  useControl('instagram', editablePet.instagram, {id : TASK_IDS.petEdit.dog_instagram, description:'instagram'});
+  useControl('facebook', editablePet.facebook, {id : TASK_IDS.petEdit.dog_facebook, description:'facebook'});
+  useControl('thumbnailUrl', editablePet.thumbnailUrl, {id : TASK_IDS.petEdit.dog_photo, description:'photo'});
+ 
 
   useEffect(() => {
     
@@ -109,6 +153,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
     editablePet.birthDate = parseStringToDate(birthDate);
     try {
       await petStore.updatePetProfile(editablePet);
+      await userStore.updateUserJobs(currentUser.id, completedJobs);
     } catch (error) {
       console.error('Ошибка при создании профиля питомца:', error);
       alert("Произошла ошибка при добавлении питомца. Пожалуйста, попробуйте снова.");
@@ -127,6 +172,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
     editablePet.birthDate = parseStringToDate(birthDate);
     try {
       const pet = await petStore.createNewPetProfile(editablePet);
+      
       if (pet) {
         router.replace('/profile'); // Перенаправление на профиль после добавления питомца
       }
@@ -157,19 +203,6 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
     setActivity(rating);
     setEditablePet((petEdit) => ({ ...petEdit, activityLevel: rating }));
   }
-
-  // const handleLengh = (lenth: string) => {
-  //   setLength(lenth);
-  //   const size = `${length}х${height}`;
-  //   setEditablePet((pet) => ({ ...pet, size: size }));
-  // }
-
-  // const handleHeight = (height: string) => {
-  //   setHeight(height);
-  //   const size = `${length}х${height}`;
-  //   setEditablePet((pet) => ({ ...pet, size: size }));
-  // }
-
   
 
   // Мемоизация хедера формы для предотвращения лишних ререндеров

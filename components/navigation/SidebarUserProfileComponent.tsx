@@ -26,7 +26,12 @@ const SidebarUserProfileComponent = () => {
   }
 
   const handleJobPress = () => {
-    router.replace('/profile/jobs');
+    router.replace('/profile/myjobs');
+    closeDrawer();
+  }
+
+  const handleWalksPress = () => {
+    router.replace('/profile/mywalks');
     closeDrawer();
   }
  
@@ -78,7 +83,7 @@ const SidebarUserProfileComponent = () => {
           <List.Item
             title="Мои прогулки"
             left={() => <List.Icon icon={() => <Feather name="users" size={20} color="#474747"  />} />}
-            onPress={() => console.log('Мои прогулки')}
+            onPress={handleWalksPress}
             titleStyle={{fontFamily: 'NunitoSans_400Regular'}}
           />
           <List.Item

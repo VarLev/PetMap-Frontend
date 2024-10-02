@@ -120,7 +120,7 @@ const MapBoxMap = observer(() => {
         },
         geometry: {
           type: 'Point',
-          coordinates: [point.latitude, point.longitude],
+          coordinates: [point.latitude!, point.longitude!],
         },
       });
     });
@@ -254,22 +254,22 @@ const MapBoxMap = observer(() => {
         paddingBottom: 400
       }
     })
-    console.log('mapPoint', mapStore.mapPoints );
-    if(mapPoint.mapPointType === MapPointType.Park){
-      setRenderContent(() => (
-        <MapPointComonent mapPoint={mapPoint} onInvite={handleChatInvite} onClose={handleSheetClose} />
-      ));
-    }
-    else if(mapPoint.mapPointType === MapPointType.Danger){
+    
+    // if(mapPoint.mapPointType === MapPointType.Park){
+    //   setRenderContent(() => (
+    //     <MapPointComonent mapPoint={mapPoint} onInvite={handleChatInvite} onClose={handleSheetClose} />
+    //   ));
+    // }
+    if(mapPoint.mapPointType === MapPointType.Danger){
       const pointDanger = mapPoint as IPointDangerDTO;
-      console.log('pointDanger', pointDanger);
+      
       setRenderContent(() => (
         <ViewDangerPoint mapPoint={pointDanger} />
       ));
     }
     else {
-      const pointUser = mapPoint as IPointUserDTO;
-      console.log('pointUser', pointUser);
+      const pointUser = mapPoint as IPointEntityDTO;
+      
       setRenderContent(() => (
         <ViewUserPoint mapPoint={pointUser} />
       ));
@@ -366,7 +366,7 @@ const MapBoxMap = observer(() => {
     <Provider>
       <SafeAreaView style={{ flex: 1 }}>
         <SlidingOverlay visible={isCardView}>      
-          <MapItemList renderType={currentPointType}/>
+          <MapItemList renderType={currentPointType} />
         </SlidingOverlay>
         <MapView 
           ref={mapRef} 
@@ -448,7 +448,7 @@ const MapBoxMap = observer(() => {
               onTouchStart={() => {}}
               allowOverlap={false}
             >  
-              <Pressable onPress={() => onMapPointPress(point as IPointDangerDTO)}>
+              <Pressable onPress={() => onMapPointPress(point)}>
                 <MapPointIcon mapPointType={point.mapPointType}/>
               </Pressable>
             </Mapbox.MarkerView>  

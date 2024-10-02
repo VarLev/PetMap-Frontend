@@ -47,9 +47,16 @@ export default function ProfileLayout() {
         }} 
       />
       <Stack.Screen 
-        name="jobs" 
+        name="myjobs" 
         options={{ 
           title: 'Задания и бонусы',
+          headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
+        }} 
+      />
+      <Stack.Screen 
+        name="mywalks" 
+        options={{ 
+          title: 'Мои прогулки',
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
         }} 
       />

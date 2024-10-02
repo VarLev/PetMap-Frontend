@@ -38,6 +38,7 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen, loadedUser }: { onEd
       // Загружаем текущего пользователя
       //await userStore.loadUser();
       setUser(user);
+      console.log(user);
       setIsCurrentUser(true);
     } else {
       // Загружаем другого пользователя

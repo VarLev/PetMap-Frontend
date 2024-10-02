@@ -18,21 +18,6 @@ const MapPointComonent = <T extends { id: string; latitude: number; longitude: n
   onClose,
 }: MapPointProps<T>) => {
 
-  const handleInvite = () => {
-    // Логика для приглашения пользователя
-  };
-
-  const handleDelete = () => {
-    onClose();
-  };
-
-  const handleUserProfileOpen = () => {
-    // Логика для открытия профиля пользователя
-  };
-
-  const handlePetProfileOpen = (petId: string) => {
-    // Логика для открытия профиля питомца
-  };
 
   const handleOpenMap = () => {
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(

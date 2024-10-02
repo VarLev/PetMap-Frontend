@@ -15,6 +15,7 @@ import { storage } from '@/firebaseConfig';
 import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
 import { IUserAdvrt } from '@/dtos/Interfaces/user/IUserAdvrt';
 import { IPagedAdvrtDto } from '@/dtos/Interfaces/advrt/IPagedAdvrtDto';
+import { handleAxiosError } from '@/utils/axiosUtils';
 
 class MapStore {
   address = '';
@@ -429,6 +430,15 @@ class MapStore {
     return downloadURL;
   };
 
+  async requestDownloadURL(image:string): Promise<string|undefined> {
+    if (!image) return;
+   
+    const storageRef = ref(storage, `${image}`);
+
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+  }
+
   async requestJoinWalk(walkId: string, userId: string) {
     try {
       console.log('Request join walk', walkId, userId);
@@ -486,6 +496,26 @@ class MapStore {
         console.error('Error:', error);
       }
       throw error;
+    }
+  }
+
+  async getMapPointById(pointId: string, pointType:MapPointType): Promise<IPointEntityDTO> {
+    try {
+      const response = await apiClient.get(`filter/point/${pointId}`);
+      if(pointType === MapPointType.Danger){
+        return response.data as IPointDangerDTO;
+      }
+      else if(pointType === MapPointType.Park){
+        return response.data as IPointParkDTO;
+      }
+      else if(pointType === MapPointType.UsersCustomPoint){
+        return response.data as IPointUserDTO;
+      }
+      else{
+        return response.data as IPointEntityDTO;
+      }
+    } catch (error) {
+      return handleAxiosError(error);
     }
   }
 }

@@ -5,13 +5,13 @@ import { BG_COLORS } from '@/constants/Colors';
 const SkeletonCard: React.FC = () => {
   return (
     <ContentLoader
-    speed={2}
+    speed={1}
     
     width={350}
     height={180}
     viewBox="0 0 400 160"
     backgroundColor="#f3f3f3"
-    foregroundColor={BG_COLORS.indigo[200]}
+    foregroundColor={BG_COLORS.indigo[300]}
   >
     {/* Скелетон для изображения */}
     <Rect x="0" y="0" rx="8" ry="8" width="100" height="100" />

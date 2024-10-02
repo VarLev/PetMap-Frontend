@@ -5,6 +5,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import EditPetProfileComponent from '@/components/profile/EditPetProfileComponent';
 import { Pet } from '@/dtos/classes/pet/Pet';
 import { View,Text, ActivityIndicator } from 'react-native';
+import { BonusProvider } from '@/contexts/BonusContex';
 
 const EditPetProfile = observer(() => {
   const { petId } = useLocalSearchParams<{ petId: string }>();
@@ -75,7 +76,9 @@ const EditPetProfile = observer(() => {
 
 
   return (
-    <EditPetProfileComponent onSave={handleSave} onCancel={handleCancel} pet={pet!}   />
+    <BonusProvider>
+      <EditPetProfileComponent onSave={handleSave} onCancel={handleCancel} pet={pet!}   />
+    </BonusProvider>
   );
 });
 

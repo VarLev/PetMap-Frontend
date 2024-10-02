@@ -25,6 +25,7 @@ const CustomTagsSelector: React.FC<CustomTagsSelectorProps> = ({
 
   // Определяем, является ли элемент индексом или строкой
   const isTagSelected = (tagLabel: string, index: number): boolean => {
+    if(readonlyMode) return !selectedTags.includes(tagLabel);
     return selectedTags.includes(tagLabel) || selectedTags.includes(index);
   };
 

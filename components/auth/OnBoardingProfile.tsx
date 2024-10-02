@@ -1,19 +1,8 @@
 import React, { ReactNode, useContext, useRef, useState } from "react";
-import {
-  View,
-  Dimensions,
-  Platform,
-  StyleSheet,
-  ImageSourcePropType,
-  Image,
-  FlatList,
-  TouchableOpacity, 
-} from "react-native";
+import { View, Dimensions, Platform, StyleSheet, ImageSourcePropType, Image, FlatList, TouchableOpacity } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { Avatar, Button, Text } from "react-native-paper";
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
 import * as ImagePicker from "expo-image-picker";
 import { IUser } from "@/dtos/Interfaces/user/IUser";
@@ -23,14 +12,10 @@ import CustomInputText from "../custom/inputs/CustomInputText";
 import * as Crypto from "expo-crypto";
 import { User } from "@/dtos/classes/user/UserDTO";
 import CustomSegmentedButtons from "../custom/buttons/CustomSegmentedButtons";
-//import { router } from "expo-router";
 import BottomSheetComponent from "../common/BottomSheetComponent";
 import BottomSheet from "@gorhom/bottom-sheet";
 import AvatarSelector from "../common/AvatarSelector";
-import {
-  GestureHandlerRootView,
-  ScrollView,
-} from "react-native-gesture-handler";
+import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
 import { avatarsStringF, avatarsStringM } from "@/constants/Avatars";
 import { BREEDS_TAGS } from "@/constants/Strings";
 import CustomDropdownList from "../custom/selectors/CustomDropdownList";
@@ -41,9 +26,7 @@ import CustomTagsSelector from "../custom/selectors/CustomTagsSelector";
 import { INTEREST_TAGS } from "@/constants/Strings";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 import BonusSlider from "../custom/sliders/BonusSlider";
-import { set } from "firebase/database";
 import CustomLoadingButton from "../custom/buttons/CustomLoadingButton";
-//import { set } from "firebase/database";
 
 const { width, height } = Dimensions.get("window");
 
@@ -73,7 +56,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   onEscape
 }) => {
   const user: User = userStore.currentUser!;
-  //const [editableUser, setEditableUser] = useState<User>(new User({ ...user }));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [name, setName] = useState("");
   const [gender, setGender] = useState(0);
@@ -112,43 +94,49 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   useControl("user_name", interests,{
     id: TASK_IDS.userEdit.user_name,
     description: "user name",
+    name:"user_name"
   });
   useControl("user_birthDate", age, {
     id: TASK_IDS.userEdit.user_birthDate,
     description: "user birthDate",
+    name:"user_birthDate"
   });
   useControl("user_gender", gender, {
     id: TASK_IDS.userEdit.user_gender,
     description: "user gender",
+    name:"user_gender"
   });
   useControl("user_photo", source, {
     id: TASK_IDS.userEdit.user_photo,
     description: "user photo",
+    name:"user_photo",
   });
   useControl("dog_name", petName, {
     id: TASK_IDS.userEdit.dog_name,
     description: "dog name",
+    name:"dog_name",
   });
   useControl("dog_breed", selectedBreed, {
     id: TASK_IDS.userEdit.dog_breed,
     description: "dog breed",
+    name:"dog_breed",
   });
   useControl("dog_birthDate", petAge, {
     id: TASK_IDS.userEdit.dog_birthDate,
     description: "dog birthDate",
+    name:"dog_birthDate",
   });
   useControl("dog_gender", petGender, {
     id: TASK_IDS.userEdit.dog_gender,
     description: "dog gender",
+    name:"dog_gender",
   });
   useControl("dog_photo", sourcePet, {
     id: TASK_IDS.userEdit.dog_photo,
     description: "dog photo",
+    name:"dog_photo",
   });
 
-  const handleIndex = (index: number) => {
-    setCurrentIndex(index);
-  };
 
   const onAgeChange = (
     event: DateTimePickerEvent,
@@ -177,11 +165,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     setShowPetAge(true);
   };
 
-  // const handleChange = (field: keyof User, value: any) => {
-  //   console.log(field, value);
-  //   setEditableUser({ ...editableUser, [field]: value });
-  // };
-
   const handleNext = async () => {
     if (currentIndex < data.length - 1) {
       const nextIndex = currentIndex + 1;
@@ -195,7 +178,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
         if(name)
           updatedValue += 100;
         if(userImage)
-          updatedValue += 300;
+          updatedValue += 200;
         setSliderValue(updatedValue);
       }
       
@@ -204,7 +187,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
         if(petName)
           updatedValue += 100;
         if(petImage)
-          updatedValue += 300;
+          updatedValue += 200;
         setPetPageBonuses(updatedValue)
         setSliderValue(updatedValue + sliderValue);
       } 
@@ -228,7 +211,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       currentUser!.gender = gender;
       currentUser!.birthDate = age;
       currentUser.interests = interests;
-      console.log("interests", interests);
       if(interests.length > 0)
         setSliderValue(sliderValue + 100);
       
@@ -236,7 +218,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
         const newAvatar = SetRandomAvatarDependOnGender();
         userStore.fetchImageUrl(newAvatar).then((resp) => {
           if (resp) {
-            console.log("resp", resp);
             currentUser.thumbnailUrl = resp;
           }
           currentUser!.petProfiles = [newPetProfile as IPet];
@@ -248,9 +229,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
         currentUser.thumbnailUrl = userImage;
         currentUser!.petProfiles = [newPetProfile as IPet];
         currentUser.jobs = completedJobs;
-        
-         onComplete(currentUser as IUser);
-        
+        onComplete(currentUser as IUser);
       }
      
       //router.replace("/screenholder");
@@ -413,20 +392,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
         <View className="items-center w-full h-full justify-center">
           {source ? (
              <Avatar.Image size={200} source={source} />
-            // <Avatar
-            //   source={source}
-            //   rounded
-            //   size={200}
-            //   containerStyle={{
-            //     backgroundColor: "#BDBDBD",
-            //     marginTop: 10,
-            //     borderColor: "white",
-            //     borderWidth: 3,
-            //     shadowColor: "black",
-            //     elevation: 4,
-            //   }}
-            //   icon={{ name: "user", type: "font-awesome", color: "white" }}
-            // />
           ) : (
             <Image
               source={require("@/assets/images/onboardingProfile/3user.webp")}
@@ -492,20 +457,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
         <View className="items-center w-full h-full justify-center">
           {sourcePet ? (
              <Avatar.Image size={200} source={sourcePet} />
-            // <Avatar
-            //   source={sourcePet}
-            //   rounded
-            //   size={200}
-            //   containerStyle={{
-            //     backgroundColor: "#BDBDBD",
-            //     marginTop: 20,
-            //     borderColor: "white",
-            //     borderWidth: 3,
-            //     shadowColor: "black",
-            //     elevation: 4,
-            //   }}
-            //   icon={{ name: "dog", type: "font-awesome-5", color: "white" }}
-            // />
           ) : (
             <Image
               source={require("@/assets/images/onboardingProfile/4pet.webp")}
@@ -587,9 +538,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                 tags={INTEREST_TAGS}
                 initialSelectedTags={interests || []}
                 maxSelectableTags={5}
-
                 onSelectedTagsChange={(tags) => setInterests(tags as number[])}
-                
               />
             </View>
           </ScrollView>
@@ -619,9 +568,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                 pagingEnabled={true}
                 loop={false}
                 enabled={false} // отключение скрола
-                // onProgressChange={(_, absoluteProgress) => {
-                //   handleIndex(Math.round(absoluteProgress));
-                // }}  // эта функция работает не корректно на пагинации
                 onSnapToItem={(index) => setCurrentIndex(index)}
                 renderItem={({ item }) => (
                   <View style={styles.carouselItemContainer}>
@@ -648,12 +594,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                     />
                   ))}
                 </View>
-                <CustomLoadingButton title="Далее" containerStyles="-mt-1 w-1/3 bg-white" textStyles="text-black text-sm font-nunitoSansBold"  handlePress={handleNext} isLoading={isLoading} />
-                {/* <Button onPress={handleNext} style={styles.navigationButton}>
-                  <Text className="font-nunitoSansBold text-black">
-                    {currentIndex === data.length - 1 ? "Завершить" : "Далее"}
-                  </Text>
-                </Button> */}
+                <CustomLoadingButton title={currentIndex < 4 ? "Далее" : "Завершить"} containerStyles="-mt-1 w-1/3 bg-white" textStyles="text-black text-sm font-nunitoSansBold"  handlePress={handleNext} isLoading={isLoading} />
               </View>
             </View>
           )}

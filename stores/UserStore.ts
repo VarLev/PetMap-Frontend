@@ -18,6 +18,10 @@ import petStore from './PetStore';
 import { Pet } from '@/dtos/classes/pet/Pet';
 import { JobTypeDto } from '@/dtos/Interfaces/job/IJob';
 import { handleAxiosError } from '@/utils/axiosUtils';
+import { JobType } from '@/dtos/enum/JobType';
+import { Job } from '@/dtos/classes/job/Job';
+import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
+import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
 
 
 class UserStore {
@@ -503,6 +507,20 @@ class UserStore {
     }
   };
 
+  async getUserWalks(userId: string): Promise<IWalkAdvrtShortDto[]> {
+    try {
+      const response = await apiClient.get(`/walkadvrt/${userId}`);
+      if(response.data.length > 0){
+        return response.data;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.error('Failed to load user walks', error);
+      return [];
+    }
+  }
+
   async getUserJobs(userId: string): Promise<JobTypeDto[]> {
     try {
       const response = await apiClient.get(`/job/user/${userId}`);
@@ -516,6 +534,37 @@ class UserStore {
       return [];
     }
   }
+
+  
+
+  async getEarnedBenefitsByJobType(userId: string, jobType: JobType): Promise<number> {
+    try {
+      const response = await apiClient.get(`/job/user/benefits-by-type`, {
+        params: {
+          userId: userId,
+          jobType: jobType
+        }
+      });
+
+      if(response.data){
+        return response.data;
+      } else {
+        return 0;
+      }
+    } catch (error) {
+      console.error('Failed to load user jobs', error);
+      return 0;
+    }
+  }
+
+  async updateUserJobs(userId: string, jobs: Job[]) {
+    try {
+      await apiClient.put(`/job/user/${userId}`, jobs);
+    } catch (error) {
+      console.error('Failed to update user jobs', error);
+    }
+  }
+
 
 }
 

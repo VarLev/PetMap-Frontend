@@ -1,15 +1,24 @@
 import { View, Text, Image, StyleSheet } from "react-native";
 import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import LottieView from "lottie-react-native";
+import { router } from "expo-router";
+import userStore from "@/stores/UserStore";
+import { JobType } from "@/dtos/enum/JobType";
 
 function CongratulationsScreen() {
+  const [benefites, setBenefits] = useState<number>(0);
   const confettiRef = useRef<LottieView>(null);
 
   useEffect(() => {
-    // Запускаем анимацию конфетти при открытии экрана
-    confettiRef.current?.play();
+    const fetchBonuses = async () => {
+      const bonuses = await userStore.getEarnedBenefitsByJobType(userStore.currentUser?.id, JobType.FillOnboarding);
+      setBenefits(bonuses);
+      console.log(bonuses);
+      confettiRef.current?.play(); 
+    };
+    fetchBonuses();
   }, []);
 
   return (
@@ -33,14 +42,16 @@ function CongratulationsScreen() {
           </Defs>
           <Rect x="0" y="0" width="100%" height="100%" fill="url(#grad)" />
         </Svg>
-        <LottieView
-          ref={confettiRef}
-          source={require('@/assets/animations/confetti.json')} // путь к анимации конфетти
-          autoPlay={false}
-          loop={false}
-          style={styles.lottie}
-          resizeMode="cover"
-        />
+        <View style={styles.lottieContainer} pointerEvents="none">
+          <LottieView
+            ref={confettiRef}
+            source={require('@/assets/animations/confetti.json')}
+            autoPlay={false}
+            loop={false}
+            style={styles.lottie}
+            resizeMode="cover"
+          />
+        </View>
 
         <View className="-mt-10 h-full">
           <View className="h-[30%]">
@@ -65,7 +76,7 @@ function CongratulationsScreen() {
                 resizeMode="contain"
               />
               <Text className="text-[60px] color-white font-nunitoSansBold">
-                1200
+                {benefites}
               </Text>
             </View>
             <Text className="color-white text-[16px] font-nunitoSansBold text-center mb-2">
@@ -73,7 +84,7 @@ function CongratulationsScreen() {
             </Text>
             <CustomButtonOutlined
               title="Забрать бонусы"
-              handlePress={() => console.log("Pressed")}
+              handlePress={() => router.replace("/map")}
               containerStyles="w-full bg-[#ACFFB9] my-4"
             />
           </View>
@@ -91,6 +102,14 @@ function CongratulationsScreen() {
 }
 
 const styles = StyleSheet.create({
+  lottieContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1000,
+  },
   lottie: {
     position: 'absolute',
     top: 0,
@@ -103,3 +122,5 @@ const styles = StyleSheet.create({
 });
 
 export default CongratulationsScreen;
+
+
