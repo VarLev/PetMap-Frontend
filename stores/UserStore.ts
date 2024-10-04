@@ -8,11 +8,11 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, storage, si
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import axios from 'axios';
 import apiClient from '@/hooks/axiosConfig';
-import * as ImageManipulator from 'expo-image-manipulator';
+import {manipulateAsync,SaveFormat } from 'expo-image-manipulator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IUserUpdateOnbording } from '@/dtos/Interfaces/user/IUserUpdateOnbording';
 import { User } from '@/dtos/classes/user/UserDTO';
-import * as ImagePicker from 'expo-image-picker';
+import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import { IPet } from '@/dtos/Interfaces/pet/IPet';
 import petStore from './PetStore';
 import { Pet } from '@/dtos/classes/pet/Pet';
@@ -423,10 +423,10 @@ class UserStore {
   };
 
   async compressImage (uri: string): Promise<string> {
-    const manipResult = await ImageManipulator.manipulateAsync(
+    const manipResult = await manipulateAsync(
       uri,
       [{ resize: { width: 400 } }], // Изменение размера изображения
-      { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
+      { compress: 0.5, format: SaveFormat.JPEG }
     );
     return manipResult.uri;
   };
@@ -494,8 +494,8 @@ class UserStore {
   }
 
   async setUserImage() {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    let result = await launchImageLibraryAsync({
+      mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [3, 3],
       quality: 0.5,

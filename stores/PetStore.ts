@@ -1,9 +1,9 @@
 import { makeAutoObservable } from "mobx";
 import axios from 'axios';
 import apiClient from '@/hooks/axiosConfig';
-import * as ImagePicker from 'expo-image-picker';
-import * as Crypto from 'expo-crypto';
-import * as ImageManipulator from 'expo-image-manipulator';
+import {launchImageLibraryAsync, MediaTypeOptions} from 'expo-image-picker';
+import {randomUUID} from "expo-crypto";
+import {manipulateAsync,SaveFormat } from 'expo-image-manipulator';
 
 import { IPet} from '@/dtos/Interfaces/pet/IPet';
 import { Pet } from "@/dtos/classes/pet/Pet";
@@ -34,7 +34,7 @@ class PetStore {
 
   getEmptyPetProfile(petId?: string, userId?: string, petName?: string): IPet {
     const newPet = new Pet();
-    newPet.id = petId || Crypto.randomUUID();
+    newPet.id = petId || randomUUID();
     newPet.petName = petName || '';
     newPet.userId = userId || '';
     return newPet;
@@ -84,7 +84,7 @@ class PetStore {
       
       if (this.currentPetProfile) {
         this.currentPetProfile = { ...this.currentPetProfile, ...pet };
-        this.currentPetProfile.id = Crypto.randomUUID();
+        this.currentPetProfile.id = randomUUID();
         const response = await apiClient.post('/petprofiles/create-new', this.currentPetProfile);
         const newPet = new Pet(response.data);
         return newPet!;
@@ -182,8 +182,8 @@ class PetStore {
 
 
   async setPetImage() {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    let result = await launchImageLibraryAsync({
+      mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [3, 3],
       quality: 0.5,
@@ -213,10 +213,10 @@ class PetStore {
   };
 
   async compressImage (uri: string): Promise<string> {
-    const manipResult = await ImageManipulator.manipulateAsync(
+    const manipResult = await manipulateAsync(
       uri,
       [{ resize: { width: 400 } }], // Изменение размера изображения
-      { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG }
+      { compress: 0.5, format: SaveFormat.JPEG }
     );
     return manipResult.uri;
   };

@@ -8,6 +8,7 @@
     "scheme": "com.lightway.petmap",
     "userInterfaceStyle": "automatic",
     "owner": "levromf",
+    "jsEngine": "hermes",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "cover",
@@ -54,12 +55,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
-      ],
-      "expo-font"
+      ]
     ],
-    "experiments": {
-      "typedRoutes": true
-    },
     "extra": {
       "router": {
         "origin": false

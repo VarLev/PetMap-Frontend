@@ -1,11 +1,9 @@
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, SafeAreaView, Alert, Image, Pressable } from 'react-native';
+import { View, SafeAreaView, Alert, Image, Pressable, BackHandler } from 'react-native';
 import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
 import { Provider  } from 'react-native-paper';
-// eslint-disable-next-line import/no-unresolved
-//import { MAPBOX_ACCESS_TOKEN } from '@env';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent'; // Импортируйте новый компонент
 
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -14,11 +12,10 @@ import userStore from '@/stores/UserStore';
 import chatStore from '@/stores/ChatStore';
 import AdvtEditComponent from './AdvtEditComponent';
 import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import Svg, { Path } from 'react-native-svg';
 import { useDrawer } from '@/contexts/DrawerProvider';
-import MapPointComonent from './MapPointComonent';
 import SearchAndTags from '../custom/inputs/FilterSearchAndTagsComponent';
 import FilterComponent from '../filter/FilterComponent';
 import { IPointEntityDTO } from '@/dtos/Interfaces/map/IPointEntityDTO';
@@ -29,7 +26,7 @@ import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
 import { DangerLevel } from '@/dtos/enum/DangerLevel';
 import { DangerType } from '@/dtos/enum/DangerType';
 import { MapPointStatus } from '@/dtos/enum/MapPointStatus';
-import * as Crypto from "expo-crypto";
+import {randomUUID} from "expo-crypto";
 import IconSelectorComponent from '../custom/icons/IconSelectorComponent';
 import ViewDangerPoint from './point/ViewDangerPoint';
 import EditUserPoint from './point/EditUserPoint';
@@ -39,7 +36,6 @@ import ViewUserPoint from './point/ViewUserPoint';
 import CustomAlert from '../custom/alert/CustomAlert';
 import MapPointIcon from './point/MapPointIscon';
 import SlidingOverlay from '../navigation/SlidingOverlay';
-import AdvrtsList from '../navigation/advrts/MapItemList';
 import MapItemList from '../navigation/advrts/MapItemList';
 
 
@@ -73,23 +69,33 @@ const MapBoxMap = observer(() => {
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
   
   useEffect(() => {
-    (async () => {
-      const granted = await Mapbox.requestAndroidLocationPermissions();
-      if (!granted) {
-        Alert.alert('Permission to access location was denied');
-      }
-      await mapStore.setWalkAdvrts();
-      
-    })();
-    setUserCoordinates([-34.6037,-58.3816]);
-    
+    setUserCoordinates([-58.3816,-34.6037]);
+    mapStore.setWalkAdvrts();
+   
   }, []);
-
+  
   useEffect(() => {
     const data = createGeoJSONFeatures();
     setGeoJSONData(data);
   }, [mapStore.walkAdvrts, mapStore.mapPoints]);
 
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        // Если пользователь авторизован и нажимает "Назад", блокируем переход на экран авторизации
+        handleSheetClose();
+        //mapStore.setBottomSheetVisible(false);
+        //setIsSheetVisible(false);
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    }, [])
+  );
 
 
   const createGeoJSONFeatures = (): FeatureCollection<Point> => {
@@ -175,7 +181,7 @@ const MapBoxMap = observer(() => {
         dangerLevel: DangerLevel.Low,
         dangerType: DangerType.Other,
         availableHours: 0,
-        id: Crypto.randomUUID(),
+        id: randomUUID(),
         mapPointType: MapPointType.Danger,
         status: MapPointStatus.InMap,
         latitude: coordinates[1],
@@ -193,7 +199,7 @@ const MapBoxMap = observer(() => {
     }
     else if(currentPointType === MapPointType.UsersCustomPoint){
       const mapPoint: IPointUserDTO = {
-        id: Crypto.randomUUID(),
+        id: randomUUID(),
         mapPointType: MapPointType.UsersCustomPoint,
         status: MapPointStatus.Pending,
         latitude: coordinates[1],
@@ -221,6 +227,7 @@ const MapBoxMap = observer(() => {
   };
 
   const onPinPress = async (advrt: IWalkAdvrtDto) => {
+    
     cameraRef.current?.setCamera({
       centerCoordinate: [advrt.longitude!, advrt.latitude!],
       animationDuration: 300,
@@ -235,12 +242,12 @@ const MapBoxMap = observer(() => {
       <AdvtComponent advrt={advrt} onInvite={handleChatInvite} onClose={handleSheetClose} />
     ));
     if (!isSheetExpanded) {
-      setTimeout(() => {
-        sheetRef.current?.snapToIndex(0); // Позиция 60% в snapPoints
-        mapStore.setBottomSheetVisible(true);
-        setIsSheetVisible(true);
-      }, 200);
-    }
+      
+      sheetRef.current?.snapToIndex(0); // Позиция 60% в snapPoints
+      mapStore.setBottomSheetVisible(true);
+      setIsSheetVisible(true);
+
+  }
   };
 
   const onMapPointPress = async (mapPoint: IPointEntityDTO ) => {
@@ -300,8 +307,8 @@ const MapBoxMap = observer(() => {
     sheetRef.current?.close();
   }
 
-  const handleSheetClose = () => {
-    sheetRef.current?.close();
+  const handleSheetClose = async () => {
+    await sheetRef.current?.close();
     mapStore.setBottomSheetVisible(false);
     setMarkerCoordinate(null);
     setMarkerPointCoordinate(null);
@@ -387,7 +394,7 @@ const MapBoxMap = observer(() => {
           <UserLocation minDisplacement={10} ref={userLocationRef}  />
           <Camera
             ref={cameraRef}
-            centerCoordinate={userCoordinates.reverse()}
+            centerCoordinate={userCoordinates}
             zoomLevel={10}
             animationDuration={1}
           />

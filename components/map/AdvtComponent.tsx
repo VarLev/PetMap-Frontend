@@ -31,6 +31,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
   const [userIsOwner, setUserIsOwner] = React.useState(false);
   
   useEffect(() => {
+    console.log('participants', participants);
       const fetchParticipants = async () => {
         if(advrt.id){
           const users = await mapStore.getAllWalkParticipants(advrt.id);
@@ -42,8 +43,9 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
         }
           
       };
-      fetchParticipants();
-  }, [advrt.id]);
+      if(advrt.userId === userStore.currentUser?.id)
+        fetchParticipants();
+  }, []);
   
  
   const handleInvite = async () => {

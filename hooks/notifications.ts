@@ -1,12 +1,12 @@
 // notifications.ts
 import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
+import {isDevice} from 'expo-device';
 import Constants from 'expo-constants';
 import apiClient from './axiosConfig';
 
 // Регистрация устройства для получения пуш-уведомлений
 export async function registerForPushNotificationsAsync(): Promise<string | null> {
-  if (Device.isDevice) {
+  if (isDevice) {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {

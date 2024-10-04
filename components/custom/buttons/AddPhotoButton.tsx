@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, Text, Image, Alert, View } from 'react-native';
 import { Card, IconButton } from 'react-native-paper';
-import * as ImagePicker from 'expo-image-picker';
-import * as ImageManipulator from 'expo-image-manipulator';
+import {launchCameraAsync,launchImageLibraryAsync, MediaTypeOptions} from 'expo-image-picker';
+import {manipulateAsync,SaveFormat } from 'expo-image-manipulator';
 
 interface AddPhotoButtonProps {
   buttonText: string;
@@ -14,10 +14,10 @@ const AddPhotoButton: React.FC<AddPhotoButtonProps> = ({ buttonText, onImageSele
 
   // Функция для сжатия изображения
   const compressImage = async (uri: string): Promise<string> => {
-    const manipResult = await ImageManipulator.manipulateAsync(
+    const manipResult = await manipulateAsync(
       uri,
       [{ resize: { width: 400 } }], // Изменение размера до 400px по ширине
-      { compress: 0.5, format: ImageManipulator.SaveFormat.JPEG } // Сжатие до 50%
+      { compress: 0.5, format: SaveFormat.JPEG } // Сжатие до 50%
     );
     return manipResult.uri;
   };
@@ -30,8 +30,8 @@ const AddPhotoButton: React.FC<AddPhotoButtonProps> = ({ buttonText, onImageSele
         {
           text: 'Сделать фотографию',
           onPress: async () => {
-            const result = await ImagePicker.launchCameraAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            const result = await launchCameraAsync({
+              mediaTypes: MediaTypeOptions.Images,
               allowsEditing: true,
               quality: 1,
               aspect:[4,3]
@@ -46,8 +46,8 @@ const AddPhotoButton: React.FC<AddPhotoButtonProps> = ({ buttonText, onImageSele
         {
           text: 'Выбрать из галереи',
           onPress: async () => {
-            const result = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            const result = await launchImageLibraryAsync({
+              mediaTypes: MediaTypeOptions.Images,
               allowsEditing: true,
               quality: 1,
               aspect:[4,3]

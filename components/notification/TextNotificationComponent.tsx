@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
-import * as Device from 'expo-device';
+import {isDevice} from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 
@@ -94,7 +94,7 @@ async function registerForPushNotificationsAsync() {
     });
   }
 
-  if (Device.isDevice) {
+  if (isDevice) {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {

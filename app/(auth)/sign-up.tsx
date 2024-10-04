@@ -183,7 +183,7 @@ const SignUp = () => {
                 title="Зарегистрироваться"
                 handlePress={handleRegister}
                 containerStyles="w-full"
-                isLoading={!isFormValid}
+                isLoading={false}
               
               />
             </View>

@@ -4,12 +4,12 @@ import Carousel from "react-native-reanimated-carousel";
 import { Avatar, Button, Text } from "react-native-paper";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
-import * as ImagePicker from "expo-image-picker";
+import { launchImageLibraryAsync, MediaTypeOptions  } from 'expo-image-picker';
 import { IUser } from "@/dtos/Interfaces/user/IUser";
 import userStore from "@/stores/UserStore";
 import { IPet } from "@/dtos/Interfaces/pet/IPet";
 import CustomInputText from "../custom/inputs/CustomInputText";
-import * as Crypto from "expo-crypto";
+import {randomUUID} from "expo-crypto";
 import { User } from "@/dtos/classes/user/UserDTO";
 import CustomSegmentedButtons from "../custom/buttons/CustomSegmentedButtons";
 import BottomSheetComponent from "../common/BottomSheetComponent";
@@ -27,6 +27,7 @@ import { INTEREST_TAGS } from "@/constants/Strings";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 import BonusSlider from "../custom/sliders/BonusSlider";
 import CustomLoadingButton from "../custom/buttons/CustomLoadingButton";
+
 
 const { width, height } = Dimensions.get("window");
 
@@ -198,7 +199,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       const currentUser = userStore.currentUser;
 
       const newPetProfile: Partial<IPet> = {
-        id: Crypto.randomUUID(),
+        id: randomUUID(),
         petName: petName,
         breed: selectedBreed,
         birthDate: petAge,
@@ -272,8 +273,8 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   };
 
   const SetPetImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+    let result = await launchImageLibraryAsync({
+      mediaTypes: MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [3, 3],
       quality: 0.7,

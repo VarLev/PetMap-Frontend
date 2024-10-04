@@ -4,7 +4,7 @@ import { ref, get, push, update, query, orderByChild, onValue, remove } from 'fi
 import userStore from '@/stores/UserStore';
 import { MessageType } from '@flyerhq/react-native-chat-ui';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
-import * as Crypto from 'expo-crypto';
+import {randomUUID} from "expo-crypto";
 import { sendPushNotification } from '@/hooks/notifications';
 
 
@@ -147,7 +147,7 @@ class ChatStore {
     if (!userId) return;
   
     const initialMessage: MessageType.Custom = {
-      id:  Crypto.randomUUID(), // используем уникальный идентификатор для сообщения
+      id:  randomUUID(), // используем уникальный идентификатор для сообщения
       author: {
         id: userId,
       },

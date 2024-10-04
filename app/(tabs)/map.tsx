@@ -1,3 +1,4 @@
+import PermissionsRequestComponent from '@/components/auth/PermissionsRequestComponent';
 import MapBoxMap from '@/components/map/MapComponent';
 import userStore from '@/stores/UserStore';
 import { router } from 'expo-router';
@@ -18,6 +19,7 @@ const Map = () => {
   return (
    
     <SafeAreaView className='bg-violet-100 h-full'>
+      <PermissionsRequestComponent/>
        <GestureHandlerRootView style={{ flex: 1 }}>
         <MapBoxMap />
       </GestureHandlerRootView>

@@ -5,6 +5,7 @@ import OnboardingProfile from '@/components/auth/OnBoardingProfile';
 import userStore from '@/stores/UserStore';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import { BonusProvider } from '@/contexts/BonusContex';
+import PermissionsRequestComponent from '@/components/auth/PermissionsRequestComponent';
 
 const Onboarding = () => {
 
@@ -28,6 +29,7 @@ const Onboarding = () => {
   return (
     <BonusProvider>
       <SafeAreaView className='bg-white h-full'>
+        <PermissionsRequestComponent/>
           <OnboardingProfile 
             onLanguageSelect={handleLanguageSelect}
             onComplete={handleComplete}  

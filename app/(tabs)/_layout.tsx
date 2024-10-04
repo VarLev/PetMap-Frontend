@@ -1,17 +1,15 @@
-import React, { useCallback, useEffect } from 'react';
-import { router, Tabs, useFocusEffect, usePathname } from 'expo-router';
+import React, { useEffect } from 'react';
+import { router, Tabs, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import TabBar from '@/components/navigation/TabBar';
 import { DrawerProvider } from '@/contexts/DrawerProvider';
 import { registerForPushNotificationsAsync, setupNotificationListeners, savePushTokenToServer } from '@/hooks/notifications';
 import UserStore from '@/stores/UserStore';
-import { BackHandler } from 'react-native';
 
 const Tabslayout = () => {
   const pathname = usePathname();
   const hideTabBar = pathname.includes('/chat/');
   
-
   useEffect(() => {
     // Загрузка пользователей при первом монтировании компонента
     UserStore.loadUsersOnce();
@@ -43,33 +41,6 @@ const Tabslayout = () => {
       removeListeners();
     };
   },[]);
-
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        // Если пользователь авторизован и нажимает "Назад", блокируем переход на экран авторизации
-        if (UserStore.currentUser) {
-          
-          
-          router.replace('/map');
-    
-          return true;
-        } else {
-          // Если пользователь не авторизован, разрешаем стандартное поведение кнопки "Назад"
-          return false;
-        }
-      };
-
-      BackHandler.addEventListener('hardwareBackPress', onBackPress);
-
-      return () => {
-        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-      };
-    }, [UserStore.currentUser])
-  );
-
-
-
 
   return (
     <>
