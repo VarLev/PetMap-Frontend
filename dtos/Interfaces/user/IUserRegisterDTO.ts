@@ -1,6 +1,6 @@
 export interface IUserRegister {
   email: string;
-  password: string;
+  password?: string;
   firebaseUid: string;
   provider: string;
 }

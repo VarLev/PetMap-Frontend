@@ -4,7 +4,7 @@ import { IUser } from '@/dtos/Interfaces/user/IUser';
 import { IUserRegister } from '@/dtos/Interfaces/user/IUserRegisterDTO';
 import { UserCredential } from 'firebase/auth';
 import { action, runInAction, makeAutoObservable } from 'mobx';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, storage, signOut } from '@/firebaseConfig';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, storage, signOut, signInWithGoogle } from '@/firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import axios from 'axios';
 import apiClient from '@/hooks/axiosConfig';
@@ -309,6 +309,65 @@ class UserStore {
       // }));
 
       return userCred;
+    } catch (error) 
+    {
+      if (axios.isAxiosError(error)) 
+      {
+        // Подробная информация об ошибке Axios
+        console.error('Axios error:', {
+            message: error.message,
+            name: error.name,
+            code: error.code,
+            config: error.config,
+            response: error.response ? {
+                data: error.response.data,
+                status: error.response.status,
+                headers: error.response.headers,
+            } : null
+        });
+      } 
+      else {
+        // Общая информация об ошибке
+        console.error('Error:', error);
+      }
+      throw error;
+    } 
+    finally 
+    {
+      this.setLoading(false);
+    }
+  }
+
+  async googleSingInUser() {
+    this.setLoading(true);
+    try {
+      const userCred = await signInWithGoogle();
+      const token = await userCred.user.getIdToken();
+      
+      await AsyncStorage.setItem(process.env.EXPO_PUBLIC_F_TOKEN!, token);
+      runInAction(() => {this.setCreatedUser(userCred);});
+      const existingUserResponse = await apiClient.get(`/users/exists/${userCred.user.uid}`);
+      
+      console.log(existingUserResponse.status === 404)
+      if(existingUserResponse.status === 404){
+        await this.loadUserAfterSignIn();
+      }else{
+        const userRegisterDTO : IUserRegister  = {
+          email: userCred.user.email!,
+          firebaseUid: userCred.user.uid,
+          provider: 'google'
+        };
+        console.log(userRegisterDTO)
+        const response = await apiClient.post('/users/register', userRegisterDTO);
+        const registeredUser = response.data as IUser;
+        runInAction(() => {
+          this.setUser(registeredUser);
+        });
+      }
+      
+      
+      runInAction(() => {this.setLogged(true);});
+      
     } catch (error) 
     {
       if (axios.isAxiosError(error)) 

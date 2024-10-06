@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { TouchableOpacity, View, Image } from "react-native";
 import { Text } from "react-native-paper";
 import OnboardingCarousel from "../components/auth/OnboardingCarousel";
@@ -11,9 +11,18 @@ import CustomButtonOutlined from "@/components/custom/buttons/CustomButtonOutlin
 import googleLogo from "../assets/images/google.png";
 import facebookLogo from "../assets/images/facebook.png";
 import appleLogo from "../assets/images/apple.png";
+import userStore from "@/stores/UserStore";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+
+GoogleSignin.configure({
+  webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
+});
+
 
 const App = () => {
   const { loading, isLogged, signOut } = useStore();
+
+  
   signOut();
   console.log("User signed out");
 
@@ -22,15 +31,24 @@ const App = () => {
 
   //return <Redirect href="/onboarding" />;
 
+ ;
+
+  const handleGooglePress = async () => {
+    GoogleSignin.configure({
+      scopes: ['email'],
+      webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com',
+      offlineAccess: true,
+    });
+    await userStore.googleSingInUser();
+    router.replace("/(auth)/onboarding");
+  }
+
   return (
     <SafeAreaView className="bg-white h-full">
       <ScrollView>
         <View className="w-full h-full px-4 justify-center ">
           <View className="flex-row mt-2 items-start justify-center ">
-            <Text
-              variant="titleSmall"
-              className="ml-0  text-xl font-nunitoSansBold mt-4 mb-2"
-            >
+            <Text variant="titleSmall" className="ml-0  text-xl font-nunitoSansBold mt-4 mb-2">
               Добро пожаловать в PetMap!
             </Text>
           </View>
@@ -57,7 +75,7 @@ const App = () => {
               Другие способы входа
             </Text>
             <View className="flex-row justify-around mt-2 gap-x-4">
-              <TouchableOpacity onPress={() => console.log("Pressed Google")}>
+              <TouchableOpacity onPress={handleGooglePress}>
                 <Image className="w-12 h-12" source={googleLogo} />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => console.log("Pressed Apple")}>

@@ -9,6 +9,7 @@ import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton
 import ArrowHelp from "@/components/auth/arrowHelp";
 
 
+
 const SignIn = () => {
   const [email, setEmail] = useState("levromf@gmail.com");
   const [password, setPassword] = useState("123456");
@@ -52,6 +53,7 @@ const SignIn = () => {
 
   return (
     <SafeAreaView className="bg-white h-full">
+ 
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="w-full justify-between h-full px-9 my-10">

@@ -41,8 +41,7 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "@react-native-firebase/app",
-      "@react-native-firebase/auth",
+      "@react-native-google-signin/google-signin",
       "expo-router",
       [
         "@rnmapbox/maps",
