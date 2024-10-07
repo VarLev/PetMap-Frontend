@@ -13,6 +13,7 @@ import facebookLogo from "../assets/images/facebook.png";
 import appleLogo from "../assets/images/apple.png";
 import userStore from "@/stores/UserStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import i18n from '@/i18n';
 
 GoogleSignin.configure({
   webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
@@ -49,7 +50,7 @@ const App = () => {
         <View className="w-full h-full px-4 justify-center ">
           <View className="flex-row mt-2 items-start justify-center ">
             <Text variant="titleSmall" className="ml-0  text-xl font-nunitoSansBold mt-4 mb-2">
-              Добро пожаловать в PetMap!
+              {i18n.t('index.welcome')}
             </Text>
           </View>
           <View className="flex-1 pt-2 justify-center items-center ">

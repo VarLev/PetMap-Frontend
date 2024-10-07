@@ -1,0 +1,8 @@
+{
+  "index": {
+    "welcome": "Добро пожаловать в PetMap!",
+    "signUp": "Регистрация",
+    "alreadyHaveAccount": "Уже есть аккаунт",
+    "otherSignInMethods": "Другие способы входа"
+  }
+}
