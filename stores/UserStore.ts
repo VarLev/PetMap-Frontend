@@ -338,15 +338,19 @@ class UserStore {
     }
   }
 
-  async googleSingInUser() {
+  async googleSingInUser(): Promise<boolean> {
     this.setLoading(true);
+    let isSuccessful = false;
     try {
+      console.log('Google Sign In');
       const userCred = await signInWithGoogle();
+      console.log('User:', userCred.user);
       
       const token = await userCred.user.getIdToken();
       
       await AsyncStorage.setItem(process.env.EXPO_PUBLIC_F_TOKEN!, token);
       runInAction(() => {this.setCreatedUser(userCred);});
+      console.log('uid', userCred.user.uid);
       const existingUserResponse = await apiClient.get(`/users/exists/${userCred.user.uid}`);
       
       console.log(existingUserResponse.status === 404)
@@ -365,11 +369,12 @@ class UserStore {
           this.setUser(registeredUser);
         });
       }
-      
+      isSuccessful = true;
       
       runInAction(() => {this.setLogged(true);});
-      
-    } catch (error) 
+      return isSuccessful;
+    } 
+    catch (error) 
     {
       if (axios.isAxiosError(error)) 
       {
@@ -390,11 +395,12 @@ class UserStore {
         // Общая информация об ошибке
         console.error('Error:', error);
       }
-      throw error;
+      isSuccessful = false;
     } 
     finally 
     {
       this.setLoading(false);
+      return isSuccessful;
     }
   }
 

@@ -40,8 +40,11 @@ const App = () => {
       webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com',
       offlineAccess: true,
     });
-    await userStore.googleSingInUser();
-    router.replace("/(auth)/onboarding");
+    console.log("Google Pressed");
+    const isSuccessful = await userStore.googleSingInUser();
+    console.log(isSuccessful);
+    if (isSuccessful)
+      router.replace("/(auth)/onboarding");
   }
 
   return (

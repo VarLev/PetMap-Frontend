@@ -1,21 +1,35 @@
 import React, { ReactNode, useContext, useRef, useState } from "react";
-import { View, Dimensions, Platform, StyleSheet, ImageSourcePropType, Image, FlatList, TouchableOpacity } from "react-native";
+import {
+  View,
+  Dimensions,
+  Platform,
+  StyleSheet,
+  ImageSourcePropType,
+  Image,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { Avatar, Button, Text } from "react-native-paper";
-import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
-import { launchImageLibraryAsync, MediaTypeOptions  } from 'expo-image-picker';
+import { launchImageLibraryAsync, MediaTypeOptions } from "expo-image-picker";
 import { IUser } from "@/dtos/Interfaces/user/IUser";
 import userStore from "@/stores/UserStore";
 import { IPet } from "@/dtos/Interfaces/pet/IPet";
 import CustomInputText from "../custom/inputs/CustomInputText";
-import {randomUUID} from "expo-crypto";
+import { randomUUID } from "expo-crypto";
 import { User } from "@/dtos/classes/user/UserDTO";
 import CustomSegmentedButtons from "../custom/buttons/CustomSegmentedButtons";
 import BottomSheetComponent from "../common/BottomSheetComponent";
 import BottomSheet from "@gorhom/bottom-sheet";
 import AvatarSelector from "../common/AvatarSelector";
-import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
+import {
+  GestureHandlerRootView,
+  ScrollView,
+} from "react-native-gesture-handler";
 import { avatarsStringF, avatarsStringM } from "@/constants/Avatars";
 import CustomDropdownList from "../custom/selectors/CustomDropdownList";
 import { setUserAvatarDependOnGender } from "@/utils/utils";
@@ -25,8 +39,7 @@ import CustomTagsSelector from "../custom/selectors/CustomTagsSelector";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 import BonusSlider from "../custom/sliders/BonusSlider";
 import CustomLoadingButton from "../custom/buttons/CustomLoadingButton";
-import i18n from '@/i18n';
-
+import i18n from "@/i18n";
 
 const { width, height } = Dimensions.get("window");
 
@@ -53,7 +66,7 @@ const TASK_IDS = {
 const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   onLanguageSelect,
   onComplete,
-  onEscape
+  onEscape,
 }) => {
   const user: User = userStore.currentUser!;
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -63,7 +76,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   const [petName, setPetName] = useState("");
   const [age, setAge] = useState<Date>(new Date("2000-01-01T12:00:00"));
   const [petAge, setPetAge] = useState<Date>(new Date("2000-01-01T12:00:00"));
-  const [interests , setInterests] = useState<number[]>([]);
+  const [interests, setInterests] = useState<number[]>([]);
 
   const [showUserAge, setShowUserAge] = useState(false);
   const [showPetAge, setShowPetAge] = useState(false);
@@ -87,56 +100,55 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [renderContent, setRenderContent] = useState<ReactNode>(() => null);
   const [sliderValue, setSliderValue] = useState(0);
-  
+
   const { completedJobs } = useContext(BonusContex)!;
 
   // Используем useControl для каждого поля
-  useControl("user_name", interests,{
+  useControl("user_name", interests, {
     id: TASK_IDS.userEdit.user_name,
     description: "user name",
-    name:"user_name"
+    name: "user_name",
   });
   useControl("user_birthDate", age, {
     id: TASK_IDS.userEdit.user_birthDate,
     description: "user birthDate",
-    name:"user_birthDate"
+    name: "user_birthDate",
   });
   useControl("user_gender", gender, {
     id: TASK_IDS.userEdit.user_gender,
     description: "user gender",
-    name:"user_gender"
+    name: "user_gender",
   });
   useControl("user_photo", source, {
     id: TASK_IDS.userEdit.user_photo,
     description: "user photo",
-    name:"user_photo",
+    name: "user_photo",
   });
   useControl("dog_name", petName, {
     id: TASK_IDS.userEdit.dog_name,
     description: "dog name",
-    name:"dog_name",
+    name: "dog_name",
   });
   useControl("dog_breed", selectedBreed, {
     id: TASK_IDS.userEdit.dog_breed,
     description: "dog breed",
-    name:"dog_breed",
+    name: "dog_breed",
   });
   useControl("dog_birthDate", petAge, {
     id: TASK_IDS.userEdit.dog_birthDate,
     description: "dog birthDate",
-    name:"dog_birthDate",
+    name: "dog_birthDate",
   });
   useControl("dog_gender", petGender, {
     id: TASK_IDS.userEdit.dog_gender,
     description: "dog gender",
-    name:"dog_gender",
+    name: "dog_gender",
   });
   useControl("dog_photo", sourcePet, {
     id: TASK_IDS.userEdit.dog_photo,
     description: "dog photo",
-    name:"dog_photo",
+    name: "dog_photo",
   });
-
 
   const onAgeChange = (
     event: DateTimePickerEvent,
@@ -173,24 +185,20 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
         index: nextIndex,
         animated: true,
       });
-      if(currentIndex === 2){
+      if (currentIndex === 2) {
         let updatedValue = 200;
-        if(name)
-          updatedValue += 100;
-        if(userImage)
-          updatedValue += 200;
+        if (name) updatedValue += 100;
+        if (userImage) updatedValue += 200;
         setSliderValue(updatedValue);
       }
-      
-      if(currentIndex === 3){
+
+      if (currentIndex === 3) {
         let updatedValue = 300;
-        if(petName)
-          updatedValue += 100;
-        if(petImage)
-          updatedValue += 200;
-        setPetPageBonuses(updatedValue)
+        if (petName) updatedValue += 100;
+        if (petImage) updatedValue += 200;
+        setPetPageBonuses(updatedValue);
         setSliderValue(updatedValue + sliderValue);
-      } 
+      }
     }
 
     if (currentIndex === data.length - 1) {
@@ -211,10 +219,10 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       currentUser!.gender = gender;
       currentUser!.birthDate = age;
       currentUser.interests = interests;
-      if(interests.length > 0)
-        setSliderValue(sliderValue + 100);
-      
+      if (interests.length > 0) setSliderValue(sliderValue + 100);
+
       if (userImage === "" || userImage === null || userImage === undefined) {
+        console.log("userImage", userImage);
         const newAvatar = SetRandomAvatarDependOnGender();
         userStore.fetchImageUrl(newAvatar).then((resp) => {
           if (resp) {
@@ -231,8 +239,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
         currentUser.jobs = completedJobs;
         onComplete(currentUser as IUser);
       }
-     
-      //router.replace("/screenholder");
     }
   };
 
@@ -245,13 +251,12 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
         animated: true,
       });
     }
-    if(currentIndex === 3){
+    if (currentIndex === 3) {
       setSliderValue(0);
     }
-    if(currentIndex === 4){
+    if (currentIndex === 4) {
       setSliderValue(sliderValue - petPageBonuses);
     }
-
   };
 
   const handleLanguageSelection = (language: number) => {
@@ -331,39 +336,36 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     sheetRef.current?.expand();
   };
 
-  
-
   const data = [
     {
       id: 1,
       content: (
-        <View style={styles.contentContainer} className="" >
+        <View style={styles.contentContainer} className="">
           <Image
             source={require("@/assets/images/onboardingProfile/1lang.webp")}
             className="h-[55%] w-full "
             resizeMode="center"
           />
           <Text className="text-lg font-nunitoSansBold text-center">
-            {i18n.t('onboardingProfile.slide1.title')}
+            {i18n.t("onboardingProfile.slide1.title")}
           </Text>
           <Text className="leading-tight text-md font-nunitoSansRegular text-center">
-            {i18n.t('onboardingProfile.slide1.subtitle')}
+            {i18n.t("onboardingProfile.slide1.subtitle")}
           </Text>
-          
-          
+
           <CustomButtonOutlined
-            title={i18n.t('onboardingProfile.slide1.englishButton')}
+            title={i18n.t("onboardingProfile.slide1.englishButton")}
             handlePress={() => handleLanguageSelection(2)}
             containerStyles="mt-4 w-full min-h-[42px] z-10"
           />
-   
+
           <CustomButtonOutlined
-            title={i18n.t('onboardingProfile.slide1.spanishButton')}
+            title={i18n.t("onboardingProfile.slide1.spanishButton")}
             handlePress={() => handleLanguageSelection(0)}
             containerStyles="mt-4 w-full min-h-[42px]"
           />
           <CustomButtonOutlined
-            title={i18n.t('onboardingProfile.slide1.russianButton')}
+            title={i18n.t("onboardingProfile.slide1.russianButton")}
             handlePress={() => handleLanguageSelection(1)}
             containerStyles="mt-4 w-full min-h-[42px]"
           />
@@ -380,10 +382,10 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             resizeMode="center"
           />
           <Text className="px-4 leading-tight text-[18px] font-nunitoSansBold text-center mb-1">
-            {i18n.t('onboardingProfile.slide2.title')}
+            {i18n.t("onboardingProfile.slide2.title")}
           </Text>
           <Text className=" text-md font-nunitoSansRegular text-center">
-            {i18n.t('onboardingProfile.slide2.subtitle')}
+            {i18n.t("onboardingProfile.slide2.subtitle")}
           </Text>
         </View>
       ),
@@ -393,7 +395,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       content: (
         <View className="items-center w-full h-full justify-center">
           {source ? (
-             <Avatar.Image size={200} source={source} />
+            <Avatar.Image size={200} source={source} />
           ) : (
             <Image
               source={require("@/assets/images/onboardingProfile/3user.webp")}
@@ -402,20 +404,20 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             />
           )}
           <Text className="px-4 leading-tight text-[18px] font-nunitoSansBold text-center my-2">
-            {i18n.t('onboardingProfile.slide3.title')}
+            {i18n.t("onboardingProfile.slide3.title")}
           </Text>
           <Text className="text-md font-nunitoSansRegular text-center">
-            {i18n.t('onboardingProfile.slide3.subtitle')}
+            {i18n.t("onboardingProfile.slide3.subtitle")}
           </Text>
           <CustomInputText
             value={name}
             handleChange={setName}
             containerStyles="my-4"
-            labelInput={i18n.t('onboardingProfile.slide3.nameLabel')}
+            labelInput={i18n.t("onboardingProfile.slide3.nameLabel")}
           />
           <View className="flex-row items-start justify-between">
             <CustomInputText
-              labelInput={i18n.t('onboardingProfile.slide3.birthDateLabel')}
+              labelInput={i18n.t("onboardingProfile.slide3.birthDateLabel")}
               value={age ? age.toLocaleDateString("en-US") : ""}
               handleClick={showUserDatepicker}
               handleChange={showUserDatepicker}
@@ -437,13 +439,13 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
           </View>
           <View className="flex-row justify-between">
             <CustomButtonOutlined
-              title={i18n.t('onboardingProfile.slide3.uploadPhotoButton')}
+              title={i18n.t("onboardingProfile.slide3.uploadPhotoButton")}
               handlePress={SetUserImage}
               containerStyles="mr-1 w-1/2 bg-indigo-700 text-white"
               textStyles="text-white"
             />
             <CustomButtonOutlined
-              title={i18n.t('onboardingProfile.slide3.chooseAvatarButton')}
+              title={i18n.t("onboardingProfile.slide3.chooseAvatarButton")}
               handlePress={handleSheetOpen}
               containerStyles="ml-1 w-1/2"
             />
@@ -456,7 +458,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       content: (
         <View className="items-center w-full h-full justify-center">
           {sourcePet ? (
-             <Avatar.Image size={200} source={sourcePet} />
+            <Avatar.Image size={200} source={sourcePet} />
           ) : (
             <Image
               source={require("@/assets/images/onboardingProfile/4pet.webp")}
@@ -465,33 +467,33 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             />
           )}
           <Text className="px-4 leading-tight text-[18px] font-nunitoSansBold text-center my-2">
-            {i18n.t('onboardingProfile.slide4.title')}
+            {i18n.t("onboardingProfile.slide4.title")}
           </Text>
           <Text className="text-md font-nunitoSansRegular text-center mb-4">
-            {i18n.t('onboardingProfile.slide4.subtitle')}
+            {i18n.t("onboardingProfile.slide4.subtitle")}
           </Text>
-  
+
           <CustomInputText
-            labelInput={i18n.t('onboardingProfile.slide4.petNameLabel')}
+            labelInput={i18n.t("onboardingProfile.slide4.petNameLabel")}
             value={petName}
             handleChange={setPetName}
             containerStyles="-mb-2"
           />
           <View className="pb-2">
             <CustomDropdownList
-              tags={i18n.t('tags.breeds') as string[]}
+              tags={i18n.t("tags.breeds") as string[]}
               label=""
-              placeholder={i18n.t('onboardingProfile.slide4.breedLabel')}
+              placeholder={i18n.t("onboardingProfile.slide4.breedLabel")}
               initialSelectedTag={selectedBreed}
               onChange={(v) => setSelectedBreed(v as number)}
               searchable={true}
               listMode="MODAL"
             />
           </View>
-  
+
           <View className="flex-row items-start ">
             <CustomInputText
-              labelInput={i18n.t('onboardingProfile.slide4.birthDateLabel')}
+              labelInput={i18n.t("onboardingProfile.slide4.birthDateLabel")}
               value={petAge ? petAge.toLocaleDateString("en-US") : ""}
               handleClick={showPetDatepicker}
               handleChange={showPetDatepicker}
@@ -513,7 +515,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             />
           </View>
           <CustomButtonOutlined
-            title={i18n.t('onboardingProfile.slide4.uploadPhotoButton')}
+            title={i18n.t("onboardingProfile.slide4.uploadPhotoButton")}
             handlePress={SetPetImage}
             containerStyles="w-full  bg-[#2F00B6]"
             textStyles="text-white"
@@ -526,15 +528,15 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       content: (
         <View className="items-center w-full h-full justify-start">
           <Text className="text-lg font-nunitoSansBold text-center ">
-            {i18n.t('onboardingProfile.slide5.title')}
+            {i18n.t("onboardingProfile.slide5.title")}
           </Text>
           <Text className=" leading-tight text-md font-nunitoSansRegular text-center mb-4">
-            {i18n.t('onboardingProfile.slide5.subtitle')}
+            {i18n.t("onboardingProfile.slide5.subtitle")}
           </Text>
           <ScrollView>
             <View>
               <CustomTagsSelector
-                tags={i18n.t('tags.interests') as string[]}
+                tags={i18n.t("tags.interests") as string[]}
                 initialSelectedTags={interests || []}
                 maxSelectableTags={5}
                 onSelectedTagsChange={(tags) => setInterests(tags as number[])}
@@ -549,10 +551,12 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View className="flex-1 h-full">
-        <BonusSlider min={0} max={1200} value={sliderValue}/>
-        <View className="mr-6 items-end"> 
+        <BonusSlider min={0} max={1200} value={sliderValue} />
+        <View className="mr-6 items-end">
           <TouchableOpacity onPress={() => setAlertEscapeVisible(true)}>
-            <Text className="text-md font-nunitoSansBold">{i18n.t('onboardingProfile.skip')}</Text>
+            <Text className="text-md font-nunitoSansBold">
+              {i18n.t("onboardingProfile.skip")}
+            </Text>
           </TouchableOpacity>
         </View>
         <FlatList
@@ -566,7 +570,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                 data={data}
                 pagingEnabled={true}
                 loop={false}
-                enabled={false} 
+                enabled={false}
                 onSnapToItem={(index) => setCurrentIndex(index)}
                 renderItem={({ item }) => (
                   <View style={styles.carouselItemContainer}>
@@ -577,7 +581,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
               <View style={styles.bottomNavigationContainer}>
                 <Button onPress={handlePrev} style={styles.navigationButton}>
                   <Text className="font-nunitoSansBold text-black">
-                    {currentIndex === 0 ? "" : i18n.t('onboardingProfile.back')}
+                    {currentIndex === 0 ? "" : i18n.t("onboardingProfile.back")}
                   </Text>
                 </Button>
                 <View style={styles.indicatorContainer}>
@@ -593,7 +597,17 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                     />
                   ))}
                 </View>
-                <CustomLoadingButton title={currentIndex < 4 ? i18n.t('onboardingProfile.next') : i18n.t('onboardingProfile.finish')} containerStyles="-mt-1 w-1/3 bg-white" textStyles="text-black text-sm font-nunitoSansBold"  handlePress={handleNext} isLoading={isLoading} />
+                <CustomLoadingButton
+                  title={
+                    currentIndex < 4
+                      ? i18n.t("onboardingProfile.next")
+                      : i18n.t("onboardingProfile.finish")
+                  }
+                  containerStyles="-mt-1 w-1/3 bg-white"
+                  textStyles="text-black text-sm font-nunitoSansBold"
+                  handlePress={handleNext}
+                  isLoading={isLoading}
+                />
               </View>
             </View>
           )}
@@ -608,11 +622,12 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             enablePanDownToClose={true}
           />
         )}
-        <CustomConfirmAlert 
-          isVisible={alertEscapeVisible} 
-          onClose={() => setAlertEscapeVisible(false)} 
-          onConfirm={handleEscape} 
-          message={i18n.t('onboardingProfile.alertMessage')}/>
+        <CustomConfirmAlert
+          isVisible={alertEscapeVisible}
+          onClose={() => setAlertEscapeVisible(false)}
+          onConfirm={handleEscape}
+          message={i18n.t("onboardingProfile.alertMessage")}
+        />
       </View>
     </GestureHandlerRootView>
   );
@@ -625,11 +640,9 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     width: "100%",
-    alignItems: "center"
-   
+    alignItems: "center",
   },
-  
-  
+
   carouselItemContainer: {
     flex: 1,
     justifyContent: "center",
