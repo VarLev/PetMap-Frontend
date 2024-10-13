@@ -17,16 +17,15 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import AvatarSelector from "../common/AvatarSelector";
 import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
 import { avatarsStringF, avatarsStringM } from "@/constants/Avatars";
-import { BREEDS_TAGS } from "@/constants/Strings";
 import CustomDropdownList from "../custom/selectors/CustomDropdownList";
 import { setUserAvatarDependOnGender } from "@/utils/utils";
 import { BonusContex } from "@/contexts/BonusContex";
 import { useControl } from "@/hooks/useBonusControl";
 import CustomTagsSelector from "../custom/selectors/CustomTagsSelector";
-import { INTEREST_TAGS } from "@/constants/Strings";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 import BonusSlider from "../custom/sliders/BonusSlider";
 import CustomLoadingButton from "../custom/buttons/CustomLoadingButton";
+import i18n from '@/i18n';
 
 
 const { width, height } = Dimensions.get("window");
@@ -338,30 +337,33 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     {
       id: 1,
       content: (
-        <View style={styles.contentContainer}>
+        <View style={styles.contentContainer} className="" >
           <Image
             source={require("@/assets/images/onboardingProfile/1lang.webp")}
-            className="h-[60%]"
+            className="h-[55%] w-full "
             resizeMode="center"
           />
           <Text className="text-lg font-nunitoSansBold text-center">
-            Добро пожаловать в PetMap!
+            {i18n.t('onboardingProfile.slide1.title')}
           </Text>
           <Text className="leading-tight text-md font-nunitoSansRegular text-center">
-            Выберите язык приложения, чтобы мы могли лучше понимать друг друга.
+            {i18n.t('onboardingProfile.slide1.subtitle')}
           </Text>
+          
+          
           <CustomButtonOutlined
-            title="Английский"
+            title={i18n.t('onboardingProfile.slide1.englishButton')}
             handlePress={() => handleLanguageSelection(2)}
-            containerStyles="mt-4 w-full min-h-[42px]"
+            containerStyles="mt-4 w-full min-h-[42px] z-10"
           />
+   
           <CustomButtonOutlined
-            title="Испанский"
+            title={i18n.t('onboardingProfile.slide1.spanishButton')}
             handlePress={() => handleLanguageSelection(0)}
             containerStyles="mt-4 w-full min-h-[42px]"
           />
           <CustomButtonOutlined
-            title="Русский"
+            title={i18n.t('onboardingProfile.slide1.russianButton')}
             handlePress={() => handleLanguageSelection(1)}
             containerStyles="mt-4 w-full min-h-[42px]"
           />
@@ -371,18 +373,17 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     {
       id: 2,
       content: (
-        <View className="w-full justify-center items-center ">
+        <View className="w-full justify-start items-center ">
           <Image
             source={require("@/assets/images/onboardingProfile/2start.webp")}
-            className="h-[80%]"
+            className="h-[70%]"
             resizeMode="center"
           />
           <Text className="px-4 leading-tight text-[18px] font-nunitoSansBold text-center mb-1">
-            Начните настройку профиля прямо сейчас
+            {i18n.t('onboardingProfile.slide2.title')}
           </Text>
           <Text className=" text-md font-nunitoSansRegular text-center">
-            И получите первые бонусы, после прохождения регистрации, чтобы
-            обменять их на подарки
+            {i18n.t('onboardingProfile.slide2.subtitle')}
           </Text>
         </View>
       ),
@@ -401,22 +402,20 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             />
           )}
           <Text className="px-4 leading-tight text-[18px] font-nunitoSansBold text-center my-2">
-            Расскажите немного о себе
+            {i18n.t('onboardingProfile.slide3.title')}
           </Text>
           <Text className="text-md font-nunitoSansRegular text-center">
-            Ваш профиль будет отображаться другим пользователям с питомцами.
+            {i18n.t('onboardingProfile.slide3.subtitle')}
           </Text>
           <CustomInputText
             value={name}
             handleChange={setName}
             containerStyles="my-4"
-            labelInput="Как вас зовут?"
+            labelInput={i18n.t('onboardingProfile.slide3.nameLabel')}
           />
-
           <View className="flex-row items-start justify-between">
             <CustomInputText
-              // placeholder="Дата рождения"
-              labelInput="Дата рождения"
+              labelInput={i18n.t('onboardingProfile.slide3.birthDateLabel')}
               value={age ? age.toLocaleDateString("en-US") : ""}
               handleClick={showUserDatepicker}
               handleChange={showUserDatepicker}
@@ -438,13 +437,13 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
           </View>
           <View className="flex-row justify-between">
             <CustomButtonOutlined
-              title="Загрузить фото"
+              title={i18n.t('onboardingProfile.slide3.uploadPhotoButton')}
               handlePress={SetUserImage}
               containerStyles="mr-1 w-1/2 bg-indigo-700 text-white"
               textStyles="text-white"
             />
             <CustomButtonOutlined
-              title="Выбрать аватар"
+              title={i18n.t('onboardingProfile.slide3.chooseAvatarButton')}
               handlePress={handleSheetOpen}
               containerStyles="ml-1 w-1/2"
             />
@@ -466,34 +465,33 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             />
           )}
           <Text className="px-4 leading-tight text-[18px] font-nunitoSansBold text-center my-2">
-            Настройте профиль своего питомца
+            {i18n.t('onboardingProfile.slide4.title')}
           </Text>
           <Text className="text-md font-nunitoSansRegular text-center mb-4">
-            Профиль питомца будет доступен другим пользователям при отклике на
-            прогулку.
+            {i18n.t('onboardingProfile.slide4.subtitle')}
           </Text>
-
+  
           <CustomInputText
-            labelInput="Имя"
+            labelInput={i18n.t('onboardingProfile.slide4.petNameLabel')}
             value={petName}
             handleChange={setPetName}
             containerStyles="-mb-2"
           />
           <View className="pb-2">
             <CustomDropdownList
-              tags={BREEDS_TAGS}
+              tags={i18n.t('tags.breeds') as string[]}
               label=""
-              placeholder="Порода"
+              placeholder={i18n.t('onboardingProfile.slide4.breedLabel')}
               initialSelectedTag={selectedBreed}
               onChange={(v) => setSelectedBreed(v as number)}
               searchable={true}
               listMode="MODAL"
             />
           </View>
-
+  
           <View className="flex-row items-start ">
             <CustomInputText
-              labelInput="Дата рождения"
+              labelInput={i18n.t('onboardingProfile.slide4.birthDateLabel')}
               value={petAge ? petAge.toLocaleDateString("en-US") : ""}
               handleClick={showPetDatepicker}
               handleChange={showPetDatepicker}
@@ -515,7 +513,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             />
           </View>
           <CustomButtonOutlined
-            title="Загрузить фото"
+            title={i18n.t('onboardingProfile.slide4.uploadPhotoButton')}
             handlePress={SetPetImage}
             containerStyles="w-full  bg-[#2F00B6]"
             textStyles="text-white"
@@ -528,15 +526,15 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       content: (
         <View className="items-center w-full h-full justify-start">
           <Text className="text-lg font-nunitoSansBold text-center ">
-            Что вам интересно?
+            {i18n.t('onboardingProfile.slide5.title')}
           </Text>
           <Text className=" leading-tight text-md font-nunitoSansRegular text-center mb-4">
-            Это поможет с поиском подходящего контента
+            {i18n.t('onboardingProfile.slide5.subtitle')}
           </Text>
           <ScrollView>
             <View>
               <CustomTagsSelector
-                tags={INTEREST_TAGS}
+                tags={i18n.t('tags.interests') as string[]}
                 initialSelectedTags={interests || []}
                 maxSelectableTags={5}
                 onSelectedTagsChange={(tags) => setInterests(tags as number[])}
@@ -554,7 +552,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
         <BonusSlider min={0} max={1200} value={sliderValue}/>
         <View className="mr-6 items-end"> 
           <TouchableOpacity onPress={() => setAlertEscapeVisible(true)}>
-            <Text className="text-md font-nunitoSansBold">Пропустить</Text>
+            <Text className="text-md font-nunitoSansBold">{i18n.t('onboardingProfile.skip')}</Text>
           </TouchableOpacity>
         </View>
         <FlatList
@@ -568,7 +566,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                 data={data}
                 pagingEnabled={true}
                 loop={false}
-                enabled={false} // отключение скрола
+                enabled={false} 
                 onSnapToItem={(index) => setCurrentIndex(index)}
                 renderItem={({ item }) => (
                   <View style={styles.carouselItemContainer}>
@@ -579,7 +577,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
               <View style={styles.bottomNavigationContainer}>
                 <Button onPress={handlePrev} style={styles.navigationButton}>
                   <Text className="font-nunitoSansBold text-black">
-                    {currentIndex === 0 ? "" : "Назад"}
+                    {currentIndex === 0 ? "" : i18n.t('onboardingProfile.back')}
                   </Text>
                 </Button>
                 <View style={styles.indicatorContainer}>
@@ -595,7 +593,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                     />
                   ))}
                 </View>
-                <CustomLoadingButton title={currentIndex < 4 ? "Далее" : "Завершить"} containerStyles="-mt-1 w-1/3 bg-white" textStyles="text-black text-sm font-nunitoSansBold"  handlePress={handleNext} isLoading={isLoading} />
+                <CustomLoadingButton title={currentIndex < 4 ? i18n.t('onboardingProfile.next') : i18n.t('onboardingProfile.finish')} containerStyles="-mt-1 w-1/3 bg-white" textStyles="text-black text-sm font-nunitoSansBold"  handlePress={handleNext} isLoading={isLoading} />
               </View>
             </View>
           )}
@@ -614,7 +612,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
           isVisible={alertEscapeVisible} 
           onClose={() => setAlertEscapeVisible(false)} 
           onConfirm={handleEscape} 
-          message={"Если вы пропустите онбординг, то вам не будут начислены бонусы, и вы не сможете пользоваться картой до тех пор пока не заполните профиль."}/>
+          message={i18n.t('onboardingProfile.alertMessage')}/>
       </View>
     </GestureHandlerRootView>
   );
@@ -627,63 +625,11 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     width: "100%",
-    alignItems: "center",
+    alignItems: "center"
+   
   },
-  titleText: {
-    fontSize: 24,
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  textInput: {
-    backgroundColor: "white",
-    width: "100%",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 50,
-
-    elevation: 2,
-    fontSize: 18,
-    marginBottom: 20,
-  },
-  dropdownContainer: {
-    width: "100%",
-    marginTop: 10,
-  },
-  dropdownButton: {
-    width: "55%",
-    height: 45,
-    backgroundColor: "#FFF",
-    borderRadius: 7,
-    borderWidth: 1,
-    borderColor: "lightgray",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingRight: 5,
-  },
-  dropdownButtonText: {
-    color: "#111827",
-    opacity: 0.7,
-    fontSize: 18,
-    fontFamily: "Poppins-SemiBold",
-  },
-  dropdown: {
-    backgroundColor: "#FFF",
-    borderRadius: 8,
-    marginTop: -20,
-    height: 230,
-  },
-  dropdownItem: {
-    backgroundColor: "#FFF",
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-  },
-  dropdownItemText: {
-    fontSize: 16,
-    color: "#444",
-  },
+  
+  
   carouselItemContainer: {
     flex: 1,
     justifyContent: "center",

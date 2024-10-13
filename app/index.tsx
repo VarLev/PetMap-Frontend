@@ -47,33 +47,30 @@ const App = () => {
   return (
     <SafeAreaView className="bg-white h-full">
       <ScrollView>
-        <View className="w-full h-full px-4 justify-center ">
-          <View className="flex-row mt-2 items-start justify-center ">
-            <Text variant="titleSmall" className="ml-0  text-xl font-nunitoSansBold mt-4 mb-2">
-              {i18n.t('index.welcome')}
+        <View className="w-full h-full px-4 justify-center">
+          <View className="flex-row mt-2 items-start justify-center">
+            <Text variant="titleSmall" className="ml-0 text-xl font-nunitoSansBold mt-4 mb-2">
+              {i18n.t('index.welcome')} 
             </Text>
           </View>
-          <View className="flex-1 pt-2 justify-center items-center ">
+          <View className="flex-1 pt-2 justify-center items-center">
             <OnboardingCarousel />
           </View>
           <View className="pt-1">
             <CustomButtonPrimary
-              title="Регистрация"
+              title={i18n.t('index.signUp')} 
               handlePress={() => router.push("/sign-up")}
               containerStyles="w-full"
             />
             <CustomButtonOutlined
-              title="Уже есть аккаунт"
+              title={i18n.t('index.alreadyHaveAccount')} 
               handlePress={() => router.push("/sign-in")}
               containerStyles="w-full"
             />
           </View>
           <View className="flex-col justify-center items-center pt-3">
-            <Text
-              variant="titleSmall"
-              className="text-sm font-nunitoSansRegular text-stone-400"
-            >
-              Другие способы входа
+            <Text variant="titleSmall" className="text-sm font-nunitoSansRegular text-stone-400">
+              {i18n.t('index.otherSignInMethods')}  
             </Text>
             <View className="flex-row justify-around mt-2 gap-x-4">
               <TouchableOpacity onPress={handleGooglePress}>

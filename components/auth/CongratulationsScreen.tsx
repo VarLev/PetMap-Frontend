@@ -6,6 +6,7 @@ import LottieView from "lottie-react-native";
 import { router } from "expo-router";
 import userStore from "@/stores/UserStore";
 import { JobType } from "@/dtos/enum/JobType";
+import i18n from '@/i18n';
 
 function CongratulationsScreen() {
   const [benefites, setBenefits] = useState<number>(0);
@@ -63,11 +64,10 @@ function CongratulationsScreen() {
           </View>
           <View className="px-4">
             <Text className="text-[20px] font-nunitoSansBold text-center color-white my-4 mt-10">
-              Вы прошли первичную регистрацию!
+              {i18n.t('congratulations.title')} 
             </Text>
-            <Text className=" leading-tight text-md font-nunitoSansRegular text-center color-white mb-4">
-              Так держать! Теперь ваш профиль активирован. Получите свои первые
-              бонусы
+            <Text className="leading-tight text-md font-nunitoSansRegular text-center color-white mb-4">
+              {i18n.t('congratulations.subtitle')} 
             </Text>
             <View className="flex-row justify-center items-center gap-3">
               <Image
@@ -80,10 +80,10 @@ function CongratulationsScreen() {
               </Text>
             </View>
             <Text className="color-white text-[16px] font-nunitoSansBold text-center mb-2">
-              PetBonuses
+              {i18n.t('congratulations.petBonuses')} 
             </Text>
             <CustomButtonOutlined
-              title="Забрать бонусы"
+              title={i18n.t('congratulations.button')} 
               handlePress={() => router.replace("/map")}
               containerStyles="w-full bg-[#ACFFB9] my-4"
             />
@@ -122,5 +122,3 @@ const styles = StyleSheet.create({
 });
 
 export default CongratulationsScreen;
-
-

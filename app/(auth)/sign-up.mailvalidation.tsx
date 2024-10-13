@@ -6,20 +6,13 @@ import { Link, router } from "expo-router";
 import userStore from "@/stores/UserStore";
 import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton";
 import ArrowHelp from "@/components/auth/arrowHelp";
-//import PasswordPrompt from "@/components/auth/passwordPrompt";
+import i18n from "@/i18n"; // Импорт i18n для мультиязычности
 
 const SignUpMailValidation = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  // const [confirmPassword, setConfirmPassword] = useState("");
-  // const [isSecure, setIsSecure] = useState(true);
-  // const [isChecked, setIsChecked] = useState(false);
-
-  // const [isActive, setIsActive] = useState(false);
-
-  // const [isSamePassword, setIsSamePassword] = useState(true);
-  // const [checkBoxAlert, setCheckBoxAlert] = useState(true);
   const [isValidEmail, setIsValidEmail] = useState(true);
+  const [password, setPassword] = useState("");
+
   const handleSubmit = async () => {
     const validEmail = validateEmail(email);
     setIsValidEmail(validEmail);
@@ -29,7 +22,7 @@ const SignUpMailValidation = () => {
     }
 
     try {
-      await userStore.registerUser(email, password);
+      await userStore.registerUser(email,password);
       Alert.alert(
         "Success",
         "Account created successfully! A verification email has been sent to your email address. Please check your inbox and verify your email to complete the registration."
@@ -51,25 +44,24 @@ const SignUpMailValidation = () => {
         <View className="w-full justify-between flex-1 px-9 my-10">
           <View>
             <ArrowHelp />
-            <View className=" justify-start mt-10 ">
+            <View className="justify-start mt-10 ">
               <View className="flex-col items-start justify-center">
                 <Text
                   variant="titleSmall"
                   className="text-lg font-nunitoSansBold"
                 >
-                  Упс... вы забыли пароль
+                  {i18n.t('signUpMailValidation.forgotPassword')} {/* Упс... вы забыли пароль */}
                 </Text>
                 <Text
                   variant="titleSmall"
                   className="mb-4 text-sm font-nunitoSansRegular"
                 >
-                  Для восстановления пароля введите почту, на которую
-                  зарегистрирован аккаунт.
+                  {i18n.t('signUpMailValidation.enterEmail')} {/* Для восстановления пароля введите почту */}
                 </Text>
               </View>
               <TextInput
                 mode="outlined"
-                label="Email"
+                label={i18n.t('signUpMailValidation.emailLabel')} 
                 value={email}
                 onChangeText={setEmail}
                 onBlur={() => setIsValidEmail(validateEmail(email))}
@@ -83,31 +75,30 @@ const SignUpMailValidation = () => {
                   style={{ marginTop: -10 }}
                   className="text-red-500 ml-1 mb-2"
                 >
-                  Введите корректный email
+                  {i18n.t('signUpMailValidation.invalidEmail')} 
                 </Text>
               )}
 
               <CustomLoadingButton
-                title="Подтвердить"
+                title={i18n.t('signUpMailValidation.submitButton')}
                 handlePress={handleSubmit}
                 containerStyles="w-full"
               />
             </View>
             <Link href="/sign-up.passwordreset" className="text-base mt-20">
-              ссылка на экран сброс пароля (временная) эмитация нажания кнопки
-              Подтвердить
+              {i18n.t('signUpMailValidation.passwordResetLink')} 
             </Link>
           </View>
           <View>
             <View className="justify-center pt-5 flex-row gap-2">
               <Text className="text-base text-gray-500 font-nunitoSansRegular">
-                Ещё нет аккаунта?
+                {i18n.t('signUpMailValidation.noAccount')} 
               </Text>
               <Link
                 href="/sign-up"
                 className="text-base text-indigo-800 font-nunitoSansBold"
               >
-                Зарегистрироваться
+                {i18n.t('signUpMailValidation.register')} 
               </Link>
             </View>
           </View>

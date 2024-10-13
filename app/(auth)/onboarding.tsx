@@ -6,6 +6,7 @@ import userStore from '@/stores/UserStore';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import { BonusProvider } from '@/contexts/BonusContex';
 import PermissionsRequestComponent from '@/components/auth/PermissionsRequestComponent';
+import i18n from '@/i18n';
 
 const Onboarding = () => {
 
@@ -14,6 +15,15 @@ const Onboarding = () => {
       userLanguages: [selectedLanguage], 
       systemLanguage: selectedLanguage,
     });
+    if(selectedLanguage === 2) {
+      i18n.locale = 'en';
+    }
+    else if(selectedLanguage === 0) {
+      i18n.locale = 'es';
+    }else {
+      i18n.locale = 'ru';
+    }
+    console.log('asdadadad');
   };
 
   const handleComplete = async (user: IUser) => {
@@ -22,7 +32,7 @@ const Onboarding = () => {
   };
 
   const handleEscape = async (user: IUser) => {
-    userStore.updateUserOnbordingData(user);
+    await userStore.updateUserOnbordingData(user);
     router.replace('/map');
   };
 

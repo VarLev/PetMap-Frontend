@@ -4,5 +4,141 @@
     "signUp": "Sign Up",
     "alreadyHaveAccount": "Already have an account",
     "otherSignInMethods": "Other sign-in methods"
+  },
+  "onboarding": {
+    "slide1": {
+      "title": "Make new friends with pet owners. Go for joint walks."
+    },
+    "slide2": {
+      "title": "All useful locations in one app: vet clinics, parks, and much more."
+    },
+    "slide3": {
+      "title": "Choose trusted professionals for various services: grooming, dog trainers, etc."
+    },
+    "slide4": {
+      "title": "Stay up to date with all pet events."
+    }
+  },
+  "onboardingProfile": {
+    "slide1": {
+      "title": "Welcome to PetMap!",
+      "subtitle": "Choose the app language so we can understand each other better.",
+      "englishButton": "English",
+      "spanishButton": "Spanish",
+      "russianButton": "Russian"
+    },
+    "slide2": {
+      "title": "Start setting up your profile right now",
+      "subtitle": "And receive your first bonuses after registration to exchange them for gifts."
+    },
+    "slide3": {
+      "title": "Tell us a little about yourself",
+      "subtitle": "Your profile will be visible to other pet owners.",
+      "nameLabel": "What's your name?",
+      "birthDateLabel": "Date of birth",
+      "uploadPhotoButton": "Upload Photo",
+      "chooseAvatarButton": "Choose Avatar"
+    },
+    "slide4": {
+      "title": "Set up your pet's profile",
+      "subtitle": "Your pet's profile will be visible to others when responding to a walk.",
+      "petNameLabel": "Name",
+      "breedLabel": "Breed",
+      "birthDateLabel": "Date of birth",
+      "uploadPhotoButton": "Upload Photo"
+    },
+    "slide5": {
+      "title": "What interests you?",
+      "subtitle": "This will help you find suitable content."
+    },
+    "skip": "Skip",
+    "next": "Next",
+    "finish": "Finish",
+    "back": "Back",
+    "alertMessage": "If you skip onboarding, you will not receive bonuses and will not be able to use the map until you complete your profile."
+  },
+  "congratulations": {
+    "title": "You have completed the initial registration!",
+    "subtitle": "Well done! Your profile is now activated. Get your first bonuses",
+    "button": "Claim bonuses",
+    "petBonuses": "PetBonuses"
+  },
+  "signIn": {
+    "welcomeBack": "Welcome back!",
+    "enterCredentials": "Enter your login details to access your account.",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Login",
+    "forgotPassword": "Forgot password",
+    "noAccount": "Don't have an account?",
+    "register": "Sign up!",
+    "invalidEmail": "Please enter a valid email"
+  },
+  "signUpMailValidation": {
+    "forgotPassword": "Oops... you forgot your password",
+    "enterEmail": "To reset your password, enter the email address associated with your account.",
+    "emailLabel": "Email",
+    "invalidEmail": "Please enter a valid email",
+    "submitButton": "Submit",
+    "passwordResetLink": "Password reset screen link (temporary) to simulate pressing Confirm button",
+    "noAccount": "Don't have an account?",
+    "register": "Sign up"
+  },
+  "signUpPasswordReset": {
+    "title": "Reset Password",
+    "description": "Enter a new password to complete the password reset and log into your account.",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "saveButton": "Save",
+    "passwordMismatch": "Passwords do not match",
+    "noAccount": "Don't have an account?",
+    "register": "Sign up"
+  },
+  "signUp": {
+    "title": "Join PetMap!",
+    "description": "Enter your details to create an account.",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "passwordMismatch": "Passwords do not match",
+    "dataPolicy": "I agree to the data processing policy of the service",
+    "policyAlert": "Please agree to the data processing policy",
+    "registerButton": "Sign Up",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Log in!",
+    "invalidEmail": "Please enter a valid email"
+  },
+  "arrowHelp": {
+    "help": "Help"
+  },
+  "tags": {
+    "breeds": [
+      "Shar Pei", "Labrador", "Laika", "Husky", "Labrador Retriever", "German Shepherd",
+      "Golden Retriever", "French Bulldog", "Bulldog", "Poodle", "Beagle", "Rottweiler",
+      "Yorkshire Terrier", "Great Dane", "Siberian Husky", "Maltese", "Boxer", "Chihuahua",
+      "Doberman", "Border Collie", "Shih Tzu", "Cocker Spaniel", "English Bulldog",
+      "Boston Terrier", "Papillon", "Pekingese", "Samoyed", "West Highland White Terrier", "Pembroke Welsh Corgi",
+      "Akita", "Australian Shepherd", "Basset Hound", "Dalmatian", "Collie", "Irish Setter",
+      "Italian Greyhound", "Lhasa Apso", "Pug", "Newfoundland", "Alaskan Malamute", "American Bulldog",
+      "Belgian Malinois", "American Staffordshire Terrier", "Basenji", "Labradoodle", "Cane Corso", "Cavalier King Charles Spaniel",
+      "Pointer", "Russian Toy", "Fox Terrier", "Greyhound", "Shetland Sheepdog", "Weimaraner"
+    ],
+    "interests": [
+      "Travel", "Music", "Cooking", "Sports", "Movies",
+      "Photography", "Art", "Dancing", "Animals", "Pets",
+      "Yoga", "Meditation", "Self-Development", "Psychology", "Fashion",
+      "Technology", "Cars", "Motorcycles", "Cycling", "Hiking",
+      "Fitness", "Drawing", "Theater", "Board Games", "Chess",
+      "Handicrafts", "History", "Science", "Politics", "Blogging",
+      "Fantasy", "Football", "Esports", "Business", "Startups",
+      "Healthy Lifestyle", "Swimming", "Running", "Tennis", "Rock",
+      "Classical Music", "Electronic Music", "Comedy", "Thrillers", 
+      "Science Fiction", "Adventures", "Romance", "TV Shows", "Anime"
+    ]
+  },
+  "emptyProfile": {
+    "welcome": "Welcome",
+    "description": "To continue, please complete your profile.",
+    "button": "Tell us about yourself"
   }
 }

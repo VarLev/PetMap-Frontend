@@ -1,12 +1,12 @@
 import { getApps , initializeApp } from 'firebase/app';
 import { getStorage } from 'firebase/storage';
-import { signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, Auth  } from 'firebase/auth';
+import { signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword  } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getAuth, initializeAuth, getReactNativePersistence, onAuthStateChanged } from "firebase/auth";
 import {getDatabase} from 'firebase/database';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import userStore from './stores/UserStore';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
 
 
 
@@ -75,7 +75,7 @@ export const signInWithGoogle = async () => {
   try {
     await GoogleSignin.hasPlayServices();
     const userInfo = await GoogleSignin.signIn();
-    const idToken = userInfo.data?.idToken;
+    const idToken = userInfo.idToken;
     if (!idToken) {
       throw new Error('No ID token returned');
     }

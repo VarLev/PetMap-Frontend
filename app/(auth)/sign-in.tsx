@@ -7,15 +7,11 @@ import { Link, router } from "expo-router";
 import userStore from "@/stores/UserStore";
 import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton";
 import ArrowHelp from "@/components/auth/arrowHelp";
-
-
+import i18n from "@/i18n"; // Импорт i18n для мультиязычности
 
 const SignIn = () => {
   const [email, setEmail] = useState("levromf@gmail.com");
   const [password, setPassword] = useState("123456");
-  // const [email, setEmail] = useState("levromf@gmail.com");
-  // const [password, setPassword] = useState("123456");
-  
   const [isSecure, setIsSecure] = useState(true);
   const [isValidEmail, setIsValidEmail] = useState(true);
 
@@ -29,10 +25,7 @@ const SignIn = () => {
 
     try {
       await userStore.singInUser(email, password);
-      //await mapStore.setWalkAdvrts();
       router.replace('/screenholder');
-      //router.replace("/(tabs)/map");
-      //router.replace("/(auth)/onboarding");
     } catch (error: any) {
       Alert.alert("Login Error", error.message.replace("Firebase:", ""));
     }
@@ -43,7 +36,7 @@ const SignIn = () => {
   };
 
   const handleBack = () => {
-    router.back(); // Возврат на предыдущий экран
+    router.back();
   };
 
   const validateEmail = (email: string) => {
@@ -53,83 +46,81 @@ const SignIn = () => {
 
   return (
     <SafeAreaView className="bg-white h-full">
- 
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="w-full justify-between h-full px-9 my-10">
-          {/* Блок 1: Стрелка и Помощь */}
-         <View>
-          <ArrowHelp />
+          <View>
+            <ArrowHelp />
+            <View className="justify-start mt-10 ">
+              <View className="flex-col items-start justify-center">
+                <Text
+                  variant="titleSmall"
+                  className="text-xl mb-2 font-nunitoSansBold"
+                >
+                  {i18n.t('signIn.welcomeBack')} 
+                </Text>
+                <Text
+                  variant="titleSmall"
+                  className="pb-4 text-sm font-nunitoSansRegular"
+                >
+                  {i18n.t('signIn.enterCredentials')}
+                </Text>
+              </View>
 
-          {/* Блок 2: Вход */}
-          <View className=" justify-start mt-10 ">
-            <View className="flex-col items-start justify-center">
-              <Text
-                variant="titleSmall"
-                className="text-xl mb-2 font-nunitoSansBold"
-              >
-                Рады видеть вас снова!
-              </Text>
-              <Text
-                variant="titleSmall"
-                className="pb-4 text-sm font-nunitoSansRegular"
-              >
-                Введите данные для входа в существующий аккаунт.
-              </Text>
-            </View>
-
-            <TextInput
-              mode="outlined"
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              onBlur={() => setIsValidEmail(validateEmail(email))}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              theme={{ roundness: 8 }}
-              className="mb-2"
-            />
+              <TextInput
+                mode="outlined"
+                label={i18n.t('signIn.email')} 
+                value={email}
+                onChangeText={setEmail}
+                onBlur={() => setIsValidEmail(validateEmail(email))}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                theme={{ roundness: 8 }}
+                className="mb-2"
+              />
               {!isValidEmail && (
-              <Text style={{ marginTop: -10 }} className="text-red-500 ml-1 mb-2">Введите корректный email</Text>
-            )}
-            <TextInput
-              mode="outlined"
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={isSecure}
-              theme={{ roundness: 8 }}
-              className="mb-2"
-            />
-         
-            <CustomLoadingButton
-              title="Войти"
-              handlePress={handleLogin}
-              containerStyles="w-full"
-            />
+                <Text style={{ marginTop: -10 }} className="text-red-500 ml-1 mb-2">
+                  {i18n.t('signIn.invalidEmail')} 
+                </Text>
+              )}
+              <TextInput
+                mode="outlined"
+                label={i18n.t('signIn.password')} 
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={isSecure}
+                theme={{ roundness: 8 }}
+                className="mb-2"
+              />
 
-            <View className="items-center pt-5">
-              <Link
-                href="/sign-up.mailvalidation"
-                className="pt-4 text-base text-indigo-800 font-nunitoSansBold"
-              >
-                Забыли пароль
-              </Link>
+              <CustomLoadingButton
+                title={i18n.t('signIn.loginButton')} 
+                handlePress={handleLogin}
+                containerStyles="w-full"
+              />
+
+              <View className="items-center pt-5">
+                <Link
+                  href="/sign-up.mailvalidation"
+                  className="pt-4 text-base text-indigo-800 font-nunitoSansBold"
+                >
+                  {i18n.t('signIn.forgotPassword')} 
+                </Link>
+              </View>
             </View>
           </View>
-          </View>
 
-          {/* Блок 3: Регистрация */}
+
           <View className="pb-20">
             <View className="justify-center flex-row gap-2">
               <Text className="text-base text-gray-500 font-nunitoSansRegular">
-                Нет аккаунта?
+                {i18n.t('signIn.noAccount')}
               </Text>
               <Link
                 href="/sign-up"
                 className="text-base text-indigo-800 font-nunitoSansBold"
               >
-                Зарегистрироваться!
+                {i18n.t('signIn.register')}
               </Link>
             </View>
           </View>

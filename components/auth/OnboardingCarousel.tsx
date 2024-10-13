@@ -9,6 +9,7 @@ import {
 import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
 
 import { Text } from "react-native-paper";
+import i18n from '@/i18n';
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -16,25 +17,22 @@ const { height } = Dimensions.get("window");
 const data = [
   {
     id: 1,
-    title:
-      "Заводите новые знакомства с владельцами питомцев. Ходите на совместные прогулки.",
+    titleKey: "onboarding.slide1.title", // Ключ для перевода
     image: require("@/assets/images/onboarding/OnbordingMap.png"),
   },
   {
     id: 2,
-    title:
-      "Все полезные локации в одном приложении: ветеринарные клиники, парки и многое другое.",
+    titleKey: "onboarding.slide2.title", // Ключ для перевода
     image: require("@/assets/images/onboarding/OnbordingLocation.png"),
   },
   {
     id: 3,
-    title:
-      "Выбирайте проверенных специалистов для различных услуг: груминг, кинолог и др",
+    titleKey: "onboarding.slide3.title", // Ключ для перевода
     image: require("@/assets/images/onboarding/OnbordingServices.png"),
   },
   {
     id: 4,
-    title: "Будьте в курсе всех мероприятий для питомцев.",
+    titleKey: "onboarding.slide4.title", // Ключ для перевода
     image: require("@/assets/images/onboarding/OnboardingEvents.png"),
   },
 ];
@@ -66,7 +64,7 @@ const OnboardingCarousel: React.FC = () => {
               variant="titleSmall"
               className="pt-3 px-3 text-base text-center font-nunitoSansRegular"
             >
-              {item.title}
+              {i18n.t(item.titleKey)}
             </Text>
           </View>
         )}

@@ -149,11 +149,12 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1 px-2">
       
-      <View className="h-full bg-white rounded-lg p-2">
+      <View className="h-full bg-white rounded-lg px-2">
+      <Text className='text-base font-nunitoSansBold text-indigo-700'>Детали прогулки</Text>
         <View className="flex-row">
-          <Image source={{ uri: avatar || 'https://via.placeholder.com/100' }} className="w-28 h-28 rounded-lg" />
+          
           <View className="flex-col ml-2">
-            <Text className="ml-1 text-2xl font-nunitoSansBold">{name}</Text> 
+     
             <TouchableRipple onPress={() => setShowModal(true)} >
               <View className='mt-2 items-start'>
                 <View className="flex-row items-center ">

@@ -342,6 +342,7 @@ class UserStore {
     this.setLoading(true);
     try {
       const userCred = await signInWithGoogle();
+      
       const token = await userCred.user.getIdToken();
       
       await AsyncStorage.setItem(process.env.EXPO_PUBLIC_F_TOKEN!, token);
