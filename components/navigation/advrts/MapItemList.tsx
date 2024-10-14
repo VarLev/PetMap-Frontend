@@ -128,6 +128,9 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
           data={points}
           keyExtractor={(_, index) => index.toString()}
           renderItem={renderItem}
+          initialNumToRender={10} // Количество элементов для рендеринга при старте
+          maxToRenderPerBatch={10} // Максимальное количество элементов за один рендер
+          windowSize={5} // Количество экранов данных для загрузки
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
           refreshing={isRefreshing}

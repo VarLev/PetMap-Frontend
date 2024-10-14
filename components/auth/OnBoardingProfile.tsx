@@ -222,7 +222,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       if (interests.length > 0) setSliderValue(sliderValue + 100);
 
       if (userImage === "" || userImage === null || userImage === undefined) {
-        console.log("userImage", userImage);
         const newAvatar = SetRandomAvatarDependOnGender();
         userStore.fetchImageUrl(newAvatar).then((resp) => {
           if (resp) {

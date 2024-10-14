@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { TouchableOpacity, View, Image } from "react-native";
 import { Text } from "react-native-paper";
 import OnboardingCarousel from "../components/auth/OnboardingCarousel";
@@ -41,10 +41,12 @@ const App = () => {
       offlineAccess: true,
     });
     console.log("Google Pressed");
-    const isSuccessful = await userStore.googleSingInUser();
-    console.log(isSuccessful);
-    if (isSuccessful)
+    const signIn = await userStore.googleSingInUser();
+    console.log(signIn);
+    if (!signIn[0] && signIn[1])
       router.replace("/(auth)/onboarding");
+    else if (signIn[0] && signIn[1])
+      router.replace("/map");
   }
 
   return (

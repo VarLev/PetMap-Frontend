@@ -36,7 +36,10 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen, loadedUser }: { onEd
   const loadData = async () => {
     if (user.id === userStore.currentUser?.id) {
       // Загружаем текущего пользователя
+      console.log('Загружаем текущего пользователя');
+      
       //await userStore.loadUser();
+      console.log(user.thumbnailUrl);
       setUser(user);
       console.log(user);
       setIsCurrentUser(true);
