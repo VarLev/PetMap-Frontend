@@ -23,11 +23,11 @@ const CustomConfirmAlert: React.FC<CustomConfirmAlertProps> = ({
 }) => {
   return (
     <Modal isVisible={isVisible} onBackdropPress={onClose} backdropOpacity={0.6}>
-      <View className={`p-6 px-8 rounded-2xl bg-white`}>
-        <Text className={`text-lg font-nunitoSansBold mb-2`}>
+      <View className={`p-6 px-8 rounded-2xl bg-white `}>
+        <Text className={`text-lg font-nunitoSansBold mb-2 text-center`}>
           {title}
         </Text>
-        <Text className="text-base font-nunitoSansRegular  mb-4">
+        <Text className="text-base font-nunitoSansRegular  mb-4 text-center">
           {message}
         </Text>
 

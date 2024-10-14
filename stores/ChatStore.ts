@@ -1,12 +1,21 @@
-import { makeAutoObservable, runInAction } from 'mobx';
-import { database } from '@/firebaseConfig';
-import { ref, get, push, update, query, orderByChild, onValue, remove } from 'firebase/database';
-import userStore from '@/stores/UserStore';
-import { MessageType } from '@flyerhq/react-native-chat-ui';
-import { IUser } from '@/dtos/Interfaces/user/IUser';
-import {randomUUID} from "expo-crypto";
-import { sendPushNotification } from '@/hooks/notifications';
-
+import { makeAutoObservable, runInAction } from "mobx";
+import { database } from "@/firebaseConfig";
+import {
+  ref,
+  get,
+  push,
+  update,
+  query,
+  orderByChild,
+  onValue,
+  remove,
+  set,
+} from "firebase/database";
+import userStore from "@/stores/UserStore";
+import { MessageType } from "@flyerhq/react-native-chat-ui";
+import { IUser } from "@/dtos/Interfaces/user/IUser";
+import { randomUUID } from "expo-crypto";
+import { sendPushNotification } from "@/hooks/notifications";
 
 interface Chat {
   id: string;
@@ -27,7 +36,7 @@ interface Message {
 class ChatStore {
   chats: Chat[] = [];
   messages: MessageType.Any[] = [];
- 
+  lastMessage: { [key: string]: string } = {};
 
   constructor() {
     makeAutoObservable(this);
@@ -37,7 +46,7 @@ class ChatStore {
     const userId = userStore.currentUser?.id;
     if (!userId) return;
 
-    const chatsRef = ref(database, 'chats');
+    const chatsRef = ref(database, "chats");
     const snapshot = await get(chatsRef);
 
     if (snapshot.exists()) {
@@ -47,8 +56,8 @@ class ChatStore {
       for (const chatId in data) {
         const chatData = data[chatId];
         const participantIds = Object.keys(chatData.participants);
-        const otherUserId = participantIds.find(id => id !== userId);
-        const currentUserId = participantIds.find(id => id === userId);
+        const otherUserId = participantIds.find((id) => id !== userId);
+        const currentUserId = participantIds.find((id) => id === userId);
 
         if (currentUserId && otherUserId) {
           const userSnapshot = await get(ref(database, `users/${otherUserId}`));
@@ -60,7 +69,7 @@ class ChatStore {
             participants: chatData.participants,
             otherUserName: otherUserName,
             otherUserId: otherUserId,
-            thumbnailUrl
+            thumbnailUrl,
           });
         }
       }
@@ -71,12 +80,14 @@ class ChatStore {
     }
   }
 
-  async createNewChat(otherUser: IUser, initalMessage?: string): Promise<string | undefined> {
+  async createNewChat(
+    otherUser: IUser,
+    initalMessage?: string
+  ): Promise<string | undefined> {
     const userId = userStore.currentUser?.id;
     if (!userId) return;
 
-    
-    const chatId = userId+otherUser.id;
+    const chatId = userId + otherUser.id;
 
     if (!chatId) {
       throw new Error("Unable to generate chat ID");
@@ -92,19 +103,18 @@ class ChatStore {
     const userId1 = userStore.currentUser?.id;
     const userId2 = otherUser?.id;
 
-    console.log('fmcTokenCurrentUser:', userStore.currentUser?.fmcToken);
-    console.log('fmcTokenOtherUser:', otherUser?.fmcToken);
+    console.log("fmcTokenCurrentUser:", userStore.currentUser?.fmcToken);
+    console.log("fmcTokenOtherUser:", otherUser?.fmcToken);
 
-    const newUserData1 ={
+    const newUserData1 = {
       name: userStore.currentUser?.name,
       avatar: userStore.currentUser?.thumbnailUrl,
-    }
-    const newUserData2 ={
+    };
+    const newUserData2 = {
       name: otherUser?.name,
       avatar: otherUser?.thumbnailUrl,
-    }
-   
-    
+    };
+
     const updates: { [key: string]: any } = {};
     updates[`/chats/${chatId}`] = newChatData;
 
@@ -112,13 +122,12 @@ class ChatStore {
 
     updates[`/users/${userId2}`] = newUserData2;
 
-
     try {
       await update(ref(database), updates);
-      
+
       runInAction(() => {
-         // Проверяем, существует ли уже объект с таким chatId в массиве this.chats
-        const existingChat = this.chats.find(chat => chat.id === chatId);
+        // Проверяем, существует ли уже объект с таким chatId в массиве this.chats
+        const existingChat = this.chats.find((chat) => chat.id === chatId);
 
         // Если такого chatId еще нет, добавляем новый объект в массив
         if (!existingChat) {
@@ -143,102 +152,129 @@ class ChatStore {
 
   async sendInviteMessage(chatId: string, otherUserId: string | undefined) {
     const userId = userStore.currentUser?.id;
-    const recipientExpoPushToken = userStore.users.find(user => user.id === otherUserId)?.fmcToken;
+    const recipientExpoPushToken = userStore.users.find(
+      (user) => user.id === otherUserId
+    )?.fmcToken;
     if (!userId) return;
-  
+
     const initialMessage: MessageType.Custom = {
-      id:  randomUUID(), // используем уникальный идентификатор для сообщения
+      id: randomUUID(), // используем уникальный идентификатор для сообщения
       author: {
         id: userId,
       },
       createdAt: Date.now(),
-      type: 'custom',
+      type: "custom",
       metadata: {
         userId: userStore.currentUser?.id,
         userName: userStore.currentUser?.name,
         userAvatar: userStore.currentUser?.thumbnailUrl,
       },
     };
-  
+
     try {
       await push(ref(database, `messages/${chatId}`), initialMessage);
-      console.log('Initial message sent');
-      if(recipientExpoPushToken){
-      
+      console.log("Initial message sent");
+      if (recipientExpoPushToken) {
         await sendPushNotification(
           recipientExpoPushToken,
-          'Приглашение на прогулку',
-          userStore?.currentUser?.name?? 'Пользователь',
+          "Приглашение на прогулку",
+          userStore?.currentUser?.name ?? "Пользователь",
           { chatId }
         );
       }
-
     } catch (error) {
-      console.error('Error sending initial message:', error);
+      console.error("Error sending initial message:", error);
     }
   }
 
-  async sendMessage(chatId: string, text: string, otherUserId: string | undefined) {
+  async sendMessage(
+    chatId: string,
+    text: string,
+    otherUserId: string | undefined
+  ) {
     const userId = userStore.currentUser?.id;
-    const recipientExpoPushToken = userStore.users.find(user => user.id === otherUserId)?.fmcToken;
+    const recipientExpoPushToken = userStore.users.find(
+      (user) => user.id === otherUserId
+    )?.fmcToken;
 
-   
     if (!userId) {
       console.error("User is not defined");
       return;
     }
-   
-    const textMessage: Message= {
+
+    const textMessage: Message = {
       author: { id: userId },
       createdAt: Date.now(),
       text,
-      type: 'text',
+      type: "text",
     };
-    
+
     push(ref(database, `messages/${chatId}`), textMessage)
-      .then(() => console.log('Message sent:', textMessage))
-      .catch(error => console.error('Error sending message:', error));
-    console.log('MMMMMessage sent:', textMessage);
-    
-    if(recipientExpoPushToken){
-      
+      .then(() => console.log("Message sent:", textMessage))
+      .catch((error) => console.error("Error sending message:", error));
+    console.log("MMMMMessage sent:", textMessage);
+
+    // Обновляем последнее сообщение в чате Sergio
+    update(ref(database, `chats/${chatId}`), {
+      lastMessage: text,
+    });
+
+    if (recipientExpoPushToken) {
       await sendPushNotification(
         recipientExpoPushToken,
-        'Новое сообщение',
+        "Новое сообщение",
         text,
         { chatId }
       );
     }
-      
+    runInAction(() => {
+      this.lastMessage[chatId] = text;
+    });
   }
 
   fetchMessages(chatId: string) {
-    
     const messagesRef = ref(database, `messages/${chatId}`);
-    const q = query(messagesRef, orderByChild('createdAt'));
+    const q = query(messagesRef, orderByChild("createdAt"));
 
-    onValue(q, snapshot => {
+    onValue(q, (snapshot) => {
       const messagesList: MessageType.Any[] = [];
-      snapshot.forEach(childSnapshot => {
+      snapshot.forEach((childSnapshot) => {
         const message = childSnapshot.val();
         //console.log('childSnapshot.key:', childSnapshot.key);
-      if (message && childSnapshot.key) {
-        messagesList.push({
-          id: childSnapshot.key,  // Убедитесь, что `id` существует
-          author: message.author,
-          createdAt: message.createdAt,
-          metadata: message.metadata,
-          text: message.text,
-          type: message.type,
-        });
-      } else {
-        console.error("Invalid message data or missing key:", childSnapshot.val());
-      }
-    });
+        if (message && childSnapshot.key) {
+          messagesList.push({
+            id: childSnapshot.key, // Убедитесь, что `id` существует
+            author: message.author,
+            createdAt: message.createdAt,
+            metadata: message.metadata,
+            text: message.text,
+            type: message.type,
+          });
+        } else {
+          console.error(
+            "Invalid message data or missing key:",
+            childSnapshot.val()
+          );
+        }
+      });
       runInAction(() => {
         this.messages = messagesList.reverse(); // Обратный порядок для правильного отображения
       });
     });
+  }
+
+  async getLastMessage(chatId: string) {
+    const data = ref(database, `chats/${chatId}`);
+    const snapshot = await get(data);
+
+    if (snapshot.exists()) {
+      const lastMessage = snapshot.val().lastMessage;
+
+      runInAction(() => {
+        this.lastMessage[chatId] = lastMessage;
+      });
+      return lastMessage;
+    }
   }
 
   async deleteChat(chatId: string) {
@@ -247,7 +283,7 @@ class ChatStore {
       console.error("User is not defined");
       return;
     }
-    console.log('chatId:', chatId);
+    console.log("chatId:", chatId);
     const chatRef = ref(database, `chats/${chatId}`);
     const messagesRef = ref(database, `messages/${chatId}`);
 
@@ -255,15 +291,142 @@ class ChatStore {
       await remove(chatRef);
       await remove(messagesRef);
       runInAction(() => {
-        this.chats = this.chats.filter(chat => chat.id !== chatId);
+        this.chats = this.chats.filter((chat) => chat.id !== chatId);
       });
-      
     } catch (error) {
       console.error("Error deleting chat:", error);
     }
   }
 
-  
+  async addBlacklist() {
+    try {
+      const userId = userStore.currentUser?.id; // Текущий пользователь
+      if (!userId) {
+        console.error("Пользователь не авторизован");
+        return;
+      }
+
+      const data = this.chats;
+      if (!data || data.length === 0) {
+        console.error("Чат не найден");
+        return;
+      }
+
+      const blockUserId = data[0]?.otherUserId; // Другой пользователь
+      if (!blockUserId) {
+        console.error("ID пользователя для блокировки не найдено");
+        return;
+      }
+
+      // Текущий пользователь блокирует другого пользователя
+      await set(ref(database, `/blacklist/${userId}/${blockUserId}`), true);
+      console.log("Пользователь заблокирован:", blockUserId);
+    } catch (error) {
+      console.error(
+        "Ошибка при добавлении пользователя в черный список:",
+        error
+      );
+    }
+  }
+
+  async removeBlacklist() {
+    try {
+      const userId = userStore.currentUser?.id; // Текущий пользователь
+      if (!userId) {
+        console.error("Пользователь не авторизован");
+        return;
+      }
+      const data = this.chats;
+      if (!data || data.length === 0) {
+        console.error("Чат не найден");
+        return;
+      }
+      const blockUserId = data[0]?.otherUserId; // Другой пользователь
+      if (!blockUserId) {
+        console.error("ID пользователя для разблокировки не найдено");
+        return;
+      }
+
+      // Текущий пользователь разблокирует другого пользователя
+      await remove(ref(database, `/blacklist/${userId}/${blockUserId}`));
+    } catch (error) {
+      console.error(
+        "Ошибка при удалении пользователя из черного списка:",
+        error
+      );
+    }
+  }
+
+  async checkBlocked() {
+    try {
+      const userId = userStore.currentUser?.id; // Текущий пользователь
+      if (!userId) {
+        console.error("Пользователь не авторизован");
+        return false;
+      }
+
+      const chatData = this.chats;
+      if (!chatData || chatData.length === 0) {
+        console.error("Чат не найден");
+        return false;
+      }
+
+      const blockUserId = chatData[0]?.otherUserId; // Другой пользователь
+      if (!blockUserId) {
+        console.error(
+          "ID другого пользователя для проверки блокировки не найдено"
+        );
+        return false;
+      }
+
+      // Проверяем, заблокировал ли другой пользователь текущего пользователя
+      const data = ref(database, `/blacklist/${blockUserId}/${userId}`);
+      const snapshot = await get(data);
+
+      if (snapshot.exists()) {
+        return true;
+      } else return false;
+    } catch (error) {
+      console.error("Ошибка при проверке статуса блокировки:", error);
+      return false;
+    }
+  }
+
+  async chekIfIBlocked() {
+    try {
+      const userId = userStore.currentUser?.id; // Текущий пользователь
+      if (!userId) {
+        console.error("Пользователь не авторизован");
+        return false;
+      }
+
+      const chatData = this.chats;
+      if (!chatData || chatData.length === 0) {
+        console.error("Чат не найден");
+        return false;
+      }
+
+      const blockUserId = chatData[0]?.otherUserId; // Другой пользователь
+      if (!blockUserId) {
+        console.error(
+          "ID другого пользователя для проверки блокировки не найдено"
+        );
+        return false;
+      }
+
+      // Проверяем, заблокировал ли другой пользователь текущего пользователя
+      const data = ref(database, `/blacklist/${userId}/${blockUserId}`);
+      const snapshot = await get(data);
+      if (snapshot.exists()) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error("Ошибка при проверке статуса блокировки:", error);
+      return false;
+    }
+  }
 
   clearMessages() {
     runInAction(() => {

@@ -9,7 +9,7 @@ function ArrowHelp() {
   };
 
   return (
-    <View className="flex-row justify-between mx-2">
+    <View className="flex-row justify-between items-center mx-2">
       <IconButton icon="arrow-left" size={30} onPress={handleBack} />
       <Text
         onPress={() => console.log("press help")}

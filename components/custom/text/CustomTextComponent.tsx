@@ -16,6 +16,7 @@ interface CustomTextComponentProps {
   iconSet?: 'material' | 'paper' | 'fontAwesome' | 'simpleLine' | 'ionicons' | 'materialCommunity';
   separator?: string;
   className_?: string; // Используем className для стилизации через NativeWind
+  textStyle?: object
 }
 
 const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
@@ -27,6 +28,7 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
   iconSet = 'material',
   separator = ', ',
   className_='', // Используем className для стилизации через NativeWind
+  textStyle = {},
 }) => {
   const displayText = Array.isArray(text) ? text.join(separator) : text;
 
@@ -50,7 +52,7 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
       <Text
         numberOfLines={maxLines}
         ellipsizeMode="tail"
-        className="flex-1 pl-2 text-base font-nunitoSansRegular"
+        style={[{ flex: 1, paddingLeft: 8, fontSize: 16, fontFamily: 'NunitoSans-Regular' }, textStyle]} 
       >
         {displayText}
       </Text>

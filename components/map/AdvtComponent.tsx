@@ -202,7 +202,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(({ advrt, onInvite, onClos
         isVisible={requestVisible} 
         onClose={()=>{setRequestVisible(false)}} 
         onConfirm={()=>handleConfirmInvite()} 
-        message='Между вами и владельцем питомца будет создан чат и отправлен запрос на присоединение к прогулке' 
+        message='Запрос на присоединение к прогулке в чате' 
         title='Отправка запроса' 
         confirmText='Ок' 
         cancelText='Отмена'/>

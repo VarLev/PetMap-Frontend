@@ -12,6 +12,7 @@ import googleLogo from "../assets/images/google.png";
 import facebookLogo from "../assets/images/facebook.png";
 import appleLogo from "../assets/images/apple.png";
 
+
 const App = () => {
   const { loading, isLogged, signOut } = useStore();
   signOut();

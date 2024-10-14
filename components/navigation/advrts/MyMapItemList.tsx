@@ -1,20 +1,22 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { FlatList, ActivityIndicator, View } from 'react-native';
-import MapPointDangerCard from '@/components/custom/cards/MapPointDangerCard';
-import { MapPointType } from '@/dtos/enum/MapPointType';
-import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
-import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
-import SkeletonCard from '@/components/custom/cards/SkeletonCard';
-import userStore from '@/stores/UserStore';
-import MyAdvrtCard from '@/components/custom/cards/MyAdvrtCard';
-import mapStore from '@/stores/MapStore';
+import React, { useState, useEffect, useCallback } from "react";
+import { FlatList, ActivityIndicator, View } from "react-native";
+import MapPointDangerCard from "@/components/custom/cards/MapPointDangerCard";
+import { MapPointType } from "@/dtos/enum/MapPointType";
+import { IWalkAdvrtShortDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtShortDto";
+import { IPointDangerDTO } from "@/dtos/Interfaces/map/IPointDangerDTO";
+import SkeletonCard from "@/components/custom/cards/SkeletonCard";
+import userStore from "@/stores/UserStore";
+import MyAdvrtCard from "@/components/custom/cards/MyAdvrtCard";
+import mapStore from "@/stores/MapStore";
 
 interface AdvrtsListProps {
   renderType: MapPointType;
 }
 
-const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
-  const [points, setPoints] = useState<IWalkAdvrtShortDto[] | IPointDangerDTO[]>([]);
+const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
+  const [points, setPoints] = useState<
+    IWalkAdvrtShortDto[] | IPointDangerDTO[]
+  >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
@@ -25,7 +27,7 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
       const walks = await userStore.getUserWalks(userStore.currentUser!.id);
       setPoints(walks);
     } catch (error) {
-      console.error('Ошибка при загрузке объявлений:', error);
+      console.error("Ошибка при загрузке объявлений:", error);
     } finally {
       setIsLoading(false);
     }
@@ -43,7 +45,7 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
       const walks = await userStore.getUserWalks(userStore.currentUser!.id);
       setPoints(walks);
     } catch (error) {
-      console.error('Ошибка при обновлении объявлений:', error);
+      console.error("Ошибка при обновлении объявлений:", error);
     } finally {
       setIsRefreshing(false);
     }
@@ -54,27 +56,34 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
     return <ActivityIndicator className="h-32" size="large" />;
   };
 
-  const handleDelete = async (id:string) => {
+  const handleDelete = async (id: string) => {
     try {
       setIsLoading(true);
       await mapStore.deleteWalkAdvrt(id);
       // После успешного удаления, обновляем состояние, фильтруя удалённый элемент
-      setPoints((prevPoints) => prevPoints.filter(point => point.id !== id));
+      setPoints((prevPoints) => prevPoints.filter((point) => point.id !== id));
     } catch (error) {
-      console.error('Ошибка при удалении объявления:', error);
+      console.error("Ошибка при удалении объявления:", error);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   // Рендеринг элемента списка в зависимости от типа
   const renderItem = useCallback(
     ({ item }: { item: IWalkAdvrtShortDto | IPointDangerDTO }) => {
       switch (renderType) {
         case MapPointType.Walk:
-          return <MyAdvrtCard ad={item as IWalkAdvrtShortDto} pressDelete={handleDelete}/>;
+          return (
+            <MyRenderItem
+              ad={item as IWalkAdvrtShortDto}
+              pressDelete={handleDelete}
+            />
+          );
         case MapPointType.Danger:
-          return <MapPointDangerCard mapPointDanger={item as IPointDangerDTO} />;
+          return (
+            <MapPointDangerCard mapPointDanger={item as IPointDangerDTO} />
+          );
         default:
           return null;
       }
@@ -89,16 +98,15 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
       keyExtractor={(item) => item.toString()}
       renderItem={() => (
         <View className="items-center bg-white ">
-          <SkeletonCard/> 
+          <SkeletonCard />
         </View>
       )}
     />
   );
 
   return (
-    <View  >
+    <View>
       {isLoading ? (
-      
         renderSkeletons()
       ) : (
         <FlatList
