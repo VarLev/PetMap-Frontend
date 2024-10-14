@@ -1,0 +1,144 @@
+{
+  "index": {
+    "welcome": "¡Bienvenido a PetMap!",
+    "signUp": "Registrarse",
+    "alreadyHaveAccount": "Ya tienes una cuenta",
+    "otherSignInMethods": "Otros métodos de inicio de sesión"
+  },
+  "onboarding": {
+    "slide1": {
+      "title": "Haz nuevos amigos con dueños de mascotas. Sal a caminar juntos."
+    },
+    "slide2": {
+      "title": "Todas las ubicaciones útiles en una aplicación: clínicas veterinarias, parques y mucho más."
+    },
+    "slide3": {
+      "title": "Elige profesionales de confianza para varios servicios: peluquería, adiestradores de perros, etc."
+    },
+    "slide4": {
+      "title": "Mantente al tanto de todos los eventos para mascotas."
+    }
+  },
+  "onboardingProfile": {
+    "slide1": {
+      "title": "¡Bienvenido a PetMap!",
+      "subtitle": "Elija el idioma de la aplicación para que podamos entendernos mejor.",
+      "englishButton": "Inglés",
+      "spanishButton": "Español",
+      "russianButton": "Ruso"
+    },
+    "slide2": {
+      "title": "Comienza a configurar tu perfil ahora mismo",
+      "subtitle": "Y recibe tus primeros bonos después del registro para intercambiarlos por regalos."
+    },
+    "slide3": {
+      "title": "Cuéntanos un poco sobre ti",
+      "subtitle": "Tu perfil será visible para otros propietarios de mascotas.",
+      "nameLabel": "¿Cómo te llamas?",
+      "birthDateLabel": "Fecha de nacimiento",
+      "uploadPhotoButton": "Subir foto",
+      "chooseAvatarButton": "Elegir avatar"
+    },
+    "slide4": {
+      "title": "Configura el perfil de tu mascota",
+      "subtitle": "El perfil de tu mascota será visible para otros al responder a una caminata.",
+      "petNameLabel": "Nombre",
+      "breedLabel": "Raza",
+      "birthDateLabel": "Fecha de nacimiento",
+      "uploadPhotoButton": "Subir foto"
+    },
+    "slide5": {
+      "title": "¿Qué te interesa?",
+      "subtitle": "Esto te ayudará a encontrar contenido adecuado."
+    },
+    "skip": "Omitir",
+    "next": "Siguiente",
+    "finish": "Finalizar",
+    "back": "Atrás",
+    "alertMessage": "Si omites la introducción, no recibirás bonificaciones y no podrás usar el mapa hasta que completes tu perfil."
+  },
+  "congratulations": {
+    "title": "¡Has completado el registro inicial!",
+    "subtitle": "¡Bien hecho! Tu perfil está activado. Recibe tus primeros bonos",
+    "button": "Reclamar bonos",
+    "petBonuses": "PetBonuses"
+  },
+  "signIn": {
+    "welcomeBack": "¡Bienvenido de nuevo!",
+    "enterCredentials": "Ingresa tus datos de inicio de sesión para acceder a tu cuenta.",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "loginButton": "Iniciar sesión",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "noAccount": "¿No tienes cuenta?",
+    "register": "¡Regístrate!",
+    "invalidEmail": "Por favor, ingresa un correo electrónico válido"
+  },
+  "signUpMailValidation": {
+    "forgotPassword": "Ups... olvidaste tu contraseña",
+    "enterEmail": "Para restablecer tu contraseña, ingresa el correo electrónico asociado a tu cuenta.",
+    "emailLabel": "Correo electrónico",
+    "invalidEmail": "Por favor, ingresa un correo válido",
+    "submitButton": "Confirmar",
+    "passwordResetLink": "Enlace a la pantalla de restablecimiento de contraseña (temporal) para simular presionar el botón Confirmar",
+    "noAccount": "¿No tienes una cuenta?",
+    "register": "Regístrate"
+  },
+  "signUpPasswordReset": {
+    "title": "Restablecer Contraseña",
+    "description": "Ingresa una nueva contraseña para completar el restablecimiento de la contraseña y acceder a tu cuenta.",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "saveButton": "Guardar",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "noAccount": "¿No tienes una cuenta?",
+    "register": "Regístrate"
+  },
+  "signUp": {
+    "title": "¡Únete a PetMap!",
+    "description": "Introduce tus datos para crear una cuenta.",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "dataPolicy": "Estoy de acuerdo con la política de procesamiento de datos del servicio",
+    "policyAlert": "Por favor, acepta la política de procesamiento de datos",
+    "registerButton": "Registrarse",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "login": "¡Inicia sesión!",
+    "invalidEmail": "Por favor, ingresa un correo electrónico válido"
+  },
+  "arrowHelp": {
+    "help": "Ayuda"
+  },
+  "tags": {
+    "breeds": [
+      "Shar Pei", "Labrador", "Laika", "Husky", "Labrador Retriever", "Pastor Alemán",
+      "Golden Retriever", "Bulldog Francés", "Bulldog", "Caniche", "Beagle", "Rottweiler",
+      "Yorkshire Terrier", "Gran Danés", "Husky Siberiano", "Maltés", "Boxer", "Chihuahua",
+      "Doberman", "Border Collie", "Shih Tzu", "Cocker Spaniel", "Bulldog Inglés",
+      "Boston Terrier", "Papillón", "Pekinés", "Samoyedo", "West Highland White Terrier", "Pembroke Welsh Corgi",
+      "Akita", "Pastor Australiano", "Basset Hound", "Dálmata", "Collie", "Setter Irlandés",
+      "Galgo Italiano", "Lhasa Apso", "Pug", "Terranova", "Malamute de Alaska", "Bulldog Americano",
+      "Malinois Belga", "American Staffordshire Terrier", "Basenji", "Labradoodle", "Cane Corso", "Cavalier King Charles Spaniel",
+      "Pointer", "Russian Toy", "Fox Terrier", "Galgo", "Shetland Sheepdog", "Weimaraner"
+    ],
+    "interests": [
+      "Viajes", "Música", "Cocina", "Deportes", "Cine",
+      "Fotografía", "Arte", "Baile", "Animales", "Mascotas",
+      "Yoga", "Meditación", "Desarrollo Personal", "Psicología", "Moda",
+      "Tecnología", "Coches", "Motocicletas", "Ciclismo", "Senderismo",
+      "Fitness", "Dibujo", "Teatro", "Juegos de Mesa", "Ajedrez",
+      "Manualidades", "Historia", "Ciencia", "Política", "Blogging",
+      "Fantasía", "Fútbol", "Esports", "Negocios", "Startups",
+      "Estilo de Vida Saludable", "Natación", "Correr", "Tenis", "Rock",
+      "Música Clásica", "Música Electrónica", "Comedia", "Thrillers", 
+      "Ciencia Ficción", "Aventuras", "Romance", "Series", "Anime"
+    ]
+  },
+  "emptyProfile": {
+    "welcome": "Bienvenido",
+    "description": "Para continuar, por favor completa tu perfil.",
+    "button": "Cuéntanos sobre ti"
+  }
+}

@@ -1,9 +1,13 @@
-import {getApps , initializeApp } from 'firebase/app';
+import { getApps , initializeApp } from 'firebase/app';
 import { getStorage } from 'firebase/storage';
-import {signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, sendEmailVerification  } from 'firebase/auth';
+import { signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword  } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getAuth, initializeAuth, getReactNativePersistence, onAuthStateChanged } from "firebase/auth";
 import {getDatabase} from 'firebase/database';
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+
 
 
 // Вставьте сюда ваши настройки Firebase
@@ -20,8 +24,6 @@ const firebaseConfig = {
 let app;
 let auth;
 
-
-
 if (getApps().length===0) {
   app = initializeApp(firebaseConfig);
   auth = initializeAuth(app, {
@@ -33,7 +35,7 @@ if (getApps().length===0) {
 }
 const database = getDatabase(app);
 const storage = getStorage(app);
-export { database, storage };
+export {database, storage };
 
 export const signInWithEmailAndPassword = async (email: string, password: string) => {
   try {
@@ -53,7 +55,6 @@ export const signOut = async () => {
   }
 }
 
-
 export const createUserWithEmailAndPassword = async (email: string, password: string) => {
   try {
     const userCredential = await firebaseCreateUserWithEmailAndPassword(auth, email, password);
@@ -68,7 +69,23 @@ export const onAuthStateChangedListener = (callback: any) => {
   onAuthStateChanged(auth, callback);
 };
 
+
+
+export const signInWithGoogle = async () => {
+  try {
+    await GoogleSignin.hasPlayServices();
+    const userInfo = await GoogleSignin.signIn();
+    const idToken = userInfo?.data?.idToken;
+    if (!idToken) {
+      throw new Error('Не возможно войти через Google аккаунт, попробуйте другие способы хода.');
+    }
+    const credential = GoogleAuthProvider.credential(idToken);
+    return await signInWithCredential(auth, credential);
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getCurrentAuth = () => {
   return auth;
 }
-

@@ -7,25 +7,23 @@ import userStore from "@/stores/UserStore";
 import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton";
 import ArrowHelp from "@/components/auth/arrowHelp";
 import PasswordPrompt from "@/components/auth/passwordPrompt";
+import i18n from "@/i18n"; // Импорт i18n для мультиязычности
 
 const SignUpPasswordReset = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSecure, setIsSecure] = useState(true);
-
-  const [isActive, setIsActive] = useState(false);
-
   const [isSamePassword, setIsSamePassword] = useState(true);
+  const [isActive, setIsActive] = useState(false);
+  const [strength, setStrength] = useState(0);
 
   const handleRegister = async () => {
     if (password !== confirmPassword) {
       setIsSamePassword(false);
       return;
     }
-    if (password === confirmPassword) {
-      setIsSamePassword(true);
-    }
+    setIsSamePassword(true);
 
     try {
       await userStore.registerUser(email, password);
@@ -47,8 +45,6 @@ const SignUpPasswordReset = () => {
     setIsActive(true);
   };
 
-  const [strength, setStrength] = useState(0);
-
   const calculatePasswordStrength = (password: string) => {
     let strengthScore = 0;
     if (password.length >= 8) strengthScore += 1;
@@ -61,29 +57,28 @@ const SignUpPasswordReset = () => {
   return (
     <SafeAreaView className="bg-white h-full">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="w-full  justify-between grow px-9 my-10">
+        <View className="w-full justify-between grow px-9 my-10">
           <View>
             <ArrowHelp />
-            <View className=" justify-start mt-10">
+            <View className="justify-start mt-10">
               <View className="flex-col items-start justify-center ">
                 <Text
                   variant="titleSmall"
                   className="text-lg font-nunitoSansBold"
                 >
-                  Сброс пароля
+                  {i18n.t('signUpPasswordReset.title')} 
                 </Text>
                 <Text
                   variant="titleSmall"
                   className="mb-4 text-sm font-nunitoSansRegular"
                 >
-                  Введите новый пароль, чтобы завершить сброс пароля и войти в
-                  ваш аккаунт.
+                  {i18n.t('signUpPasswordReset.description')}
                 </Text>
               </View>
 
               <TextInput
                 mode="outlined"
-                label="Password"
+                label={i18n.t('signUpPasswordReset.password')}
                 value={password}
                 onFocus={handlePasswordInput}
                 onBlur={() => setIsActive(false)}
@@ -107,25 +102,24 @@ const SignUpPasswordReset = () => {
 
               <TextInput
                 mode="outlined"
-                label="Confirm Password"
+                label={i18n.t('signUpPasswordReset.confirmPassword')} 
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 secureTextEntry={isSecure}
-                onBlur={() => handleRegister()}
                 className="mb-2"
                 theme={{ roundness: 8 }}
               />
               {!isSamePassword && (
                 <Text style={{ marginTop: -10 }} className="text-red-500 ml-1">
-                  Пароли не совпадают
+                  {i18n.t('signUpPasswordReset.passwordMismatch')} 
                 </Text>
               )}
 
               <CustomLoadingButton
-                title="Сохранить"
+                title={i18n.t('signUpPasswordReset.saveButton')}
                 handlePress={handleRegister}
                 containerStyles="w-full"
-                isLoading={(password !== confirmPassword) || (password === '' || confirmPassword === "")}
+                isLoading={password !== confirmPassword || !password || !confirmPassword}
               />
             </View>
           </View>
@@ -133,13 +127,13 @@ const SignUpPasswordReset = () => {
           <View>
             <View className="justify-center flex-row gap-2">
               <Text className="text-base text-gray-500 font-nunitoSansRegular">
-                Ещё нет аккаунта?
+                {i18n.t('signUpPasswordReset.noAccount')} {/* Ещё нет аккаунта? */}
               </Text>
               <Link
                 href="/sign-in"
                 className="text-base text-indigo-800 font-nunitoSansBold"
               >
-                Зарегистрироваться
+                {i18n.t('signUpPasswordReset.register')} {/* Зарегистрироваться */}
               </Link>
             </View>
           </View>

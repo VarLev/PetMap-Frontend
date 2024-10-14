@@ -7,6 +7,7 @@ import userStore from "@/stores/UserStore";
 import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton";
 import ArrowHelp from "@/components/auth/arrowHelp";
 import PasswordPrompt from "@/components/auth/passwordPrompt";
+import i18n from "@/i18n"; // Импорт i18n для мультиязычности
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -14,26 +15,24 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSecure, setIsSecure] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
-
   const [isActive, setIsActive] = useState(false);
-
   const [isSamePassword, setIsSamePassword] = useState(true);
   const [checkBoxAlert, setCheckBoxAlert] = useState(true);
   const [isValidEmail, setIsValidEmail] = useState(true);
+  const [strength, setStrength] = useState(0);
+
   const handleRegister = async () => {
     if (password !== confirmPassword) {
       setIsSamePassword(false);
       return;
     }
-    if (password === confirmPassword) {
-      setIsSamePassword(true);
-    }
+    setIsSamePassword(true);
 
     if (!isChecked) {
       setCheckBoxAlert(false);
-      // Alert.alert("Error", "You must agree to the data processing policy");
       return;
     }
+    
     const validEmail = validateEmail(email);
     setIsValidEmail(validEmail);
 
@@ -61,8 +60,6 @@ const SignUp = () => {
     setIsActive(true);
   };
 
-  const [strength, setStrength] = useState(0);
-
   const calculatePasswordStrength = (password: string) => {
     let strengthScore = 0;
     if (password.length >= 8) strengthScore += 1;
@@ -77,8 +74,6 @@ const SignUp = () => {
     return emailRegex.test(email);
   };
 
-  const isFormValid = isChecked && isValidEmail && isSamePassword;
-
   return (
     <SafeAreaView className="bg-white h-full">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -91,18 +86,18 @@ const SignUp = () => {
                   variant="titleSmall"
                   className="text-lg font-nunitoSansBold"
                 >
-                  Станьте частью PetMap!
+                  {i18n.t('signUp.title')} {/* Станьте частью PetMap! */}
                 </Text>
                 <Text
                   variant="titleSmall"
                   className="mb-4 text-sm font-nunitoSansRegular"
                 >
-                  Введите данные, чтобы создать аккаунт.
+                  {i18n.t('signUp.description')} 
                 </Text>
               </View>
               <TextInput
                 mode="outlined"
-                label="Email"
+                label={i18n.t('signUp.email')}
                 value={email}
                 onChangeText={setEmail}
                 onBlur={() => setIsValidEmail(validateEmail(email))}
@@ -116,12 +111,12 @@ const SignUp = () => {
                   style={{ marginTop: -10 }}
                   className="text-red-500 ml-1 mb-2"
                 >
-                  Введите корректный email
+                  {i18n.t('signUp.invalidEmail')} 
                 </Text>
               )}
               <TextInput
                 mode="outlined"
-                label="Password"
+                label={i18n.t('signUp.password')} 
                 value={password}
                 onFocus={handlePasswordInput}
                 onBlur={() => setIsActive(false)}
@@ -145,17 +140,16 @@ const SignUp = () => {
 
               <TextInput
                 mode="outlined"
-                label="Confirm Password"
+                label={i18n.t('signUp.confirmPassword')}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 secureTextEntry={isSecure}
-                onBlur={() => handleRegister()}
                 className="mb-2"
                 theme={{ roundness: 8 }}
               />
               {!isSamePassword && (
                 <Text style={{ marginTop: -10 }} className="text-red-500 ml-1">
-                  Пароли не совпадают
+                  {i18n.t('signUp.passwordMismatch')} 
                 </Text>
               )}
               <View className="flex-row items-center justify-start gap-3 py-1 px-1.5">
@@ -171,20 +165,19 @@ const SignUp = () => {
                   variant="titleSmall"
                   className="mb-4 p-2 font-nunitoSansRegular text-xs"
                 >
-                  Я согласен с Политикой обработки данных сервиса
+                  {i18n.t('signUp.dataPolicy')} 
                 </Text>
               </View>
               {!checkBoxAlert && (
                 <Text style={{ marginTop: -20 }} className="text-red-500 mb-2">
-                  Согласитесь с политикой обработки данных
+                  {i18n.t('signUp.policyAlert')} 
                 </Text>
               )}
               <CustomLoadingButton
-                title="Зарегистрироваться"
+                title={i18n.t('signUp.registerButton')} 
                 handlePress={handleRegister}
                 containerStyles="w-full"
                 isLoading={false}
-              
               />
             </View>
           </View>
@@ -192,13 +185,13 @@ const SignUp = () => {
           <View>
             <View className="justify-center pt-5 flex-row gap-2">
               <Text className="text-base text-gray-500 font-nunitoSansRegular">
-                У вас уже есть аккаунт,
+                {i18n.t('signUp.alreadyHaveAccount')} {/* У вас уже есть аккаунт? */}
               </Text>
               <Link
                 href="/sign-in"
                 className="text-base text-indigo-800 font-nunitoSansBold"
               >
-                Войти!
+                {i18n.t('signUp.login')} {/* Войти! */}
               </Link>
             </View>
           </View>
