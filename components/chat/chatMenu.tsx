@@ -5,17 +5,15 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import ChatStore from "@/stores/ChatStore";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 
-
 interface IChatMenuProps {
-  chatId: string;  
-  otherUserId: string;  
+  chatId: string;
+  otherUserId: string;
 }
 
 const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
   const [visible, setVisible] = useState<boolean>(false);
   const [requestVisible, setRequestVisible] = useState(false);
   const [requestVisibleDel, setRequestVisibleDel] = useState(false);
-  
   const [isIBlocked, setIsIBlocked] = useState<boolean>(false);
 
   const handleMenu = () => {
@@ -35,17 +33,17 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
 
   const handleDelete = () => {
     setRequestVisibleDel(true);
-  }
+  };
 
   const deleteChat = async (chatId: string) => {
     console.log("Deleting chat", ChatStore.chats);
     await ChatStore.deleteChat(chatId);
-    setRequestVisibleDel(false)
+    setRequestVisibleDel(false);
     setVisible(false);
   };
 
   const handleBlock = () => {
-       setRequestVisible(true);
+    setRequestVisible(true);
   };
 
   const handleChekBlocked = async (otherUserId: string) => {
@@ -59,7 +57,6 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
     handleChekBlocked(otherUserId);
   }, [otherUserId]);
 
-
   const blockUser = async (otherUserId: string) => {
     if (!isIBlocked) {
       await ChatStore.addBlacklist();
@@ -69,7 +66,7 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
       console.log("Unblocking user", otherUserId);
     }
     setIsIBlocked(!isIBlocked);
-    setRequestVisible(false)
+    setRequestVisible(false);
     setVisible(false);
   };
 
@@ -118,8 +115,16 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
           setRequestVisible(false);
         }}
         onConfirm={() => blockUser(otherUserId)}
-        message={isIBlocked ? "Разблокировать пользователя?" : "Вы действительно хотите заблокировать пользователя?"}
-        title={isIBlocked ? "Разблокировать пользователя" : "Заблокировать пользователя"}
+        message={
+          isIBlocked
+            ? "Разблокировать пользователя?"
+            : "Вы действительно хотите заблокировать пользователя?"
+        }
+        title={
+          isIBlocked
+            ? "Разблокировать пользователя"
+            : "Заблокировать пользователя"
+        }
         confirmText="Ок"
         cancelText="Отмена"
       />
