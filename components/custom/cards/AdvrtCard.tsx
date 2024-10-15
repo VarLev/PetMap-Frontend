@@ -7,19 +7,29 @@ import CustomButtonPrimary from '../buttons/CustomButtonPrimary';
 import CustomButtonOutlined from '../buttons/CustomButtonOutlined';
 import userStore from '@/stores/UserStore';
 import { BREEDS_TAGS, PET_IMAGE } from '@/constants/Strings';
-import { getTagsByIndex } from '@/utils/utils';
+import { calculateDistance, convertDistance, getTagsByIndex } from '@/utils/utils';
 import ImageModalViewer from '@/components/common/ImageModalViewer';
+import mapStore from '@/stores/MapStore';
 
 interface AdCardProps {
   ad: IWalkAdvrtShortDto;
 }
 
-const AdvrtCard: React.FC<AdCardProps> = ({ ad }) => {
+const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
   const [petImage, setPetImage] = React.useState<string>();
+  const [distance, setDistance] = React.useState(0);
   
   useEffect(() => {
     getPetImage().then((url) => setPetImage(url));
-  } ,[]);
+    const dist = calculateDistance(
+      ad.latitude!,
+      ad.longitude!,
+      mapStore.currentUserCoordinates[0],
+      mapStore.currentUserCoordinates[1]
+    );
+    setDistance(dist);
+    console.log(ad.latitude, ad.longitude);
+  }, [ad.latitude, ad.longitude]);
 
   const getPetImage = async () : Promise<string> => {
     const petImage = await userStore.fetchImageUrl(PET_IMAGE);
@@ -48,7 +58,7 @@ const AdvrtCard: React.FC<AdCardProps> = ({ ad }) => {
               className_='p-0'
             />
             <CustomTextComponent 
-              text={'2км 500м'} 
+              text={convertDistance(distance)} 
               leftIcon='paper-plane-outline' 
               iconSet='ionicons' 
               className_='p-0'
@@ -73,6 +83,8 @@ const AdvrtCard: React.FC<AdCardProps> = ({ ad }) => {
       
     </Card>
   );
-};
+});
+
+AdvrtCard.displayName = 'AdvrtCard';
 
 export default AdvrtCard;

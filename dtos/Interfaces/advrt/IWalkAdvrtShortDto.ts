@@ -8,4 +8,6 @@ export interface IWalkAdvrtShortDto {
   address?: string;
   description?: string;
   date?: Date;
+  latitude?: number;
+  longitude?: number;
 }

@@ -12,4 +12,6 @@ export interface IPointDangerDTO extends IPointEntityDTO {
   availableHours: number;          // Количество часов, в течение которых опасность актуальна
   description?: string;            // Описание точки
   userId?: string;                 // Идентификатор пользователя, создавшего точку
+  latitude?: number;
+  longitude?: number;
 }

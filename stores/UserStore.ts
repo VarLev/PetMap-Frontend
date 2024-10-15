@@ -20,7 +20,6 @@ import { JobTypeDto } from '@/dtos/Interfaces/job/IJob';
 import { handleAxiosError } from '@/utils/axiosUtils';
 import { JobType } from '@/dtos/enum/JobType';
 import { Job } from '@/dtos/classes/job/Job';
-import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
 import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
 
 
@@ -338,41 +337,42 @@ class UserStore {
     }
   }
 
-  async googleSingInUser(): Promise<boolean> {
+  async googleSingInUser(): Promise<[isUserAlreadyRegistrated:boolean, isSuccessfulSignIn:boolean] > {
     this.setLoading(true);
     let isSuccessful = false;
+    let isUserAlreadyRegistrated = false;
     try {
-      console.log('Google Sign In');
+
       const userCred = await signInWithGoogle();
-      console.log('User:', userCred.user);
-      
       const token = await userCred.user.getIdToken();
-      
       await AsyncStorage.setItem(process.env.EXPO_PUBLIC_F_TOKEN!, token);
       runInAction(() => {this.setCreatedUser(userCred);});
-      console.log('uid', userCred.user.uid);
+      console.log('existingUserResponse:');
       const existingUserResponse = await apiClient.get(`/users/exists/${userCred.user.uid}`);
-      
-      console.log(existingUserResponse.status === 404)
-      if(existingUserResponse.status === 404){
+      console.log('existingUserResponse:', existingUserResponse);
+      if(existingUserResponse.status === 200){
+
+        isUserAlreadyRegistrated = true;
         await this.loadUserAfterSignIn();
+        console.log('User already registrated', isUserAlreadyRegistrated);
+
       }else{
         const userRegisterDTO : IUserRegister  = {
           email: userCred.user.email!,
           firebaseUid: userCred.user.uid,
           provider: 'google'
         };
-        console.log(userRegisterDTO)
+      
         const response = await apiClient.post('/users/register', userRegisterDTO);
         const registeredUser = response.data as IUser;
         runInAction(() => {
           this.setUser(registeredUser);
         });
+
       }
       isSuccessful = true;
       
       runInAction(() => {this.setLogged(true);});
-      return isSuccessful;
     } 
     catch (error) 
     {
@@ -400,7 +400,7 @@ class UserStore {
     finally 
     {
       this.setLoading(false);
-      return isSuccessful;
+      return [isUserAlreadyRegistrated, isSuccessful];
     }
   }
 
@@ -410,9 +410,12 @@ class UserStore {
       if (this.currentUser) 
       {
         // Обновление локального состояния
-        
         if(user.thumbnailUrl && this.currentUser?.email){
+
+          console.log('user thumbnailUrl:', user.thumbnailUrl);
           const thumUrl = await this.uploadUserThumbnailImage(new User({ ...this.currentUser, ...user }));
+          
+          console.log('thumbnailUrl:', thumUrl);
 
           runInAction(() => {
             this.currentUser.thumbnailUrl = thumUrl;
@@ -444,7 +447,6 @@ class UserStore {
           this.currentUser = new User({ ...this.currentUser, ...user });
         });
 
-        
         await apiClient.put('/users/updateOnbording', this.currentUser);
       }
     } catch (error) 
