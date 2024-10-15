@@ -23,7 +23,6 @@ const Onboarding = () => {
     }else {
       i18n.locale = 'ru';
     }
-    console.log('asdadadad');
   };
 
   const handleComplete = async (user: IUser) => {

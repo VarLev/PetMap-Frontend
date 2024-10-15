@@ -1,6 +1,6 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, SafeAreaView, Alert, Image, Pressable, BackHandler } from 'react-native';
+import { View, SafeAreaView, Image, Pressable, BackHandler } from 'react-native';
 import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
 import { Provider  } from 'react-native-paper';
@@ -71,7 +71,6 @@ const MapBoxMap = observer(() => {
   useEffect(() => {
     setUserCoordinates([-58.3816,-34.6037]);
     mapStore.setWalkAdvrts();
-   
   }, []);
   
   useEffect(() => {
@@ -390,8 +389,8 @@ const MapBoxMap = observer(() => {
           zoomEnabled={!isCardView}
           rotateEnabled={!isCardView}
         >
-          {/* <UserLocation minDisplacement={10} ref={userLocationRef} onUpdate={handleUserLocationUpdate} /> */}
-          <UserLocation minDisplacement={10} ref={userLocationRef}  />
+          <UserLocation minDisplacement={50} ref={userLocationRef} onUpdate={handleUserLocationUpdate} /> 
+          {/* <UserLocation minDisplacement={10} ref={userLocationRef}  /> */}
           <Camera
             ref={cameraRef}
             centerCoordinate={userCoordinates}
