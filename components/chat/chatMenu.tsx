@@ -7,7 +7,7 @@ import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 
 interface IChatMenuProps {
   chatId: string;
-  otherUserId: string;
+  otherUserId: string | undefined;
 }
 
 const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {

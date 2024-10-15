@@ -11,15 +11,12 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import ChatStore from "@/stores/ChatStore";
-import { Divider, Surface, IconButton, } from "react-native-paper";
+import { Divider, Surface, IconButton } from "react-native-paper";
 import ChatMenu from "@/components/chat/chatMenu";
 import EmptyChatScreen from "@/components/chat/EmptyChatScreen";
 
-
-
 const ChatListItem: React.FC<{
   item: (typeof ChatStore.chats)[0];
-  
 }> = ({ item }) => {
   const router = useRouter();
   const [lastMessage, setLastMessage] = useState<string | null>(null);
@@ -43,18 +40,15 @@ const ChatListItem: React.FC<{
     // открытие профиля собеседника тапая по аватару
   };
 
-  
-
   return (
-    <TouchableOpacity onPress={handleOpenChat} >
-        <View className="flex-row items-center justify-start gap-2 py-2 mt-4">
-        <IconButton icon="arrow-left" size={24}  />
-        <Text className="text-lg font-nunitoSansBold">Сообщения</Text>
-      </View>
- 
+    <TouchableOpacity onPress={handleOpenChat}>
       <View className="flex-row justify-between p-1 ml-4 items-center h-17 bg-gray-100 rounded-l-xl ">
         <View className="flex-row items-center">
-          <TouchableOpacity onPress={() => {handleOpenProfile()}}>
+          <TouchableOpacity
+            onPress={() => {
+              handleOpenProfile();
+            }}
+          >
             <Image
               source={{
                 uri: item?.thumbnailUrl ?? "https://i.pravatar.cc/200",
@@ -71,7 +65,7 @@ const ChatListItem: React.FC<{
             </Text>
           </View>
         </View>
-           <ChatMenu chatId={item?.id} otherUserId={item.otherUserId} />
+        <ChatMenu chatId={item?.id} otherUserId={item.otherUserId} />
       </View>
       <Divider bold className="bg-gray-400" />
     </TouchableOpacity>
@@ -123,26 +117,27 @@ const ChatListScreen: React.FC = observer(() => {
   }
 
   return (
-    <>  
-  {ChatStore.chats.length === 0 && <EmptyChatScreen />}
-    <View className="h-full">
-
-      <FlatList
-        data={ChatStore.chats}
-        renderItem={({ item }) => (
-          <ChatListItem item={item}  />
-        )}
-        keyExtractor={(item) => item.id}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={onRefresh}
-            colors={["#6200ee"]}
-          />
-        }
-      />
-      <Surface elevation={5} className="h-24 bg-white" children={undefined} />
-    </View>
+    <>
+      {ChatStore.chats.length === 0 && <EmptyChatScreen />}
+      <View className="h-full">
+        <View className="flex-row items-center justify-start gap-2 p-2 mt-4">
+          <IconButton icon="arrow-left" size={24} />
+          <Text className="text-lg font-nunitoSansBold pb-1">Сообщения</Text>
+        </View>
+        <FlatList
+          data={ChatStore.chats}
+          renderItem={({ item }) => <ChatListItem item={item} />}
+          keyExtractor={(item) => item.id}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={onRefresh}
+              colors={["#6200ee"]}
+            />
+          }
+        />
+        <Surface elevation={5} className="h-24 bg-white" children={undefined} />
+      </View>
     </>
   );
 });
