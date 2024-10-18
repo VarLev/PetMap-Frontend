@@ -19,6 +19,7 @@ import { handleAxiosError } from '@/utils/axiosUtils';
 import { PARK_IMAGE } from '@/constants/Strings';
 import { IPagedPointDangerDTO } from '@/dtos/Interfaces/map/paged/IPagedPointDangerDTO';
 import { IPagetPointUserDTO } from '@/dtos/Interfaces/map/paged/IPagetPointUserDTO';
+import { ReviewDTO } from '@/dtos/classes/review/Review';
 
 class MapStore {
   address = '';
@@ -533,6 +534,35 @@ class MapStore {
       return await getDownloadURL(storageRef);
     }
   };
+
+  async addReview(review: ReviewDTO) {
+    try {
+    await apiClient.post('map/add-point-review', review);
+      
+    } catch (error) {
+      if (axios.isAxiosError(error)) 
+      {
+        // Подробная информация об ошибке Axios
+        console.error('Axios error:', {
+            message: error.message,
+            name: error.name,
+            code: error.code,
+            config: error.config,
+            response: error.response ? {
+                data: error.response.data.errors,
+                status: error.response.status,
+                headers: error.response.headers,
+            } : null
+        });
+      } 
+      else {
+        // Общая информация об ошибке
+        console.error('Error:', error);
+      }
+      throw error;
+    }
+  }
+
 }
 
 const mapStore = new MapStore();

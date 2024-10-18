@@ -8,6 +8,8 @@ import mapStore from '@/stores/MapStore';
 import { IPointEntityDTO } from '@/dtos/Interfaces/map/IPointEntityDTO';
 import { getTagsByIndex } from '@/utils/utils';
 import SkeletonCard from '@/components/custom/cards/SkeletonCard';
+import ReviewSection from '@/components/review/ReviewSection';
+import { ReviewDTO } from '@/dtos/classes/review/Review';
 
 interface CompositeFormProps {
   mapPoint: IPointEntityDTO;
@@ -58,6 +60,13 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
     });
   };
 
+  const  handleSubmitReview = async (review: ReviewDTO) => {
+    review.pointId = mapPoint.id;
+    console.log(review);
+    await mapStore.addReview(review);
+
+  }
+
   if (loading) {
     return (
       <View className='px-4'>
@@ -94,6 +103,15 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
           <CustomTagsSelector tags={AMENITIES_TAGS} initialSelectedTags={pointData.amenities!} readonlyMode visibleTagsCount={10} />
         </View>
       </View>
+      <ReviewSection 
+        onSubmitReview={handleSubmitReview}
+        fetchReviews={async () => {
+          console.log('Fetch reviews');
+          return []; // Return an empty array to match the expected type
+        }}
+        reviews={[]}
+        totalPages={1}
+      />
       <View className="h-24" />
     </View>
   );

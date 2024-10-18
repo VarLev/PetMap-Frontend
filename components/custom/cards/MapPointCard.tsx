@@ -12,6 +12,7 @@ import CustomButtonOutlined from '../buttons/CustomButtonOutlined';
 import { PARK_IMAGE } from '@/constants/Strings';
 import { MapPointType } from '@/dtos/enum/MapPointType';
 
+
 interface MapPointDangerCardProps {
   mapPoint: IPointEntityDTO;
   onDetailPress: (id: string, mapPointType: MapPointType) => void;
@@ -91,6 +92,7 @@ const MapPointCard: React.FC<MapPointDangerCardProps> = ({ mapPoint, onDetailPre
         <CustomButtonPrimary title='Открыть на карте' containerStyles='w-1/2' handlePress={handleOpenMap}/>
         <CustomButtonOutlined title='Подробно' containerStyles='w-1/2' handlePress={handleDetailPress}/>
       </View>
+      
 
     </Card>
   );
