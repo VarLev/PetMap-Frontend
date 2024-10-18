@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white', // Цвет ручки (если используется)
     borderTopLeftRadius: 80,
     borderTopRightRadius: 80,
+    
   },
 });
 

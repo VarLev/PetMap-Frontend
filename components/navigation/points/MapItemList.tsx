@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { FlatList, ActivityIndicator, View } from 'react-native';
 import AdvrtCard from '@/components/custom/cards/AdvrtCard';
 import MapPointDangerCard from '@/components/custom/cards/MapPointDangerCard';
@@ -7,14 +7,18 @@ import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
 import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
 import mapStore from '@/stores/MapStore';
 import SkeletonCard from '@/components/custom/cards/SkeletonCard';
-import userStore from '@/stores/UserStore';
-
+import { LinearGradient } from 'expo-linear-gradient';
+import uiStore from '@/stores/UIStore';
+import { IPointEntityDTO } from '@/dtos/Interfaces/map/IPointEntityDTO';
+import MapPointCard from '@/components/custom/cards/MapPointCard';
+import BottomSheetComponent from '@/components/common/BottomSheetComponent';
+import BottomSheet from '@gorhom/bottom-sheet';
+import ViewDangerPoint from '@/components/map/point/ViewDangerPoint';
+import ViewUserPoint from '@/components/map/point/ViewUserPoint';
 
 interface AdvrtsListProps {
   renderType: MapPointType;
 }
-
-
 
 const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
   const [points, setPoints] = useState<IWalkAdvrtShortDto[] | IPointDangerDTO[]>([]);
@@ -22,6 +26,9 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [hasMoreData, setHasMoreData] = useState<boolean>(true);
+  const sheetRef = useRef<BottomSheet>(null);
+  const [renderContent, setRenderContent] = useState<ReactNode>(() => null);
+  const [isSheetVisible, setIsSheetVisible] = useState(uiStore.getIsBottomTableViewSheetOpen());
 
   const pageSize = 20; // Количество объявлений на странице
 
@@ -86,14 +93,41 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
     return <ActivityIndicator className="h-32" size="large" />;
   };
 
+  const handleSheetClose = async () => {
+    await sheetRef.current?.close();
+    setIsSheetVisible(false);
+  };
+
+  const handleSheetOpen = async (id:string, mapPointType: MapPointType) => {
+    console.log('Detail press', id);
+    const point = await mapStore.getMapPointById(id, mapPointType);
+    if(mapPointType === MapPointType.Danger){
+      const pointDanger = point as IPointDangerDTO;
+      setRenderContent(() => (
+        <ViewDangerPoint mapPoint={pointDanger} />
+      ));
+    }
+    else {
+      const pointUser = point as IPointEntityDTO;
+      setRenderContent(() => (
+        <ViewUserPoint mapPoint={pointUser} />
+      ));
+    }
+
+    setIsSheetVisible(true);
+    await sheetRef.current?.snapToIndex(0);
+  }
+
   // Рендеринг элемента списка в зависимости от типа
   const renderItem = useCallback(
-    ({ item }: { item: IWalkAdvrtShortDto | IPointDangerDTO }) => {
+    ({ item }: { item: IWalkAdvrtShortDto | IPointDangerDTO | IPointEntityDTO}) => {
       switch (renderType) {
         case MapPointType.Walk:
           return <AdvrtCard ad={item as IWalkAdvrtShortDto} />;
         case MapPointType.Danger:
           return <MapPointDangerCard mapPointDanger={item as IPointDangerDTO} />;
+        case MapPointType.Park:
+          return <MapPointCard mapPoint={item as IPointEntityDTO} onDetailPress={handleSheetOpen}  />;
         default:
           return null;
       }
@@ -107,25 +141,28 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
       data={[...Array(5).keys()]} // Создаём 5 элементов для отображения скелетона
       keyExtractor={(item) => item.toString()}
       renderItem={() => (
- 
-          <View className="items-center ">
-            
-            <SkeletonCard/> 
-          
-          </View>
-      
+        <View className="items-center ">
+          <SkeletonCard/> 
+        </View>
       )}
     />
   );
 
+
+
   return (
-    <View className="pt-14">
+    <View className="flex-1">
+      <LinearGradient
+        colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0)']}
+        className={`absolute top-0 left-0 right-0 ${uiStore.getIsPointSearchFilterTagSelected() ? 'h-14':'h-32'} z-10`}
+      />
       {isLoading && page === 1 ? (
         // Показываем скелетоны только если загружается первая страница
         renderSkeletons()
       ) : (
         <FlatList
           data={points}
+          ListHeaderComponent={<View className={`${uiStore.getIsPointSearchFilterTagSelected() ? 'h-16':'h-28'}`} />}
           keyExtractor={(_, index) => index.toString()}
           renderItem={renderItem}
           initialNumToRender={10} // Количество элементов для рендеринга при старте
@@ -138,6 +175,14 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
           ListFooterComponent={renderFooter}
         />
       )}
+     {isSheetVisible && ( <BottomSheetComponent
+            ref={sheetRef}
+            snapPoints={['85%']}
+            renderContent={() => renderContent}
+            onClose={handleSheetClose} 
+            enablePanDownToClose={true}
+            initialIndex={0}
+          />)}
     </View>
   );
 };

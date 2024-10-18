@@ -6,6 +6,8 @@ import CustomBudgeButton from '../buttons/CustomBudgeButton';
 import { MapPointType } from '@/dtos/enum/MapPointType';
 import IconSelectorComponent from '../icons/IconSelectorComponent';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import uiStore from '@/stores/UIStore';
+
  // Предполагаем, что кастомная кнопка находится в этом файле
 
 interface SearchAndTagsProps {
@@ -35,11 +37,13 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
     setSelectedTag(name);
     setIsTagSelected(true);
     onTagSelected(type);
+    uiStore.setIsPointSearchFilterTagSelected(true);
   }
 
   const handleClearTag = () => {
     setSelectedTag('');
     setIsTagSelected(false);
+    uiStore.setIsPointSearchFilterTagSelected(false);
   }
 
   const hadleOpenCardView =() => {
@@ -52,12 +56,11 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
     <View style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex:1}}>
       <View className='flex-row w-full pt-3 px-3 justify-center items-center'>
         <Searchbar
-          placeholder="Search"
+          
           onChangeText={onSearchTextChange}
           value={selectedTag}
           onClearIconPress={handleClearTag}
           elevation={1}
-          
           style={{ backgroundColor: 'white'}}
           inputStyle={{ color: 'black', fontFamily: 'NunitoSans_400Regular', padding: -10}}
           className='flex-1 h-12'

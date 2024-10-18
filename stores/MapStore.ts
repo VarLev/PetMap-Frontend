@@ -16,6 +16,9 @@ import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
 import { IUserAdvrt } from '@/dtos/Interfaces/user/IUserAdvrt';
 import { IPagedAdvrtDto } from '@/dtos/Interfaces/advrt/IPagedAdvrtDto';
 import { handleAxiosError } from '@/utils/axiosUtils';
+import { PARK_IMAGE } from '@/constants/Strings';
+import { IPagedPointDangerDTO } from '@/dtos/Interfaces/map/paged/IPagedPointDangerDTO';
+import { IPagetPointUserDTO } from '@/dtos/Interfaces/map/paged/IPagetPointUserDTO';
 
 class MapStore {
   address = '';
@@ -33,13 +36,15 @@ class MapStore {
   currentUserCoordinates: [number, number] = [0,0];
   
   isAvaliableToCreateWalk = true; // Переменная для проверки возможности создания прогулки
-
+  
   marker: [number, number] | null = null;
   selectedFeature: GeoJSON.Feature<GeoJSON.Point> | null = null;
 
   constructor() {
     makeAutoObservable(this);
   }
+
+  
 
   setAddress(address: string) {
     this.address = address;
@@ -332,11 +337,10 @@ class MapStore {
     }
   }
 
-  async getPagenatedPointItems(type: MapPointType,page: number, pageSize: number): Promise<IPagedAdvrtDto> {
+  async getPagenatedPointItems(type: MapPointType,page: number, pageSize: number): Promise<IPagedAdvrtDto | IPagedPointDangerDTO | IPagetPointUserDTO> {
     try {
       const response = await apiClient.get(`map/get-points-paginated?type=${type}&page=${page}&pageSize=${pageSize}`);
-  
-      return response.data as IPagedAdvrtDto;
+      return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) 
       {
@@ -518,6 +522,17 @@ class MapStore {
       return handleAxiosError(error);
     }
   }
+
+  async fetchPointImageUrl(path:string) {
+    try {
+      const storageRef = ref(storage, `${path}`);
+      const downloadURL = await getDownloadURL(storageRef);
+      return downloadURL;
+    } catch {
+      const storageRef = ref(storage, `${PARK_IMAGE}`);
+      return await getDownloadURL(storageRef);
+    }
+  };
 }
 
 const mapStore = new MapStore();

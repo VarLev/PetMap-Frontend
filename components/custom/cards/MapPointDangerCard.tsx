@@ -29,29 +29,30 @@ const MapPointDangerCard: React.FC<MapPointDangerCardProps> = ({ mapPointDanger 
   };
 
   return (
-    <Card className="p-2 mx-4 mt-5 -mb-2 bg-white rounded-2xl" elevation={5} >
+    <Card className="mx-4 mt-5 -mb-2 bg-white rounded-2xl" elevation={5} >
       {/* Информация о пользователе */}
-      <View className="flex-1 flex-row items-center justify-stretch">
-        <View className='-mt-3 -ml-2'>
+      <View className="flex-row items-center justify-stretch">
+        <View className=' '>
         <ImageModalViewer images={[{ uri: mapPointDanger.thumbnailUrl || 'https://placehold.it/100x100' }]} imageHeight={100} imageWidth={100} borderRadius={0} className_=' rounded-xl' />
 
         </View>
         
         {/* <Image source={{ uri: mapPointDanger.thumbnailUrl ||'https://placehold.it/100x100'}} className="w-20 h-20 " /> */}
-        <View className="-mt-2 ml-1 w-2/3">
+        <View className="-mt-2  w-2/3">
           <Text className="text-lg font-nunitoSansBold">Опасность</Text>
           <CustomTextComponent 
               text={getTagsByIndex(DANGERTYPE_TAGS,mapPointDanger.dangerType) } 
               leftIcon='alert-circle-outline' 
               iconSet='ionicons' 
-              className_='p-0'
+              className_='p-0 w-full'
+              maxLines={1}
             />
-            {mapPointDanger.description && <Text className="m-1 -mt-0.5 text-sm text-gray-800">{mapPointDanger.description}</Text>}
+            {mapPointDanger.description && <Text className="m-1  text-sm text-gray-800">{mapPointDanger.description}</Text>}
         </View>
       </View>
       {/* Детали объявления */}
-      <View className='w-full px-1'>
-        <CustomButtonPrimary title='Открыть в Google Maps' containerStyles='-mx-1' handlePress={handleOpenMap}/>
+      <View className='w-full px-2 pb-2'>
+        <CustomButtonPrimary title='Открыть в Google Maps' containerStyles='' handlePress={handleOpenMap}/>
       </View>
       
     </Card>

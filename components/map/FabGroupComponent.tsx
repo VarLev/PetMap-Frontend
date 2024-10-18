@@ -49,7 +49,7 @@ const FabGroupComponent: React.FC<FabGroupProps> = ({ selectedNumber, setSelecte
         visible={isVisible}
         icon={fabOpen ? 'close' : () => fabIcon} // Используем кастомную иконку или иконку "close" при открытии
         color='white'
-        backdropColor='rgba(47, 30, 150, 0.9)'
+        backdropColor='rgba(0, 0, 0, 0.7)'
         fabStyle={{
           backgroundColor: '#2F00B6',
           borderColor: 'white',

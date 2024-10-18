@@ -16,9 +16,10 @@ import mapStore from '@/stores/MapStore';
 
 interface FilterComponentProps {
   onFilterChange: (count: number) => void;  // Пропс для передачи количества измененных полей
+  onFilterApply: () => void;  // Пропс для передачи фильтра
 }
 
-const FilterComponent:React.FC<FilterComponentProps> = observer(({ onFilterChange }) => {
+const FilterComponent:React.FC<FilterComponentProps> = observer(({ onFilterChange, onFilterApply }) => {
   const [filter, setFilter] = useState<WalkAdvrtFilterParams>(new WalkAdvrtFilterParams());
   const [temperament, setTemperament] = useState(0);
   const [friendly, setFriendly] = useState(0);
@@ -71,6 +72,7 @@ const FilterComponent:React.FC<FilterComponentProps> = observer(({ onFilterChang
     filter.latitude = mapStore.currentUserCoordinates[0];
     filter.longitude = mapStore.currentUserCoordinates[1];
     await mapStore.getFilteredWalks(filter);
+    onFilterApply();
   }
 
   const handleResetFilter = () => {

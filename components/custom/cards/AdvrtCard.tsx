@@ -10,6 +10,8 @@ import { BREEDS_TAGS, PET_IMAGE } from '@/constants/Strings';
 import { calculateDistance, convertDistance, getTagsByIndex } from '@/utils/utils';
 import ImageModalViewer from '@/components/common/ImageModalViewer';
 import mapStore from '@/stores/MapStore';
+import { router } from 'expo-router';
+import uiStore from '@/stores/UIStore';
 
 interface AdCardProps {
   ad: IWalkAdvrtShortDto;
@@ -18,6 +20,7 @@ interface AdCardProps {
 const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
   const [petImage, setPetImage] = React.useState<string>();
   const [distance, setDistance] = React.useState(0);
+  const [userIsOwner, setUserIsOwner] = React.useState(false);
   
   useEffect(() => {
     getPetImage().then((url) => setPetImage(url));
@@ -28,7 +31,14 @@ const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
       mapStore.currentUserCoordinates[1]
     );
     setDistance(dist);
-    console.log(ad.latitude, ad.longitude);
+  
+    // Проверка, является ли пользователь владельцем объявления
+    if (ad.userId === userStore.currentUser?.id) {
+      setUserIsOwner(true);
+    }else{
+      setUserIsOwner(false);
+    }
+
   }, [ad.latitude, ad.longitude]);
 
   const getPetImage = async () : Promise<string> => {
@@ -36,23 +46,43 @@ const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
     return petImage || 'https://placehold.it/100x100';
   }
 
+  const handleUserProfileOpen = () => {
+    console.log("userIsOwner", userIsOwner);
+    console.log("ad.userId", ad.userId);
+    if (userIsOwner) {
+      console.log("userIsOwner", userIsOwner);
+      router.push("/profile");
+    } else {
+      console.log("userIsOwner", userIsOwner);
+      router.push(`/(tabs)/profile/${ad.userId}`);
+    }
+    uiStore.setIsBottomTableViewSheetOpen(false);
+  };
+
   return (
-    <Card className="p-2 mx-4 mt-5 -mb-2 bg-white rounded-2xl" elevation={5} >
+    <Card className="p-2 mx-3 mt-2 bg-white rounded-2xl" elevation={1} >
       {/* Информация о пользователе */}
       <View className="flex-row items-start">
         <Image source={{ uri: ad.userPhoto }} className="w-20 h-20 rounded-xl" />
         {ad.userPets && ad.userPets.length > 0 && (
           <View className="absolute top-8 left-8 rounded-full ">
             <ImageModalViewer images={[{ uri: ad.userPets[0].thumbnailUrl || petImage || 'https://placehold.it/100x100' }]} imageHeight={60} imageWidth={60} borderRadius={4} className_='rounded-full' />
-            
           </View>
-          
         )}
        
-        <View className="ml-8 w-full">
-          <Text className="-ml-4 text-lg font-nunitoSansBold">{ad.userName}</Text>
-          <CustomTextComponent 
-              text={ad.date ? new Date(ad.date).toLocaleTimeString() : 'Дата не указана'} 
+        <View className="ml-8 w-full flex-1">
+            <Text className="-ml-4 text-lg font-nunitoSansBold" 
+              numberOfLines={1} 
+              ellipsizeMode="tail"
+              style={{ flexShrink: 1 }}>
+                {ad.userName}
+            </Text>
+            <CustomTextComponent 
+              text={ad.date  ? new Date(ad.date).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "Дата не указана"} 
               leftIcon='time-outline' 
               iconSet='ionicons' 
               className_='p-0'
@@ -68,17 +98,24 @@ const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
                 text={`${ad.userPets[0].petName}, ${getTagsByIndex(BREEDS_TAGS, ad.userPets[0].breed!) }`} 
                 leftIcon='paw-outline' 
                 iconSet='ionicons' 
+                maxLines={1}
                 className_='p-0 pt-1'
               />)
             }
         </View>
       </View>
-
       {/* Детали объявления */}
-      {ad.description && <Text className="m-2 text-sm text-gray-800">{ad.description}</Text>}
-      <View className='flex-row w-full justify-between px-1'>
-        <CustomButtonPrimary title='Пригласить' containerStyles='w-1/2 -mx-1'/>
-        <CustomButtonOutlined title='Профиль' containerStyles='w-1/2 -mx-1'/>
+      {ad.description && 
+      <Text className="mt-1 text-xs text-gray-800"
+        numberOfLines={2} 
+        ellipsizeMode="tail"
+        style={{ flexShrink: 1 }}
+        >
+          {ad.description}
+      </Text>}
+      <View className='flex-row w-full justify-between'>
+        <CustomButtonPrimary title='Пригласить' containerStyles='w-1/2'/>
+        <CustomButtonOutlined title='Профиль' containerStyles='w-1/2' handlePress={handleUserProfileOpen}/>
       </View>
       
     </Card>
