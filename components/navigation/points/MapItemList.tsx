@@ -27,7 +27,7 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [hasMoreData, setHasMoreData] = useState<boolean>(true);
   const sheetRef = useRef<BottomSheet>(null);
-  const [renderContent, setRenderContent] = useState<ReactNode>(() => null);
+  const [renderContent, setRenderContent] = useState<React.ReactElement | null>(null);
   const [isSheetVisible, setIsSheetVisible] = useState(uiStore.getIsBottomTableViewSheetOpen());
 
   const pageSize = 20; // Количество объявлений на странице
@@ -178,7 +178,7 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
      {isSheetVisible && ( <BottomSheetComponent
             ref={sheetRef}
             snapPoints={['85%']}
-            renderContent={() => renderContent}
+            renderContent={renderContent}
             onClose={handleSheetClose} 
             enablePanDownToClose={true}
             initialIndex={0}

@@ -4,30 +4,33 @@ import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 
 interface BottomSheetComponentProps {
   snapPoints: (number | string)[];
-  renderContent: () => React.ReactNode;
+  renderContent: React.ReactElement | null;
   onClose?: () => void;
-  enablePanDownToClose: boolean; 
-  initialIndex?: number; // Добавляем пропс для начальной позиции снапшота
+  enablePanDownToClose: boolean;
+  initialIndex?: number;
 }
 
 const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
-  ({ snapPoints, renderContent, onClose, enablePanDownToClose, initialIndex = 0 }, ref) => {
+  (
+    { snapPoints, renderContent, onClose, enablePanDownToClose, initialIndex = 0 },
+    ref
+  ) => {
     return (
       <BottomSheet
         ref={ref}
         snapPoints={snapPoints}
-        index={initialIndex} // Устанавливаем начальную позицию снапшота
+        index={initialIndex}
         enablePanDownToClose={enablePanDownToClose}
         onClose={onClose}
         backgroundStyle={styles.backgroundStyle}
         handleStyle={styles.handleStyle}
       >
         <BottomSheetFlatList
-          showsHorizontalScrollIndicator={true} 
-          initialNumToRender={2} 
           data={[]}
+          keyExtractor={() => 'key'}
           renderItem={null}
           ListHeaderComponent={renderContent}
+          contentContainerStyle={styles.contentContainer}
         />
       </BottomSheet>
     );
@@ -45,10 +48,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
   },
   handleStyle: {
-    backgroundColor: 'white', // Цвет ручки (если используется)
+    backgroundColor: 'white',
     borderTopLeftRadius: 80,
     borderTopRightRadius: 80,
-    
+  },
+  contentContainer: {
+    paddingBottom: 16,
   },
 });
 

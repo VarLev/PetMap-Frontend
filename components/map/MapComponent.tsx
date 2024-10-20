@@ -271,9 +271,7 @@ const MapBoxMap = observer(() => {
     if(mapPoint.mapPointType === MapPointType.Danger){
       const pointDanger = mapPoint as IPointDangerDTO;
       
-      setRenderContent(() => (
-        <ViewDangerPoint mapPoint={pointDanger} />
-      ));
+      setRenderContent( <ViewDangerPoint mapPoint={pointDanger} />);
     }
     else {
       const pointUser = mapPoint as IPointEntityDTO;
@@ -537,7 +535,7 @@ const MapBoxMap = observer(() => {
           <BottomSheetComponent
             ref={sheetRef}
             snapPoints={['60%','100%']}
-            renderContent={() => renderContent}
+            renderContent={renderContent as any}
             onClose={handleSheetClose} // Обработчик для события закрытия BottomSheet
             enablePanDownToClose={true}
             initialIndex={0} // Начальная позиция - 60%
