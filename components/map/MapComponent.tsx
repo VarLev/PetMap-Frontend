@@ -370,9 +370,11 @@ const MapBoxMap = observer(() => {
   return (
     <Provider>
       <SafeAreaView style={{ flex: 1 }}>
-        <SlidingOverlay visible={isCardView}>      
+      {isCardView && (
+        <SlidingOverlay visible={isCardView}>
           <MapItemList renderType={currentPointType} />
         </SlidingOverlay>
+      )}
         <MapView 
           ref={mapRef} 
           style={{ flex: 1 }} 
