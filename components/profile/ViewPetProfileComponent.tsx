@@ -14,6 +14,7 @@ import { router } from 'expo-router';
 import petStore from '@/stores/PetStore';
 import { BREEDS_TAGS, DOGGAMES_TAGS, DOGVACCINATIONS_TAGS, PETGENDERS_TAGS, PETHEALTHISSUES_TAGS, petUriImage } from '@/constants/Strings';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
+import CircleIcon from '../custom/icons/CircleIcon';
 
 
 const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: () => void}) => {
@@ -83,89 +84,158 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
           </View>
         </View>
       </PaperProvider>
-      <BottomSheetComponent ref={sheetRef} enablePanDownToClose={false} snapPoints={['60%','100%']} renderContent={function (): React.ReactNode {
-        return ( 
-        <View className='bg-white h-full'>
-          <Text className='pl-5 text-2xl font-nunitoSansBold'>
-            {pet.petName} {calculateDogAge(pet.birthDate)} 
+      <BottomSheetComponent
+  ref={sheetRef}
+  enablePanDownToClose={false}
+  snapPoints={['60%', '100%']}
+  renderContent={
+    <View className="bg-white h-full">
+      <Text className="pl-5 text-2xl font-nunitoSansBold">
+        {pet.petName} {calculateDogAge(pet.birthDate)}
+      </Text>
+
+      <View className="pr-3 pl-4">
+        <View>
+          <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Основное</Text>
+          <CustomTextComponent
+            text="Собака"
+            rightIcon="chevron-right"
+            onRightIconPress={onEdit}
+            leftIcon="paw-outline"
+            iconSet="ionicons"
+          />
+          <CustomTextComponent
+            text={getTagsByIndex(PETGENDERS_TAGS, pet.gender!)}
+            rightIcon="chevron-right"
+            onRightIconPress={onEdit}
+            leftIcon="transgender-outline"
+            iconSet="ionicons"
+          />
+          <CustomTextComponent
+            text={getTagsByIndex(BREEDS_TAGS, pet.breed!)}
+            rightIcon="chevron-right"
+            onRightIconPress={onEdit}
+            leftIcon="dog"
+            iconSet="materialCommunity"
+          />
+          <CustomTextComponent
+            text={pet?.birthDate?.toLocaleDateString()}
+            rightIcon="chevron-right"
+            onRightIconPress={onEdit}
+            leftIcon="cake-variant-outline"
+            iconSet="materialCommunity"
+          />
+          <CustomTextComponent
+            text={`${pet.weight || ''} kg, ${pet.size} sm`}
+            rightIcon="chevron-right"
+            onRightIconPress={onEdit}
+            leftIcon="resize-outline"
+            iconSet="ionicons"
+          />
+          <Divider />
+        </View>
+
+        {/* Остальные секции */}
+        <View>
+          <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Здоровье</Text>
+          <Text className="pt-2 font-nunitoSansRegular text-gray-400 text-center">
+            We are working on a health passport for your pet, stay tuned for updates.
           </Text>
-          
-          <View className='pr-3 pl-4'>
-            <View >
-              <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Основное</Text>
-              <CustomTextComponent text="Собака"  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='paw-outline' iconSet='ionicons'/>
-              <CustomTextComponent text={getTagsByIndex(PETGENDERS_TAGS, pet.gender!)}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='transgender-outline' iconSet='ionicons'/>
-              <CustomTextComponent text={getTagsByIndex(BREEDS_TAGS, pet.breed!)}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='dog' iconSet='materialCommunity'/>
-              <CustomTextComponent text={pet?.birthDate?.toLocaleDateString()}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='cake-variant-outline' iconSet='materialCommunity'/>
-              <CustomTextComponent text={`${pet.weight|| ''} kg, ${pet.size} sm`}  rightIcon='chevron-right' onRightIconPress={onEdit} leftIcon='resize-outline' iconSet='ionicons'/>
-              <Divider />
-            </View>
-            <View >
-              <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Здоровье</Text>
-              <Text className='pt-2 font-nunitoSansRegular text-gray-400 text-center'>We are working on a health passport for your pet, stay tuned for updates.</Text>
-              <Text className='pt-4 -mb-1 text-sm font-nunitoSansBold text-indigo-700'>Особенности здоровья</Text>
-              <CustomTagsSelector 
-                tags={PETHEALTHISSUES_TAGS} 
-                initialSelectedTags={pet.petHealthIssues || []}
-                readonlyMode
-                visibleTagsCount={10}
-              />
-              <Text className='pt-4 -mb-1 text-sm font-nunitoSansBold text-indigo-700'>Вакцины</Text>
-              <CustomTagsSelector 
-                tags={DOGVACCINATIONS_TAGS} 
-                initialSelectedTags={pet.vaccinations || []}
-                readonlyMode
-                visibleTagsCount={10}
-              />
-              <Divider className='mt-3' />
-            </View>
-            <View className=''>
-              <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Показатели</Text>
-              
-              <View className='pt-2 flex-row justify-between'>              
-                <Text className='font-nunitoSansRegular text-base'>Темперамент</Text>
-                <StarRatingDisplay rating={pet.temperament?? 0} style={{}} starSize={25} color='#BFA8FF'/>
-              </View>
-              <View className='pt-2 flex-row justify-between'>              
-                <Text className='font-nunitoSansRegular text-base'>Дружелюбность</Text>
-                <StarRatingDisplay rating={pet.friendliness?? 0} style={{}} starSize={25} color='#BFA8FF'/>
-              </View>
-              <View className='pt-2 flex-row justify-between'>              
-                <Text className='font-nunitoSansRegular text-base'>Активность</Text>
-                <StarRatingDisplay rating={pet.activityLevel?? 0} starSize={25} color='#BFA8FF'/>
-              </View>
-              
-              <Divider className='mt-3' />
-            </View>
-            <View className=''>
-              <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Игровые предпочтения</Text>
-              <CustomTagsSelector 
-                tags={DOGGAMES_TAGS} 
-                initialSelectedTags={pet.playPreferences || []}
-                readonlyMode
-                visibleTagsCount={10}
-              />
-            
-              
-              <Divider className='mt-3' />
-            </View>
-            <View className=''>
-              <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>О питомце</Text>
-              <CustomTextComponent text={pet.additionalNotes}  rightIcon='chevron-right' onRightIconPress={onEdit}/>
-            
-              
-              <Divider className='mt-3' />
-            </View>
-            <View>
-              <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Социальные сети</Text>
-              <CustomSocialLinkInput text={pet.instagram!} leftIcon='instagram' iconSet='fontAwesome' rightIcon='chevron-right' onRightIconPress={onEdit} platform={'instagram'}/>
-              <CustomSocialLinkInput text={pet.facebook!} leftIcon='facebook' iconSet='fontAwesome' rightIcon='chevron-right' onRightIconPress={onEdit} platform={'facebook'} />
-              <Divider className='mt-3' />
-            </View>
+          <Text className="pt-4 -mb-1 text-sm font-nunitoSansBold text-indigo-700">Особенности здоровья</Text>
+          <CustomTagsSelector
+            tags={PETHEALTHISSUES_TAGS}
+            initialSelectedTags={pet.petHealthIssues || []}
+            readonlyMode
+            visibleTagsCount={10}
+          />
+          <Text className="pt-4 -mb-1 text-sm font-nunitoSansBold text-indigo-700">Вакцины</Text>
+          <CustomTagsSelector
+            tags={DOGVACCINATIONS_TAGS}
+            initialSelectedTags={pet.vaccinations || []}
+            readonlyMode
+            visibleTagsCount={10}
+          />
+          <Divider className="mt-3" />
+        </View>
+
+        {/* Показатели */}
+        <View>
+          <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Показатели</Text>
+          <View className="pt-2 flex-row justify-between">
+            <Text className="font-nunitoSansRegular text-base">Темперамент</Text>
+            <StarRatingDisplay
+              rating={pet.temperament ?? 0}
+              starSize={25}
+              color="#BFA8FF"
+              StarIconComponent={CircleIcon}
+            />
           </View>
-          <View className='h-28'/>
-        </View>)
-      } }/>
+          <View className="pt-2 flex-row justify-between">
+            <Text className="font-nunitoSansRegular text-base">Дружелюбность</Text>
+            <StarRatingDisplay
+              rating={pet.friendliness ?? 0}
+              starSize={25}
+              color="#BFA8FF"
+              StarIconComponent={CircleIcon}
+            />
+          </View>
+          <View className="pt-2 flex-row justify-between">
+            <Text className="font-nunitoSansRegular text-base">Активность</Text>
+            <StarRatingDisplay
+              rating={pet.activityLevel ?? 0}
+              starSize={25}
+              color="#BFA8FF"
+              StarIconComponent={CircleIcon}
+            />
+          </View>
+          <Divider className="mt-3" />
+        </View>
+
+        {/* Игровые предпочтения */}
+        <View>
+          <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Игровые предпочтения</Text>
+          <CustomTagsSelector
+            tags={DOGGAMES_TAGS}
+            initialSelectedTags={pet.playPreferences || []}
+            readonlyMode
+            visibleTagsCount={10}
+          />
+          <Divider className="mt-3" />
+        </View>
+
+        {/* О питомце */}
+        <View>
+          <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">О питомце</Text>
+          <CustomTextComponent text={pet.additionalNotes} rightIcon="chevron-right" onRightIconPress={onEdit} />
+          <Divider className="mt-3" />
+        </View>
+
+        {/* Социальные сети */}
+        <View>
+          <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Социальные сети</Text>
+          <CustomSocialLinkInput
+            text={pet.instagram!}
+            leftIcon="instagram"
+            iconSet="fontAwesome"
+            rightIcon="chevron-right"
+            onRightIconPress={onEdit}
+            platform="instagram"
+          />
+          <CustomSocialLinkInput
+            text={pet.facebook!}
+            leftIcon="facebook"
+            iconSet="fontAwesome"
+            rightIcon="chevron-right"
+            onRightIconPress={onEdit}
+            platform="facebook"
+          />
+          <Divider className="mt-3" />
+        </View>
+      </View>
+      <View className="h-28" />
+    </View>
+  }
+/>
     </GestureHandlerRootView>
   );
 });

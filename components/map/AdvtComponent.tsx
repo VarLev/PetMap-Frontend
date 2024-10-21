@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Image, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Button, Surface } from "react-native-paper";
@@ -21,6 +21,7 @@ import { BREEDS_TAGS, petUriImage } from "@/constants/Strings";
 import { IUserAdvrt } from "@/dtos/Interfaces/user/IUserAdvrt";
 import { WalkRequestStatus } from "@/dtos/enum/WalkRequestStatus";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
+import CircleIcon from "../custom/icons/CircleIcon";
 
 interface AdvtProps {
   advrt: IWalkAdvrtDto;
@@ -35,9 +36,9 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
     const [requestVisible, setRequestVisible] = React.useState(false);
     const [userIsOwner, setUserIsOwner] = React.useState(false);
     const [distance, setDistance] = React.useState(0);
+    const [showAllPets, setShowAllPets] = useState(false);
 
     useEffect(() => {
-      console.log("participants", participants);
       const fetchParticipants = async () => {
         if (advrt.id) {
           const users = await mapStore.getAllWalkParticipants(advrt.id);
@@ -46,18 +47,18 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
           setUserIsOwner(true);
         }
       };
+      const dist = calculateDistance(
+        advrt.latitude!,
+        advrt.longitude!,
+        mapStore.currentUserCoordinates[0],
+        mapStore.currentUserCoordinates[1]
+      );
+      setDistance(dist);
       if (advrt.userId === userStore.currentUser?.id) fetchParticipants();
       else {
-        const dist = calculateDistance(
-          advrt.latitude!,
-          advrt.longitude!,
-          mapStore.currentUserCoordinates[0],
-          mapStore.currentUserCoordinates[1]
-        );
-        console.log("distance", dist);
-        setDistance(dist);
+        
       }
-    }, []);
+    }, [advrt]);
 
     const handleInvite = async () => {
       setRequestVisible(true);
@@ -77,17 +78,14 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
     };
 
     const handleDelete = () => {
-      // Реализуйте удаление прогулки
       mapStore.deleteWalkAdvrt(advrt.id!);
       onClose();
     };
 
     const handleUserProfileOpen = (userId: string) => {
       if (userIsOwner) {
-        console.log("userIsOwner", userIsOwner);
         router.push("/profile");
       } else {
-        console.log("userIsOwner", userIsOwner);
         router.push(`/(tabs)/profile/${userId}`);
       }
       mapStore.setBottomSheetVisible(false);
@@ -108,7 +106,32 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
       mapStore.setBottomSheetVisible(false);
     };
 
-  
+    const renderWalkDetails = () => {
+      if (advrt.isRegular) {
+        if (advrt.selectedDays?.length === 7) {
+          //переделай startTime из number в время
+          if (advrt.startTime){
+            const hours = Math.floor(advrt.startTime / 60);
+            const minutes = advrt.startTime % 60;
+            return "Каждый день в " + (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes);
+          }
+          return "Каждый день";
+        } else {
+          return advrt.selectedDays?.map((day) =>
+            ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"][day]
+          ).join(", ") + " в "  + (advrt.startTime
+            ? new Date(advrt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            : "Время не указано");
+        }
+      } else {
+        return advrt.date
+        ? new Date(advrt.date).toLocaleDateString() +
+            (advrt.startTime
+              ? " в " + new Date(advrt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              : " Время не указано")
+        : "Дата не указана";
+      }
+    };
 
     return (
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="px-4">
@@ -122,10 +145,10 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                 source={{
                   uri: advrt?.userPhoto || "https://via.placeholder.com/100",
                 }}
-                className="w-32 h-32 rounded-2xl"
+                className="w-28 h-32 rounded-2xl"
               />
             </TouchableOpacity>
-            <View className="flex-1 ml-4 justify-between">
+            <View className="flex-1 ml-2 justify-between">
               <View className="flex-1 justify-center">
                 <Text className="w-full text-xl font-nunitoSansBold max-h-14">
                   {advrt.userName || "Owner"}
@@ -133,14 +156,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
               </View>
               <View className="flex-1 justify-center">
                 <CustomTextComponent
-                  text={
-                    advrt.date
-                      ? new Date(advrt.date).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : "Дата не указана"
-                  }
+                  text={renderWalkDetails()}
                   leftIcon="time-outline"
                   iconSet="ionicons"
                   className_="p-0"
@@ -160,15 +176,14 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                   (p) => p.id === userStore.currentUser?.id
                 ) ? (
                   <Button
-                    disabled
-                    mode="contained"
-                    className="mt-2 bg-gray-400"
-                    onPress={handleInvite}
-                  >
-                    <Text className="font-nunitoSansRegular text-white">
-                      Присоединиться
-                    </Text>
-                  </Button>
+                mode="contained"
+                className="mt-2 bg-indigo-800"
+                onPress={handleDelete}
+              >
+                <Text className="font-nunitoSansRegular text-white">
+                  Удалить прогулку
+                </Text>
+              </Button>
                 ) : (
                   <Button
                     mode="contained"
@@ -186,18 +201,17 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
 
           {userIsOwner && (
             <>
-              <Text className="text-sm text-gray-500 font-nunitoSansBold">
-                Учасники
+              <Text className="text-base text-indigo-800 font-nunitoSansBold">
+                Участники
               </Text>
               <View className="flex-row items-center">
-                {userIsOwner &&
-                  participants &&
+                {userIsOwner && participants && participants.length > 0 ? (
                   participants
                     .filter(
                       (p) =>
                         p.status === WalkRequestStatus.Pending ||
                         p.status === WalkRequestStatus.Approved
-                    ) // Фильтруем участников по статусу
+                    )
                     .map((p, index) => (
                       <TouchableOpacity
                         key={index}
@@ -214,24 +228,33 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                                 "https://via.placeholder.com/100",
                             }}
                             className="w-10 h-10 rounded-full"
-                            style={p.status === 0 ? { opacity: 0.5 } : {}} // Добавляем полупрозрачность для статуса 0
+                            style={p.status === WalkRequestStatus.Pending ? { opacity: 0.5 } : {}}
                           />
                           <Text className="text-xs text-gray-500 font-nunitoSansBold text-center">
                             {p?.name}
                           </Text>
                         </View>
                       </TouchableOpacity>
-                    ))}
+                    ))
+                ) : (
+                  <Text className="text-xs text-gray-400 font-nunitoSansRegular">
+                    Пока к вашей прогулке еще никто не присоединился
+                  </Text>
+                )}
               </View>
             </>
           )}
-
-          {pets &&
-            pets.map((pet, index) => (
+        <Text className="text-base pt-2 text-indigo-800 font-nunitoSansBold">    
+          Питомцы
+        </Text>
+         <View className="w-full pt-1 items-center">
+         
+         {pets && 
+            pets.slice(0, showAllPets ? pets.length : 2).map((pet, index) => (
               <Surface
                 key={index}
                 elevation={0}
-                className="mt-4 p-1 flex-row bg-purple-100 rounded-2xl"
+                className="mt-2 w-full flex-row bg-purple-100 rounded-2xl"
               >
                 <View className="p-1 flex-row ">
                   <TouchableOpacity
@@ -240,35 +263,22 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                   >
                     <Image
                       source={{ uri: pet?.thumbnailUrl || petUriImage }}
-                      className=" w-28 h-28 rounded-xl"
+                      className=" w-24 h-24 rounded-xl"
                     />
                   </TouchableOpacity>
                   <View className="ml-2">
                     <View className="flex-col items-start">
                       <View className="justify-center items-center flex-row">
                         <Ionicons name="male" size={18} color="indigo" />
-                        <Text className="pl-1 text-xl font-nunitoSansBold">
+                        <Text className="pl-1 text-lg font-nunitoSansBold">
                           {pet.petName || "Pet"},
                         </Text>
                       </View>
                       <Text className="text-sm -mt-1 font-nunitoSansRegular">
-                        {" "}
-                        {calculateDogAge(pet.birthDate)}{" "}
-                        {getTagsByIndex(BREEDS_TAGS, pet.breed!) || "Порода"}
+                        {calculateDogAge(pet.birthDate)} {getTagsByIndex(BREEDS_TAGS, pet.breed!) || "Порода"}
                       </Text>
                     </View>
-                    <View className="flex-col pt-1 ">
-                      <View className="flex-row justify-between items-center">
-                        <Text className="font-nunitoSansRegular text-sm">
-                          Темперамент
-                        </Text>
-                        <StarRatingDisplay
-                          rating={pet.temperament ?? 0}
-                          starSize={15}
-                          color="#BFA8FF"
-                          starStyle={{ marginHorizontal: 2 }}
-                        />
-                      </View>
+                    <View className="flex-col pt-0 ">
                       <View className="flex-row justify-between items-center">
                         <Text className="font-nunitoSansRegular text-sm">
                           Дружелюбность
@@ -277,7 +287,9 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                           rating={pet.friendliness ?? 0}
                           starSize={15}
                           color="#BFA8FF"
+                          maxStars={5}
                           starStyle={{ marginHorizontal: 2 }}
+                          StarIconComponent={CircleIcon}
                         />
                       </View>
                       <View className=" flex-row justify-between items-center">
@@ -289,35 +301,53 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                           starSize={15}
                           color="#BFA8FF"
                           starStyle={{ marginHorizontal: 2 }}
+                          StarIconComponent={CircleIcon}
                         />
                       </View>
                     </View>
                   </View>
                 </View>
               </Surface>
-            ))}
+            ))
+          }
 
-          <View className="max-h-28">
+          {pets && pets.length > 2 && !showAllPets && (
+            <Button onPress={() => setShowAllPets(true)} mode="text" >
+              <Text className="font-nunitoSansBold">
+               Показать всех
+              </Text>
+              
+            </Button>
+          )}
+
+          {showAllPets && (
+            <Button onPress={() => setShowAllPets(false)} mode="text" >
+              <Text className="font-nunitoSansBold">
+               Скрыть
+              </Text>
+            </Button>
+          )}
+         </View>
+          
+                
+          
+
+          <View >
             <ScrollView>
-              <Text className="mt-2 text-justify text-base text-gray-600">
+              <Text className="mt-2 text-justify text-base text-gray-600 font-nunitoSansRegular">
                 {advrt.description || "Описание"}
               </Text>
+              <Text className="mt-2 text-justify text-base text-indigo-800 font-nunitoSansBold">
+               Детали прогулки
+              </Text>
+              <CustomTextComponent text={advrt.address}  leftIcon='location-pin' iconSet="simpleLine"/>
+            
+              <CustomTextComponent text={renderWalkDetails()}  leftIcon='calendar-outline' iconSet="ionicons" /> 
+                
+               
+             
+            
             </ScrollView>
-          </View>
-          <View className="h-16 pt-2">
-            {userIsOwner ? (
-              <Button
-                mode="contained"
-                className="mt-2 bg-indigo-800"
-                onPress={handleDelete}
-              >
-                <Text className="font-nunitoSansRegular text-white">
-                  Удалить прогулку
-                </Text>
-              </Button>
-            ) : (
-              <View></View>
-            )}
           </View>
         </View>
         <CustomConfirmAlert

@@ -1,6 +1,8 @@
 import React, { forwardRef } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { Portal } from 'react-native-paper';
+
 
 interface BottomSheetComponentProps {
   snapPoints: (number | string)[];
@@ -8,14 +10,22 @@ interface BottomSheetComponentProps {
   onClose?: () => void;
   enablePanDownToClose: boolean;
   initialIndex?: number;
+  usePortal?: boolean; // Новый пропс для управления отображением через Portal
 }
 
 const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
   (
-    { snapPoints, renderContent, onClose, enablePanDownToClose, initialIndex = 0 },
+    {
+      snapPoints,
+      renderContent,
+      onClose,
+      enablePanDownToClose,
+      initialIndex = 0,
+      usePortal = false, // Значение по умолчанию - false
+    },
     ref
   ) => {
-    return (
+    const BottomSheetContent = (
       <BottomSheet
         ref={ref}
         snapPoints={snapPoints}
@@ -32,8 +42,11 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
           ListHeaderComponent={renderContent}
           contentContainerStyle={styles.contentContainer}
         />
+        <View className='h-20' />
       </BottomSheet>
     );
+
+    return usePortal ? <Portal>{BottomSheetContent}</Portal> : BottomSheetContent;
   }
 );
 

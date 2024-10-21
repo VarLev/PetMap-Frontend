@@ -539,7 +539,8 @@ const MapBoxMap = observer(() => {
             onClose={handleSheetClose} // Обработчик для события закрытия BottomSheet
             enablePanDownToClose={true}
             initialIndex={0} // Начальная позиция - 60%
-              // Добавляем обработчик изменения позиции
+            usePortal={true} // Используем Portal для отображения BottomSheet
+             
           />
         )}
         {!isSheetVisible && 
