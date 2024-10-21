@@ -5,9 +5,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const apiClient = axios.create({
   //baseURL: 'http://10.113.1.31:5142/api',
-  //baseURL: 'https://petmeetar-test.azurewebsites.net/api'
+  baseURL: 'https://petmeetar-test.azurewebsites.net/api'
   //baseURL: 'http://192.168.0.98:5142/api'
-  baseURL: 'http://192.168.1.17:5142/api'
+  //baseURL: 'http://192.168.1.17:5142/api'
   //baseURL: 'http://192.168.1.35:5142/api'
 });
 //baseURL: 'http://192.168.0.98:5142/api'
