@@ -1,10 +1,15 @@
+import React, { useEffect, useState } from "react";
 import { Text, View, Image } from "react-native";
-import { IconButton } from "react-native-paper";
+import { Divider, IconButton } from "react-native-paper";
 import { router } from "expo-router";
 import ChatStore from "@/stores/ChatStore";
+import userStore from "@/stores/UserStore";
+
+
 
 
 const ChatHeader = ({ item }) => {
+  const [time, setTime] = useState(Date.now());
 
  const getChatData = () => {
         return item ? ChatStore.chats.find((chat) => chat.id === item) : null;
@@ -12,16 +17,56 @@ const ChatHeader = ({ item }) => {
   
   const chatData = getChatData();
 
+  // const gender = userStore.currentUser?.gender
+  // console.log("gender", gender)
 
+  const userId = chatData?.otherUserId
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(Date.now());
+    }, 60000); // Каждую минуту
+
+    return () => clearInterval(interval); // Очищаем таймер при размонтировании
+  }, []);
+
+  const showLastSeenTime = (userId?: string) => {
+    if (userId) {
+      const lastSeen = ChatStore.lastSeen[userId];
+      if (lastSeen) {
+        const now = Date.now();
+        const diff = now - lastSeen;
+  
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  
+        if (minutes < 1) {
+          return 'менее минуты назад';
+        } else if (minutes <= 10) {
+          return `Был(а) ${minutes} ${minutes === 1 ? 'минуту' : minutes < 5 ? 'минуты' : 'минут'} назад`;
+        } else if (days > 0) {
+          const lastSeenDate = new Date(lastSeen);
+          return `Был(а) в ${lastSeenDate.getDate()}д ${lastSeenDate.getHours()}ч ${lastSeenDate.getMinutes()}м `;
+        } else {
+          const lastSeenDate = new Date(lastSeen);
+          return `Был(а) в ${lastSeenDate.getHours()}ч ${lastSeenDate.getMinutes()}м`;
+        }
+      }
+      return 'Был(а): Неизвестно';
+    } else {
+      console.warn("User ID is undefined, cannot retrieve lastSeen");
+      return '';
+    }
+  };
+  
   const handleBack = () => {
     router.back(); 
   };
 
   return (
     <> 
-    
-      <View className="flex-row items-center justify-start gap-2 py-2">
+          <View className="flex-row items-center justify-start gap-2 py-2 shadow-md">
         <IconButton icon="arrow-left" size={24} onPress={handleBack} />
         <Image
           source={{
@@ -31,10 +76,11 @@ const ChatHeader = ({ item }) => {
         />
         <View>
         <Text className="text-lg font-nunitoSansBold">{chatData?.otherUserName}</Text>
-        <Text className="text-[13px] font-nunitoSansRegular text-[#87878A]">был(а) в 22:01</Text>
+        <Text className="text-[13px] font-nunitoSansRegular text-[#87878A]">{showLastSeenTime(userId)}</Text>
         </View>
    
       </View>
+        <Divider className="w-full" style={{elevation: 2}} />
     </>
   );
 };

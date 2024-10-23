@@ -24,6 +24,7 @@ interface Chat {
   otherUserId?: string;
   lastMessage: string;
   participants: { [key: string]: boolean };
+  lastSeen?: number;
 }
 
 interface Message {
@@ -37,6 +38,7 @@ class ChatStore {
   chats: Chat[] = [];
   messages: MessageType.Any[] = [];
   lastMessage: { [key: string]: string } = {};
+  lastSeen: { [key: string]: number } = {};
 
   constructor() {
     makeAutoObservable(this);
@@ -66,6 +68,7 @@ class ChatStore {
           chatsList.push({
             id: chatId,
             lastMessage: chatData.lastMessage,
+            // lastSeen: chatData.lastSeen,
             participants: chatData.participants,
             otherUserName: otherUserName,
             otherUserId: otherUserId,
@@ -109,6 +112,7 @@ class ChatStore {
     const newUserData1 = {
       name: userStore.currentUser?.name,
       avatar: userStore.currentUser?.thumbnailUrl,
+      lastSeen: Date.now(),
     };
     const newUserData2 = {
       name: otherUser?.name,
@@ -134,6 +138,7 @@ class ChatStore {
           this.chats.push({
             id: chatId,
             lastMessage: newChatData.lastMessage,
+
             participants: newChatData.participants,
             otherUserName: otherUser?.name!,
             thumbnailUrl: otherUser?.thumbnailUrl!,
@@ -209,27 +214,38 @@ class ChatStore {
       type: "text",
     };
 
-    push(ref(database, `messages/${chatId}`), textMessage)
-      .then(() => console.log("Message sent:", textMessage))
-      .catch((error) => console.error("Error sending message:", error));
-    console.log("MMMMMessage sent:", textMessage);
+    try {
+      // Отправляем сообщение
+      await push(ref(database, `messages/${chatId}`), textMessage);
+      console.log("Message sent:", textMessage);
 
-    // Обновляем последнее сообщение в чате Sergio
-    update(ref(database, `chats/${chatId}`), {
-      lastMessage: text,
-    });
+      // Обновляем последнее сообщение в чате
+      await update(ref(database, `chats/${chatId}`), {
+        lastMessage: text,
+      });
+      await update(ref(database, `users/${userId}`), {
+        lastSeen: Date.now(),
+      });
 
-    if (recipientExpoPushToken) {
-      await sendPushNotification(
-        recipientExpoPushToken,
-        "Новое сообщение",
-        text,
-        { chatId }
-      );
+      // Отправляем push-уведомление, если есть токен получателя
+      if (recipientExpoPushToken) {
+        await sendPushNotification(
+          recipientExpoPushToken,
+          "Новое сообщение",
+          text,
+          { chatId }
+        );
+      }
+
+      // Обновляем локальное состояние lastMessage и lastSeen в chatStore
+      runInAction(() => {
+        chatStore.lastMessage[chatId] = text;
+        chatStore.lastSeen[userId] = Date.now();
+        console.log("lastSeen from chatStore:", chatStore.lastMessage[chatId]);
+      });
+    } catch (error) {
+      console.error("Error during sendMessage:", error);
     }
-    runInAction(() => {
-      this.lastMessage[chatId] = text;
-    });
   }
 
   fetchMessages(chatId: string) {
@@ -346,7 +362,6 @@ class ChatStore {
         console.error("ID пользователя для разблокировки не найдено");
         return;
       }
-
       // Текущий пользователь разблокирует другого пользователя
       await remove(ref(database, `/blacklist/${userId}/${blockUserId}`));
     } catch (error) {
@@ -378,7 +393,6 @@ class ChatStore {
         );
         return false;
       }
-
       // Проверяем, заблокировал ли другой пользователь текущего пользователя
       const data = ref(database, `/blacklist/${blockUserId}/${userId}`);
       const snapshot = await get(data);

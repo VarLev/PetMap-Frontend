@@ -201,3 +201,27 @@ export function convertDistance(distance: number | null): string {
     return `${kilometers} km ${meters > 0 ? meters + " m" : ""}`.trim();
   }
 }
+export function correctTimeNaming (diffHours: number, diffMinutes: number) {
+   let hoursText = "";
+   let minutesText = "";
+ 
+   // Определение правильного названия для часов
+   if (diffHours === 1) {
+     hoursText = `${diffHours} час`;
+   } else if (diffHours >= 2 && diffHours <= 4) {
+     hoursText = `${diffHours} часа`;
+   } else {
+     hoursText = `${diffHours} часов`;
+   }
+ 
+   // Определение правильного названия для минут
+   if (diffMinutes === 1) {
+     minutesText = `${diffMinutes} минута`;
+   } else if (diffMinutes >= 2 && diffMinutes <= 4) {
+     minutesText = `${diffMinutes} минуты`;
+   } else {
+     minutesText = `${diffMinutes} минут`;
+   }
+ 
+   return `Через ${hoursText} ${minutesText}`;
+ };

@@ -44,6 +44,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
           setParticipants(users);
           advrt.participants = users;
           setUserIsOwner(true);
+          mapStore.currentWalkDate = advrt.date;  // Сохраняем дату прогулки
         }
       };
       if (advrt.userId === userStore.currentUser?.id) fetchParticipants();
@@ -55,6 +56,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
           mapStore.currentUserCoordinates[1]
         );
         console.log("distance", dist);
+     
         setDistance(dist);
       }
     }, []);

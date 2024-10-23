@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { View, Image, Text, TouchableOpacity } from "react-native";
 import { Button, Chip, Divider, Surface } from "react-native-paper";
 import { useRouter } from "expo-router";
@@ -6,33 +6,79 @@ import { MessageType } from "@flyerhq/react-native-chat-ui";
 import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
 import mapStore from "@/stores/MapStore";
 import { StarRatingDisplay } from "react-native-star-rating-widget";
-
 import { Ionicons } from "@expo/vector-icons";
 import { calculateDogAge, getTagsByIndex } from "@/utils/utils";
 import { BREEDS_TAGS, petUriImage } from "@/constants/Strings";
 import CustomTextComponent from "../custom/text/CustomTextComponent";
+import { calculateDistance, convertDistance, correctTimeNaming } from "@/utils/utils";
+
 interface AdvtProps {
-  item: IWalkAdvrtDto;
+  item?: IWalkAdvrtDto[];
   message: MessageType.Custom;
+  latitude?: IWalkAdvrtDto;
+  longitude?: IWalkAdvrtDto;
 }
 
-const CustomMessageComponent = ({
-  message,
-}: {
-  message: MessageType.Custom;
-}) => {
-  const [userIsOwner, setUserIsOwner] = React.useState(false);
+const CustomMessageComponent = ({ message }: AdvtProps) => {
+  const [userIsOwner, setUserIsOwner] = useState(false);
+  const [diffHours, setDiffHours] = useState<number | null>(null);
+  const [diffMinutes, setDiffMinutes] = useState<number | null>(null);
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+
   const router = useRouter();
 
-  const item = mapStore.walkAdvrts;
-
-  console.log("message", message.author.id);
-
   const userIdFromMessage = message.metadata?.userId;
+  const item = mapStore.walkAdvrts;
+  // console.log("item", item);
 
   const matchedItem = item.find((advrt) => advrt.userId === userIdFromMessage);
-
   const pets = matchedItem?.userPets;
+  const timeToWalk: Date | undefined = matchedItem?.date
+    ? new Date(matchedItem.date)
+    : undefined;
+  // console.log("timeToWalk", timeToWalk);
+
+ 
+  // console.log("currentTime", currentTime);
+
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Обновляем каждую минуту
+
+    return () => clearInterval(timer); // Очищаем таймер при размонтировании компонента
+  }, []);
+
+  useEffect(() => {
+    if (timeToWalk) {
+      const currentTime: Date = new Date();
+      console.log("currentTime", currentTime);
+
+      // Вычисляем разницу во времени в миллисекундах
+      const diffMs = timeToWalk.getTime() - currentTime.getTime();
+
+      // Разделение на часы и минуты
+      // const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      let diffHours = Math.floor(
+        (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      let diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+      if (diffHours < 0) {
+        diffHours += 24;
+        diffMinutes += 60;
+      }
+      setDiffHours(diffHours + 24);
+      setDiffMinutes(diffMinutes + 60);
+      // const diffSeconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+      setDiffHours(diffHours);
+      setDiffMinutes(diffMinutes);
+
+      console.log(`${diffHours} часов, ${diffMinutes} минут`);
+    }
+   
+  }, [currentTime, timeToWalk]);
+ 
 
   const handlePress = () => {
     router.push(`/profile/${message.metadata!.userId}`);
@@ -57,8 +103,8 @@ const CustomMessageComponent = ({
         </Text>
       </View>
       <View className="bg-white h-3"></View>
-      <View>
-        <View className="flex-row p-2">
+      <View className="p-2 mt-1">
+        <View className="flex-row">
           <TouchableOpacity
             className="rounded-2xl"
             onPress={() => handleUserProfileOpen(matchedItem?.userId!)}
@@ -75,27 +121,27 @@ const CustomMessageComponent = ({
             <Text className="w-full text-xl font-nunitoSansBold">
               {matchedItem?.userName || "Owner"}
             </Text>
-            <CustomTextComponent
-              text={"Через 2 часа"}
+            {/* <CustomTextComponent
+              text={correctTimeNaming(diffHours, diffMinutes)}
               leftIcon="time-outline"
               iconSet="ionicons"
               className_="p-0"
               textStyle={{ fontSize: 12 }}
-            />
-            <CustomTextComponent
-              text={"2 км 400 м"}
+            /> */}
+            {/* <CustomTextComponent
+              text={distanceText}
               leftIcon="social-distance"
               iconSet="material"
               className_="p-0"
               textStyle={{ fontSize: 12 }}
-            />
+            /> */}
           </View>
         </View>
         {pets &&
           pets.map((pet, index) => (
             <View
               key={index}
-              className="mt-4 p-1 flex-row bg-purple-100 rounded-2xl mx-2"
+              className="mt-4 p-1 flex-row bg-purple-100 rounded-2xl"
             >
               <View className="p-1 flex-row ">
                 <TouchableOpacity className="rounded-2xl mt-2 ">
@@ -178,19 +224,19 @@ const CustomMessageComponent = ({
           textStyle={{ fontSize: 12 }}
         />
         <CustomTextComponent
-          text={"Через 2 часа"}
+          text={correctTimeNaming(diffHours, diffMinutes)}
           leftIcon="time-outline"
           iconSet="ionicons"
           className_="p-1 mb-1"
           textStyle={{ fontSize: 12 }}
         />
-        <CustomTextComponent
-          text={"2 км 400 м"}
+        {/* <CustomTextComponent
+          text={distanceText}
           leftIcon="social-distance"
           iconSet="material"
           className_="p-1 mb-1"
           textStyle={{ fontSize: 12 }}
-        />
+        /> */}
       </View>
     </>
   );

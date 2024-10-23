@@ -31,6 +31,8 @@ class MapStore {
   walkAdvrts: IWalkAdvrtDto[] = [];
   mapPoints: IPointEntityDTO[] = [];
   currentUserCoordinates: [number, number] = [0,0];
+  currentWalkId: string | undefined = undefined;
+  currentWalkDate: Date | undefined = undefined; //mine
   
   isAvaliableToCreateWalk = true; // Переменная для проверки возможности создания прогулки
 

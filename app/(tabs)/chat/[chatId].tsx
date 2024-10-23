@@ -113,6 +113,11 @@ const ChatScreen: React.FC = observer(() => {
               inputBorderRadius: 10,
               messageBorderRadius: 16,
             },
+            insets: {
+              ...defaultTheme.insets,
+              messageInsetsVertical: 12,
+        
+            }
           }}
           messages={ChatStore.messages as any[]}
           onSendPress={handleSendPress}
