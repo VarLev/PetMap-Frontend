@@ -1,14 +1,44 @@
 import IconSelectorComponent from '@/components/custom/icons/IconSelectorComponent';
 import { MapPointType } from '@/dtos/enum/MapPointType';
-import React from 'react';
-import { View } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, Animated } from 'react-native';
 
-
-interface MapPointIconProps {
+interface MapPointIconWithAnimationProps {
   mapPointType: MapPointType;
+  isSelected: boolean;
 }
 
-const MapPointIcon: React.FC<MapPointIconProps> = ({ mapPointType }) => {
+const MapPointIconWithAnimation: React.FC<MapPointIconWithAnimationProps> = ({ mapPointType, isSelected }) => {
+  const animationValue = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (isSelected) {
+      // Зацикленная анимация прыжка маркера, если он выбран
+      Animated.loop(
+        Animated.sequence([
+          Animated.spring(animationValue, {
+            toValue: 1.25, // Увеличение масштаба для эффекта прыжка
+            
+            speed: 20,
+         
+            useNativeDriver: true,
+          }),
+          Animated.spring(animationValue, {
+            toValue: 0.8, // Возврат к изначальному размеру
+            useNativeDriver: true,
+            speed: 20,
+          }),
+        ])
+      ).start();
+    } else {
+      // Сбрасываем анимацию, если маркер не выбран
+      Animated.spring(animationValue, {
+        toValue: 1,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [isSelected]);
+
   const renderIcon = () => {
     switch (mapPointType) {
       case MapPointType.Danger:
@@ -44,7 +74,7 @@ const MapPointIcon: React.FC<MapPointIconProps> = ({ mapPointType }) => {
             />
           </View>
         );
-        case MapPointType.DogArea:
+      case MapPointType.DogArea:
         return (
           <View className='bg-blue-500 rounded-full h-6 w-6 justify-center items-center'>
             <IconSelectorComponent
@@ -55,7 +85,7 @@ const MapPointIcon: React.FC<MapPointIconProps> = ({ mapPointType }) => {
             />
           </View>
         );
-        case MapPointType.Cafe:
+      case MapPointType.Cafe:
         return (
           <View className='bg-blue-500 rounded-full h-6 w-6 justify-center items-center'>
             <IconSelectorComponent
@@ -66,7 +96,7 @@ const MapPointIcon: React.FC<MapPointIconProps> = ({ mapPointType }) => {
             />
           </View>
         );
-        case MapPointType.Restaurant:
+      case MapPointType.Restaurant:
         return (
           <View className='bg-blue-500 rounded-full h-6 w-6 justify-center items-center'>
             <IconSelectorComponent
@@ -77,7 +107,7 @@ const MapPointIcon: React.FC<MapPointIconProps> = ({ mapPointType }) => {
             />
           </View>
         );
-        case MapPointType.Veterinary:
+      case MapPointType.Veterinary:
         return (
           <View className='bg-blue-500 rounded-full h-6 w-6 justify-center items-center'>
             <IconSelectorComponent
@@ -88,7 +118,7 @@ const MapPointIcon: React.FC<MapPointIconProps> = ({ mapPointType }) => {
             />
           </View>
         );
-        case MapPointType.PetStore:
+      case MapPointType.PetStore:
         return (
           <View className='bg-blue-500 rounded-full h-6 w-6 justify-center items-center'>
             <IconSelectorComponent
@@ -113,7 +143,11 @@ const MapPointIcon: React.FC<MapPointIconProps> = ({ mapPointType }) => {
     }
   };
 
-  return <>{renderIcon()}</>;
+  return (
+    <Animated.View className='h-8 w-8 justify-center items-center' style={{ transform: [{ scale: animationValue }] }}>
+      {renderIcon()}
+    </Animated.View>
+  );
 };
 
-export default MapPointIcon;
+export default MapPointIconWithAnimation;

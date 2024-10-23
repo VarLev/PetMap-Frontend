@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, {
   ReactNode,
   useCallback,
@@ -24,6 +25,47 @@ import Mapbox, {
 import mapStore from "@/stores/MapStore";
 import { Provider } from "react-native-paper";
 import BottomSheetComponent from "@/components/common/BottomSheetComponent"; // Импортируйте новый компонент
+=======
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { View, SafeAreaView, Image, Pressable, BackHandler } from 'react-native';
+import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer } from '@rnmapbox/maps';
+import mapStore from '@/stores/MapStore';
+import { Provider  } from 'react-native-paper';
+import BottomSheetComponent from '@/components/common/BottomSheetComponent'; // Импортируйте новый компонент
+import BottomSheet from '@gorhom/bottom-sheet';
+import AdvtComponent from './AdvtComponent';
+import userStore from '@/stores/UserStore';
+import chatStore from '@/stores/ChatStore';
+import AdvtEditComponent from './AdvtEditComponent';
+import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
+import { router, useFocusEffect } from 'expo-router';
+import { IUser } from '@/dtos/Interfaces/user/IUser';
+import Svg, { Path } from 'react-native-svg';
+import { useDrawer } from '@/contexts/DrawerProvider';
+import SearchAndTags from '../custom/inputs/FilterSearchAndTagsComponent';
+import FilterComponent from '../filter/FilterComponent';
+import { IPointEntityDTO } from '@/dtos/Interfaces/map/IPointEntityDTO';
+import { MapPointType } from '@/dtos/enum/MapPointType';
+import FabGroupComponent from './FabGroupComponent';
+import EditDangerPoint from './point/EditDangerPoint';
+import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
+import { DangerLevel } from '@/dtos/enum/DangerLevel';
+import { DangerType } from '@/dtos/enum/DangerType';
+import { MapPointStatus } from '@/dtos/enum/MapPointStatus';
+import {randomUUID} from "expo-crypto";
+import IconSelectorComponent from '../custom/icons/IconSelectorComponent';
+import ViewDangerPoint from './point/ViewDangerPoint';
+import EditUserPoint from './point/EditUserPoint';
+import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
+import { Feature, FeatureCollection, Point } from 'geojson';
+import ViewUserPoint from './point/ViewUserPoint';
+import CustomAlert from '../custom/alert/CustomAlert';
+import MapPointIcon from './point/MapPointIscon';
+import SlidingOverlay from '../navigation/SlidingOverlay';
+import MapItemList from '../navigation/points/MapItemList';
+import MapPointIconWithAnimation from './point/MapPointIscon';
+>>>>>>> master
 
 import BottomSheet from "@gorhom/bottom-sheet";
 import AdvtComponent from "./AdvtComponent";
@@ -72,7 +114,7 @@ const MapBoxMap = observer(() => {
   >(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const pointAnnotationCurrentUser = useRef<PointAnnotation>(null);
-  const { openDrawer } = useDrawer();
+  const { openDrawer, closeDrawer } = useDrawer();
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
   const [selectedTag, setSelectedTag] = useState<string>("");
   const [userCoordinates, setUserCoordinates] = useState([0, 0]);
@@ -87,6 +129,7 @@ const MapBoxMap = observer(() => {
   const [alertType, setAlertType] = useState<"error" | "info">("info");
   const [alertText, setAlertText] = useState<string>("");
   const [isCardView, setisCardView] = useState<boolean>(false);
+  const [selectedPointId, setSelectedPointId] = useState<string>('');
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
@@ -145,8 +188,13 @@ const MapBoxMap = observer(() => {
           type: "point",
         },
         geometry: {
+<<<<<<< HEAD
           type: "Point",
           coordinates: [point.latitude!, point.longitude!],
+=======
+          type: 'Point',
+          coordinates: [point.longitude!, point.latitude!],
+>>>>>>> master
         },
       });
     });
@@ -272,7 +320,13 @@ const MapBoxMap = observer(() => {
     }
   };
 
+<<<<<<< HEAD
   const onMapPointPress = async (mapPoint: IPointEntityDTO) => {
+=======
+  const onMapPointPress = async (mapPoint: IPointEntityDTO ) => {
+    setSelectedPointId(mapPoint.id);
+    console.log('Map point press:', mapPoint.id);
+>>>>>>> master
     cameraRef.current?.setCamera({
       centerCoordinate: [mapPoint.longitude!, mapPoint.latitude!],
       animationDuration: 300,
@@ -291,9 +345,16 @@ const MapBoxMap = observer(() => {
     // }
     if (mapPoint.mapPointType === MapPointType.Danger) {
       const pointDanger = mapPoint as IPointDangerDTO;
+<<<<<<< HEAD
 
       setRenderContent(() => <ViewDangerPoint mapPoint={pointDanger} />);
     } else {
+=======
+      
+      setRenderContent( <ViewDangerPoint mapPoint={pointDanger} />);
+    }
+    else {
+>>>>>>> master
       const pointUser = mapPoint as IPointEntityDTO;
 
       setRenderContent(() => <ViewUserPoint mapPoint={pointUser} />);
@@ -306,6 +367,7 @@ const MapBoxMap = observer(() => {
         setIsSheetVisible(true);
       }, 200);
     }
+    
   };
 
   const handleChatInvite = async (otherUser: IUser) => {
@@ -325,6 +387,7 @@ const MapBoxMap = observer(() => {
   };
 
   const handleSheetClose = async () => {
+    setSelectedPointId('');
     await sheetRef.current?.close();
     mapStore.setBottomSheetVisible(false);
     setMarkerCoordinate(null);
@@ -350,26 +413,39 @@ const MapBoxMap = observer(() => {
   };
 
   const handleOpenFilter = () => {
+<<<<<<< HEAD
     openDrawer(<FilterComponent onFilterChange={handleFilterChange} />);
   };
+=======
+    openDrawer(<FilterComponent onFilterChange={handleFilterChange} onFilterApply={closeDrawer}/>);
+  }
+>>>>>>> master
 
   const handleUserLocationUpdate = (location: Mapbox.Location) => {
     const { coords } = location;
     if (coords) {
       // Сохранение координат пользователя
       mapStore.currentUserCoordinates = [coords.latitude, coords.longitude];
+<<<<<<< HEAD
       setUserCoordinates([coords.latitude, coords.longitude]);
       console.log("User coordinates:", coords.latitude, coords.longitude);
+=======
+      setUserCoordinates([coords.longitude, coords.latitude]);
+      console.log('User coordinates:', coords.latitude, coords.longitude);
+>>>>>>> master
     }
   };
 
   const hangleSetSelectedNumberPoint = (number: number) => {
     setCurrentPointType(number);
     tagSelected(number);
+<<<<<<< HEAD
   };
+=======
+  }
+>>>>>>> master
 
   const handlePressOut = () => {
-    // Включаем перемещение карты
     setScrollEnabled(true);
   };
 
@@ -378,6 +454,7 @@ const MapBoxMap = observer(() => {
     setModalVisible(true);
   };
 
+<<<<<<< HEAD
   return (
     <Provider>
       <SafeAreaView style={{ flex: 1 }}>
@@ -388,6 +465,21 @@ const MapBoxMap = observer(() => {
           ref={mapRef}
           style={{ flex: 1 }}
           onLongPress={handleLongPress}
+=======
+ 
+  return (
+    <Provider>
+      <SafeAreaView style={{ flex: 1 }}>
+      {isCardView && (
+        <SlidingOverlay visible={isCardView}>
+          <MapItemList renderType={currentPointType} />
+        </SlidingOverlay>
+      )}
+        <MapView 
+          ref={mapRef} 
+          style={{ flex: 1 }} 
+          onLongPress={handleLongPress} 
+>>>>>>> master
           styleURL={Mapbox.StyleURL.Light}
           logoEnabled={false}
           attributionEnabled={false}
@@ -398,11 +490,15 @@ const MapBoxMap = observer(() => {
           zoomEnabled={!isCardView}
           rotateEnabled={!isCardView}
         >
+<<<<<<< HEAD
           <UserLocation
             minDisplacement={50}
             ref={userLocationRef}
             onUpdate={handleUserLocationUpdate}
           />
+=======
+          <UserLocation minDisplacement={50} ref={userLocationRef} onUpdate={handleUserLocationUpdate}  /> 
+>>>>>>> master
           {/* <UserLocation minDisplacement={10} ref={userLocationRef}  /> */}
           <Camera
             ref={cameraRef}
@@ -468,6 +564,7 @@ const MapBoxMap = observer(() => {
             ))}
 
           {/* Маркеры поинтов */}
+<<<<<<< HEAD
           {!isCardView &&
             mapStore.mapPoints.map((point, index) => (
               <Mapbox.MarkerView
@@ -484,6 +581,23 @@ const MapBoxMap = observer(() => {
               </Mapbox.MarkerView>
             ))}
 
+=======
+          {!isCardView && mapStore.mapPoints.map((point, index) => (
+            <Mapbox.MarkerView 
+              key={`advrt-${point.id}`} 
+              id={`advrt-${index}`}
+              anchor={{ x: 0.5, y: 1}}
+              coordinate={[point.longitude!, point.latitude!]}
+              onTouchStart={() => {}}
+              allowOverlap={false}
+            >  
+              <Pressable onPress={() => onMapPointPress(point)}>
+                <MapPointIconWithAnimation mapPointType={point.mapPointType} isSelected={selectedPointId === point.id}/>
+              </Pressable>
+            </Mapbox.MarkerView>  
+          ))}
+          
+>>>>>>> master
           {/* Маркер редактирования прогулки */}
           {markerCoordinate && isSheetVisible && (
             <PointAnnotation
@@ -572,6 +686,7 @@ const MapBoxMap = observer(() => {
         {isSheetVisible && (
           <BottomSheetComponent
             ref={sheetRef}
+<<<<<<< HEAD
             snapPoints={["60%", "100%"]}
             renderContent={() => renderContent}
             onClose={handleSheetClose} // Обработчик для события закрытия BottomSheet
@@ -585,6 +700,15 @@ const MapBoxMap = observer(() => {
             selectedNumber={currentPointType}
             setSelectedNumber={hangleSetSelectedNumberPoint}
             isVisible={!isCardView}
+=======
+            snapPoints={['60%','100%']}
+            renderContent={renderContent as any}
+            onClose={handleSheetClose} // Обработчик для события закрытия BottomSheet
+            enablePanDownToClose={true}
+            initialIndex={0} // Начальная позиция - 60%
+            usePortal={true} // Используем Portal для отображения BottomSheet
+             
+>>>>>>> master
           />
         )}
         <CustomAlert

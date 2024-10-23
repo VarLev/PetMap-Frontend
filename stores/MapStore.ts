@@ -16,6 +16,10 @@ import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
 import { IUserAdvrt } from '@/dtos/Interfaces/user/IUserAdvrt';
 import { IPagedAdvrtDto } from '@/dtos/Interfaces/advrt/IPagedAdvrtDto';
 import { handleAxiosError } from '@/utils/axiosUtils';
+import { PARK_IMAGE } from '@/constants/Strings';
+import { IPagedPointDangerDTO } from '@/dtos/Interfaces/map/paged/IPagedPointDangerDTO';
+import { IPagetPointUserDTO } from '@/dtos/Interfaces/map/paged/IPagetPointUserDTO';
+import { ReviewDTO } from '@/dtos/classes/review/Review';
 
 class MapStore {
   address = '';
@@ -35,13 +39,15 @@ class MapStore {
   currentWalkDate: Date | undefined = undefined; //mine
   
   isAvaliableToCreateWalk = true; // Переменная для проверки возможности создания прогулки
-
+  
   marker: [number, number] | null = null;
   selectedFeature: GeoJSON.Feature<GeoJSON.Point> | null = null;
 
   constructor() {
     makeAutoObservable(this);
   }
+
+  
 
   setAddress(address: string) {
     this.address = address;
@@ -334,11 +340,10 @@ class MapStore {
     }
   }
 
-  async getPagenatedPointItems(type: MapPointType,page: number, pageSize: number): Promise<IPagedAdvrtDto> {
+  async getPagenatedPointItems(type: MapPointType,page: number, pageSize: number): Promise<IPagedAdvrtDto | IPagedPointDangerDTO | IPagetPointUserDTO> {
     try {
       const response = await apiClient.get(`map/get-points-paginated?type=${type}&page=${page}&pageSize=${pageSize}`);
-  
-      return response.data as IPagedAdvrtDto;
+      return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) 
       {
@@ -518,6 +523,73 @@ class MapStore {
       }
     } catch (error) {
       return handleAxiosError(error);
+    }
+  }
+
+  async fetchPointImageUrl(path:string) {
+    try {
+      const storageRef = ref(storage, `${path}`);
+      const downloadURL = await getDownloadURL(storageRef);
+      return downloadURL;
+    } catch {
+      const storageRef = ref(storage, `${PARK_IMAGE}`);
+      return await getDownloadURL(storageRef);
+    }
+  };
+
+  async addReview(review: ReviewDTO) {
+    try {
+    await apiClient.post('map/add-point-review', review);
+      
+    } catch (error) {
+      if (axios.isAxiosError(error)) 
+      {
+        // Подробная информация об ошибке Axios
+        console.error('Axios error:', {
+            message: error.message,
+            name: error.name,
+            code: error.code,
+            config: error.config,
+            response: error.response ? {
+                data: error.response.data.errors,
+                status: error.response.status,
+                headers: error.response.headers,
+            } : null
+        });
+      } 
+      else {
+        // Общая информация об ошибке
+        console.error('Error:', error);
+      }
+      throw error;
+    }
+  }
+
+  async getReviewsByPointId(pointId: string): Promise<ReviewDTO[]> {
+    try {
+      const response = await apiClient.get(`map/reviews/${pointId}`);
+      return response.data as ReviewDTO[];
+    } catch (error) {
+      if (axios.isAxiosError(error)) 
+      {
+        // Подробная информация об ошибке Axios
+        console.error('Axios error:', {
+            message: error.message,
+            name: error.name,
+            code: error.code,
+            config: error.config,
+            response: error.response ? {
+                data: error.response.data.errors,
+                status: error.response.status,
+                headers: error.response.headers,
+            } : null
+        });
+      } 
+      else {
+        // Общая информация об ошибке
+        console.error('Error:', error);
+      }
+      throw error;
     }
   }
 }

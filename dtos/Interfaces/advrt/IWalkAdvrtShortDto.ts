@@ -2,6 +2,7 @@ import { IPetAdvrtShortDto } from "../pet/IPetAdvrtShortDto";
 
 export interface IWalkAdvrtShortDto {
   id?: string;
+  userId?: string;
   userPhoto?:  string;
   userName?: string;
   userPets?: IPetAdvrtShortDto[];

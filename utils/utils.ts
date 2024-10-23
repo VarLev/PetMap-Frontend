@@ -188,6 +188,7 @@ function deg2rad(deg: number): number {
  * @returns Строка, представляющая расстояние в километрах и/или метрах.
  */
 export function convertDistance(distance: number | null): string {
+  console.log('distance', distance);
   if (!distance) return "..."; // Если distance пустой, возвращаем "Место"
 
   if (distance < 1) {

@@ -309,9 +309,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 handleChange={(text) => handleChange('facebook', text)}/>
             </View>
               <CustomLoadingButton title='Сохранит' handlePress={handleSave} />
-              {/* <Button mode="contained" onPress={handleSave} className='mt-5 bg-indigo-800'>
-                Сохранить
-              </Button> */}
+             
               <Button mode="outlined" onPress={onCancel} className='mt-4'>
                 Отмена
               </Button>
@@ -323,9 +321,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
         <BottomSheetComponent
           ref={sheetRef}
           snapPoints={['60%', '100%']}
-          renderContent={() => (
-            <AvatarSelector onAvatarSelect={handleAvatarSelect} />
-          )}
+          renderContent={<AvatarSelector onAvatarSelect={handleAvatarSelect} />}
           onClose={handleSheetClose}
           enablePanDownToClose={true}
         />
