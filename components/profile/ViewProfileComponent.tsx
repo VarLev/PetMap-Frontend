@@ -36,7 +36,10 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen, loadedUser }: { onEd
   const loadData = async () => {
     if (user.id === userStore.currentUser?.id) {
       // Загружаем текущего пользователя
+      console.log('Загружаем текущего пользователя');
+      
       //await userStore.loadUser();
+      console.log(user.thumbnailUrl);
       setUser(user);
       console.log(user);
       setIsCurrentUser(true);
@@ -109,8 +112,7 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen, loadedUser }: { onEd
         </ScrollView>
         
       </PaperProvider>
-      <BottomSheetComponent ref={sheetRef} enablePanDownToClose={false} snapPoints={['60%','100%']} renderContent={function (): React.ReactNode {
-        return ( 
+      <BottomSheetComponent ref={sheetRef} enablePanDownToClose={false} snapPoints={['60%','100%']} renderContent={
         <View className='bg-white h-full'>
           <Text className='pl-5 text-2xl font-nunitoSansBold'>
             {user.name} {calculateHumanAge(user.birthDate)}
@@ -172,8 +174,8 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen, loadedUser }: { onEd
             </View>
           </View>
           <View className='h-28'/>
-        </View>)
-      } }/>
+        </View>
+      }/>
     </GestureHandlerRootView>
   );
 });

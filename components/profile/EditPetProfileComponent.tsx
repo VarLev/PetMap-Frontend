@@ -18,6 +18,7 @@ import CustomLoadingButton from '../custom/buttons/CustomLoadingButton';
 import { BonusContex } from '@/contexts/BonusContex';
 import { useControl } from '@/hooks/useBonusControl';
 import userStore from '@/stores/UserStore';
+import CircleIcon from '../custom/icons/CircleIcon';
 
 
 const TASK_IDS = {
@@ -335,15 +336,15 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
         <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Показатели</Text>
         <View className='pt-2 flex-row justify-between'>              
           <Text className='font-nunitoSansRegular text-base'>Темперамент</Text>
-          <StarRating rating={temperament} starSize={25} color='#BFA8FF' onChange={handleTemperament} />
+          <StarRating rating={temperament} starSize={25} color='#BFA8FF' onChange={handleTemperament} StarIconComponent={CircleIcon}/>
         </View>
         <View className='pt-2 flex-row justify-between'>              
           <Text className='font-nunitoSansRegular text-base'>Дружелюбность</Text>
-          <StarRating rating={friendly} starSize={25}  color='#BFA8FF' onChange={handleFriendly}/>
+          <StarRating rating={friendly} starSize={25}  color='#BFA8FF' onChange={handleFriendly}  StarIconComponent={CircleIcon}/>
         </View>
         <View className='pt-2 flex-row justify-between'>              
           <Text className='font-nunitoSansRegular text-base'>Активность</Text>
-          <StarRating rating={activity} starSize={25} color='#BFA8FF' onChange={handleActivity}/>
+          <StarRating rating={activity} starSize={25} color='#BFA8FF' onChange={handleActivity}  StarIconComponent={CircleIcon}/>
         </View>
         <Divider className='mt-3' />
       </View>

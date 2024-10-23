@@ -19,4 +19,8 @@ export interface IWalkAdvrtDto {
   userId?: string;
   status?: WalkAdvrtStatus;
   isEnabled?: boolean;
+  duration?: number;
+  isRegular?: boolean;
+  selectedDays?: number[];
+  startTime?: number;
 }

@@ -25,11 +25,11 @@ const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation })
   }, []);
 
   if (mapStore.bottomSheetVisible) {
-    return null;
+    //return null;
   }
   
   if (!isVisible || mapStore.bottomSheetVisible) {
-    return null;
+    //return null;
   }
 
   return (

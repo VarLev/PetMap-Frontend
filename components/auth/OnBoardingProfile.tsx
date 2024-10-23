@@ -98,7 +98,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   const [selectedBreed, setSelectedBreed] = useState<number>(0);
   const sheetRef = useRef<BottomSheet>(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
-  const [renderContent, setRenderContent] = useState<ReactNode>(() => null);
+  const [renderContent, setRenderContent] = useState<React.ReactElement | null>(null);
   const [sliderValue, setSliderValue] = useState(0);
 
   const { completedJobs } = useContext(BonusContex)!;
@@ -222,7 +222,6 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       if (interests.length > 0) setSliderValue(sliderValue + 100);
 
       if (userImage === "" || userImage === null || userImage === undefined) {
-        console.log("userImage", userImage);
         const newAvatar = SetRandomAvatarDependOnGender();
         userStore.fetchImageUrl(newAvatar).then((resp) => {
           if (resp) {
@@ -617,7 +616,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
           <BottomSheetComponent
             ref={sheetRef}
             snapPoints={["60%", "100%"]}
-            renderContent={() => renderContent}
+            renderContent={renderContent}
             onClose={handleSheetClose}
             enablePanDownToClose={true}
           />

@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Image, Text, Alert } from 'react-native';
-import { Button, Surface, Checkbox, TouchableRipple, Switch } from 'react-native-paper';
+import { Button, Surface, Checkbox, TouchableRipple } from 'react-native-paper';
 import { observer } from 'mobx-react-lite';
 import userStore from '@/stores/UserStore';
 import { Ionicons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import mapStore from '@/stores/MapStore';
 import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
 import CustomOutlineInputText from '../custom/inputs/CustomOutlineInputText';
 import { calculateDogAge } from '@/utils/utils';
 import { petUriImage } from '@/constants/Strings';
-import Modal from "react-native-modal";
 import { WalkAdvrtStatus } from '@/dtos/enum/WalkAdvrtStatus';
 import { AdvrtType } from '@/dtos/enum/AdvrtType';
+import DateOrTimeRangePicker from '../custom/pickers/DateOrTimeRangePicker';
+import CustomSegmentedButtonsWithProps from '../custom/buttons/CustomSegmentedButtonsWithProps';
+import CustomLoadingButton from '../custom/buttons/CustomLoadingButton';
+import CustomAlert from '../custom/alert/CustomAlert';
+
 
 interface AdvtEditProps {
   coordinates: [number, number];
@@ -20,19 +23,22 @@ interface AdvtEditProps {
 }
 
 const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdvrtAddedInvite}) => {
-  const [name, setName] = useState(userStore.currentUser?.name || '');
-  const [avatar, setAvatar] = useState(userStore.currentUser?.thumbnailUrl || '');
+
   const [description, setDescription] = useState('');
-  const [gender, setGender] = useState(userStore.currentUser?.gender || '');
+
   const [selectedPets, setSelectedPets] = useState<string[]>([]);
+  const [date, setDate] = useState<Date>(new Date());
   const [time, setTime] = useState<Date>(new Date());
   const [duration, setDuration] = useState<number>(60);
-  const [showTimePicker, setShowTimePicker] = useState(false);
   const [address, setAddress] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [inputTime, setInputTime] = useState(time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-  const [inputDuration, setInputDuration] = useState(duration.toString());
   const [isSwitchOn, setIsSwitchOn] = useState(true);
+  const [selectedDays, setselectedDays] = useState<number[]>([0,1,2,3,4,5,6]); 
+  const [showAllPets, setShowAllPets] = useState(false);
+  const petProfiles = userStore.currentUser?.petProfiles || [];
+  const visiblePets = showAllPets ? petProfiles : petProfiles.slice(0, 2);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertTitle, setAlertTitle] = useState('');
 
   useEffect(() => {
     // Загрузите пользователя, если он еще не загружен
@@ -43,10 +49,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
 
   useEffect(() => {
     if (userStore.currentUser) {
-      setName(userStore.currentUser.name || '');
-      setAvatar(userStore.currentUser.thumbnailUrl || '');
       setDescription('');
-      setGender(userStore.currentUser.gender || '');
       setSelectedPets(userStore.currentUser.petProfiles?.map(pet => pet.id) || []);
     }
   }, [userStore.currentUser]);
@@ -63,15 +66,58 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
       });
   }, [coordinates]);
 
+  const handleSelectedDays = (newSelectedIndices: number[]) => {
+    setselectedDays(newSelectedIndices); // Обновляем выбранные индексы
+  };
+
+  const showAlert = (title: string, message: string) => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertVisible(true);
+  };
+
   const handleSave = async () => {
     if (selectedPets.length === 0) {
-      Alert.alert("", "Выберите хотя бы одного питомца для участия в прогулке.");
-      return; // Прекращаем выполнение функции, если питомцы не выбраны
+      showAlert('Ошибка', 'Выберите хотя бы одного питомца для участия в прогулке.');
+      return;
     }
-    
-    if(!mapStore.isAvaliableToCreateWalk){
-      Alert.alert("", "В этом месте нельзя создать прогулку.");
-      return; // Прекращаем выполнение функции, если питомцы не выбраны
+  
+    // Проверка доступности создания прогулки в выбранном месте
+    if (!mapStore.isAvaliableToCreateWalk) {
+      showAlert('Ошибка', 'В этом месте нельзя создать прогулку.');
+      return;
+    }
+  
+    // Проверка на заполнение адреса
+    if (!address.trim()) {
+      showAlert('Ошибка', 'Укажите адрес прогулки.');
+      return;
+    }
+    console.log('duration', duration);
+    if (duration <= 0 || duration > 180) {
+      showAlert("Ошибка", "Укажите корректную продолжительность прогулки.");
+      return;
+    }
+  
+    // Проверка на заполнение описания
+    if (!description.trim()) {
+      showAlert('Ошибка', 'Добавьте описание прогулки.');
+      return;
+    }
+  
+    // Проверка на заполнение времени и даты
+    if (isSwitchOn) {
+      // Если регулярная прогулка, проверяем, что дни недели выбраны
+      if (selectedDays.length === 0) {
+        showAlert('Ошибка', 'Выберите хотя бы один день для регулярной прогулки.');
+        return;
+      }
+    } else {
+      // Если разовая прогулка, проверяем, что дата установлена
+      if (!date) {
+        showAlert('Ошибка', 'Укажите дату для разовой прогулки.');
+        return;
+      }
     }
 
     const updatedUserWalk :IWalkAdvrtDto = {
@@ -89,7 +135,11 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
       type: AdvrtType.Single,
       userPhoto: userStore.currentUser?.thumbnailUrl || '',
       userName: userStore.currentUser?.name || '',
-      userPets: userStore.currentUser?.petProfiles || []
+      userPets: userStore.currentUser?.petProfiles || [],
+      duration: duration,
+      isRegular: isSwitchOn,
+      selectedDays: selectedDays,
+      startTime: time.getHours() * 60 + time.getMinutes()
     };
 
     await mapStore.addWalkAdvrt(updatedUserWalk);
@@ -105,152 +155,99 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
     );
   };
 
-  const getGenderIcon = (gender: string) => {
-    switch (gender.toLowerCase()) {
-      case 'male':
-        return 'man';
-      case 'female':
-        return 'woman';
-      default:
-        return 'person';
-    }
-  };
-
-  const validateTimeInput = (time: string) => {
-    const [hours, minutes] = time.split(':').map(Number);
-    
-    if (hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60) {
-      return true;
-    }
-    return false;
-  };
-
-
-  
-  const onModalSave = () => {
-    if (!validateTimeInput(inputTime)) {
-      Alert.alert("Ошибка", "Введите корректное время (формат 00:00, часы 0-23, минуты 0-59).");
-      return;
-    }
-    if(Number(inputDuration) < 15 || Number(inputDuration) > 360){
-      Alert.alert("Ошибка", "Продолжительность прогулки должна быть от 15 до 360 минут.");
-      return;
-    }
-
-    const [hours, minutes] = inputTime.split(':').map(Number);
-    const newTime = new Date();
-    newTime.setHours(hours, minutes);
-    setTime(newTime);
-
-    setDuration(Number(inputDuration));
-    setShowModal(false);
-  };
 
   return (
+    <>
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1 px-2">
       
       <View className="h-full bg-white rounded-lg px-2">
       <Text className='text-base font-nunitoSansBold text-indigo-700'>Детали прогулки</Text>
-        <View className="flex-row">
+        <View className="pt-2">
+          <DateOrTimeRangePicker mode='time' time={time} duration={duration} onTimeChange={setTime} onDurationChange={setDuration} />
+          <Checkbox.Item
+            label={`${isSwitchOn ? 'Регулярная прогулка' : 'Разовая прогулка'}`}
+            labelVariant='bodyLarge'
+            status={isSwitchOn ? 'checked' : 'unchecked'}
+            onPress={() => setIsSwitchOn(!isSwitchOn)}
+            position='leading'
+            style={{width: 270, marginLeft: -20}}
+            labelStyle={{fontFamily: 'NunitoSans_400Regular', textAlign: 'left', color: '#363636'}}
+          />
+          {isSwitchOn ? (<CustomSegmentedButtonsWithProps values={selectedDays}  onValueChange={handleSelectedDays}
+          buttons={[
+            { label: 'ПН' },
+            { label: 'ВТ' },
+            { label: 'СР' },
+            { label: 'ЧТ' },
+            { label: 'ПТ' },
+            { label: 'СБ' },
+            { label: 'ВС' },
+          ]}  />):(
+            <DateOrTimeRangePicker mode='date' date={date} onDateChange={setDate}  />
+          )}
           
-          <View className="flex-col ml-2">
-     
-            <TouchableRipple onPress={() => setShowModal(true)} >
-              <View className='mt-2 items-start'>
-                <View className="flex-row items-center ">
-                  <Ionicons name="time-outline" size={18} color="indigo" /> 
-                  <Text className="text-lg font-nunitoSansRegular"> {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text> 
-                  <Text className="ml-2 text-lg font-nunitoSansRegular">60 мин.</Text> 
-                </View>
-                <Text className='-mt-2 ml-6 text-sm text-violet-600 font-nunitoSansBold'>Изменить</Text>
-              </View>
-            </TouchableRipple>
-            
-            <View className="mt-1 -ml-1 flex-row items-center">
-              {/* <CustomDropdownList
-                tags={['15 min','30 min','40 min','60 min','90 min','120 min','360 min']}
-                placeholder=""
-                onChange={(text) => onDurationSet(text)}
-                
-              /> */}
-              <Switch  value={isSwitchOn} onValueChange={setIsSwitchOn}  />
-              <Text className='text-base font-nunitoSansRegular'>{isSwitchOn? 'Регулярная прогулка': 'Разовая прогулка'}</Text>
-              
-            </View>
-            {/* {showTimePicker && (
-              <DateTimePicker
-                value={time}
-                mode="time"
-                display="default"
-                onChange={onTimeChange}
-              />
-            )}    */}
-          </View>
         </View>
+      
         <View className="mt-2 justify-start w-full ">
         
           <CustomOutlineInputText label='Адрес' value={address} handleChange={setAddress} /> 
           <View className='pt-2'/> 
           <CustomOutlineInputText label='Описание' value={description} handleChange={setDescription} numberOfLines={3} />  
         </View>
-          {userStore.currentUser?.petProfiles?.map((pet,index) => (
-              <Surface key={index}  elevation={0} className=" mt-4 bg-purple-100  rounded-lg">
-                <TouchableRipple  rippleColor="#c9b2d9" onPress={() => togglePetSelection(pet.id)}>
-                <View  className="-ml-2 p-1 flex-row items-center">
-                  <Checkbox
-                    status={selectedPets.includes(pet.id) ? 'checked' : 'unchecked'}
-                    onPress={() => togglePetSelection(pet.id)}
-                  />
-                  <Image source={{ uri: pet.thumbnailUrl || petUriImage}} width={60} height={60} className="rounded-lg" />
-                  <View className='flex-col'>
-                    <View className='flex-row items-center ml-3'>
-                      <Ionicons name="male" size={18} color="indigo" />
-                      <Text className="ml-2 text-xl font-nunitoSansBold">{pet.petName},</Text>
-                      <Text className="ml-2 text-base font-nunitoSansRegular">{calculateDogAge(pet.birthDate)} {pet.breed}</Text>
-                    </View>
-                  </View>
+        <>
+      {visiblePets.map((pet, index) => (
+        <Surface key={index} elevation={0} className="mt-4 bg-purple-100 rounded-lg">
+          <TouchableRipple rippleColor="#c9b2d9" onPress={() => togglePetSelection(pet.id)}>
+            <View className="-ml-2 p-1 flex-row items-center">
+              <Checkbox
+                status={selectedPets.includes(pet.id) ? 'checked' : 'unchecked'}
+                onPress={() => togglePetSelection(pet.id)}
+              />
+              <Image
+                source={{ uri: pet.thumbnailUrl || petUriImage }}
+                width={60}
+                height={60}
+                className="rounded-lg"
+              />
+              <View className="flex-col">
+                <View className="flex-row items-center ml-3">
+                  <Ionicons name="male" size={18} color="indigo" />
+                  <Text className="ml-2 text-xl font-nunitoSansBold">{pet.petName},</Text>
+                  <Text className="ml-2 text-base font-nunitoSansRegular">
+                    {calculateDogAge(pet.birthDate)} {pet.breed}
+                  </Text>
                 </View>
-                </TouchableRipple>
-              </Surface>
-          ))}  
+              </View>
+            </View>
+          </TouchableRipple>
+        </Surface>
+      ))}
+      
+      {petProfiles.length > 2 && (
+        <Button onPress={() => setShowAllPets(!showAllPets)} mode="text">
+          <Text className="font-nunitoSansBold">
+            {showAllPets ? 'Скрыть' : 'Показать еще'}
+          </Text>  
+        </Button>
+      )}
+    </>
         <View className='h-20'>
-          <Button mode="contained" className="mt-4 " onPress={handleSave}>
-            Разместить на карте
-          </Button>
+          <CustomLoadingButton title='Сохранит' handlePress={handleSave} />
         </View>
       </View>
-      <Modal isVisible={showModal} className="items-center">
-        <View className="pt-2 h-36 w-80 bg-white rounded-2xl items-center">
-          <DateTimePicker value={time} mode="time" display="default" onChange={(event, selectedTime) => {} } />
-          <View className="flex-row">
-            <CustomOutlineInputText
-              label="Начало"
-              value={inputTime}
-              handleChange={setInputTime}
-              mask="99:99"
-              keyboardType="numeric"
-              containerStyles="w-32 m-3"
-            />
-            <CustomOutlineInputText
-              label="Продолжительность (мин)"
-              value={inputDuration}
-              handleChange={setInputDuration}
-              keyboardType="numeric"
-              containerStyles="w-32 m-3"
-            />
-          </View>
-          <View className="flex-row items-center space-x-5">
-            <Button onPress={onModalSave}>
-              <Text className="font-nunitoSansBold">OK</Text>
-            </Button>
-            <Button onPress={() => setShowModal(false)}>
-              <Text className="font-nunitoSansBold">Cancel</Text>
-            </Button>
-          </View>
-        </View>
-      </Modal>
     </ScrollView>
+    
+     <CustomAlert
+     isVisible={alertVisible}
+     onClose={() => setAlertVisible(false)}
+     message={alertMessage}
+     title={alertTitle}
+     type="error"
+   />
+   </>
   );
 });
 
 export default AdvtEditComponent;
+
+

@@ -151,3 +151,54 @@ export function getTagsByIndex(tagsArray: string[], indexes: number | number[] |
   }
   return null;
 }
+
+/**
+ * Вычисляет расстояние между двумя точками (координатами) на Земле.
+ * @param lat1 Широта первой точки (например, пользователя).
+ * @param lon1 Долгота первой точки (например, пользователя).
+ * @param lat2 Широта второй точки (например, целевая точка).
+ * @param lon2 Долгота второй точки (например, целевая точка).
+ * @returns Расстояние в километрах.
+ */
+export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371; // Радиус Земли в километрах
+  const dLat = deg2rad(lat2 - lat1);
+  const dLon = deg2rad(lon2 - lon1);
+  const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c; // Расстояние в километрах
+  return parseFloat(distance.toFixed(3));
+}
+
+/**
+* Преобразует градусы в радианы.
+* @param deg Значение в градусах.
+* @returns Значение в радианах.
+*/
+function deg2rad(deg: number): number {
+  return deg * (Math.PI / 180);
+}
+
+/**
+ * Преобразует расстояние в строковый формат, показывая километры и метры.
+ * @param distance Расстояние в километрах (может быть null).
+ * @returns Строка, представляющая расстояние в километрах и/или метрах.
+ */
+export function convertDistance(distance: number | null): string {
+  console.log('distance', distance);
+  if (!distance) return "..."; // Если distance пустой, возвращаем "Место"
+
+  if (distance < 1) {
+    // Если меньше 1 км, переводим в метры
+    const meters = Math.round(distance * 1000);
+    return `${meters} m`;
+  } else {
+    // Если больше 1 км, показываем километры и метры
+    const kilometers = Math.floor(distance);
+    const meters = Math.round((distance - kilometers) * 1000);
+    return `${kilometers} km ${meters > 0 ? meters + " m" : ""}`.trim();
+  }
+}
