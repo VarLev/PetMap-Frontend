@@ -8,7 +8,7 @@ interface CustomButtonProps {
   text: string;
   iconName?: string;
   iconPosition?: 'left' | 'right';
-  iconSet?: 'MaterialIcons' | 'FontAwesome' | 'Ionicons' | 'MaterialCommunityIcons';
+  iconSet?: 'MaterialIcons' | 'FontAwesome' | 'Ionicons' | 'MaterialCommunityIcons' | 'SimpleLine';
   buttonStyle?: string;
   textStyle?: string;
 }

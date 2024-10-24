@@ -6,7 +6,7 @@ import axios from 'axios';
 import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
 import apiClient from '@/hooks/axiosConfig';
 import { IWalkAdvrtFilterParams } from '@/dtos/Interfaces/filter/IWalkAdvrtFilterParams';
-import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
+import { IPointDangerDTO, IPointDangerShortDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
 import { IPointEntityDTO } from '@/dtos/Interfaces/map/IPointEntityDTO';
 import { IPointParkDTO } from '@/dtos/Interfaces/map/IPointParkDTO';
 import { MapPointType } from '@/dtos/enum/MapPointType';
@@ -20,6 +20,7 @@ import { PARK_IMAGE } from '@/constants/Strings';
 import { IPagedPointDangerDTO } from '@/dtos/Interfaces/map/paged/IPagedPointDangerDTO';
 import { IPagetPointUserDTO } from '@/dtos/Interfaces/map/paged/IPagetPointUserDTO';
 import { ReviewDTO } from '@/dtos/classes/review/Review';
+import { IMapPointTagDTO } from '@/dtos/Interfaces/map/IMapPointTagDTO';
 
 class MapStore {
   address = '';
@@ -254,22 +255,28 @@ class MapStore {
   }
 
   
-  async getMapPointsByType(filter: number){
+  async getMapPointsByType(pointTag: IMapPointTagDTO){
     try {
-      const response = await apiClient.get(`filter/point/all/${filter}`);
+
+      const queryParams = new URLSearchParams({
+        type: pointTag.type?.toString() || '',
+        userId: pointTag.userId?.toString() || ''
+      }).toString();
+
+      const response = await apiClient.get(`filter/point/all?${queryParams}`);
       if (response.data.length === 0) {
         console.log('No map points found');
         runInAction(() => {
           this.mapPoints = response.data as IPointEntityDTO[];
         });
       }else{
-        if(filter === MapPointType.Danger){
+        if(pointTag.type === MapPointType.Danger){
           runInAction(() => {
             this.walkAdvrts = [];
-            this.mapPoints = response.data as IPointDangerDTO[];
+            this.mapPoints = response.data as IPointDangerShortDTO[];
           });
         }
-        else if(filter === MapPointType.Park){
+        else if(pointTag.type === MapPointType.Park){
           runInAction(() => {
             this.walkAdvrts = [];
             this.mapPoints = response.data as IPointParkDTO[];
@@ -537,7 +544,7 @@ class MapStore {
 
   async addReview(review: ReviewDTO) {
     try {
-    await apiClient.post('map/add-point-review', review);
+    await apiClient.post('review/add-or-update', review);
       
     } catch (error) {
       if (axios.isAxiosError(error)) 
@@ -565,7 +572,7 @@ class MapStore {
 
   async getReviewsByPointId(pointId: string): Promise<ReviewDTO[]> {
     try {
-      const response = await apiClient.get(`map/reviews/${pointId}`);
+      const response = await apiClient.get(`review/get-all-by-point/${pointId}`);
       return response.data as ReviewDTO[];
     } catch (error) {
       if (axios.isAxiosError(error)) 

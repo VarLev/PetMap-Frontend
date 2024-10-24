@@ -1,10 +1,9 @@
-import { View, StyleSheet, Keyboard } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import React from 'react';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { observer } from 'mobx-react-lite';
 import TabBarButton from './TabBarButton';
 import { Colors } from '@/constants/Colors';
-import mapStore from '@/stores/MapStore';
 import { useDrawer } from '@/contexts/DrawerProvider';
 import SidebarUserProfileComponent from './SidebarUserProfileComponent';
 
@@ -12,28 +11,28 @@ const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation })
   const primaryColor = Colors.light.primTextButtHigh;
   //const greyColor = Colors.light.primTextButtDefault;
   const { openDrawer } = useDrawer();
-  const [isVisible, setIsVisible] = useState(true);
+  //const [isVisible, setIsVisible] = useState(true);
 
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setIsVisible(false));
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setIsVisible(true));
+  // useEffect(() => {
+  //   //const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setIsVisible(false));
+  //   //const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setIsVisible(true));
 
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
+  //   return () => {
+  //     //keyboardDidShowListener.remove();
+  //     //keyboardDidHideListener.remove();
+  //   };
+  // }, []);
 
-  if (mapStore.bottomSheetVisible) {
-    //return null;
-  }
+  // if (mapStore.bottomSheetVisible) {
+  //   //return null;
+  // }
   
-  if (!isVisible || mapStore.bottomSheetVisible) {
-    //return null;
-  }
+  // if (!isVisible || mapStore.bottomSheetVisible) {
+  //   //return null;
+  // }
 
   return (
-    
+   
     <View style={styles.tabbar} className='shadow-md shadow-black'>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];

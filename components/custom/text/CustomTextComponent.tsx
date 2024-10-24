@@ -50,7 +50,7 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
       <Text
         numberOfLines={maxLines}
         ellipsizeMode="tail"
-        className="flex-1 pl-2 text-base font-nunitoSansRegular"
+        className="flex-1 pl-2 text-base font-nunitoSansRegular leading-5"
       >
         {displayText}
       </Text>

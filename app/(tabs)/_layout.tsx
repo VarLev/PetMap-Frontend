@@ -1,15 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { router, Tabs, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import TabBar from '@/components/navigation/TabBar';
 import { DrawerProvider } from '@/contexts/DrawerProvider';
 import { registerForPushNotificationsAsync, setupNotificationListeners, savePushTokenToServer } from '@/hooks/notifications';
 import UserStore from '@/stores/UserStore';
+import { Keyboard } from 'react-native';
 
 const Tabslayout = () => {
   const pathname = usePathname();
   const hideTabBar = pathname.includes('/chat/');
-  
+  const [isVisible, setIsVisible] = useState(true);
   useEffect(() => {
     // Загрузка пользователей при первом монтировании компонента
     UserStore.loadUsersOnce();
@@ -42,11 +43,21 @@ const Tabslayout = () => {
     };
   },[]);
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setIsVisible(false));
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setIsVisible(true));
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
   return (
     <>
      <DrawerProvider> 
       <Tabs
-        tabBar={(props) => !hideTabBar && <TabBar {...props} />}
+        tabBar={(props) =>  (!hideTabBar && isVisible) && <TabBar {...props} />}
         screenOptions={{
           tabBarShowLabel: false,
           tabBarActiveTintColor: '#2f0f48',
@@ -71,7 +82,7 @@ const Tabslayout = () => {
           name="explore"
           options={{
             title: 'Explore',
-            headerShown: true,
+            headerShown: false,
           }}
         />
         <Tabs.Screen
