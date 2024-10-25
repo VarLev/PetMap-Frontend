@@ -147,8 +147,8 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
             />
             
             <CustomButtonWithIcon
-              iconName='map-marker-multiple-outline'
-              iconSet='MaterialCommunityIcons'
+              iconName='location-pin'
+              iconSet='SimpleLine'
               onPress={() => handleSelectTag('Заметка', MapPointType.Note)}
               text={'Заметка'}
               buttonStyle='bg-white'

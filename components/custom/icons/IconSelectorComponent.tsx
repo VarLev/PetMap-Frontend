@@ -3,9 +3,10 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 interface IconComponentProps {
-  iconSet: 'MaterialIcons' | 'FontAwesome' | 'Ionicons' | 'MaterialCommunityIcons';
+  iconSet: 'MaterialIcons' | 'FontAwesome' | 'Ionicons' | 'MaterialCommunityIcons' | 'SimpleLine';
   iconName: string;
   size?: number;
   color?: string
@@ -24,6 +25,8 @@ const IconSelectorComponent: React.FC<IconComponentProps> = ({
       return <Ionicons name={iconName} size={size} color={color}/>;
     case 'MaterialCommunityIcons':
       return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
+    case 'SimpleLine':
+        return <SimpleLineIcons name={iconName} size={size} color={color} />;
     case 'MaterialIcons':
     default:
       return <MaterialIcons name={iconName} size={size} color={color} />;

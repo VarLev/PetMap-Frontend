@@ -34,10 +34,10 @@ import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
 import { Feature, FeatureCollection, Point } from 'geojson';
 import ViewUserPoint from './point/ViewUserPoint';
 import CustomAlert from '../custom/alert/CustomAlert';
-import MapPointIcon from './point/MapPointIscon';
 import SlidingOverlay from '../navigation/SlidingOverlay';
 import MapItemList from '../navigation/points/MapItemList';
 import MapPointIconWithAnimation from './point/MapPointIscon';
+import { UserPointType } from '@/dtos/enum/UserPointType';
 
 
 const MapBoxMap = observer(() => {
@@ -45,7 +45,6 @@ const MapBoxMap = observer(() => {
   const cameraRef = useRef<Camera>(null);
   const mapRef = useRef<Mapbox.MapView>(null);
   const userLocationRef = useRef<UserLocation>(null);
-  const [fabOpen, setFabOpen] = useState(false);
   const [renderContent, setRenderContent] = useState<ReactNode>(() => null);
   const [markerCoordinate, setMarkerCoordinate] = useState<
     [number, number] | null
@@ -62,15 +61,14 @@ const MapBoxMap = observer(() => {
   const currentUser = userStore.currentUser;
   const [modifiedFieldsCount, setModifiedFieldsCount] = useState(0);
   const [currentPointType, setCurrentPointType] = useState(MapPointType.Walk);
-
-  const [geoJSONData, setGeoJSONData] =
-    useState<FeatureCollection<Point> | null>(null);
+  const [geoJSONData, setGeoJSONData] = useState<FeatureCollection<Point> | null>(null);
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [isModalVisible, setModalVisible] = useState(false);
   const [alertType, setAlertType] = useState<"error" | "info">("info");
   const [alertText, setAlertText] = useState<string>("");
   const [isCardView, setisCardView] = useState<boolean>(false);
   const [selectedPointId, setSelectedPointId] = useState<string>('');
+  const [selectedWalkMarker, setSelectedWalkMarker] = useState('');
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
@@ -184,7 +182,8 @@ const MapBoxMap = observer(() => {
         showAlert("info");
         return;
       }
-    } else if (currentPointType === MapPointType.Danger) {
+    }
+    else if(currentPointType === MapPointType.Danger){ 
       const mapPoint: IPointDangerDTO = {
         dangerLevel: DangerLevel.Low,
         dangerType: DangerType.Other,
@@ -222,6 +221,43 @@ const MapBoxMap = observer(() => {
         <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose} />
       ));
     }
+    else if(currentPointType === MapPointType.Note){
+      const mapPoint: IPointUserDTO = {
+        id: randomUUID(),
+        mapPointType: MapPointType.Note,
+        status: MapPointStatus.Pending,
+        latitude: coordinates[1],
+        longitude: coordinates[0],
+        createdAt: new Date().toISOString(),
+        photos: [],
+        userId: currentUser?.id,
+        userPointType: UserPointType.Note,
+      };
+      setMarkerPointCoordinate(coordinates);
+      mapStore.setMarker(coordinates);
+      setRenderContent(() => (
+        <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose}  />
+      ));
+    }
+    else if(currentPointType === MapPointType.Note){
+      const mapPoint: IPointUserDTO = {
+        id: randomUUID(),
+        mapPointType: MapPointType.Note,
+        status: MapPointStatus.Pending,
+        latitude: coordinates[1],
+        longitude: coordinates[0],
+        createdAt: new Date().toISOString(),
+        photos: [],
+        userId: currentUser?.id,
+        userPointType: UserPointType.Note,
+      };
+      setMarkerPointCoordinate(coordinates);
+      mapStore.setMarker(coordinates);
+      setRenderContent(() => (
+        <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose}  />
+      ));
+    }
+
     if (!isSheetExpanded) {
       setTimeout(() => {
         sheetRef.current?.snapToIndex(0);
@@ -270,19 +306,14 @@ const MapBoxMap = observer(() => {
         paddingLeft: 0,
         paddingRight: 0,
         paddingTop: 0,
-        paddingBottom: 400,
-      },
-    });
-
-    // if(mapPoint.mapPointType === MapPointType.Park){
-    //   setRenderContent(() => (
-    //     <MapPointComonent mapPoint={mapPoint} onInvite={handleChatInvite} onClose={handleSheetClose} />
-    //   ));
-    // }
-    if (mapPoint.mapPointType === MapPointType.Danger) {
+        paddingBottom: 400
+      }
+    })
+    
+    
+    if(mapPoint.mapPointType === MapPointType.Danger){
       const pointDanger = mapPoint as IPointDangerDTO;
-
-      
+      console.log('Danger point:', pointDanger);    
       setRenderContent( <ViewDangerPoint mapPoint={pointDanger} />);
     }
     else {
@@ -340,9 +371,14 @@ const MapBoxMap = observer(() => {
 
   const tagSelected = async (type: number) => {
     setCurrentPointType(type);
-    if (type === MapPointType.Walk) await mapStore.setWalkAdvrts();
-    else await mapStore.getMapPointsByType(type);
-  };
+    if(type === MapPointType.Walk) 
+      await mapStore.setWalkAdvrts();
+    else{
+      await mapStore.getMapPointsByType( {type: type, userId: currentUser?.id});
+    }
+      
+
+  }
 
   const handleOpenFilter = () => {
     openDrawer(<FilterComponent onFilterChange={handleFilterChange} onFilterApply={closeDrawer}/>);
@@ -421,54 +457,43 @@ const MapBoxMap = observer(() => {
               cluster
               clusterRadius={38}
             >
-              <SymbolLayer
+              <SymbolLayer 
                 id="clusteredPoints"
                 filter={["has", "point_count"]}
                 style={styles.clusterStyle}
               />
-
-              {/* <SymbolLayer
-                id="individualPoints"
-                filter={['!', ['has', 'point_count']]}
-                style={styles.pointStyle}
-              /> */}
             </ShapeSource>
           )}
 
           {/* Маркеры прогулок */}
-          {!isCardView &&
-            mapStore.walkAdvrts.map((advrt, index) => (
-              <Mapbox.MarkerView
-                key={`advrt-${advrt.id}`}
-                id={`advrt-${index}`}
-                coordinate={[advrt.longitude!, advrt.latitude!]}
-                anchor={{ x: 0.5, y: 1 }}
-                onTouchStart={() => onPinPress(advrt)}
-                allowOverlap={false}
-              >
-                <Pressable
-                  onPress={() => onPinPress(advrt)}
-                  onLongPress={() => console.log("Long press detected")}
-                >
-                  <View>
-                    <Svg width="43" height="55" viewBox="0 0 43 55" fill="none">
-                      <Path
-                        d="M21.4481 54.8119C21.4481 54.8119 42.8963 35.7469 42.8963 21.4481C42.8963 9.60265 33.2936 0 21.4481 0C9.60265 0 0 9.60265 0 21.4481C0 35.7469 21.4481 54.8119 21.4481 54.8119Z"
-                        fill="#BFA8FF"
-                      />
-                    </Svg>
-                    <Image
-                      className="ml-[3.5px] mt-[3px] rounded-full h-9 w-9 absolute"
-                      source={{
-                        uri:
-                          advrt?.userPhoto || "https://via.placeholder.com/100",
-                      }}
-                    />
-                  </View>
-                </Pressable>
-              </Mapbox.MarkerView>
-            ))}
-
+          {!isCardView && mapStore.walkAdvrts.map((advrt, index) => (
+            <Mapbox.MarkerView 
+              key={`advrt-${advrt.id}`} 
+              id={`advrt-${index}`}
+              coordinate={[advrt.longitude!, advrt.latitude!]}
+              anchor={{ x: 0.5, y: 1}}
+              onTouchStart={() => {
+                onPinPress(advrt);
+                setSelectedWalkMarker(advrt.id!);
+              }}
+              allowOverlap={false}
+            >
+              <Pressable onPress={() => {
+                onPinPress(advrt);
+                setSelectedWalkMarker(advrt.id!);
+              }} onLongPress={() => console.log('Long press detected')}>
+                <View>
+                  <Svg width="43" height="55" viewBox="0 0 43 55" fill="none">
+                    <Path d="M21.4481 54.8119C21.4481 54.8119 42.8963 35.7469 42.8963 21.4481C42.8963 9.60265 33.2936 0 21.4481 0C9.60265 0 0 9.60265 0 21.4481C0 35.7469 21.4481 54.8119 21.4481 54.8119Z" fill={selectedWalkMarker === advrt.id ? "#4338CA" : "#BFA8FF"}/>
+                  </Svg>
+                  <Image className='ml-[3.5px] mt-[3px] rounded-full h-9 w-9 absolute'
+                    source={{ uri: advrt?.userPhoto|| 'https://via.placeholder.com/100' }}
+                  />
+                </View>
+              </Pressable>
+            </Mapbox.MarkerView>  
+          ))} 
+          
           {/* Маркеры поинтов */}
 
           {!isCardView && mapStore.mapPoints.map((point, index) => (
@@ -520,10 +545,10 @@ const MapBoxMap = observer(() => {
             >
               {currentPointType === MapPointType.Danger ? (
                 // Условие если добавляется опасность
-                <View className="bg-rose-500 rounded-full h-6 w-6">
+                 <View className='bg-indigo-700 rounded-full h-6 w-6'>
                   <IconSelectorComponent
-                    iconName="alert-octagram-outline"
-                    iconSet="MaterialCommunityIcons"
+                    iconName='alert-circle-outline'
+                    iconSet='MaterialCommunityIcons'
                     size={24}
                     color="white"
                   />

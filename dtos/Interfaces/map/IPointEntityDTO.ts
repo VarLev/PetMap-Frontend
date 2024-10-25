@@ -16,3 +16,10 @@ export interface IPointEntityDTO {
   name?: string;                    // Название точки
   amenities?: AmenitiesType[];      // Удобства точки
 }
+
+export interface IPointEntityShortDTO {
+  id: string;                     // Идентификатор точки
+  mapPointType: MapPointType;     // Тип точки (Danger, Park и т.д.)       
+  latitude?: number;              // Широта
+  longitude?: number;             // Долгота
+}

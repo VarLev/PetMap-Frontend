@@ -1,11 +1,11 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { IconButton } from 'react-native-paper';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import { IconButton } from "react-native-paper";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface CustomTextComponentProps {
   text?: string | number | string[] | null;
@@ -13,10 +13,16 @@ interface CustomTextComponentProps {
   rightIcon?: string;
   onRightIconPress?: () => void;
   maxLines?: number;
-  iconSet?: 'material' | 'paper' | 'fontAwesome' | 'simpleLine' | 'ionicons' | 'materialCommunity';
+  iconSet?:
+    | "material"
+    | "paper"
+    | "fontAwesome"
+    | "simpleLine"
+    | "ionicons"
+    | "materialCommunity";
   separator?: string;
   className_?: string; // Используем className для стилизации через NativeWind
-  textStyle?: object
+  textStyle?: object;
 }
 
 const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
@@ -25,34 +31,37 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
   rightIcon,
   onRightIconPress,
   maxLines = 2, // Устанавливаем максимум 2 строки по умолчанию
-  iconSet = 'material',
-  separator = ', ',
-  className_='', // Используем className для стилизации через NativeWind
+  iconSet = "material",
+  separator = ", ",
+  className_ = "", // Используем className для стилизации через NativeWind
   textStyle = {},
 }) => {
   const displayText = Array.isArray(text) ? text.join(separator) : text;
 
   return (
     <View className={`py-2 flex-row items-center ${className_}`}>
-      {leftIcon && (
-        iconSet === 'material' ? (
+      {leftIcon &&
+        (iconSet === "material" ? (
           <MaterialIcons name={leftIcon} size={20} color="#b39ddb" />
-        ) : iconSet === 'fontAwesome' ? (
+        ) : iconSet === "fontAwesome" ? (
           <FontAwesome name={leftIcon} size={20} color="#b39ddb" />
-        ) : iconSet === 'simpleLine' ? (
+        ) : iconSet === "simpleLine" ? (
           <SimpleLineIcons name={leftIcon} size={20} color="#b39ddb" />
-        ) : iconSet === 'ionicons' ? (
+        ) : iconSet === "ionicons" ? (
           <Ionicons name={leftIcon} size={20} color="#b39ddb" />
-        ) : iconSet === 'materialCommunity' ? (
-          <MaterialCommunityIcons name={leftIcon as any} size={20} color="#b39ddb" />
+        ) : iconSet === "materialCommunity" ? (
+          <MaterialCommunityIcons
+            name={leftIcon as any}
+            size={20}
+            color="#b39ddb"
+          />
         ) : (
           <IconButton icon={leftIcon} size={20} />
-        )
-      )}
+        ))}
       <Text
         numberOfLines={maxLines}
         ellipsizeMode="tail"
-        style={[{ flex: 1, paddingLeft: 8, fontSize: 16, fontFamily: 'NunitoSans-Regular' }, textStyle]} 
+        className="flex-1 pl-2 text-base font-nunitoSansRegular leading-5"
       >
         {displayText}
       </Text>

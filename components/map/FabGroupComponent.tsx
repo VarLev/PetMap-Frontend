@@ -24,7 +24,7 @@ const FabGroupComponent: React.FC<FabGroupProps> = ({ selectedNumber, setSelecte
 
   const handleIconChange = (
     iconName: string,
-    iconSet: 'MaterialIcons' | 'FontAwesome' | 'Ionicons' | 'MaterialCommunityIcons'
+    iconSet: 'MaterialIcons' | 'FontAwesome' | 'Ionicons' | 'MaterialCommunityIcons' | 'SimpleLine'
   ) => {
     setFabIcon(
       <IconSelectorComponent
@@ -83,7 +83,7 @@ const FabGroupComponent: React.FC<FabGroupProps> = ({ selectedNumber, setSelecte
           {
             icon: () => (
               <IconSelectorComponent
-                iconName='alert-octagram-outline'
+                iconName='alert-circle-outline'
                 iconSet='MaterialCommunityIcons'
                 size={24}
                 color='white'
@@ -99,7 +99,7 @@ const FabGroupComponent: React.FC<FabGroupProps> = ({ selectedNumber, setSelecte
               ); // Изменяем иконку FAB
               handleActionPress(MapPointType.Danger); // Обновляем число
             },
-            style: { backgroundColor: `${BG_COLORS.rose[500]}` },
+            style: { backgroundColor: `${BG_COLORS.indigo[700]}` },
           },
           {
             icon: () => (
@@ -120,28 +120,28 @@ const FabGroupComponent: React.FC<FabGroupProps> = ({ selectedNumber, setSelecte
               ); // Изменяем иконку FAB
               handleActionPress(MapPointType.UsersCustomPoint); // Обновляем число
             },
-            style: { backgroundColor: '#9076ea' },
+            style: { backgroundColor: `${BG_COLORS.indigo[700]}` },
           },
           {
             icon: () => (
               <IconSelectorComponent
-                iconName='note-plus-outline'
-                iconSet='MaterialCommunityIcons'
+                iconName='location-pin'
+                iconSet='SimpleLine'
                 size={24}
                 color='white'
               />
             ),
-            label: 'Моя метка',
+            label: 'Моя заметка',
             labelTextColor: 'white',
             labelStyle: { fontFamily: 'NunitoSans_700Bold' },
             onPress: () => {
               handleIconChange(
-                'note-plus-outline',
-                'MaterialCommunityIcons'
+                'location-pin',
+                'SimpleLine'
               ); // Изменяем иконку FAB
               handleActionPress(MapPointType.Note); // Обновляем число
             },
-            style: { backgroundColor: '#9076ea' },
+            style: { backgroundColor: `${BG_COLORS.indigo[700]}` },
           },
         ]}
         onStateChange={({ open }) => setFabOpen(open)}

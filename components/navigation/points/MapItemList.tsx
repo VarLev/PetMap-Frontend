@@ -48,6 +48,7 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
       setPoints(reset ? items : (prevAds) => [...prevAds, ...items]);
     } catch (error) {
       console.error('Ошибка при загрузке объявлений:', error);
+      setHasMoreData(false); // Останавливаем дальнейшие попытки загрузки
     } finally {
       setIsLoading(false);
     }
