@@ -8,17 +8,19 @@ import CustomOutlineInputText from '../custom/inputs/CustomOutlineInputText';
 import { ReviewDTO } from '@/dtos/classes/review/Review';
 import userStore from '@/stores/UserStore';
 import CustomAlert from '../custom/alert/CustomAlert';
+import ReviewComment from './ReviewComment';
+import mapStore from '@/stores/MapStore';
 
 interface ReviewSectionProps {
-  onSubmitReview: (review: ReviewDTO) => Promise<void>;
+  mapPointId: string;
   fetchReviews: (page: number) => Promise<ReviewDTO[]>;
   totalPages: number;
 }
 
 const ReviewSection: React.FC<ReviewSectionProps> = ({
-  onSubmitReview,
+  mapPointId,
   fetchReviews,
-  totalPages,
+  totalPages
 }) => {
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
@@ -26,24 +28,35 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   const [localReviews, setLocalReviews] = useState<ReviewDTO[]>(new Array<ReviewDTO>());
   const [isModalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [existingReview, setExistingReview] = useState<ReviewDTO | null>(null);
 
   const hasLoadedInitialReviews = useRef(false); // Use ref to track if initial load has occurred
 
   useEffect(() => {
+    console.log('Загрузка отзывов');
     if (!hasLoadedInitialReviews.current) {
-      loadReviews(currentPage);
+      loadReviews(1); // Load first page on initial mount
       hasLoadedInitialReviews.current = true;
     }
-  }, [currentPage]);
+  }, []);
 
   const loadReviews = async (page: number) => {
-    if (isLoading) return;
+    if (isLoading || page > totalPages) return;
     setIsLoading(true);
     try {
-      console.log('Загрузка отзывов');
       const newReviews = await fetchReviews(page);
       setLocalReviews((prevReviews) => [...prevReviews, ...newReviews]);
-      console.log('Отзывы загружены:', localReviews);
+
+      // Check if the current user has already left a review for this point
+      const userReview = newReviews.find(
+        (review) => review.userId === userStore.currentUser.id
+      );
+      if (userReview) {
+        setExistingReview(userReview);
+        setReviewText(userReview.comment);
+        setRating(userReview.rating);
+      }
+    
     } catch (error) {
       console.error('Ошибка при загрузке отзывов:', error);
     } finally {
@@ -51,7 +64,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
     }
   };
 
-  const handleSubmitReview = async () => {
+  const handleSubmitOrUpdateReview = async () => {
     if (!reviewText || rating === 0) {
       setModalVisible(true);
       return;
@@ -62,82 +75,100 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
         console.error('User ID or name is missing');
         return;
       }
-      console.log('Отправка отзыва:', reviewText, rating);
       const review = new ReviewDTO(
-        '',
+        existingReview ? existingReview.id : '',
         rating,
         reviewText,
         new Date(),
         userStore.currentUser.id,
-        userStore.currentUser.name
+        userStore.currentUser.name ?? 'User',
+        mapPointId // Include pointId in the constructor
       );
-      await onSubmitReview(review);
-      setLocalReviews([review, ...localReviews]);
+
+      console.log('Отправка отзыва:', reviewText, rating);
+      await mapStore.addReview(review);
+      setLocalReviews((prevReviews) => {
+        if (existingReview) {
+          return prevReviews.map((r) => (r.id === review.id ? review : r));
+        } else {
+          return [review, ...prevReviews];
+        }
+      });
       setReviewText('');
       setRating(0);
+      setExistingReview(null);
     } catch (error) {
-      console.error('Ошибка при отправке отзыва:', error);
+      console.error('Ошибка при отправке/обновлении отзыва:', error);
     }
   };
 
   const handleLoadMore = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
+      loadReviews(currentPage + 1); // Load the next page
     }
   };
 
   const renderReview = ({ item }: { item: ReviewDTO }) => (
-    <Card className="m-1 p-2 bg-white" elevation={1}>
-      <Text>{item.userName}</Text>
-      <StarRating
-        rating={item.rating}
-        starSize={15}
-        onChange={() => {}}
-        style={{ paddingVertical: 1 }}
-      />
-      <Text>{item.comment}</Text>
-    </Card>
+    <ReviewComment
+      item={item}
+      onUpdateReview={handleSubmitOrUpdateReview}
+      refreshReviews={(updatedReview: ReviewDTO) => {
+        setLocalReviews((prevReviews) =>
+          prevReviews.map((r) => (r.id === updatedReview.id ? updatedReview : r))
+        );
+      }}
+    />
   );
 
   return (
-    <View className="pt-2">
-      <Card className="p-4 bg-white" elevation={1}>
-        <CustomOutlineInputText
-          numberOfLines={3}
-          label="Напишите ваш отзыв"
-          value={reviewText}
-          handleChange={setReviewText}
-        />
-        <StarRating
-          rating={rating}
-          starSize={40}
-          onChange={setRating}
-          emptyColor="#2F00B6"
-          style={{ paddingVertical: 10 }}
-          color="#BFA8FF"
-          starStyle={{ marginHorizontal: 5 }}
-        />
-        <CustomButtonPrimary
-          title="Отправить отзыв"
-          handlePress={handleSubmitReview}
-        />
-      </Card>
+    <View className="pt-4">
+      {!existingReview && (
+        <Card className="p-4 bg-white" elevation={1}>
+          <CustomOutlineInputText
+            numberOfLines={3}
+            label="Напишите ваш отзыв"
+            value={reviewText}
+            handleChange={setReviewText}
+          />
+          <StarRating
+            rating={rating}
+            starSize={40}
+            onChange={setRating}
+            emptyColor="#2F00B6"
+            style={{ paddingVertical: 10 }}
+            color="#BFA8FF"
+            starStyle={{ marginHorizontal: 5 }}
+          />
+          <CustomButtonPrimary
+            title="Отправить отзыв"
+            handlePress={handleSubmitOrUpdateReview}
+          />
+        </Card>
+      )}
 
-      <FlatList
-        data={localReviews}
-        renderItem={renderReview}
-        keyExtractor={(item, index) => index.toString()}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.9}
-        ListFooterComponent={() =>
-          currentPage < totalPages ? (
-            <CustomButtonOutlined
-              title="Загрузить еще"
-              handlePress={handleLoadMore}
-            />
-          ) : null
-        }
-      />
+      <Text className='mt-2 ml-1 text-base font-nunitoSansBold text-indigo-700'>Отзывы</Text>
+      {localReviews.length === 0 ? (
+        <Text className='m-2 text-sm font-nunitoSansBold text-gray-400'>
+          Никто еще не оставил отзыв об этом месте, будь первым и получи повышенные бонусы.
+        </Text>
+      ) : (
+        <FlatList
+          data={localReviews}
+          renderItem={renderReview}
+          keyExtractor={(item) => item.id}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.9}
+          ListFooterComponent={() =>
+            currentPage < totalPages ? (
+              <CustomButtonOutlined
+                title="Загрузить еще"
+                handlePress={handleLoadMore}
+              />
+            ) : null
+          }
+        />
+      )}
       <CustomAlert
         isVisible={isModalVisible}
         onClose={() => setModalVisible(false)}

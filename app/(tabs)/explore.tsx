@@ -1,14 +1,26 @@
-import { View } from 'react-native'
+import { SafeAreaView } from 'react-native'
 import React from 'react'
-import TextNotificationComponent from '@/components/notification/TextNotificationComponent'
+
+import TopUsers from '@/components/search/TopUsers'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { Provider } from 'react-native-paper'
 
 const explore = () => {
   return (
-    <View>
-      
-      <TextNotificationComponent/>
-    </View>
+    
+      <SafeAreaView className='bg-violet-100 h-full'>
+      <GestureHandlerRootView  style={{ flex: 1 }}>
+        <Provider>
+        <TopUsers />
+        </Provider>
+      </GestureHandlerRootView> 
+    </SafeAreaView>
+
+    
+    
   )
 }
 
-export default explore
+export default explore;
+
+      {/* <TextNotificationComponent/> */}

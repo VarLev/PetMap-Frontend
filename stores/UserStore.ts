@@ -21,6 +21,7 @@ import { handleAxiosError } from '@/utils/axiosUtils';
 import { JobType } from '@/dtos/enum/JobType';
 import { Job } from '@/dtos/classes/job/Job';
 import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
+import { IUserCardDto } from '@/dtos/Interfaces/user/IUserCardDto';
 
 
 class UserStore {
@@ -620,8 +621,7 @@ class UserStore {
         return 0;
       }
     } catch (error) {
-      console.error('Failed to load user jobs', error);
-      return 0;
+      return handleAxiosError(error);
     }
   }
 
@@ -629,7 +629,16 @@ class UserStore {
     try {
       await apiClient.put(`/job/user/${userId}`, jobs);
     } catch (error) {
-      console.error('Failed to update user jobs', error);
+      return handleAxiosError(error);
+    }
+  }
+
+  async getAllTopUsers(): Promise<IUserCardDto[]> {
+    try {
+      const response = await apiClient.get('/users/all-top-users');
+      return response.data;
+    } catch (error) {
+      return handleAxiosError(error);
     }
   }
 
