@@ -50,7 +50,7 @@ const ChatHeader = ({ item }) => {
           return `Был(а) в ${lastSeenDate.getDate()}д ${lastSeenDate.getHours()}ч ${lastSeenDate.getMinutes()}м `;
         } else {
           const lastSeenDate = new Date(lastSeen);
-          return `Был(а) в ${lastSeenDate.getHours()}ч ${lastSeenDate.getMinutes()}м`;
+          return `Был(а) в ${lastSeenDate.getHours()}:${lastSeenDate.getMinutes().toString().padStart(2, '0')}`;
         }
       }
       return 'Был(а): Неизвестно';

@@ -217,7 +217,7 @@ export function correctTimeNaming (diffHours: number, diffMinutes: number) {
  
    // Определение правильного названия для минут
    if (diffMinutes === 1) {
-     minutesText = `${diffMinutes} минута`;
+     minutesText = `${diffMinutes} минуту`;
    } else if (diffMinutes >= 2 && diffMinutes <= 4) {
      minutesText = `${diffMinutes} минуты`;
    } else {

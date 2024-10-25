@@ -57,19 +57,9 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
       setDistance(dist);
       if (advrt.userId === userStore.currentUser?.id) fetchParticipants();
       else {
-<<<<<<< HEAD
-        const dist = calculateDistance(
-          advrt.latitude!,
-          advrt.longitude!,
-          mapStore.currentUserCoordinates[0],
-          mapStore.currentUserCoordinates[1]
-        );
-        console.log("distance", dist);
-     
-        setDistance(dist);
-=======
+
         
->>>>>>> master
+
       }
     }, [advrt]);
 
@@ -257,11 +247,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
               </View>
             </>
           )}
-<<<<<<< HEAD
 
-          {pets &&
-            pets.map((pet, index) => (
-=======
         <Text className="text-base pt-2 text-indigo-800 font-nunitoSansBold">    
           Питомцы
         </Text>
@@ -269,7 +255,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
          
          {pets && 
             pets.slice(0, showAllPets ? pets.length : 2).map((pet, index) => (
->>>>>>> master
+
               <Surface
                 key={index}
                 elevation={0}

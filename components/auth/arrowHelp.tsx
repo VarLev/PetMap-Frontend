@@ -9,10 +9,11 @@ function ArrowHelp() {
   };
 
   return (
-    <View className="flex-row justify-between items-center mx-2">
-      <IconButton icon="arrow-left" size={30} onPress={handleBack} />
+    <View className="flex-row justify-between items-center">
+      <IconButton icon="arrow-left" size={26} onPress={handleBack} />
       <Text
-        onPress={() => console.log("press help")}
+        onPress={() => {
+          alert("press help"); console.log("press help")}}
         className="text-lg font-nunitoSansBold"
       >
         {i18n.t('arrowHelp.help')}

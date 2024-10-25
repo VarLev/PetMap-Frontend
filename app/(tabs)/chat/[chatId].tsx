@@ -38,7 +38,7 @@ const ChatScreen: React.FC = observer(() => {
   useEffect(() => {
     if (otherUserId) {
       checkUserIsBlocked(otherUserId);
-    }
+        }
   }, []);
   useEffect(() => {
     if (chatId) {
@@ -60,6 +60,7 @@ const ChatScreen: React.FC = observer(() => {
       backHandler.remove();
       ChatStore.clearMessages();
     };
+  
   }, [chatId, router]);
 
   const renderMessage = useCallback((message: MessageType.Custom) => {

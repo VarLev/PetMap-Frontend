@@ -10,7 +10,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { calculateDogAge, getTagsByIndex } from "@/utils/utils";
 import { BREEDS_TAGS, petUriImage } from "@/constants/Strings";
 import CustomTextComponent from "../custom/text/CustomTextComponent";
-import { calculateDistance, convertDistance, correctTimeNaming } from "@/utils/utils";
+import {
+  calculateDistance,
+  convertDistance,
+  correctTimeNaming,
+} from "@/utils/utils";
+import CircleIcon from "../custom/icons/CircleIcon";
 
 interface AdvtProps {
   item?: IWalkAdvrtDto[];
@@ -29,18 +34,59 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
 
   const userIdFromMessage = message.metadata?.userId;
   const item = mapStore.walkAdvrts;
-  // console.log("item", item);
 
   const matchedItem = item.find((advrt) => advrt.userId === userIdFromMessage);
+  
+  
   const pets = matchedItem?.userPets;
-  const timeToWalk: Date | undefined = matchedItem?.date
-    ? new Date(matchedItem.date)
-    : undefined;
-  // console.log("timeToWalk", timeToWalk);
 
- 
-  // console.log("currentTime", currentTime);
+  const nextWalkTime = (advrt: IWalkAdvrtDto): Date | undefined => {
+    const today = new Date();
+    const currentDay = today.getDay(); // 0 - воскресенье, 6 - суббота
 
+    if (advrt.isRegular) {
+      if (advrt.selectedDays?.length === 7) {
+        // Прогулки каждый день
+        if (advrt.startTime) {
+          const nextWalk = new Date(advrt.startTime);
+          nextWalk.setFullYear(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate()
+          );
+
+          // Если время прогулки уже прошло сегодня, берем завтрашнее время
+          if (nextWalk <= today) {
+            nextWalk.setDate(nextWalk.getDate() + 1);
+          }
+          return nextWalk;
+        }
+        return undefined; // Если время не указано
+      } else if (advrt.selectedDays && advrt.selectedDays.length > 0) {
+        // Прогулки в определенные дни недели
+        const sortedDays = advrt.selectedDays.sort((a, b) => a - b);
+        let nextWalkDay =
+          sortedDays.find((day) => day > currentDay) ?? sortedDays[0];
+        let daysUntilNextWalk = (nextWalkDay - currentDay + 7) % 7;
+
+        const nextWalkDate = new Date();
+        nextWalkDate.setDate(today.getDate() + daysUntilNextWalk);
+
+        if (advrt.startTime) {
+          const startTimeDate = new Date(advrt.startTime);
+          nextWalkDate.setHours(startTimeDate.getHours());
+          nextWalkDate.setMinutes(startTimeDate.getMinutes());
+        }
+
+        return nextWalkDate;
+      }
+    } else if (advrt.date) {
+      // Разовая прогулка
+      return new Date(advrt.date);
+    }
+
+    return undefined; // Если нет данных о прогулке
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -51,34 +97,28 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
   }, []);
 
   useEffect(() => {
-    if (timeToWalk) {
-      const currentTime: Date = new Date();
-      console.log("currentTime", currentTime);
+    const nextWalk = matchedItem ? nextWalkTime(matchedItem) : undefined;
+
+    if (nextWalk) {
+      const currentTime = new Date();
 
       // Вычисляем разницу во времени в миллисекундах
-      const diffMs = timeToWalk.getTime() - currentTime.getTime();
+      const diffMs = nextWalk.getTime() - currentTime.getTime();
 
-      // Разделение на часы и минуты
-      // const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-      let diffHours = Math.floor(
-        (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-      );
-      let diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-      if (diffHours < 0) {
-        diffHours += 24;
-        diffMinutes += 60;
+      if (diffMs > 0) {
+        let diffHours = Math.floor(
+          (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        let diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+        setDiffHours(diffHours);
+        setDiffMinutes(diffMinutes);
+      } else {
+        setDiffHours(0);
+        setDiffMinutes(0);
       }
-      setDiffHours(diffHours + 24);
-      setDiffMinutes(diffMinutes + 60);
-      // const diffSeconds = Math.floor((diffMs % (1000 * 60)) / 1000);
-      setDiffHours(diffHours);
-      setDiffMinutes(diffMinutes);
-
-      console.log(`${diffHours} часов, ${diffMinutes} минут`);
     }
-   
-  }, [currentTime, timeToWalk]);
- 
+  }, [currentTime, matchedItem]);
 
   const handlePress = () => {
     router.push(`/profile/${message.metadata!.userId}`);
@@ -86,10 +126,8 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
 
   const handleUserProfileOpen = (userId: string) => {
     if (userIsOwner) {
-      console.log("userIsOwner", userIsOwner);
       router.push("/profile");
     } else {
-      console.log("userIsOwner", userIsOwner);
       router.push(`/(tabs)/profile/${userId}`);
     }
     mapStore.setBottomSheetVisible(false);
@@ -121,20 +159,6 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
             <Text className="w-full text-xl font-nunitoSansBold">
               {matchedItem?.userName || "Owner"}
             </Text>
-            {/* <CustomTextComponent
-              text={correctTimeNaming(diffHours, diffMinutes)}
-              leftIcon="time-outline"
-              iconSet="ionicons"
-              className_="p-0"
-              textStyle={{ fontSize: 12 }}
-            /> */}
-            {/* <CustomTextComponent
-              text={distanceText}
-              leftIcon="social-distance"
-              iconSet="material"
-              className_="p-0"
-              textStyle={{ fontSize: 12 }}
-            /> */}
           </View>
         </View>
         {pets &&
@@ -170,9 +194,10 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
                       </Text>
                       <StarRatingDisplay
                         rating={pet.temperament ?? 0}
-                        starSize={15}
+                        starSize={14}
                         color="#BFA8FF"
                         starStyle={{ marginHorizontal: 1 }}
+                        StarIconComponent={CircleIcon}
                       />
                     </View>
                     <View className="flex-row justify-between items-center ml-[-5px]">
@@ -181,9 +206,10 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
                       </Text>
                       <StarRatingDisplay
                         rating={pet.friendliness ?? 0}
-                        starSize={15}
+                        starSize={14}
                         color="#BFA8FF"
                         starStyle={{ marginHorizontal: 1 }}
+                        StarIconComponent={CircleIcon}
                       />
                     </View>
                     <View className=" flex-row justify-between items-center ml-[-5px]">
@@ -192,9 +218,10 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
                       </Text>
                       <StarRatingDisplay
                         rating={pet.activityLevel ?? 0}
-                        starSize={15}
+                        starSize={14}
                         color="#BFA8FF"
                         starStyle={{ marginHorizontal: 1 }}
+                        StarIconComponent={CircleIcon}
                       />
                     </View>
                   </View>
@@ -207,8 +234,64 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
         </Text>
         <CustomTextComponent
           text={
-            matchedItem?.date
-              ? new Date(matchedItem.date).toLocaleTimeString()
+            matchedItem?.isRegular
+              ? // Прогулки регулярные
+                matchedItem.selectedDays?.length === 7
+                ? "Каждый день в " +
+                  (matchedItem.startTime
+                    ? new Date(matchedItem.startTime).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "Время не указано")
+                : matchedItem.selectedDays
+                    ?.map(
+                      (day) => ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"][day]
+                    )
+                    .join(", ") +
+                  " в " +
+                  (matchedItem.startTime
+                    ? new Date(matchedItem.startTime).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "Время не указано")
+              : // Прогулки нерегулярные
+              matchedItem?.date
+              ? (() => {
+                  const walkDate = new Date(matchedItem.date);
+                  const currentTime = new Date();
+                  const diffMs = walkDate.getTime() - currentTime.getTime();
+                  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+                  // Если до прогулки больше суток, показываем дату и время
+                  if (diffDays > 1) {
+                    return (
+                      walkDate.toLocaleDateString() +
+                      " в " +
+                      (matchedItem.startTime
+                        ? new Date(matchedItem.startTime).toLocaleTimeString(
+                            [],
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )
+                        : "Время не указано")
+                    );
+                  } else if (matchedItem.startTime) {
+                    // Если до прогулки меньше суток и startTime указан, показываем только время
+                    return (
+                      "Сегодня в " +
+                      new Date(matchedItem.startTime).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    );
+                  } else {
+                    return "Дата не указана";
+                  }
+                })()
               : "Дата не указана"
           }
           leftIcon="calendar-outline"
@@ -216,6 +299,7 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
           className_="p-1"
           textStyle={{ fontSize: 12 }}
         />
+
         <CustomTextComponent
           text={matchedItem?.address || "Место"}
           leftIcon="location-pin"
@@ -224,19 +308,12 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
           textStyle={{ fontSize: 12 }}
         />
         <CustomTextComponent
-          text={correctTimeNaming(diffHours, diffMinutes)}
+          text={correctTimeNaming(diffHours ?? 0, diffMinutes ?? 0)}
           leftIcon="time-outline"
           iconSet="ionicons"
           className_="p-1 mb-1"
           textStyle={{ fontSize: 12 }}
         />
-        {/* <CustomTextComponent
-          text={distanceText}
-          leftIcon="social-distance"
-          iconSet="material"
-          className_="p-1 mb-1"
-          textStyle={{ fontSize: 12 }}
-        /> */}
       </View>
     </>
   );

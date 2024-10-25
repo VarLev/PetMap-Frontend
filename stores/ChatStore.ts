@@ -68,7 +68,7 @@ class ChatStore {
           chatsList.push({
             id: chatId,
             lastMessage: chatData.lastMessage,
-            // lastSeen: chatData.lastSeen,
+            lastSeen: userSnapshot.val().lastSeen || null,
             participants: chatData.participants,
             otherUserName: otherUserName,
             otherUserId: otherUserId,
@@ -223,6 +223,7 @@ class ChatStore {
       await update(ref(database, `chats/${chatId}`), {
         lastMessage: text,
       });
+      // обновляем время посещения
       await update(ref(database, `users/${userId}`), {
         lastSeen: Date.now(),
       });
@@ -241,7 +242,7 @@ class ChatStore {
       runInAction(() => {
         chatStore.lastMessage[chatId] = text;
         chatStore.lastSeen[userId] = Date.now();
-        console.log("lastSeen from chatStore:", chatStore.lastMessage[chatId]);
+        console.log("lastSeen from chatStore:", chatStore.lastSeen[userId]);
       });
     } catch (error) {
       console.error("Error during sendMessage:", error);
@@ -282,16 +283,46 @@ class ChatStore {
   async getLastMessage(chatId: string) {
     const data = ref(database, `chats/${chatId}`);
     const snapshot = await get(data);
-
     if (snapshot.exists()) {
       const lastMessage = snapshot.val().lastMessage;
-
       runInAction(() => {
         this.lastMessage[chatId] = lastMessage;
       });
       return lastMessage;
     }
   }
+
+  async getLastSeen(userId: string) {
+    const data = ref(database, `users/${userId}`);
+    const snapshot = await get(data);
+    if (snapshot.exists()) {
+      const lastSeen = snapshot.val().lastSeen;
+
+      runInAction(() => {
+        this.lastSeen[userId] = lastSeen;
+      });
+      return lastSeen;
+    }
+  }
+
+  async setLastSeen() {
+    const userId = userStore.currentUser?.id;
+    if (!userId) {
+      console.error("User is not defined");
+      return;
+    }
+      const timestamp = Date.now();
+    await update(ref(database, `users/${userId}`), {
+      lastSeen: timestamp,
+    });
+
+    console.log('timestamp set in database:', timestamp);
+  
+    runInAction(() => {
+      this.lastSeen[userId] = timestamp;
+    });
+  }
+  
 
   async deleteChat(chatId: string) {
     const userId = userStore.currentUser?.id;

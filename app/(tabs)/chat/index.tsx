@@ -15,18 +15,39 @@ import { Divider, Surface, IconButton } from "react-native-paper";
 import ChatMenu from "@/components/chat/chatMenu";
 import EmptyChatScreen from "@/components/chat/EmptyChatScreen";
 
+
 const ChatListItem: React.FC<{
   item: (typeof ChatStore.chats)[0];
 }> = ({ item }) => {
   const router = useRouter();
   const [lastMessage, setLastMessage] = useState<string | null>(null);
+ const [lastSeen, setLastSeen] = useState<number | null>(null);
+
+
+  //достаем время последнего посещения всех участников чата 
+  useEffect(() => {
+    const fetchLastSeen = async () => {
+      try {
+        const userId = item.id.slice(36, 72);
+        ChatStore.lastSeen[userId] = await ChatStore.getLastSeen(userId);
+       await ChatStore.setLastSeen();
+        console.log('userId', userId);
+        setLastSeen(ChatStore.lastSeen[userId]);
+      } catch (error) {
+        console.error('Error fetching last seen:', error);
+      }
+    };
+   fetchLastSeen();
+  }, [item.id]);
+
+  
+  
 
   useEffect(() => {
     const fetchLastMessage = async () => {
       const message = await ChatStore.getLastMessage(item.id);
-      setLastMessage(message);
+      setLastMessage(message);   
     };
-
     fetchLastMessage();
   }, [item.id]);
 
@@ -76,6 +97,7 @@ const ChatListScreen: React.FC = observer(() => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     fetchData();
@@ -121,7 +143,7 @@ const ChatListScreen: React.FC = observer(() => {
       {ChatStore.chats.length === 0 && <EmptyChatScreen />}
       <View className="h-full">
         <View className="flex-row items-center justify-start gap-2 p-2 mt-4">
-          <IconButton icon="arrow-left" size={24} />
+          <IconButton icon="arrow-left" size={24} onPress={() => router.push('(tabs)/map')} />
           <Text className="text-lg font-nunitoSansBold pb-1">Сообщения</Text>
         </View>
         <FlatList
