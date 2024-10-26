@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, FlatList, Text } from 'react-native';
-import { Card } from 'react-native-paper';
+import { View, FlatList, Text, Image } from 'react-native';
+import { Card, Divider } from 'react-native-paper';
 import StarRating from 'react-native-star-rating-widget';
 import CustomButtonPrimary from '../custom/buttons/CustomButtonPrimary';
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
@@ -10,6 +10,7 @@ import userStore from '@/stores/UserStore';
 import CustomAlert from '../custom/alert/CustomAlert';
 import ReviewComment from './ReviewComment';
 import mapStore from '@/stores/MapStore';
+import StarSvgIcon from '../custom/icons/StarSvgIcon';
 
 interface ReviewSectionProps {
   mapPointId: string;
@@ -122,9 +123,10 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   );
 
   return (
-    <View className="pt-4">
+    <View className="pt-2">
+      <Text className='ml-1 text-base font-nunitoSansBold text-indigo-700  '>Оценки и отзывы</Text>
       {!existingReview && (
-        <Card className="p-4 bg-white" elevation={1}>
+        <View className="m-2">
           <CustomOutlineInputText
             numberOfLines={3}
             label="Напишите ваш отзыв"
@@ -133,21 +135,21 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
           />
           <StarRating
             rating={rating}
-            starSize={40}
+            starSize={50}
+            maxStars={5}
             onChange={setRating}
             emptyColor="#2F00B6"
-            style={{ paddingVertical: 10 }}
-            color="#BFA8FF"
-            starStyle={{ marginHorizontal: 5 }}
+            style={{ paddingVertical: 10, alignSelf: 'center' }}
+            color="#2F00B6"
+            starStyle={{ marginHorizontal: 10 }}
+            StarIconComponent={StarSvgIcon}
           />
           <CustomButtonPrimary
             title="Отправить отзыв"
             handlePress={handleSubmitOrUpdateReview}
           />
-        </Card>
+        </View>
       )}
-
-      <Text className='mt-2 ml-1 text-base font-nunitoSansBold text-indigo-700'>Отзывы</Text>
       {localReviews.length === 0 ? (
         <Text className='m-2 text-sm font-nunitoSansBold text-gray-400'>
           Никто еще не оставил отзыв об этом месте, будь первым и получи повышенные бонусы.
