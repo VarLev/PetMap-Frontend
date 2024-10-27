@@ -4,7 +4,7 @@ import { Stack, SplashScreen } from 'expo-router';
 import React, { useEffect } from 'react';
 import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans';
 import { AlertProvider } from '@/contexts/AlertContext';
-import { PaperProvider } from 'react-native-paper';
+import { DefaultTheme, PaperProvider } from 'react-native-paper';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -30,7 +30,7 @@ const Layout = () => {
   return (
     <StoreProvider>
       <AlertProvider>
-        <PaperProvider>
+        <PaperProvider theme={DefaultTheme}>
         <Stack initialRouteName='(tabs)'>
           <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
           <Stack.Screen name='(auth)' options={{ headerShown: false }} />
