@@ -4,11 +4,12 @@ import { Avatar } from 'react-native-paper';
 import UserCard from '../custom/cards/UserCard';
 import usersStore from '@/stores/UserStore';
 import { IUserCardDto } from '@/dtos/Interfaces/user/IUserCardDto';
-import { Svg, Path } from 'react-native-svg';
+import { Svg, Path, Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { router } from 'expo-router';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
+import LottieView from 'lottie-react-native';
 
 const TopUsers = () => {
   const [topUsers, setTopUsers] = useState<IUserCardDto[]>([]);
@@ -77,8 +78,26 @@ const TopUsers = () => {
         animatedStyle,
       ]}
     >
-      <View className="flex-col justify-between">
-        <View className="bg-[#2F00B6] rounded-b-3xl p-4 rounded-full">
+      <Svg height="100%" width="100%" className="absolute">
+        <Defs>
+          <RadialGradient
+            id="grad"
+            cx="0.1"  // Центрируем градиент по горизонтали
+            cy="0.1"  // Центрируем градиент по вертикали
+            rx="100%"  // Увеличиваем радиус по горизонтали, чтобы светлая часть занимала половину
+            ry="100%"  // Увеличиваем радиус по вертикали
+            fx="0.1"  // Начальная точка градиента по горизонтали (центр)
+            fy="0.1"  // Начальная точка градиента по вертикали (центр)
+            gradientUnits="userSpaceOnUse"
+          >
+            <Stop offset="0%" stopColor="#BC88FF" />
+            <Stop offset="100%" stopColor="#2F00B6" />
+          </RadialGradient>
+        </Defs>
+        <Rect x="0" y="0" width="100%" height="100%" fill="url(#grad)" />
+      </Svg>
+      <View className="flex-col justify-between">    
+        <View className="rounded-b-3xl p-4 rounded-full">
           <Text className="pt-2 text-white text-center mb-2 text-lg font-nunitoSansBold">
             Самые активные пользователи!
           </Text>
@@ -92,13 +111,14 @@ const TopUsers = () => {
         <View className="flex-row items-center justify-center mx-2">
           {/* Второй пользователь (слева) */}
           <View key={topUsers[1]?.id} className="items-center">
-            <TouchableOpacity onPress={() => handleUserProfileOpen(topUsers[1]?.id)}>
-              <Avatar.Image size={60} source={{ uri: topUsers[1]?.thumbnailUrl ?? 'https://placehold.it/100x100' }} />
-              <View style={{ position: 'absolute', top: -3, right: -3 }}>
-                <StarIcon />
+            <TouchableOpacity onPress={() => handleUserProfileOpen(topUsers[1]?.id)} >
+              <View className='border-2 rounded-full bg-white border-white'>
+                <Avatar.Image size={60} source={{ uri: topUsers[1]?.thumbnailUrl ?? 'https://placehold.it/100x100' }} />
+                <View style={{ position: 'absolute', top: -3, right: -3 }}>
+                  <StarIcon />
+                </View>
               </View>
             </TouchableOpacity>
-            
             <Text numberOfLines={1} className="text-white mt-2 font-nunitoSansBold text-lg w-[120px] text-center">
               {topUsers[1]?.name}
             </Text>
@@ -111,10 +131,22 @@ const TopUsers = () => {
           <View key={topUsers[0]?.id} className="items-center -mt-2">
             <View>
               <TouchableOpacity onPress={() => handleUserProfileOpen(topUsers[0]?.id)}>
+              <View className='border-2 rounded-full bg-white border-white'>
                 <Avatar.Image size={80} source={{ uri: topUsers[0]?.thumbnailUrl ?? 'https://placehold.it/100x100' }} />
-                <View style={{ position: 'absolute', top: -3, right: -3 }}>
+                {/* <View style={{ position: 'absolute', top: -1, right: -1}}>
                   <StarIcon />
+                </View> */}
+                 {/* Заменяем звезду на Lottie-анимацию для первого пользователя */}
+                 <View style={{ position: 'absolute', top: -15, right: -15}}>
+                  <LottieView
+                    source={require('@/assets/animations/FlashAnimation.json')}
+                    autoPlay
+                    loop
+                    style={{ width: 50, height: 50 }}  // Размер анимации
+             
+                  />
                 </View>
+              </View>
               </TouchableOpacity>
               
             </View>
@@ -129,9 +161,11 @@ const TopUsers = () => {
           {/* Третий пользователь (справа) */}
           <View key={topUsers[2]?.id} className="items-center">
             <TouchableOpacity onPress={() => handleUserProfileOpen(topUsers[2]?.id)}>
-              <Avatar.Image size={60} source={{ uri: topUsers[2]?.thumbnailUrl ?? 'https://placehold.it/100x100' }} />
-              <View style={{ position: 'absolute', top: -3, right: -3 }}>
-                <StarIcon />
+              <View className='border-2 rounded-full bg-white border-white'>
+                <Avatar.Image size={60} source={{ uri: topUsers[2]?.thumbnailUrl ?? 'https://placehold.it/100x100' }}/>
+                <View style={{ position: 'absolute', top: -3, right: -3 }}>
+                  <StarIcon />
+                </View>
               </View>
             </TouchableOpacity>
            
