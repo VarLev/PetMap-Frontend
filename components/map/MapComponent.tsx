@@ -37,6 +37,7 @@ import SlidingOverlay from '../navigation/SlidingOverlay';
 import MapItemList from '../navigation/points/MapItemList';
 import MapPointIconWithAnimation from './point/MapPointIscon';
 import { UserPointType } from '@/dtos/enum/UserPointType';
+import PointsOfInterestComponent from './PointsOfInterestComponent';
 
 
 const MapBoxMap = observer(() => {
@@ -56,7 +57,7 @@ const MapBoxMap = observer(() => {
   const { openDrawer, closeDrawer } = useDrawer();
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
   const [selectedTag, setSelectedTag] = useState<string>("");
-  const [userCoordinates, setUserCoordinates] = useState([0, 0]);
+  const [userCoordinates, setUserCoordinates] = useState<[number, number]>([0, 0]);
   const currentUser = userStore.currentUser;
   const [modifiedFieldsCount, setModifiedFieldsCount] = useState(0);
   const [currentPointType, setCurrentPointType] = useState(MapPointType.Walk);
@@ -334,8 +335,6 @@ const MapBoxMap = observer(() => {
       setAlertText('Прогулка успешно создана. Вам начислены 400 бонусов за создание первой прогулки.');
       showAlert("info");
     }
-      
-    
   };
 
   const handleSheetClose = async () => {
@@ -555,6 +554,9 @@ const MapBoxMap = observer(() => {
               )}
             </PointAnnotation>
           )}
+
+          {/* Добавляем компонент точек интереса */}
+          <PointsOfInterestComponent userLocation={userCoordinates} />
         </MapView>
         <View
           style={{

@@ -28,8 +28,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
         {image && (
           <Image 
             source={image} 
-            style={{ width: 250, height: 250, alignSelf: 'center', marginBottom: 10 }} 
-            resizeMode="contain"
+            style={{ width: 250, height: 230, alignSelf: 'center', marginBottom: 10 }} 
+            resizeMode="cover"
           />
         )}
         {/* <Text className="text-lg font-nunitoSansBold mb-2">
