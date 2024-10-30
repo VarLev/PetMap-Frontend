@@ -1,7 +1,7 @@
 
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, SafeAreaView, Image, Pressable, BackHandler } from 'react-native';
+import { View, SafeAreaView, Image, Pressable, BackHandler, ImageSourcePropType } from 'react-native';
 import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
 import { Provider  } from 'react-native-paper';
@@ -20,7 +20,6 @@ import SearchAndTags from '../custom/inputs/FilterSearchAndTagsComponent';
 import FilterComponent from '../filter/FilterComponent';
 import { IPointEntityDTO } from '@/dtos/Interfaces/map/IPointEntityDTO';
 import { MapPointType } from '@/dtos/enum/MapPointType';
-import FabGroupComponent from './FabGroupComponent';
 import EditDangerPoint from './point/EditDangerPoint';
 import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
 import { DangerLevel } from '@/dtos/enum/DangerLevel';
@@ -69,6 +68,7 @@ const MapBoxMap = observer(() => {
   const [isCardView, setisCardView] = useState<boolean>(false);
   const [selectedPointId, setSelectedPointId] = useState<string>('');
   const [selectedWalkMarker, setSelectedWalkMarker] = useState('');
+  const [alertImage, setAlertImage] = useState<ImageSourcePropType >();
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
@@ -239,24 +239,6 @@ const MapBoxMap = observer(() => {
         <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose}  />
       ));
     }
-    else if(currentPointType === MapPointType.Note){
-      const mapPoint: IPointUserDTO = {
-        id: randomUUID(),
-        mapPointType: MapPointType.Note,
-        status: MapPointStatus.Pending,
-        latitude: coordinates[1],
-        longitude: coordinates[0],
-        createdAt: new Date().toISOString(),
-        photos: [],
-        userId: currentUser?.id,
-        userPointType: UserPointType.Note,
-      };
-      setMarkerPointCoordinate(coordinates);
-      mapStore.setMarker(coordinates);
-      setRenderContent(() => (
-        <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose}  />
-      ));
-    }
 
     if (!isSheetExpanded) {
       setTimeout(() => {
@@ -345,8 +327,15 @@ const MapBoxMap = observer(() => {
     }
   };
 
-  const handleAdvrtAdded = () => {
+  const handleAdvrtAdded = (isGetedBonuses:boolean) => {
     sheetRef.current?.close();
+    if(isGetedBonuses){
+      setAlertImage(require('@/assets/images/alert-dog-bonuses.webp'));
+      setAlertText('Прогулка успешно создана. Вам начислены 400 бонусов за создание первой прогулки.');
+      showAlert("info");
+    }
+      
+    
   };
 
   const handleSheetClose = async () => {
@@ -616,7 +605,8 @@ const MapBoxMap = observer(() => {
           onClose={() => setModalVisible(false)}
           message={alertText}
           type={alertType}
-          title={alertType === "error" ? "Ошибка" : "Информация"}
+          title={alertType === "error" ? "Ошибка" : ""}
+          image={alertImage}
         />
       </SafeAreaView>
     </Provider>

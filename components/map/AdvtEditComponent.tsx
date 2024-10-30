@@ -19,7 +19,7 @@ import CustomAlert from '../custom/alert/CustomAlert';
 
 interface AdvtEditProps {
   coordinates: [number, number];
-  onAdvrtAddedInvite: () => void
+  onAdvrtAddedInvite: (isGetedBonuses: boolean) => void
 }
 
 const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdvrtAddedInvite}) => {
@@ -141,10 +141,13 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(({coordinates, onAdv
       selectedDays: selectedDays,
       startTime: time.getHours() * 60 + time.getMinutes()
     };
+    const isGetedBonuses = await mapStore.addWalkAdvrt(updatedUserWalk)
+    if(isGetedBonuses)
+      onAdvrtAddedInvite(true);
+    else
+      onAdvrtAddedInvite(false);
 
-    await mapStore.addWalkAdvrt(updatedUserWalk);
     
-    onAdvrtAddedInvite();
   };
 
   const togglePetSelection = (petId: string) => {
