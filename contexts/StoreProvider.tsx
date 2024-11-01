@@ -1,39 +1,51 @@
-import React, { createContext, useContext, useEffect, ReactNode } from 'react';
-import { observer } from 'mobx-react-lite';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import userStore from '@/stores/UserStore';
 
-
-
-const StoreContext = createContext(userStore);
+const StoreContext = createContext({
+  ...userStore,
+  isInitialized: false, // Добавляем isInitialized в начальное значение контекста
+});
 
 interface StoreProviderProps {
   children: ReactNode;
 }
 
 export const StoreProvider = ({ children }: StoreProviderProps) => {
-  
+  const [isInitialized, setIsInitialized] = useState(false);
+
   useEffect(() => {
-    userStore.getCurrentUser().then((res) => {
-      if (res) {
-        userStore.setLogged(true);
-        userStore.setUser(res);
-        console.log('User logined');
-      } else {
-        userStore.setLogged(false);
+    const initializeUser = async () => {
+      try{
+        const user = await userStore.getCurrentUserForProvider();
+        if (user) {
+          userStore.setLogged(true);
+          userStore.setUser(user);
+          
+        } else {
+          userStore.setLogged(false);
+          userStore.setUser(null);
+          
+        }
+        userStore.setLoading(false);
+      }catch(e)
+      {
         userStore.setUser(null);
-        console.log('User not logined');
-        userStore.signOut();
+        console.log(e);
       }
-    }).catch((error) => {
-      console.log(error);
-    })
-    .finally(() => {
-      userStore.setLoading(false);
-    });
+      finally{
+        userStore.setLoading(false);
+        setIsInitialized(true);
+      }
+     
+    };
+
+    initializeUser();
   }, []);
 
+  const storeValue = { ...userStore, isInitialized }; // Объединяем userStore с isInitialized
+
   return (
-    <StoreContext.Provider value={userStore}>
+    <StoreContext.Provider value={storeValue}>
       {children}
     </StoreContext.Provider>
   );
@@ -42,9 +54,7 @@ export const StoreProvider = ({ children }: StoreProviderProps) => {
 export const useStore = () => {
   const context = useContext(StoreContext);
   if (!context) {
-    throw new Error('useStore must be used within a StoreProvider');
+    throw new Error("useStore must be used within a StoreProvider");
   }
   return context;
 };
-
-export default observer(StoreProvider);

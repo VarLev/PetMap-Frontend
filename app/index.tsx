@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { TouchableOpacity, View, Image } from "react-native";
 import { Text } from "react-native-paper";
 import OnboardingCarousel from "../components/auth/OnboardingCarousel";
@@ -14,6 +14,7 @@ import appleLogo from "../assets/images/apple.png";
 import userStore from "@/stores/UserStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import i18n from '@/i18n';
+import ScreenHolderLogo from "@/components/common/ScreenHolderLogo";
 
 GoogleSignin.configure({
   webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
@@ -22,18 +23,28 @@ GoogleSignin.configure({
 
 
 const App = () => {
-  const { loading, isLogged, signOut } = useStore();
-
+  const { loading, isLogged, isInitialized  } = useStore();
   
-  signOut();
-  console.log("User signed out");
+  useEffect(() => {
+    const checkAuthAndRedirect = async () => {
+      if (isInitialized && !loading && isLogged) {
+        await router.replace("/map"); // Перенаправление на карту, если пользователь авторизован
+      }
+    };
+    checkAuthAndRedirect();
+  }, [loading, isLogged, isInitialized]);
 
-  console.log(loading, isLogged);
-  if (!loading && isLogged) return <Redirect href="/map" />;
-
+   // Отображаем загрузочный экран или ничего, пока идет проверка авторизации
+  if (loading || !isInitialized) return <ScreenHolderLogo/>;
+    else 
+  if (!loading && isLogged && isInitialized ) return <Redirect href="/map" />;   
+  // signOut();
+  // console.log("User signed out");
+  //console.log(loading, isLogged);
+  //if (!loading && isLogged) return <Redirect href="/map" />;
   //return <Redirect href="/onboarding" />;
 
- ;
+ 
 
   const handleGooglePress = async () => {
     GoogleSignin.configure({
@@ -97,3 +108,5 @@ const App = () => {
 };
 
 export default App;
+
+

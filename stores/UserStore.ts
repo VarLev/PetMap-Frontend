@@ -22,14 +22,16 @@ import { JobType } from '@/dtos/enum/JobType';
 import { Job } from '@/dtos/classes/job/Job';
 import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
 import { IUserCardDto } from '@/dtos/Interfaces/user/IUserCardDto';
+import { router } from 'expo-router';
 
 
 class UserStore {
-  fUser: UserCredential | null = null;
+  fUid: string | null = null;
   currentUser: User  = new User({});
   users: User[] = [];
   isLogged: boolean = false;
   loading: boolean = false;
+  isInitialized: boolean = false;
   
 
   constructor() {
@@ -54,7 +56,7 @@ class UserStore {
   
 
   setLoginedUser(user: any) {
-    this.fUser = user;
+    this.fUid = user.user.uid;
     this.isLogged = !!user;
   }
   
@@ -73,10 +75,10 @@ class UserStore {
   }
 
   setCreatedUser(user: UserCredential) {
-    this.fUser = user;
+    this.fUid = user.user.uid;
   }
   getUser(user: UserCredential) {
-    this.fUser = user;
+    this.fUid = user.user.uid;
   }
 
   
@@ -123,15 +125,15 @@ class UserStore {
     
       return this.users;
     } catch (error) {
-      console.error('Не удалось загрузить пользователей', error);
-      throw error;
+      return handleAxiosError(error);
     }
   }
 
 
   async loadUser(): Promise<IUser> {
     try {
-      const fuid = this.fUser?.user.uid;
+      const fuid = this.fUid;
+      console.log('fuid:', fuid);
       const response = await apiClient.get('/users/me', { params: { fuid } }); // Эндпоинт для получения текущего пользователя
       runInAction(() => {
         this.currentUser = new User({...response.data});
@@ -153,7 +155,7 @@ class UserStore {
   async loadUserAfterSignIn() {
     try {
      
-      const fuid = this.fUser?.user.uid;
+      const fuid = this.fUid;
       const response = await apiClient.get('/users/me', { params: { fuid } }); // Эндпоинт для получения текущего пользователя
       runInAction(() => {
         console.log('Пользователь загружен из базы:');
@@ -167,26 +169,7 @@ class UserStore {
 
 
     } catch (error) {
-      if (axios.isAxiosError(error)) 
-        {
-          // Подробная информация об ошибке Axios
-          console.error('Axios error:', {
-              message: error.message,
-              name: error.name,
-              code: error.code,
-              config: error.config,
-              response: error.response ? {
-                  data: error.response.data,
-                  status: error.response.status,
-                  headers: error.response.headers,
-              } : null
-          });
-        } 
-        else {
-          // Общая информация об ошибке
-          console.error('Error:', error);
-        }
-        throw error;
+      return handleAxiosError(error);
     }
   }
 
@@ -200,39 +183,44 @@ class UserStore {
     
   }
   
-  async getCurrentUser(): Promise<IUser> {
-    if(this.currentUser?.id) {
-      console.log('Пользователь загружен из базы:');
-      return this.currentUser?? {} as IUser;
-    }
-    else{
-      const userData = await AsyncStorage.getItem('currentUser');
-      if (userData) {
-        const user = JSON.parse(userData);
-        console.log('Пользователь загружен из AsyncStorage:');
-        return user as IUser;
-      } else {
-        console.log('Пользователь не найден1');
-        return null as unknown as IUser;
+  async getCurrentUserForProvider(): Promise<IUser | null> {
+    try{
+      // Проверяем, есть ли пользователь уже в состоянии
+      if (this.currentUser?.id) {
+        console.log('Пользователь загружен из состояния');
+        return this.currentUser;
       }
-    }
-  }
 
-  async getCurrentUserFromServer(): Promise<IUser> {
-   
-      const userData = await AsyncStorage.getItem('currentUser');
-      if (userData) {
-        const user = JSON.parse(userData);
+      const currentUserString = await AsyncStorage.getItem(process.env.EXPO_PUBLIC_CURRENT_USER!);
+      const currentUser = currentUserString ? JSON.parse(currentUserString) : null;
+
+      //Пытаемся загрузить пользователя из AsyncStorage
+      if (!currentUser || !currentUser?.firebaseUid) {
+        this.signOut();
+        //return null;
+      }
+
+      const userData = await apiClient.get('/users/me', { params: { fUid: currentUser!.firebaseUid } });
+     
+      if (userData.data) {
+        this.fUid = currentUser!.firebaseUid;
+        const user = userData.data as IUser;
+
+        // Обновляем MobX состояние и возвращаем пользователя
         runInAction(() => {
           this.currentUser = new User(user);
         });
-        console.log('Пользователь загружен из AsyncStorage:');
-        return user as IUser;
-      } else {
-        console.log('Пользователь не найден2');
-        return null as unknown as IUser;
-      }
-    
+        console.log('Пользователь загружен из AsyncStorage');
+        return this.currentUser;
+      } 
+
+      console.log('Пользователь не найден');
+      return null; // Возвращаем null, если пользователь не найден
+    }catch (error) {
+      //this.signOut();
+      return handleAxiosError(error);
+    }
+   
   }
 
   async singInUser(email: string, password: string) {
@@ -249,26 +237,7 @@ class UserStore {
       
     } catch (error) 
     {
-      if (axios.isAxiosError(error)) 
-      {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            code: error.code,
-            config: error.config,
-            response: error.response ? {
-                data: error.response.data,
-                status: error.response.status,
-                headers: error.response.headers,
-            } : null
-        });
-      } 
-      else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
-      throw error;
+      return handleAxiosError(error);
     } 
     finally 
     {
@@ -301,36 +270,10 @@ class UserStore {
         this.setUser(registeredUser);
       });
 
-      // await AsyncStorage.setItem('user', JSON.stringify({
-      //   email: registeredUser.email,
-      //   uid: registeredUser.firebaseUid,
-      //   provider: registeredUser.provider,
-      //   userId: registeredUser.id
-      // }));
-
       return userCred;
     } catch (error) 
     {
-      if (axios.isAxiosError(error)) 
-      {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            code: error.code,
-            config: error.config,
-            response: error.response ? {
-                data: error.response.data,
-                status: error.response.status,
-                headers: error.response.headers,
-            } : null
-        });
-      } 
-      else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
-      throw error;
+      return handleAxiosError(error);
     } 
     finally 
     {
@@ -377,26 +320,9 @@ class UserStore {
     } 
     catch (error) 
     {
-      if (axios.isAxiosError(error)) 
-      {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            code: error.code,
-            config: error.config,
-            response: error.response ? {
-                data: error.response.data,
-                status: error.response.status,
-                headers: error.response.headers,
-            } : null
-        });
-      } 
-      else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
       isSuccessful = false;
+      return handleAxiosError(error);
+     
     } 
     finally 
     {
@@ -452,25 +378,7 @@ class UserStore {
       }
     } catch (error) 
     {
-      if (axios.isAxiosError(error)) 
-      {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            //code: error.code,
-            //config: error.config,
-            response: error.response ? {
-                data: error.response.data,
-                status: error.response.status,
-                headers: error.response.headers,
-            } : null
-        });
-      } 
-      else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
+      return handleAxiosError(error);
     } 
   }
 
@@ -516,26 +424,7 @@ class UserStore {
       }
     } catch (error) 
     {
-      if (axios.isAxiosError(error)) 
-      {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            //code: error.code,
-            //config: error.config,
-            response: error.response ? {
-                data: error.response.data,
-                status: error.response.status,
-                headers: error.response.headers,
-            } : null
-        });
-      } 
-      else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
-      throw error;
+      return handleAxiosError(error);
     } 
   }
 
@@ -546,7 +435,7 @@ class UserStore {
       
       return downloadURL;
     } catch (error) {
-      console.error('Error fetching image URL:', error);
+      return handleAxiosError(error);
     }
   };
 
@@ -557,8 +446,9 @@ class UserStore {
       await AsyncStorage.removeItem(process.env.EXPO_PUBLIC_F_TOKEN!);
       await AsyncStorage.removeItem(process.env.EXPO_PUBLIC_CURRENT_USER!);
       signOut();
+     
     } catch (error) {
-      console.error('Failed to sign out', error);     
+      return handleAxiosError(error);
     }
   }
 
@@ -604,8 +494,6 @@ class UserStore {
     }
   }
 
-  
-
   async getEarnedBenefitsByJobType(userId: string, jobType: JobType): Promise<number> {
     try {
       const response = await apiClient.get(`/job/user/benefits-by-type`, {
@@ -642,6 +530,18 @@ class UserStore {
     }
   }
 
+  async collectPOI(poiId: string): Promise<IUserCardDto[]> {
+    try {
+      const response = await apiClient.patch('poi/collect', poiId, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
 
 }
 

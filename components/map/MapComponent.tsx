@@ -1,8 +1,8 @@
 
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, SafeAreaView, Image, Pressable, BackHandler } from 'react-native';
-import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer } from '@rnmapbox/maps';
+import { View, SafeAreaView, Image, Pressable, BackHandler, ImageSourcePropType } from 'react-native';
+import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer, LineLayer } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
 import { Provider  } from 'react-native-paper';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent'; // Импортируйте новый компонент
@@ -20,7 +20,6 @@ import SearchAndTags from '../custom/inputs/FilterSearchAndTagsComponent';
 import FilterComponent from '../filter/FilterComponent';
 import { IPointEntityDTO } from '@/dtos/Interfaces/map/IPointEntityDTO';
 import { MapPointType } from '@/dtos/enum/MapPointType';
-import FabGroupComponent from './FabGroupComponent';
 import EditDangerPoint from './point/EditDangerPoint';
 import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
 import { DangerLevel } from '@/dtos/enum/DangerLevel';
@@ -38,9 +37,11 @@ import SlidingOverlay from '../navigation/SlidingOverlay';
 import MapItemList from '../navigation/points/MapItemList';
 import MapPointIconWithAnimation from './point/MapPointIscon';
 import { UserPointType } from '@/dtos/enum/UserPointType';
+import PointsOfInterestComponent from './PointsOfInterestComponent';
 
 
 const MapBoxMap = observer(() => {
+  const [isLoading, setIsLoading] = useState(true);
   const sheetRef = useRef<BottomSheet>(null);
   const cameraRef = useRef<Camera>(null);
   const mapRef = useRef<Mapbox.MapView>(null);
@@ -57,7 +58,7 @@ const MapBoxMap = observer(() => {
   const { openDrawer, closeDrawer } = useDrawer();
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
   const [selectedTag, setSelectedTag] = useState<string>("");
-  const [userCoordinates, setUserCoordinates] = useState([0, 0]);
+  const [userCoordinates, setUserCoordinates] =  useState<[number, number] | null>(null);
   const currentUser = userStore.currentUser;
   const [modifiedFieldsCount, setModifiedFieldsCount] = useState(0);
   const [currentPointType, setCurrentPointType] = useState(MapPointType.Walk);
@@ -69,14 +70,24 @@ const MapBoxMap = observer(() => {
   const [isCardView, setisCardView] = useState<boolean>(false);
   const [selectedPointId, setSelectedPointId] = useState<string>('');
   const [selectedWalkMarker, setSelectedWalkMarker] = useState('');
+  const [alertImage, setAlertImage] = useState<ImageSourcePropType >();
+
+   // ... существующие состояния и переменные
+   const [routeData, setRouteData] = useState<any>(null);
 
   const [renderAdvrtForm, setRenderAdvrtForm] = useState(false);
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
   useEffect(() => {
-    setUserCoordinates([-58.3816, -34.6037]);
-    mapStore.setWalkAdvrts();
+    setIsLoading(true);
+    const fetchData = async () => {
+      await mapStore.setWalkAdvrts();
+      const data = createGeoJSONFeatures();
+      setGeoJSONData(data);
+    };
+    fetchData();
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -84,6 +95,7 @@ const MapBoxMap = observer(() => {
     setGeoJSONData(data);
   }, [mapStore.walkAdvrts, mapStore.mapPoints]);
 
+ 
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
@@ -141,6 +153,42 @@ const MapBoxMap = observer(() => {
       type: "FeatureCollection",
       features,
     };
+  };
+
+  const handleRouteReady = (routeFeatureCollection: any) => {
+    setRouteData(routeFeatureCollection);
+
+    // Adjust camera to show the route
+    const coordinates = routeFeatureCollection.features[0].geometry.coordinates;
+    interface Bounds {
+      minX: number;
+      minY: number;
+      maxX: number;
+      maxY: number;
+    }
+
+    const bounds: Bounds = coordinates.reduce(
+      (bounds: Bounds, coord: [number, number]) => {
+        return {
+          minX: Math.min(bounds.minX, coord[0]),
+          minY: Math.min(bounds.minY, coord[1]),
+          maxX: Math.max(bounds.maxX, coord[0]),
+          maxY: Math.max(bounds.maxY, coord[1]),
+        };
+      },
+      {
+        minX: coordinates[0][0],
+        minY: coordinates[0][1],
+        maxX: coordinates[0][0],
+        maxY: coordinates[0][1],
+      }
+    );
+
+    // cameraRef.current?.fitBounds(
+    //   [bounds.minX, bounds.minY],
+    //   [bounds.maxX, bounds.maxY],
+    //   100
+    // );
   };
 
   const handleFilterChange = (count: number) => {
@@ -222,24 +270,6 @@ const MapBoxMap = observer(() => {
       mapStore.setMarker(coordinates);
       setRenderContent(() => (
         <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose} />
-      ));
-    }
-    else if(currentPointType === MapPointType.Note){
-      const mapPoint: IPointUserDTO = {
-        id: randomUUID(),
-        mapPointType: MapPointType.Note,
-        status: MapPointStatus.Pending,
-        latitude: coordinates[1],
-        longitude: coordinates[0],
-        createdAt: new Date().toISOString(),
-        photos: [],
-        userId: currentUser?.id,
-        userPointType: UserPointType.Note,
-      };
-      setMarkerPointCoordinate(coordinates);
-      mapStore.setMarker(coordinates);
-      setRenderContent(() => (
-        <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose}  />
       ));
     }
     else if(currentPointType === MapPointType.Note){
@@ -348,8 +378,13 @@ const MapBoxMap = observer(() => {
     }
   };
 
-  const handleAdvrtAdded = () => {
+  const handleAdvrtAdded = (isGetedBonuses:boolean) => {
     sheetRef.current?.close();
+    if(isGetedBonuses){
+      setAlertImage(require('@/assets/images/alert-dog-bonuses.webp'));
+      setAlertText('Прогулка успешно создана. Вам начислены 400 бонусов за создание первой прогулки.');
+      showAlert("info");
+    }
   };
 
   const handleSheetClose = async () => {
@@ -427,11 +462,10 @@ const MapBoxMap = observer(() => {
           <MapItemList renderType={currentPointType} />
         </SlidingOverlay>
       )}
-        <MapView 
+       {!isLoading && (<MapView 
           ref={mapRef} 
           style={{ flex: 1 }} 
           onLongPress={handleLongPress} 
-
           styleURL={Mapbox.StyleURL.Light}
           logoEnabled={false}
           attributionEnabled={false}
@@ -442,17 +476,25 @@ const MapBoxMap = observer(() => {
           zoomEnabled={!isCardView}
           rotateEnabled={!isCardView}
         >
-
           <UserLocation minDisplacement={50} ref={userLocationRef} onUpdate={handleUserLocationUpdate}  /> 
+          {routeData && (
+            <ShapeSource id="routeSource" shape={routeData}>
+              <LineLayer 
+                id="routeLine" 
+                style={{ lineColor: 'blue', lineWidth: 5 }} 
+              />
+            </ShapeSource>
+          )}
 
           {/* <UserLocation minDisplacement={10} ref={userLocationRef}  /> */}
-          <Camera
-            ref={cameraRef}
-            centerCoordinate={userCoordinates}
-            zoomLevel={10}
-            animationDuration={1}
-          />
-
+          {userCoordinates && (
+            <Camera
+              ref={cameraRef}
+              centerCoordinate={userCoordinates}
+              zoomLevel={10}
+              animationDuration={1}
+            />)} 
+          
           {/* Добавдяем цифры, когда маркеры накладываются друг на друга */}
           {!isCardView && geoJSONData && (
             <ShapeSource
@@ -570,7 +612,11 @@ const MapBoxMap = observer(() => {
               )}
             </PointAnnotation>
           )}
-        </MapView>
+
+          {/* Добавляем компонент точек интереса */}
+          {userCoordinates && (<PointsOfInterestComponent userLocation={userCoordinates} onRouteReady={handleRouteReady}  />)}
+          
+        </MapView>)} 
         <View
           style={{
             position: "absolute",
@@ -589,7 +635,7 @@ const MapBoxMap = observer(() => {
             onOpenCardView={() => setisCardView(!isCardView)}
             badgeCount={modifiedFieldsCount}
           />
-        </View>
+        </View> 
         {/* <View style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: 10,paddingRight:60, flexDirection: 'row' }}>
           <TextInput
             className='bg-white h-12 rounded-xl mt-1 pl-3 w-full border border-gray-400'
@@ -620,7 +666,8 @@ const MapBoxMap = observer(() => {
           onClose={() => setModalVisible(false)}
           message={alertText}
           type={alertType}
-          title={alertType === "error" ? "Ошибка" : "Информация"}
+          title={alertType === "error" ? "Ошибка" : ""}
+          image={alertImage}
         />
       </SafeAreaView>
     </Provider>

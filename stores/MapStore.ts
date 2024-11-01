@@ -21,23 +21,21 @@ import { IPagedPointDangerDTO } from '@/dtos/Interfaces/map/paged/IPagedPointDan
 import { IPagetPointUserDTO } from '@/dtos/Interfaces/map/paged/IPagetPointUserDTO';
 import { ReviewDTO } from '@/dtos/classes/review/Review';
 import { IMapPointTagDTO } from '@/dtos/Interfaces/map/IMapPointTagDTO';
+import { IPOI } from '@/dtos/Interfaces/map/POI/IPOI';
 
 class MapStore {
   address = '';
   advrtAddress = '';
   suggestions: any[] = [];
-  region = {
-    latitude: -34.603722,
-    longitude: -58.381592,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  };
   bottomSheetVisible = false;
   walkAdvrts: IWalkAdvrtDto[] = [];
   mapPoints: IPointEntityDTO[] = [];
   currentUserCoordinates: [number, number] = [0,0];
   currentWalkId: string | undefined = undefined;
   currentWalkDate: Date | undefined = undefined; //mine
+  pois: IPOI[] = [];
+
+
   
   isAvaliableToCreateWalk = true; // Переменная для проверки возможности создания прогулки
   
@@ -66,9 +64,7 @@ class MapStore {
     this.suggestions = suggestions;
   }
 
-  setRegion(region: { latitude: number, longitude: number, latitudeDelta: number, longitudeDelta: number }) {
-    this.region = region;
-  }
+
 
   setMarker(coordinates: [number, number]) {
     this.marker = coordinates;
@@ -76,6 +72,31 @@ class MapStore {
 
   setSelectedFeature(feature: GeoJSON.Feature<GeoJSON.Point> | null) {
     this.selectedFeature = feature;
+  }
+
+  setPoi(poi: IPOI[]) {
+    this.pois = poi;
+  }
+
+  getPoi() {
+    return this.pois;
+  }
+
+  async fetchUserPOIs([latitude, longitude]: [number, number]): Promise<IPOI[]> {  
+    try {
+      const response = await apiClient.get('poi', {
+        params: {
+          longitude: latitude,
+          latitude: longitude
+        },
+      });
+      runInAction(() => {
+        this.setPoi(response.data);
+      });
+      return response.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
   }
 
   async setWalkAdvrts() {
@@ -86,7 +107,7 @@ class MapStore {
         this.mapPoints = [];
       });
     } catch (error) {
-      console.error("Error fetching walk advertisements:", error);
+      return handleAxiosError(error);
     }
   }
 
@@ -103,57 +124,23 @@ class MapStore {
         
       // }
     } catch (error) {
-      if (axios.isAxiosError(error)) 
-        {
-          // Подробная информация об ошибке Axios
-          console.error('Axios error:', {
-              message: error.message,
-              name: error.name,
-              //code: error.code,
-              //config: error.config,
-              response: error.response ? {
-                  data: error.response.data.errors,
-                  //status: error.response.status,
-                  //headers: error.response.headers,
-              } : null
-          });
-        } 
-        else {
-          // Общая информация об ошибке
-          console.error('Error:', error);
-        }
-        throw error;
+      return handleAxiosError(error);
     }
   }
 
-  async addWalkAdvrt(walk : IWalkAdvrtDto) {
+  async addWalkAdvrt(walk : IWalkAdvrtDto):Promise<boolean | undefined> {
     try {
       const response = await apiClient.post('map/walk', walk);
+      let isJobAdded: boolean | undefined;
       runInAction(() => {
-        this.walkAdvrts.push(response.data as IWalkAdvrtDto);
+        console.log('Add walk advrt', response.data);
+        this.walkAdvrts.push(response.data.walkAdvertisement as IWalkAdvrtDto);
+        isJobAdded = response.data.isJobAdded;
       });
       await this.setWalkAdvrts();
+      return isJobAdded;
     } catch (error) {
-      if (axios.isAxiosError(error)) 
-        {
-          // Подробная информация об ошибке Axios
-          console.error('Axios error:', {
-              message: error.message,
-              name: error.name,
-              //code: error.code,
-              //config: error.config,
-              response: error.response ? {
-                  data: error.response.data.errors,
-                  //status: error.response.status,
-                  //headers: error.response.headers,
-              } : null
-          });
-        } 
-        else {
-          // Общая информация об ошибке
-          console.error('Error:', error);
-        }
-        throw error;
+      return handleAxiosError(error);
     }
   }
 
@@ -162,26 +149,7 @@ class MapStore {
       const response = await apiClient.get('walkadvrt/walk/all');
       return response.data as IWalkAdvrtDto[];
     } catch (error) {
-      if (axios.isAxiosError(error)) 
-        {
-          // Подробная информация об ошибке Axios
-          console.error('Axios error:', {
-              message: error.message,
-              name: error.name,
-              code: error.code,
-              config: error.config,
-              response: error.response ? {
-                  data: error.response.data,
-                  status: error.response.status,
-                  headers: error.response.headers,
-              } : null
-          });
-        } 
-        else {
-          // Общая информация об ошибке
-          console.error('Error:', error);
-        }
-        throw error;
+      return handleAxiosError(error);
     }
   }
 
@@ -194,7 +162,7 @@ class MapStore {
         );
         this.setSuggestions(response.data.features);
       } catch (error) {
-        console.error(error);
+        return handleAxiosError(error);
       }
     } else {
       this.setSuggestions([]);
@@ -238,20 +206,14 @@ class MapStore {
         this.isAvaliableToCreateWalk = false;
       }
     } catch (error) {
-      console.error("Error fetching address: ", error);
-      this.setAdvrtAddress("Error fetching address");
       this.isAvaliableToCreateWalk = false;
+      return handleAxiosError(error);
     }
   }
 
   selectAddress(place: any) {
     const { center, place_name } = place;
-    this.setRegion({
-      latitude: center[0],
-      longitude: center[1],
-      latitudeDelta: 0.0922,
-      longitudeDelta: 0.0421,
-    });
+    
     this.setAddress(place_name);
     this.setSuggestions([]);
   }
@@ -293,26 +255,7 @@ class MapStore {
       }
       
     } catch (error) {
-      if (axios.isAxiosError(error)) 
-        {
-          // Подробная информация об ошибке Axios
-          console.error('Axios error:', {
-              message: error.message,
-              name: error.name,
-              //code: error.code,
-              //config: error.config,
-              response: error.response ? {
-                  data: error.response.data.errors,
-                  //status: error.response.status,
-                  //headers: error.response.headers,
-              } : null
-          });
-        } 
-        else {
-          // Общая информация об ошибке
-          console.error('Error:', error);
-        }
-        throw error;
+      return handleAxiosError(error);
     }
   }
 
@@ -324,26 +267,7 @@ class MapStore {
         this.walkAdvrts = response.data as IWalkAdvrtDto[]; 
       });
     } catch (error) {
-      if (axios.isAxiosError(error)) 
-      {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            code: error.code,
-            config: error.config,
-            response: error.response ? {
-                data: error.response.data.errors,
-                status: error.response.status,
-                headers: error.response.headers,
-            } : null
-        });
-      } 
-      else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
-      throw error;
+      return handleAxiosError(error);
     }
   }
 
@@ -352,26 +276,7 @@ class MapStore {
       const response = await apiClient.get(`map/get-points-paginated?type=${type}&page=${page}&pageSize=${pageSize}`);
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) 
-      {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            code: error.code,
-            config: error.config,
-            response: error.response ? {
-                data: error.response.data.errors,
-                status: error.response.status,
-                headers: error.response.headers,
-            } : null
-        });
-      } 
-      else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
-      throw error;
+      return handleAxiosError(error);
     }
   }
 
@@ -394,26 +299,7 @@ class MapStore {
       }
       
     } catch (error) {
-      if (axios.isAxiosError(error)) 
-      {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            code: error.code,
-            config: error.config,
-            response: error.response ? {
-                data: error.response.data.errors,
-                status: error.response.status,
-                headers: error.response.headers,
-            } : null
-        });
-      } 
-      else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
-      throw error;
+      return handleAxiosError(error);
     }
   }
 
@@ -461,25 +347,7 @@ class MapStore {
       } );
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) 
-      {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            code: error.code,
-            config: error.config,
-            response: error.response ? {
-                data: error.response.data.errors,
-                status: error.response.status,
-                headers: error.response.headers,
-            } : null
-        });
-      } 
-      else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
+      return handleAxiosError(error);
     }
   }
 
@@ -490,26 +358,7 @@ class MapStore {
       console.log('Participants:', response.data);
       return response.data as IUserAdvrt[];
     } catch (error) {
-      if (axios.isAxiosError(error)) 
-      {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            code: error.code,
-            config: error.config,
-            response: error.response ? {
-                data: error.response.data.errors,
-                status: error.response.status,
-                headers: error.response.headers,
-            } : null
-        });
-      } 
-      else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
-      throw error;
+      return handleAxiosError(error);
     }
   }
 
@@ -549,26 +398,7 @@ class MapStore {
     await apiClient.post('review/add-or-update', review);
       
     } catch (error) {
-      if (axios.isAxiosError(error)) 
-      {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            code: error.code,
-            config: error.config,
-            response: error.response ? {
-                data: error.response.data.errors,
-                status: error.response.status,
-                headers: error.response.headers,
-            } : null
-        });
-      } 
-      else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
-      throw error;
+      return handleAxiosError(error);
     }
   }
 
@@ -577,26 +407,7 @@ class MapStore {
       const response = await apiClient.get(`review/get-all-by-point/${pointId}`);
       return response.data as ReviewDTO[];
     } catch (error) {
-      if (axios.isAxiosError(error)) 
-      {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            code: error.code,
-            config: error.config,
-            response: error.response ? {
-                data: error.response.data.errors,
-                status: error.response.status,
-                headers: error.response.headers,
-            } : null
-        });
-      } 
-      else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
-      throw error;
+      return handleAxiosError(error);
     }
   }
 }

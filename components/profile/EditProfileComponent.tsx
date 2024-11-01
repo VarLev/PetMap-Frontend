@@ -92,7 +92,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
 
   useEffect(() => {
     const fetchUser = async () => {
-      const thisUser = await userStore.getCurrentUserFromServer();
+      const thisUser = await userStore.getCurrentUserForProvider();
       setEditableUser(new User({ ...thisUser }));
     };
   

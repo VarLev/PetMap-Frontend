@@ -18,7 +18,7 @@ import CustomAlert from "../custom/alert/CustomAlert";
 
 interface AdvtEditProps {
   coordinates: [number, number];
-  onAdvrtAddedInvite: () => void;
+  onAdvrtAddedInvite: (isGetedBonuses: boolean) => void
 }
 
 const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
@@ -130,32 +130,35 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
         }
       }
 
-      const updatedUserWalk: IWalkAdvrtDto = {
-        id: undefined,
-        isEnabled: true,
-        createdAt: new Date(),
-        date: date,
-        latitude: coordinates[1],
-        longitude: coordinates[0],
-        participants: [],
-        address: address,
-        userId: userStore.currentUser?.id || "",
-        description: description,
-        status: WalkAdvrtStatus.Active,
-        type: AdvrtType.Single,
-        userPhoto: userStore.currentUser?.thumbnailUrl || "",
-        userName: userStore.currentUser?.name || "",
-        userPets: userStore.currentUser?.petProfiles || [],
-        duration: duration,
-        isRegular: isSwitchOn,
-        selectedDays: selectedDays,
-        startTime: time.getHours() * 60 + time.getMinutes(),
-      };
-
-      await mapStore.addWalkAdvrt(updatedUserWalk);
-
-      onAdvrtAddedInvite();
+    const updatedUserWalk :IWalkAdvrtDto = {
+      id: undefined,
+      isEnabled: true,
+      createdAt: new Date(),
+      date: new Date(),
+      latitude: coordinates[1],
+      longitude: coordinates[0],
+      participants: [],
+      address: address,
+      userId: userStore.currentUser?.id || '',
+      description: description,
+      status: WalkAdvrtStatus.Active,
+      type: AdvrtType.Single,
+      userPhoto: userStore.currentUser?.thumbnailUrl || '',
+      userName: userStore.currentUser?.name || '',
+      userPets: userStore.currentUser?.petProfiles || [],
+      duration: duration,
+      isRegular: isSwitchOn,
+      selectedDays: selectedDays,
+      startTime: time.getHours() * 60 + time.getMinutes()
     };
+    const isGetedBonuses = await mapStore.addWalkAdvrt(updatedUserWalk)
+    if(isGetedBonuses)
+      onAdvrtAddedInvite(true);
+    else
+      onAdvrtAddedInvite(false);
+
+    
+  };
 
     const togglePetSelection = (petId: string) => {
       setSelectedPets((prevSelectedPets) =>

@@ -34,6 +34,9 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen, loadedUser }: { onEd
   }, []);
 
   const loadData = async () => {
+    console.log(user.id);
+    console.log(userStore.currentUser?.id);
+
     if (user.id === userStore.currentUser?.id) {
       // Загружаем текущего пользователя
       console.log('Загружаем текущего пользователя');
@@ -45,6 +48,10 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen, loadedUser }: { onEd
       setIsCurrentUser(true);
     } else {
       // Загружаем другого пользователя
+      if (!loadedUser.id) {
+        console.log('Пользователь не найден');
+        return;
+      }
       const otherUser = await userStore.getUserById(loadedUser.id);
       setUser(otherUser as User);
       setIsCurrentUser(false);
