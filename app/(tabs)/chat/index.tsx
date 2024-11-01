@@ -14,6 +14,9 @@ import ChatStore from "@/stores/ChatStore";
 import { Divider, Surface, IconButton } from "react-native-paper";
 import ChatMenu from "@/components/chat/chatMenu";
 import EmptyChatScreen from "@/components/chat/EmptyChatScreen";
+import { runInAction } from "mobx";
+
+
 
 
 const ChatListItem: React.FC<{
@@ -25,34 +28,34 @@ const ChatListItem: React.FC<{
 
 
   //достаем время последнего посещения всех участников чата 
-  useEffect(() => {
     const fetchLastSeen = async () => {
       try {
         const userId = item.id.slice(36, 72);
         ChatStore.lastSeen[userId] = await ChatStore.getLastSeen(userId);
        await ChatStore.setLastSeen();
-        console.log('userId', userId);
+       
         setLastSeen(ChatStore.lastSeen[userId]);
       } catch (error) {
         console.error('Error fetching last seen:', error);
       }
-    };
-   fetchLastSeen();
-  }, [item.id]);
-
+    }; 
   
-  
-
-  useEffect(() => {
     const fetchLastMessage = async () => {
       const message = await ChatStore.getLastMessage(item.id);
       setLastMessage(message);   
     };
-    fetchLastMessage();
-  }, [item.id]);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+       await fetchLastSeen();
+       await fetchLastMessage();
+    };
+    fetchData();
+ }, [item.id]);
 
   const handleOpenChat = () => {
     router.push(`/chat/${item?.id}?otherUserId=${item.otherUserId}`);
+    console.log('open chat: ', item.id);
   };
 
   const handleOpenProfile = () => {
@@ -101,8 +104,15 @@ const ChatListScreen: React.FC = observer(() => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+     
+ }, []);
 
+
+ useEffect(() => {
+  if (!isLoading) {
+    sortChats();
+  }
+}, [isLoading, ChatStore.chats]);
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -138,16 +148,30 @@ const ChatListScreen: React.FC = observer(() => {
     );
   }
 
+  const sortChats = (): void => {
+    // Создаем массив sortedChats с добавлением lastCreatedAt для каждого чата
+    const sortedChats = ChatStore.chats.map((chat) => {
+            return { ...chat, lastCreatedAt: ChatStore.lastCreatedAt[chat.id] || 0 };
+    });
+      // Сортируем чаты по lastCreatedAt, чтобы самые последние чаты были в начале
+    sortedChats.sort((a, b) => b.lastCreatedAt - a.lastCreatedAt);
+        // Обновляем ChatStore.sortedChats с использованием runInAction
+    runInAction(() => {
+      ChatStore.sortedChats = sortedChats;
+    });
+  }; 
+
+
   return (
     <>
-      {ChatStore.chats.length === 0 && <EmptyChatScreen />}
+      {ChatStore.sortedChats.length === 0 && <EmptyChatScreen />}
       <View className="h-full">
         <View className="flex-row items-center justify-start gap-2 p-2 mt-4">
           <IconButton icon="arrow-left" size={24} onPress={() => router.push('(tabs)/map')} />
           <Text className="text-lg font-nunitoSansBold pb-1">Сообщения</Text>
         </View>
         <FlatList
-          data={ChatStore.chats}
+          data={ChatStore.sortedChats}
           renderItem={({ item }) => <ChatListItem item={item} />}
           keyExtractor={(item) => item.id}
           refreshControl={
@@ -158,7 +182,7 @@ const ChatListScreen: React.FC = observer(() => {
             />
           }
         />
-        <Surface elevation={5} className="h-24 bg-white" children={undefined} />
+        {/* <Surface elevation={5} className="h-24 bg-white" children={undefined} /> */}
       </View>
     </>
   );

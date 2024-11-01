@@ -1,5 +1,9 @@
 import { avatarsStringF, avatarsStringM } from "@/constants/Avatars";
 import { IUser } from "@/dtos/Interfaces/user/IUser";
+import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
+
+
+
 
 /**
  * Вычисляет возраст собаки в годах или месяцах в зависимости от даты рождения.
@@ -202,27 +206,106 @@ export function convertDistance(distance: number | null): string {
     return `${kilometers} km ${meters > 0 ? meters + " m" : ""}`.trim();
   }
 }
-export function correctTimeNaming (diffHours: number, diffMinutes: number) {
-   let hoursText = "";
-   let minutesText = "";
- 
-   // Определение правильного названия для часов
-   if (diffHours === 1) {
-     hoursText = `${diffHours} час`;
-   } else if (diffHours >= 2 && diffHours <= 4) {
-     hoursText = `${diffHours} часа`;
-   } else {
-     hoursText = `${diffHours} часов`;
-   }
- 
-   // Определение правильного названия для минут
-   if (diffMinutes === 1) {
-     minutesText = `${diffMinutes} минуту`;
-   } else if (diffMinutes >= 2 && diffMinutes <= 4) {
-     minutesText = `${diffMinutes} минуты`;
-   } else {
-     minutesText = `${diffMinutes} минут`;
-   }
- 
-   return `Через ${hoursText} ${minutesText}`;
- };
+
+
+export const renderWalkDetails = (advrt: IWalkAdvrtDto) => {
+  if (advrt.isRegular) {
+    if (advrt.selectedDays?.length === 7) {
+      if (advrt.startTime) {
+        const hours = Math.floor(advrt.startTime / 60);
+        const minutes = advrt.startTime % 60;
+        return (
+          "Каждый день в " +
+          (hours < 10 ? "0" + hours : hours) +
+          ":" +
+          (minutes < 10 ? "0" + minutes : minutes)
+        );
+      }
+      return "Каждый день";
+    } else {
+      const formattedTime =
+        advrt.startTime !== undefined
+          ? `${String(Math.floor(advrt.startTime / 60)).padStart(2, "0")}:${String(
+              advrt.startTime % 60
+            ).padStart(2, "0")}`
+          : "Время не указано";
+
+      return (
+        advrt.selectedDays
+          ?.map((day) => ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"][day])
+          .join(", ") +
+        " в " +
+        formattedTime
+      );
+    }
+  } else {
+    const formattedTime =
+      advrt.startTime !== undefined
+        ? `${String(Math.floor(advrt.startTime / 60)).padStart(2, "0")}:${String(
+            advrt.startTime % 60
+          ).padStart(2, "0")}`
+        : "Время не указано";
+
+    return advrt.date
+      ? new Date(advrt.date).toLocaleDateString() + " в " + formattedTime
+      : "Дата не указана";
+  }
+};
+
+export const calculateTimeUntilNextWalk = (advrt: IWalkAdvrtDto): string | undefined => {
+  const now = new Date();
+  let nextWalk: Date | undefined;
+
+  // Преобразуем текущий день недели: 0 = Понедельник, 6 = Воскресенье
+  const getAdjustedDay = (day: number) => (day === 0 ? 6 : day - 1);
+  const currentDay = getAdjustedDay(now.getDay());
+
+  if (advrt.isRegular) {
+    if (advrt.selectedDays?.length === 7 && advrt.startTime !== undefined) {
+      // Прогулки каждый день
+      nextWalk = new Date();
+      nextWalk.setHours(Math.floor(advrt.startTime / 60), advrt.startTime % 60, 0, 0);
+      if (nextWalk <= now) nextWalk.setDate(nextWalk.getDate() + 1);
+    } else if (advrt.selectedDays && advrt.selectedDays.length > 0) {
+      const sortedDays = advrt.selectedDays.sort((a, b) => a - b);
+      
+      // Найдём следующий день для прогулки
+      let nextDay = sortedDays.find(day => day > currentDay) ?? sortedDays[0];
+      let daysUntilNextWalk = (nextDay - currentDay + 7) % 7;
+
+      nextWalk = new Date();
+      nextWalk.setDate(now.getDate() + daysUntilNextWalk);
+
+      if (advrt.startTime !== undefined) {
+        const startHours = Math.floor(advrt.startTime / 60);
+        const startMinutes = advrt.startTime % 60;
+        nextWalk.setHours(startHours, startMinutes, 0, 0);
+
+        // Если прогулка сегодня, но время уже прошло, сдвигаем на следующий день
+        if (daysUntilNextWalk === 0 && nextWalk <= now) {
+          nextDay = sortedDays[(sortedDays.indexOf(nextDay) + 1) % sortedDays.length];
+          daysUntilNextWalk = (nextDay - currentDay + 7) % 7;
+          nextWalk.setDate(now.getDate() + daysUntilNextWalk);
+          nextWalk.setHours(startHours, startMinutes, 0, 0);
+        }
+      }
+    }
+  } else if (advrt.date) {
+    nextWalk = new Date(advrt.date);
+  }
+
+  if (!nextWalk) return undefined;
+
+  // Вычисление разницы во времени
+  const diffMs = nextWalk.getTime() - now.getTime();
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+  // Форматируем вывод с правильными окончаниями
+  const daysText = days > 0 ? `${days} ${days % 10 === 1 && days % 100 !== 11 ? 'день' : days % 10 >= 2 && days % 10 <= 4 && !(days % 100 >= 12 && days % 100 <= 14) ? 'дня' : 'дней'}` : '';
+  const hoursText = hours > 0 ? `${hours} ${hours % 10 === 1 && hours % 100 !== 11 ? 'час' : hours % 10 >= 2 && hours % 10 <= 4 && !(hours % 100 >= 12 && hours % 100 <= 14) ? 'часа' : 'часов'}` : '';
+  const minutesText = minutes > 0 ? `${minutes} ${minutes % 10 === 1 && minutes % 100 !== 11 ? 'минуту' : minutes % 10 >= 2 && minutes % 10 <= 4 && !(minutes % 100 >= 12 && minutes % 100 <= 14) ? 'минуты' : 'минут'}` : '';
+
+  return `Через ${[daysText, hoursText, minutesText].filter(Boolean).join(" ")}`;
+};

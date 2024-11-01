@@ -3,7 +3,7 @@ import { Text, View, Image } from "react-native";
 import { Divider, IconButton } from "react-native-paper";
 import { router } from "expo-router";
 import ChatStore from "@/stores/ChatStore";
-import userStore from "@/stores/UserStore";
+
 
 
 
@@ -16,9 +16,6 @@ const ChatHeader = ({ item }) => {
  }   
   
   const chatData = getChatData();
-
-  // const gender = userStore.currentUser?.gender
-  // console.log("gender", gender)
 
   const userId = chatData?.otherUserId
 
@@ -33,6 +30,9 @@ const ChatHeader = ({ item }) => {
   const showLastSeenTime = (userId?: string) => {
     if (userId) {
       const lastSeen = ChatStore.lastSeen[userId];
+
+// если lastSeen нет то взять время последнего сообщения
+
       if (lastSeen) {
         const now = Date.now();
         const diff = now - lastSeen;
@@ -55,13 +55,14 @@ const ChatHeader = ({ item }) => {
       }
       return 'Был(а): Неизвестно';
     } else {
-      console.warn("User ID is undefined, cannot retrieve lastSeen");
+  
+      console.log("User ID is undefined, cannot retrieve lastSeen");
       return '';
     }
   };
   
   const handleBack = () => {
-    router.back(); 
+    router.push("/(tabs)/chat/");
   };
 
   return (

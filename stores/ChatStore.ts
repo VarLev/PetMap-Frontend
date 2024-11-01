@@ -23,6 +23,7 @@ interface Chat {
   otherUserName?: string;
   otherUserId?: string;
   lastMessage: string;
+  lastCreatedAt: number;
   participants: { [key: string]: boolean };
   lastSeen?: number;
 }
@@ -36,9 +37,15 @@ interface Message {
 
 class ChatStore {
   chats: Chat[] = [];
+  sortedChats: Chat[] = [];
   messages: MessageType.Any[] = [];
   lastMessage: { [key: string]: string } = {};
   lastSeen: { [key: string]: number } = {};
+  allMessages: MessageType.Any[] = [];
+  advrtId: string | undefined = '';
+  lastCreatedAt: {[key: string]: number} = {};
+  
+ 
 
   constructor() {
     makeAutoObservable(this);
@@ -73,6 +80,7 @@ class ChatStore {
             otherUserName: otherUserName,
             otherUserId: otherUserId,
             thumbnailUrl,
+            lastCreatedAt: chatData.lastCreatedAt
           });
         }
       }
@@ -98,6 +106,7 @@ class ChatStore {
 
     const newChatData = {
       lastMessage: "Чат начат",
+      lastCreatedAt: Date.now(),
       participants: {
         [userId]: true,
         [otherUser.id]: true,
@@ -138,12 +147,12 @@ class ChatStore {
           this.chats.push({
             id: chatId,
             lastMessage: newChatData.lastMessage,
-
-            participants: newChatData.participants,
+            lastCreatedAt: newChatData.lastCreatedAt,
+             participants: newChatData.participants,
             otherUserName: otherUser?.name!,
             thumbnailUrl: otherUser?.thumbnailUrl!,
           });
-        }
+        } 
       });
 
       await this.sendInviteMessage(chatId, otherUser?.id);
@@ -173,12 +182,20 @@ class ChatStore {
         userId: userStore.currentUser?.id,
         userName: userStore.currentUser?.name,
         userAvatar: userStore.currentUser?.thumbnailUrl,
-      },
+        advrtId: this.advrtId,
+        visibleToUserId: otherUserId, // ID пользователя, которому нужно показать кнопки
+          },
     };
 
     try {
       await push(ref(database, `messages/${chatId}`), initialMessage);
       console.log("Initial message sent");
+      await update(ref(database, `chats/${chatId}`), {
+              lastCreatedAt: initialMessage.createdAt,
+      });
+      runInAction(() => {
+        chatStore.lastCreatedAt[chatId] = Date.now();
+      })
       if (recipientExpoPushToken) {
         await sendPushNotification(
           recipientExpoPushToken,
@@ -222,6 +239,7 @@ class ChatStore {
       // Обновляем последнее сообщение в чате
       await update(ref(database, `chats/${chatId}`), {
         lastMessage: text,
+        lastCreatedAt: Date.now(),
       });
       // обновляем время посещения
       await update(ref(database, `users/${userId}`), {
@@ -242,7 +260,8 @@ class ChatStore {
       runInAction(() => {
         chatStore.lastMessage[chatId] = text;
         chatStore.lastSeen[userId] = Date.now();
-        console.log("lastSeen from chatStore:", chatStore.lastSeen[userId]);
+        chatStore.lastCreatedAt[chatId] = Date.now();
+       
       });
     } catch (error) {
       console.error("Error during sendMessage:", error);
@@ -275,10 +294,14 @@ class ChatStore {
         }
       });
       runInAction(() => {
-        this.messages = messagesList.reverse(); // Обратный порядок для правильного отображения
+                this.messages = messagesList.reverse(); // Обратный порядок для правильного отображения
       });
     });
   }
+
+
+
+  
 
   async getLastMessage(chatId: string) {
     const data = ref(database, `chats/${chatId}`);
@@ -315,9 +338,7 @@ class ChatStore {
     await update(ref(database, `users/${userId}`), {
       lastSeen: timestamp,
     });
-
-    console.log('timestamp set in database:', timestamp);
-  
+ 
     runInAction(() => {
       this.lastSeen[userId] = timestamp;
     });
@@ -471,6 +492,13 @@ class ChatStore {
       console.error("Ошибка при проверке статуса блокировки:", error);
       return false;
     }
+  }
+
+  // запоминаем id прогулки для использования в чате
+  setSelectedAdvrtId( id: string) {
+    runInAction(() => {
+      this.advrtId = id ;  
+    })
   }
 
   clearMessages() {

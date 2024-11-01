@@ -1,10 +1,12 @@
 import React, { memo, useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
 import { View, Image, Text, TouchableOpacity } from "react-native";
 import { Button, Chip, Divider, Surface } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { MessageType } from "@flyerhq/react-native-chat-ui";
 import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
 import mapStore from "@/stores/MapStore";
+import userStore from "@/stores/UserStore";
 import { StarRatingDisplay } from "react-native-star-rating-widget";
 import { Ionicons } from "@expo/vector-icons";
 import { calculateDogAge, getTagsByIndex } from "@/utils/utils";
@@ -13,9 +15,13 @@ import CustomTextComponent from "../custom/text/CustomTextComponent";
 import {
   calculateDistance,
   convertDistance,
-  correctTimeNaming,
+  renderWalkDetails,
+  calculateTimeUntilNextWalk
 } from "@/utils/utils";
 import CircleIcon from "../custom/icons/CircleIcon";
+
+import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
+
 
 interface AdvtProps {
   item?: IWalkAdvrtDto[];
@@ -26,99 +32,34 @@ interface AdvtProps {
 
 const CustomMessageComponent = ({ message }: AdvtProps) => {
   const [userIsOwner, setUserIsOwner] = useState(false);
-  const [diffHours, setDiffHours] = useState<number | null>(null);
-  const [diffMinutes, setDiffMinutes] = useState<number | null>(null);
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+   const [showButtons, setShowButtons] = useState(false);
+
 
   const router = useRouter();
 
-  const userIdFromMessage = message.metadata?.userId;
   const item = mapStore.walkAdvrts;
 
-  const matchedItem = item.find((advrt) => advrt.userId === userIdFromMessage);
-  
-  
+   const advrtId = message.metadata?.advrtId;
+
+   const visibleToUserId = message.metadata?.visibleToUserId;
+   
+   
+   const matchedItem = item.find((advrt) => advrtId === advrt.id);
+   
+   const walkDetails = matchedItem ? renderWalkDetails(matchedItem) : "Данные отсутствуют";
+
   const pets = matchedItem?.userPets;
 
-  const nextWalkTime = (advrt: IWalkAdvrtDto): Date | undefined => {
-    const today = new Date();
-    const currentDay = today.getDay(); // 0 - воскресенье, 6 - суббота
+  const nextWalk =matchedItem ?  calculateTimeUntilNextWalk(matchedItem) : "Данные отсутствуют";
 
-    if (advrt.isRegular) {
-      if (advrt.selectedDays?.length === 7) {
-        // Прогулки каждый день
-        if (advrt.startTime) {
-          const nextWalk = new Date(advrt.startTime);
-          nextWalk.setFullYear(
-            today.getFullYear(),
-            today.getMonth(),
-            today.getDate()
-          );
+useEffect(() => {
+  if (visibleToUserId  === userStore.currentUser?.id) {
+    setShowButtons(true);  
+  }
+    
+}, [visibleToUserId]);
 
-          // Если время прогулки уже прошло сегодня, берем завтрашнее время
-          if (nextWalk <= today) {
-            nextWalk.setDate(nextWalk.getDate() + 1);
-          }
-          return nextWalk;
-        }
-        return undefined; // Если время не указано
-      } else if (advrt.selectedDays && advrt.selectedDays.length > 0) {
-        // Прогулки в определенные дни недели
-        const sortedDays = advrt.selectedDays.sort((a, b) => a - b);
-        let nextWalkDay =
-          sortedDays.find((day) => day > currentDay) ?? sortedDays[0];
-        let daysUntilNextWalk = (nextWalkDay - currentDay + 7) % 7;
 
-        const nextWalkDate = new Date();
-        nextWalkDate.setDate(today.getDate() + daysUntilNextWalk);
-
-        if (advrt.startTime) {
-          const startTimeDate = new Date(advrt.startTime);
-          nextWalkDate.setHours(startTimeDate.getHours());
-          nextWalkDate.setMinutes(startTimeDate.getMinutes());
-        }
-
-        return nextWalkDate;
-      }
-    } else if (advrt.date) {
-      // Разовая прогулка
-      return new Date(advrt.date);
-    }
-
-    return undefined; // Если нет данных о прогулке
-  };
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000); // Обновляем каждую минуту
-
-    return () => clearInterval(timer); // Очищаем таймер при размонтировании компонента
-  }, []);
-
-  useEffect(() => {
-    const nextWalk = matchedItem ? nextWalkTime(matchedItem) : undefined;
-
-    if (nextWalk) {
-      const currentTime = new Date();
-
-      // Вычисляем разницу во времени в миллисекундах
-      const diffMs = nextWalk.getTime() - currentTime.getTime();
-
-      if (diffMs > 0) {
-        let diffHours = Math.floor(
-          (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        );
-        let diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-
-        setDiffHours(diffHours);
-        setDiffMinutes(diffMinutes);
-      } else {
-        setDiffHours(0);
-        setDiffMinutes(0);
-      }
-    }
-  }, [currentTime, matchedItem]);
 
   const handlePress = () => {
     router.push(`/profile/${message.metadata!.userId}`);
@@ -133,6 +74,7 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
     mapStore.setBottomSheetVisible(false);
   };
 
+  
   return (
     <>
       <View className="p-4">
@@ -142,7 +84,7 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
       </View>
       <View className="bg-white h-3"></View>
       <View className="p-2 mt-1">
-        <View className="flex-row">
+        <View className="flex-row ">
           <TouchableOpacity
             className="rounded-2xl"
             onPress={() => handleUserProfileOpen(matchedItem?.userId!)}
@@ -233,67 +175,7 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
           Детали прогулки
         </Text>
         <CustomTextComponent
-          text={
-            matchedItem?.isRegular
-              ? // Прогулки регулярные
-                matchedItem.selectedDays?.length === 7
-                ? "Каждый день в " +
-                  (matchedItem.startTime
-                    ? new Date(matchedItem.startTime).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                    : "Время не указано")
-                : matchedItem.selectedDays
-                    ?.map(
-                      (day) => ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"][day]
-                    )
-                    .join(", ") +
-                  " в " +
-                  (matchedItem.startTime
-                    ? new Date(matchedItem.startTime).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                    : "Время не указано")
-              : // Прогулки нерегулярные
-              matchedItem?.date
-              ? (() => {
-                  const walkDate = new Date(matchedItem.date);
-                  const currentTime = new Date();
-                  const diffMs = walkDate.getTime() - currentTime.getTime();
-                  const diffDays = diffMs / (1000 * 60 * 60 * 24);
-
-                  // Если до прогулки больше суток, показываем дату и время
-                  if (diffDays > 1) {
-                    return (
-                      walkDate.toLocaleDateString() +
-                      " в " +
-                      (matchedItem.startTime
-                        ? new Date(matchedItem.startTime).toLocaleTimeString(
-                            [],
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }
-                          )
-                        : "Время не указано")
-                    );
-                  } else if (matchedItem.startTime) {
-                    // Если до прогулки меньше суток и startTime указан, показываем только время
-                    return (
-                      "Сегодня в " +
-                      new Date(matchedItem.startTime).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                    );
-                  } else {
-                    return "Дата не указана";
-                  }
-                })()
-              : "Дата не указана"
-          }
+          text={walkDetails}
           leftIcon="calendar-outline"
           iconSet="ionicons"
           className_="p-1"
@@ -308,15 +190,31 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
           textStyle={{ fontSize: 12 }}
         />
         <CustomTextComponent
-          text={correctTimeNaming(diffHours ?? 0, diffMinutes ?? 0)}
+          text={nextWalk}
           leftIcon="time-outline"
           iconSet="ionicons"
           className_="p-1 mb-1"
           textStyle={{ fontSize: 12 }}
         />
       </View>
+      {showButtons &&
+      <View>
+          <View className="flex-row justify-between items-center bg-white ">
+          <CustomButtonOutlined
+              title={'Принять'} 
+              handlePress={() => console.log("Принять")}
+              containerStyles="flex-1 bg-[#ACFFB9] my-2 mr-2" 
+            />
+                <CustomButtonOutlined
+              title={'Отклонить'} 
+              handlePress={() => console.log("Отклонить")}
+              containerStyles="flex-1 bg-[#FA8072] my-2 ml-2"
+            />
+          </View>
+    
+        </View>}     
     </>
-  );
-};
+  )}
+
 
 export default CustomMessageComponent;
