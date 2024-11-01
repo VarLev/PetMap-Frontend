@@ -19,13 +19,13 @@ import mapStore from '@/stores/MapStore';
 
 interface Props {
   userLocation: [number, number];
-  setRouteData: (route: any) => void;
+  onRouteReady: (routeFeatureCollection: any) => void; // New prop
 }
 
 const PulsatingMarker: React.FC<{
   point: IPOI;
   onPress: (pointId: string) => void;
-  onLongPress: (pointId: string) => void;
+  onLongPress: (point: IPOI) => void;
 }> = ({ point, onPress, onLongPress }) => {
   // Создаем анимируемое значение для масштаба
   const scale = useSharedValue(1);
@@ -56,7 +56,7 @@ const PulsatingMarker: React.FC<{
       stiffness: 150,
     });
     // Вызываем переданный обработчик долгого нажатия
-    onLongPress(point.id);
+    onLongPress(point); // Call onLongPress with point data
   };
 
   const handleLongPressOut = () => {
@@ -92,7 +92,7 @@ const PulsatingMarker: React.FC<{
   );
 };
 
-const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, setRouteData }) => {
+const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, onRouteReady }) => {
   const [pointsOfInterest, setPointsOfInterest] = useState<IPOI[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [visiblePoints, setVisiblePoints] = useState<IPOI[]>([]);
@@ -164,10 +164,7 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, set
   );
 
   const handleMarkerLongPress = useCallback(
-    async (pointId: string) => {
-      const point = pointsOfInterest.find((point) => point.id === pointId);
-      if (!point) return;
-
+    async (point: IPOI) => {
       const origin = [userLocation[0], userLocation[1]];
       const destination = [point.longitude, point.latitude];
 
@@ -191,13 +188,13 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, set
             ],
           };
 
-          setRouteData(routeFeatureCollection);
+          onRouteReady(routeFeatureCollection); // Pass route data back to MapBoxMap
         }
       } catch (error) {
         console.error('Error fetching route', error);
       }
     },
-    [pointsOfInterest, userLocation, setRouteData]
+    [userLocation, onRouteReady]
   );
 
   return (

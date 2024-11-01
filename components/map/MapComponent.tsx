@@ -2,7 +2,7 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { View, SafeAreaView, Image, Pressable, BackHandler, ImageSourcePropType } from 'react-native';
-import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer } from '@rnmapbox/maps';
+import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer, LineLayer } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
 import { Provider  } from 'react-native-paper';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent'; // Импортируйте новый компонент
@@ -93,17 +93,7 @@ const MapBoxMap = observer(() => {
     setGeoJSONData(data);
   }, [mapStore.walkAdvrts, mapStore.mapPoints]);
 
-  // useEffect(() => {
-  //   if (routeData) {
-  //     const coordinates = routeData.features[0].geometry.coordinates;
-  //     mapRef.current?.fitBounds(
-  //       [Math.min(...coordinates.map(c => c[0])), Math.min(...coordinates.map(c => c[1]))],
-  //       [Math.max(...coordinates.map(c => c[0])), Math.max(...coordinates.map(c => c[1]))],
-  //       { paddingLeft: 50, paddingRight: 50, paddingTop: 50, paddingBottom: 50 }
-  //     );
-  //   }
-  // }, [routeData]);
-
+ 
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
@@ -161,6 +151,42 @@ const MapBoxMap = observer(() => {
       type: "FeatureCollection",
       features,
     };
+  };
+
+  const handleRouteReady = (routeFeatureCollection: any) => {
+    setRouteData(routeFeatureCollection);
+
+    // Adjust camera to show the route
+    const coordinates = routeFeatureCollection.features[0].geometry.coordinates;
+    interface Bounds {
+      minX: number;
+      minY: number;
+      maxX: number;
+      maxY: number;
+    }
+
+    const bounds: Bounds = coordinates.reduce(
+      (bounds: Bounds, coord: [number, number]) => {
+        return {
+          minX: Math.min(bounds.minX, coord[0]),
+          minY: Math.min(bounds.minY, coord[1]),
+          maxX: Math.max(bounds.maxX, coord[0]),
+          maxY: Math.max(bounds.maxY, coord[1]),
+        };
+      },
+      {
+        minX: coordinates[0][0],
+        minY: coordinates[0][1],
+        maxX: coordinates[0][0],
+        maxY: coordinates[0][1],
+      }
+    );
+
+    // cameraRef.current?.fitBounds(
+    //   [bounds.minX, bounds.minY],
+    //   [bounds.maxX, bounds.maxY],
+    //   100
+    // );
   };
 
   const handleFilterChange = (count: number) => {
@@ -436,7 +462,6 @@ const MapBoxMap = observer(() => {
           ref={mapRef} 
           style={{ flex: 1 }} 
           onLongPress={handleLongPress} 
-
           styleURL={Mapbox.StyleURL.Light}
           logoEnabled={false}
           attributionEnabled={false}
@@ -448,16 +473,23 @@ const MapBoxMap = observer(() => {
           rotateEnabled={!isCardView}
         >
           <UserLocation minDisplacement={50} ref={userLocationRef} onUpdate={handleUserLocationUpdate}  /> 
-          
+          {routeData && (
+            <ShapeSource id="routeSource" shape={routeData}>
+              <LineLayer 
+                id="routeLine" 
+                style={{ lineColor: 'blue', lineWidth: 5 }} 
+              />
+            </ShapeSource>
+          )}
 
           {/* <UserLocation minDisplacement={10} ref={userLocationRef}  /> */}
-         {userCoordinates && (<Camera
-            ref={cameraRef}
-            centerCoordinate={userCoordinates}
-            zoomLevel={10}
-            animationDuration={1}
-            
-          />)} 
+          {userCoordinates && (
+            <Camera
+              ref={cameraRef}
+              centerCoordinate={userCoordinates}
+              zoomLevel={10}
+              animationDuration={1}
+            />)} 
           
           {/* Добавдяем цифры, когда маркеры накладываются друг на друга */}
           {!isCardView && geoJSONData && (
@@ -578,7 +610,7 @@ const MapBoxMap = observer(() => {
           )}
 
           {/* Добавляем компонент точек интереса */}
-          {userCoordinates && (<PointsOfInterestComponent userLocation={userCoordinates} setRouteData={setRouteData}  />)}
+          {userCoordinates && (<PointsOfInterestComponent userLocation={userCoordinates} onRouteReady={handleRouteReady}  />)}
           
         </MapView>)} 
         <View
