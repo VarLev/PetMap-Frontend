@@ -19,12 +19,14 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     } else {
       // Использование токена в параметре запроса
-      config.params = config.params || {};
-      config.params["access_token"] = token;
+      console.warn("Token not found");
+      // config.params = config.params || {};
+      // config.params["access_token"] = token;
     }
     return config;
   },
   (error) => {
+    console.error("Error retrieving token:", error);
     return Promise.reject(error);
   }
 );

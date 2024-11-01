@@ -1,10 +1,11 @@
-import StoreProvider from '@/contexts/StoreProvider';
+
 import { useFonts } from 'expo-font';
 import { Stack, SplashScreen } from 'expo-router';
 import React, { useEffect } from 'react';
 import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans';
 import { AlertProvider } from '@/contexts/AlertContext';
 import { DefaultTheme, PaperProvider } from 'react-native-paper';
+import { StoreProvider } from '@/contexts/StoreProvider';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -31,7 +32,7 @@ const Layout = () => {
     <StoreProvider>
       <AlertProvider>
         <PaperProvider theme={DefaultTheme}>
-        <Stack initialRouteName='(tabs)'>
+        <Stack initialRouteName='index'>
           <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
           <Stack.Screen name='(auth)' options={{ headerShown: false }} />
           <Stack.Screen name='index' options={{ headerShown: false }} />

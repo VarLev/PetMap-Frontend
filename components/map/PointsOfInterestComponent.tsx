@@ -8,25 +8,28 @@ import Animated, {
   useAnimatedStyle,
   withRepeat,
   withTiming,
+  withSpring,
   Easing,
 } from 'react-native-reanimated';
 import CustomAlert from '../custom/alert/CustomAlert';
-
-interface PointOfInterest {
-  id: string;
-  coordinate: [number, number];
-}
+import userStore from '@/stores/UserStore';
+import { Job } from '@/dtos/classes/job/Job';
+import { IPOI } from '@/dtos/Interfaces/map/POI/IPOI';
+import mapStore from '@/stores/MapStore';
 
 interface Props {
   userLocation: [number, number];
+  setRouteData: (route: any) => void;
 }
 
 const PulsatingMarker: React.FC<{
-  point: PointOfInterest;
+  point: IPOI;
   onPress: (pointId: string) => void;
-}> = ({ point, onPress }) => {
+  onLongPress: (pointId: string) => void;
+}> = ({ point, onPress, onLongPress }) => {
   // Создаем анимируемое значение для масштаба
   const scale = useSharedValue(1);
+  const longPressScale = useSharedValue(1);
 
   useEffect(() => {
     // Анимация пульсации
@@ -42,78 +45,85 @@ const PulsatingMarker: React.FC<{
 
   // Применяем анимированный стиль
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+    transform: [{ scale: scale.value * longPressScale.value }],
     width: 50,  
     height: 50,
   }));
 
+  const handleLongPressIn = () => {
+    longPressScale.value = withSpring(2, {
+      damping: 5,
+      stiffness: 150,
+    });
+    // Вызываем переданный обработчик долгого нажатия
+    onLongPress(point.id);
+  };
+
+  const handleLongPressOut = () => {
+    longPressScale.value = withSpring(1, {
+      damping: 5,
+      stiffness: 150,
+    });
+  };
+
   return (
-    
     <MarkerView
       key={point.id}
       id={point.id}
-      coordinate={point.coordinate}
+      coordinate={[point.longitude, point.latitude]}
       anchor={{ x: 0.5, y: 0.5 }}
     >
-      <TouchableOpacity onPress={() => onPress(point.id)}>
-      <Animated.View
-        className="rounded-full justify-center items-center"
-        
-        style={animatedStyle}
-        
+      <TouchableOpacity
+        onPress={() => onPress(point.id)}
+        onLongPress={handleLongPressIn}
+        onPressOut={handleLongPressOut}
       >
-        <Image
-          source={require('@/assets/images/bonuse.png')}
-          style={{ width: 20, height: 20 }}
-        />
-      </Animated.View>
+        <Animated.View
+          className="rounded-full justify-center items-center"
+          style={animatedStyle}   
+        >
+          <Image
+            source={require('@/assets/images/bonuse.png')}
+            style={{ width: 20, height: 20 }}
+          />
+        </Animated.View>
       </TouchableOpacity>
     </MarkerView>
-
   );
 };
 
-const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation }) => {
-  const [pointsOfInterest, setPointsOfInterest] = useState<PointOfInterest[]>([]);
+const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, setRouteData }) => {
+  const [pointsOfInterest, setPointsOfInterest] = useState<IPOI[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [visiblePoints, setVisiblePoints] = useState<PointOfInterest[]>([]);
+  const [visiblePoints, setVisiblePoints] = useState<IPOI[]>([]);
   const [alertText, setAlertText] = useState<string>('');
   const imageBonuse = require('@/assets/images/alert-dog-bonuses.webp'); // Define alertImage
   const imageSad = require('@/assets/images/alert-dog-sad.png'); 
-
   const [alertImage, setAlertImage] = useState<ImageSourcePropType | undefined>(imageSad);
-
-  // Мемоизируем функцию генерации точек, чтобы она не пересоздавалась при каждом рендере
-  const generatePoints = useCallback(
-    (userLocation: [number, number]): PointOfInterest[] => {
-      const points: PointOfInterest[] = [];
-      for (let i = 0; i < 3; i++) {
-        const offsetLat = (Math.random() - 0.5) * 0.02;
-        const offsetLng = (Math.random() - 0.5) * 0.02;
-        points.push({
-          id: `point-${i}`,
-          coordinate: [userLocation[0] + offsetLng, userLocation[1] + offsetLat],
-        });
-      }
-      return points;
-    },
-    []
-  );
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    // Генерируем точки только при изменении userLocation
-    const generatedPoints = generatePoints(userLocation);
-    setPointsOfInterest(generatedPoints);
-  }, [userLocation, generatePoints]);
+    const fetchPoints = async () => {
+      if (!isDataLoaded) {
+        await mapStore.fetchUserPOIs(userLocation);
+        const generatedPoints = mapStore.getPoi();
+        setPointsOfInterest(generatedPoints);
+        setIsDataLoaded(true);
+      }
+    };
+    console.log('fetchPoints');
+
+    fetchPoints();
+  }, [isDataLoaded]);
 
   useEffect(() => {
     // Обновляем список видимых точек на основе текущего местоположения
     const updatedVisiblePoints = pointsOfInterest.filter((point) => {
       const distance = haversine(
         { latitude: userLocation[1], longitude: userLocation[0] },
-        { latitude: point.coordinate[1], longitude: point.coordinate[0] }
+        { latitude: point.latitude , longitude: point.longitude }
       );
-      return distance <= 5000; // 5 км
+      return distance ; // 5 км
     });
     setVisiblePoints(updatedVisiblePoints);
   }, [userLocation, pointsOfInterest]);
@@ -125,16 +135,25 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation }) =
 
       const distance = haversine(
         { latitude: userLocation[1], longitude: userLocation[0] },
-        { latitude: point.coordinate[1], longitude: point.coordinate[0] }
+        { latitude: point.latitude, longitude: point.longitude }
       );
 
-      if (distance <= 20) {
+      if (distance <= 2000) {
         setPointsOfInterest((prevPoints) =>
           prevPoints.filter((point) => point.id !== pointId)
         );
+        const job = new Job({
+          id: 41,
+          name: 'Test',
+          benefits: 400,
+        });
+        
+        userStore.updateUserJobs(userStore.currentUser.id, [job]);
+        userStore.collectPOI(point.id);
         setAlertImage(imageBonuse);
         setModalVisible(true);
         setAlertText('Вам начислено 400 бонусов!');
+        
       } else {
         setAlertImage(imageSad);
         setModalVisible(true);
@@ -144,10 +163,52 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation }) =
     [pointsOfInterest, userLocation]
   );
 
+  const handleMarkerLongPress = useCallback(
+    async (pointId: string) => {
+      const point = pointsOfInterest.find((point) => point.id === pointId);
+      if (!point) return;
+
+      const origin = [userLocation[0], userLocation[1]];
+      const destination = [point.longitude, point.latitude];
+
+      const url = `https://api.mapbox.com/directions/v5/mapbox/walking/${origin[0]},${origin[1]};${destination[0]},${destination[1]}?geometries=geojson&access_token=${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}`;
+
+      try {
+        const response = await fetch(url);
+        const json = await response.json();
+
+        if (json.routes && json.routes.length > 0) {
+          const route = json.routes[0].geometry;
+
+          const routeFeatureCollection = {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                properties: {},
+                geometry: route,
+              },
+            ],
+          };
+
+          setRouteData(routeFeatureCollection);
+        }
+      } catch (error) {
+        console.error('Error fetching route', error);
+      }
+    },
+    [pointsOfInterest, userLocation, setRouteData]
+  );
+
   return (
     <>
       {visiblePoints.map((point) => (
-        <PulsatingMarker key={point.id} point={point} onPress={handleMarkerPress} />
+        <PulsatingMarker 
+        key={point.id} 
+        point={point} 
+        onPress={handleMarkerPress} 
+        onLongPress={handleMarkerLongPress} 
+        />
       ))}
       <CustomAlert
           isVisible={isModalVisible}

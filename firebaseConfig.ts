@@ -75,7 +75,7 @@ export const signInWithGoogle = async () => {
   try {
     await GoogleSignin.hasPlayServices();
     const userInfo = await GoogleSignin.signIn();
-    const idToken = userInfo?.data?.idToken;
+    const idToken = userInfo?.idToken;
     if (!idToken) {
       throw new Error('Не возможно войти через Google аккаунт, попробуйте другие способы хода.');
     }

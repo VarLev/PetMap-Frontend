@@ -41,6 +41,7 @@ import PointsOfInterestComponent from './PointsOfInterestComponent';
 
 
 const MapBoxMap = observer(() => {
+  const [isLoading, setIsLoading] = useState(true);
   const sheetRef = useRef<BottomSheet>(null);
   const cameraRef = useRef<Camera>(null);
   const mapRef = useRef<Mapbox.MapView>(null);
@@ -57,7 +58,7 @@ const MapBoxMap = observer(() => {
   const { openDrawer, closeDrawer } = useDrawer();
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
   const [selectedTag, setSelectedTag] = useState<string>("");
-  const [userCoordinates, setUserCoordinates] = useState<[number, number]>([0, 0]);
+  const [userCoordinates, setUserCoordinates] =  useState<[number, number] | null>(null);
   const currentUser = userStore.currentUser;
   const [modifiedFieldsCount, setModifiedFieldsCount] = useState(0);
   const [currentPointType, setCurrentPointType] = useState(MapPointType.Walk);
@@ -71,17 +72,37 @@ const MapBoxMap = observer(() => {
   const [selectedWalkMarker, setSelectedWalkMarker] = useState('');
   const [alertImage, setAlertImage] = useState<ImageSourcePropType >();
 
+   // ... существующие состояния и переменные
+   const [routeData, setRouteData] = useState<any>(null);
+
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
   useEffect(() => {
-    setUserCoordinates([-58.3816, -34.6037]);
-    mapStore.setWalkAdvrts();
+    setIsLoading(true);
+    const fetchData = async () => {
+      await mapStore.setWalkAdvrts();
+      const data = createGeoJSONFeatures();
+      setGeoJSONData(data);
+    };
+    fetchData();
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
     const data = createGeoJSONFeatures();
     setGeoJSONData(data);
   }, [mapStore.walkAdvrts, mapStore.mapPoints]);
+
+  // useEffect(() => {
+  //   if (routeData) {
+  //     const coordinates = routeData.features[0].geometry.coordinates;
+  //     mapRef.current?.fitBounds(
+  //       [Math.min(...coordinates.map(c => c[0])), Math.min(...coordinates.map(c => c[1]))],
+  //       [Math.max(...coordinates.map(c => c[0])), Math.max(...coordinates.map(c => c[1]))],
+  //       { paddingLeft: 50, paddingRight: 50, paddingTop: 50, paddingBottom: 50 }
+  //     );
+  //   }
+  // }, [routeData]);
 
   useFocusEffect(
     useCallback(() => {
@@ -411,7 +432,7 @@ const MapBoxMap = observer(() => {
           <MapItemList renderType={currentPointType} />
         </SlidingOverlay>
       )}
-        <MapView 
+       {!isLoading && (<MapView 
           ref={mapRef} 
           style={{ flex: 1 }} 
           onLongPress={handleLongPress} 
@@ -426,17 +447,18 @@ const MapBoxMap = observer(() => {
           zoomEnabled={!isCardView}
           rotateEnabled={!isCardView}
         >
-
           <UserLocation minDisplacement={50} ref={userLocationRef} onUpdate={handleUserLocationUpdate}  /> 
+          
 
           {/* <UserLocation minDisplacement={10} ref={userLocationRef}  /> */}
-          <Camera
+         {userCoordinates && (<Camera
             ref={cameraRef}
             centerCoordinate={userCoordinates}
             zoomLevel={10}
             animationDuration={1}
-          />
-
+            
+          />)} 
+          
           {/* Добавдяем цифры, когда маркеры накладываются друг на друга */}
           {!isCardView && geoJSONData && (
             <ShapeSource
@@ -556,8 +578,9 @@ const MapBoxMap = observer(() => {
           )}
 
           {/* Добавляем компонент точек интереса */}
-          <PointsOfInterestComponent userLocation={userCoordinates} />
-        </MapView>
+          {userCoordinates && (<PointsOfInterestComponent userLocation={userCoordinates} setRouteData={setRouteData}  />)}
+          
+        </MapView>)} 
         <View
           style={{
             position: "absolute",
@@ -576,7 +599,7 @@ const MapBoxMap = observer(() => {
             onOpenCardView={() => setisCardView(!isCardView)}
             badgeCount={modifiedFieldsCount}
           />
-        </View>
+        </View> 
         {/* <View style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: 10,paddingRight:60, flexDirection: 'row' }}>
           <TextInput
             className='bg-white h-12 rounded-xl mt-1 pl-3 w-full border border-gray-400'

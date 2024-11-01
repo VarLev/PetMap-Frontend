@@ -14,11 +14,13 @@ const UserProfile = observer(() => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+
     const fetchUser = async () => {
       setLoading(true); // Устанавливаем состояние загрузки
       setEditableUser(null); // Очищаем данные предыдущего пользователя
       setIsEmpty(false); // Сбрасываем состояние пустого профиля
 
+      
       if (id) {
         const user = await userStore.getUserById(id as string); // Получаем пользователя по ID
         setEditableUser(user);

@@ -21,23 +21,21 @@ import { IPagedPointDangerDTO } from '@/dtos/Interfaces/map/paged/IPagedPointDan
 import { IPagetPointUserDTO } from '@/dtos/Interfaces/map/paged/IPagetPointUserDTO';
 import { ReviewDTO } from '@/dtos/classes/review/Review';
 import { IMapPointTagDTO } from '@/dtos/Interfaces/map/IMapPointTagDTO';
+import { IPOI } from '@/dtos/Interfaces/map/POI/IPOI';
 
 class MapStore {
   address = '';
   advrtAddress = '';
   suggestions: any[] = [];
-  region = {
-    latitude: -34.603722,
-    longitude: -58.381592,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  };
   bottomSheetVisible = false;
   walkAdvrts: IWalkAdvrtDto[] = [];
   mapPoints: IPointEntityDTO[] = [];
   currentUserCoordinates: [number, number] = [0,0];
   currentWalkId: string | undefined = undefined;
   currentWalkDate: Date | undefined = undefined; //mine
+  pois: IPOI[] = [];
+
+
   
   isAvaliableToCreateWalk = true; // Переменная для проверки возможности создания прогулки
   
@@ -66,9 +64,7 @@ class MapStore {
     this.suggestions = suggestions;
   }
 
-  setRegion(region: { latitude: number, longitude: number, latitudeDelta: number, longitudeDelta: number }) {
-    this.region = region;
-  }
+
 
   setMarker(coordinates: [number, number]) {
     this.marker = coordinates;
@@ -76,6 +72,31 @@ class MapStore {
 
   setSelectedFeature(feature: GeoJSON.Feature<GeoJSON.Point> | null) {
     this.selectedFeature = feature;
+  }
+
+  setPoi(poi: IPOI[]) {
+    this.pois = poi;
+  }
+
+  getPoi() {
+    return this.pois;
+  }
+
+  async fetchUserPOIs([latitude, longitude]: [number, number]): Promise<IPOI[]> {  
+    try {
+      const response = await apiClient.get('poi', {
+        params: {
+          longitude: latitude,
+          latitude: longitude
+        },
+      });
+      runInAction(() => {
+        this.setPoi(response.data);
+      });
+      return response.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
   }
 
   async setWalkAdvrts() {
@@ -192,12 +213,7 @@ class MapStore {
 
   selectAddress(place: any) {
     const { center, place_name } = place;
-    this.setRegion({
-      latitude: center[0],
-      longitude: center[1],
-      latitudeDelta: 0.0922,
-      longitudeDelta: 0.0421,
-    });
+    
     this.setAddress(place_name);
     this.setSuggestions([]);
   }
