@@ -75,6 +75,8 @@ const MapBoxMap = observer(() => {
    // ... существующие состояния и переменные
    const [routeData, setRouteData] = useState<any>(null);
 
+  const [renderAdvrtForm, setRenderAdvrtForm] = useState(false);
+
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
   useEffect(() => {
@@ -221,6 +223,7 @@ const MapBoxMap = observer(() => {
       if ((currentUser.petProfiles ?? []).length > 0) {
         setMarkerCoordinate(coordinates);
         mapStore.setMarker(coordinates);
+        setRenderAdvrtForm(true);
         setRenderContent(() => (
           <AdvtEditComponent
             coordinates={coordinates}
@@ -396,6 +399,7 @@ const MapBoxMap = observer(() => {
     setMarkerPointCoordinate(null);
     setIsSheetVisible(false);
     setIsSheetExpanded(false);
+    setRenderAdvrtForm(false);  // Сбрасываем форму редактирования прогулки
   };
 
   const handleSheetChange = (index: number) => {
@@ -652,7 +656,7 @@ const MapBoxMap = observer(() => {
           <BottomSheetComponent
             ref={sheetRef}
 
-            snapPoints={['60%','100%']}
+            snapPoints={renderAdvrtForm ? ['85%', '100%'] : ['60%','100%']}
             renderContent={renderContent as any}
             onClose={handleSheetClose} // Обработчик для события закрытия BottomSheet
             enablePanDownToClose={true}

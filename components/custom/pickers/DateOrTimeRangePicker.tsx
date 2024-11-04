@@ -32,9 +32,11 @@ const DateOrTimeRangePicker: React.FC<DateOrTimeRangePickerProps> = ({ time, dur
       onTimeChange(selectedDate);
     } else if (mode === 'date' && onDateChange) {
       onDateChange(selectedDate);
-    }
+          }
     setPickerVisible(false);
   };
+
+  
 
   return (
     <View className='flex-col w-full space-y-4'>

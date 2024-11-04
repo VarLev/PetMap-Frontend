@@ -15,7 +15,7 @@ const ChatScreen: React.FC = observer(() => {
     chatId: string;
     otherUserId?: string;
   }>();
-  const userId = UserStore.currentUser?.id;
+  const userId: string | undefined = UserStore.currentUser?.id;
   const router = useRouter();
 
   const [isBlocked, setIsBlocked] = React.useState(false);
@@ -58,13 +58,12 @@ const ChatScreen: React.FC = observer(() => {
 
     return () => {
       backHandler.remove();
-      ChatStore.clearMessages();
+      //ChatStore.clearMessages();
     };
   
   }, [chatId, router]);
 
   const renderMessage = useCallback((message: MessageType.Custom) => {
-    console.log("chatId", chatId);
     return <CustomMessageComponent message={message} />;
   }, []);
 

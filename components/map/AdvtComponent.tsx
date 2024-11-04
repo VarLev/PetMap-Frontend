@@ -22,6 +22,8 @@ import { IUserAdvrt } from "@/dtos/Interfaces/user/IUserAdvrt";
 import { WalkRequestStatus } from "@/dtos/enum/WalkRequestStatus";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 import CircleIcon from "../custom/icons/CircleIcon";
+import chatStore from "@/stores/ChatStore";
+import  { renderWalkDetails } from "@/utils/utils";
 
 interface AdvtProps {
   advrt: IWalkAdvrtDto;
@@ -72,8 +74,10 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
       user.id = advrt.userId!;
       user.name = advrt.userName!;
       user.thumbnailUrl = advrt.userPhoto ?? "https://via.placeholder.com/100";
-      await mapStore.requestJoinWalk(advrt.id!, userStore.currentUser?.id);
+      chatStore.setSelectedAdvrtId(advrt.id!);
+            await mapStore.requestJoinWalk(advrt.id!, userStore.currentUser?.id);
       onInvite(user);
+ 
     };
 
     const handleEdit = () => {
@@ -109,32 +113,9 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
       mapStore.setBottomSheetVisible(false);
     };
 
-    const renderWalkDetails = () => {
-      if (advrt.isRegular) {
-        if (advrt.selectedDays?.length === 7) {
-          //переделай startTime из number в время
-          if (advrt.startTime){
-            const hours = Math.floor(advrt.startTime / 60);
-            const minutes = advrt.startTime % 60;
-            return "Каждый день в " + (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes);
-          }
-          return "Каждый день";
-        } else {
-          return advrt.selectedDays?.map((day) =>
-            ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"][day]
-          ).join(", ") + " в "  + (advrt.startTime
-            ? new Date(advrt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            : "Время не указано");
-        }
-      } else {
-        return advrt.date
-        ? new Date(advrt.date).toLocaleDateString() +
-            (advrt.startTime
-              ? " в " + new Date(advrt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-              : " Время не указано")
-        : "Дата не указана";
-      }
-    };
+    const walkDetails = renderWalkDetails(advrt);
+
+       
 
     return (
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="px-4">
@@ -159,7 +140,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
               </View>
               <View className="flex-1 justify-center">
                 <CustomTextComponent
-                  text={renderWalkDetails()}
+                  text={walkDetails}                  
                   leftIcon="time-outline"
                   iconSet="ionicons"
                   className_="p-0"
@@ -347,7 +328,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
               </Text>
               <CustomTextComponent text={advrt.address}  leftIcon='location-pin' iconSet="simpleLine"/>
             
-              <CustomTextComponent text={renderWalkDetails()}  leftIcon='calendar-outline' iconSet="ionicons" /> 
+              <CustomTextComponent text={walkDetails}  leftIcon='calendar-outline' iconSet="ionicons" /> 
                 
                
              
