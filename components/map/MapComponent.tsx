@@ -154,6 +154,10 @@ const MapBoxMap = observer(() => {
   };
 
   const handleRouteReady = (routeFeatureCollection: any) => {
+    if(routeData){
+      setRouteData(null);
+      return;
+    }
     setRouteData(routeFeatureCollection);
 
     // Adjust camera to show the route
@@ -519,6 +523,7 @@ const MapBoxMap = observer(() => {
                 setSelectedWalkMarker(advrt.id!);
               }}
               allowOverlap={false}
+              
             >
               <Pressable onPress={() => {
                 onPinPress(advrt);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { MarkerView } from '@rnmapbox/maps';
-import { Image, ImageSourcePropType, TouchableOpacity } from 'react-native';
+import { Image, ImageSourcePropType, Pressable } from 'react-native';
 import haversine from 'haversine-distance';
 import { observer } from 'mobx-react-lite';
 import Animated, {
@@ -8,8 +8,8 @@ import Animated, {
   useAnimatedStyle,
   withRepeat,
   withTiming,
-  withSpring,
   Easing,
+  cancelAnimation
 } from 'react-native-reanimated';
 import CustomAlert from '../custom/alert/CustomAlert';
 import userStore from '@/stores/UserStore';
@@ -30,40 +30,58 @@ const PulsatingMarker: React.FC<{
   // Создаем анимируемое значение для масштаба
   const scale = useSharedValue(1);
   const longPressScale = useSharedValue(1);
+  const isLongPressed = useSharedValue(false);
 
   useEffect(() => {
     // Анимация пульсации
-    scale.value = withRepeat(
-      withTiming(1.7, {
-        duration: 500,
-        easing: Easing.linear, 
-      }),
-      -1, // Бесконечное повторение
-      true // Реверс анимации
-    );
-  }, [scale]);
+    if (!isLongPressed.value) {
+      scale.value = withRepeat(
+        withTiming(1.7, {
+          duration: 500,
+          easing: Easing.linear,
+        }),
+        -1, // Бесконечное повторение
+        true // Реверс анимации
+      );
+    }
+  }, [scale, isLongPressed]);
 
   // Применяем анимированный стиль
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value * longPressScale.value }],
-    width: 50,  
-    height: 50,
+    width: 50 * longPressScale.value, // Изменяем ширину и высоту, чтобы избежать обрезания
+    height: 50 * longPressScale.value,
   }));
 
   const handleLongPressIn = () => {
-    longPressScale.value = withSpring(2, {
-      damping: 5,
-      stiffness: 150,
-    });
+    // Увеличиваем размер при долгом нажатии
+    isLongPressed.value = true;
+    longPressScale.value = withTiming(2.7, {
+      duration: 500,
+      easing: Easing.inOut(Easing.quad),
+     
+    })
+    cancelAnimation(scale); // Останавливаем анимацию пульсирования
     // Вызываем переданный обработчик долгого нажатия
-    onLongPress(point); // Call onLongPress with point data
+    onLongPress(point);
   };
 
   const handleLongPressOut = () => {
-    longPressScale.value = withSpring(1, {
-      damping: 5,
-      stiffness: 150,
-    });
+    // Возвращаем размер, возобновляем анимацию пульсирования
+    isLongPressed.value = false;
+    longPressScale.value = withTiming(1, {
+      duration: 500,
+      easing: Easing.inOut(Easing.quad),
+
+    })
+    // scale.value = withRepeat(
+    //   withTiming(1.7, {
+    //     duration: 500,
+    //     easing: Easing.linear,
+    //   }),
+    //   -1, // Бесконечное повторение
+    //   true // Реверс анимации
+    // );
   };
 
   return (
@@ -73,21 +91,23 @@ const PulsatingMarker: React.FC<{
       coordinate={[point.longitude, point.latitude]}
       anchor={{ x: 0.5, y: 0.5 }}
     >
-      <TouchableOpacity
+      <Pressable
         onPress={() => onPress(point.id)}
         onLongPress={handleLongPressIn}
         onPressOut={handleLongPressOut}
+        delayLongPress={200}
       >
         <Animated.View
           className="rounded-full justify-center items-center"
-          style={animatedStyle}   
+          style={[animatedStyle, { overflow: 'visible' }]} // Добавлено overflow: 'visible' для предотвращения обрезания
         >
           <Image
             source={require('@/assets/images/bonuse.png')}
-            style={{ width: 20, height: 20 }}
+            style={{ width: 25, height: 25 }}
+            resizeMode="contain" // Убедитесь, что изображение масштабируется полностью
           />
         </Animated.View>
-      </TouchableOpacity>
+      </Pressable>
     </MarkerView>
   );
 };
@@ -98,7 +118,7 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, onR
   const [visiblePoints, setVisiblePoints] = useState<IPOI[]>([]);
   const [alertText, setAlertText] = useState<string>('');
   const imageBonuse = require('@/assets/images/alert-dog-bonuses.webp'); // Define alertImage
-  const imageSad = require('@/assets/images/alert-dog-sad.png'); 
+  const imageSad = require('@/assets/images/alert-dog-sad.png');
   const [alertImage, setAlertImage] = useState<ImageSourcePropType | undefined>(imageSad);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
@@ -121,9 +141,9 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, onR
     const updatedVisiblePoints = pointsOfInterest.filter((point) => {
       const distance = haversine(
         { latitude: userLocation[1], longitude: userLocation[0] },
-        { latitude: point.latitude , longitude: point.longitude }
+        { latitude: point.latitude, longitude: point.longitude }
       );
-      return distance ; // 5 км
+      return distance; // 5 км
     });
     setVisiblePoints(updatedVisiblePoints);
   }, [userLocation, pointsOfInterest]);
@@ -138,7 +158,7 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, onR
         { latitude: point.latitude, longitude: point.longitude }
       );
 
-      if (distance <= 2000) {
+      if (distance <= 50) {
         setPointsOfInterest((prevPoints) =>
           prevPoints.filter((point) => point.id !== pointId)
         );
@@ -147,13 +167,12 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, onR
           name: 'Test',
           benefits: 400,
         });
-        
+
         userStore.updateUserJobs(userStore.currentUser.id, [job]);
         userStore.collectPOI(point.id);
         setAlertImage(imageBonuse);
         setModalVisible(true);
         setAlertText('Вам начислено 400 бонусов!');
-        
       } else {
         setAlertImage(imageSad);
         setModalVisible(true);
@@ -200,21 +219,21 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, onR
   return (
     <>
       {visiblePoints.map((point) => (
-        <PulsatingMarker 
-        key={point.id} 
-        point={point} 
-        onPress={handleMarkerPress} 
-        onLongPress={handleMarkerLongPress} 
+        <PulsatingMarker
+          key={point.id}
+          point={point}
+          onPress={handleMarkerPress}
+          onLongPress={handleMarkerLongPress}
         />
       ))}
       <CustomAlert
-          isVisible={isModalVisible}
-          onClose={() => setModalVisible(false)}
-          message={alertText}
-          type={'info'}
-          image={alertImage}
-        />
-    </> 
+        isVisible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        message={alertText}
+        type={'info'}
+        image={alertImage}
+      />
+    </>
   );
 });
 
