@@ -250,6 +250,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
             </View>
             <View className="p-2 ">
               <Text className="text-lg font-nunitoSansBold text-indigo-800">Интересы</Text>
+              <Text className='font-nunitoSansRegular text-gray-600'>Выберите до 5 интересов</Text>
               <CustomTagsSelector
                 tags={INTEREST_TAGS}
                 initialSelectedTags={editableUser.interests || []}
@@ -308,7 +309,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 value={editableUser.facebook || ''} 
                 handleChange={(text) => handleChange('facebook', text)}/>
             </View>
-              <CustomLoadingButton title='Сохранит' handlePress={handleSave} />
+              <CustomLoadingButton title='Сохранить' handlePress={handleSave} />
              
               <Button mode="outlined" onPress={onCancel} className='mt-4'>
                 Отмена

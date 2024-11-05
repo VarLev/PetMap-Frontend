@@ -384,7 +384,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
       {isNewPet ?  (
         <CustomLoadingButton title='Добавить' handlePress={handleAddPet} />
         ):(
-        <CustomLoadingButton title='Сохранит' handlePress={handleSave} />
+        <CustomLoadingButton title='Сохранить' handlePress={handleSave} />
       )} 
       <Button mode="outlined" onPress={onCancel} className="mt-4">
         Отмена

@@ -42,10 +42,8 @@ class ChatStore {
   lastMessage: { [key: string]: string } = {};
   lastSeen: { [key: string]: number } = {};
   allMessages: MessageType.Any[] = [];
-  advrtId: string | undefined = '';
-  lastCreatedAt: {[key: string]: number} = {};
-  
- 
+  advrtId: string | undefined = "";
+  lastCreatedAt: { [key: string]: number } = {};
 
   constructor() {
     makeAutoObservable(this);
@@ -80,7 +78,7 @@ class ChatStore {
             otherUserName: otherUserName,
             otherUserId: otherUserId,
             thumbnailUrl,
-            lastCreatedAt: chatData.lastCreatedAt
+            lastCreatedAt: chatData.lastCreatedAt,
           });
         }
       }
@@ -148,11 +146,11 @@ class ChatStore {
             id: chatId,
             lastMessage: newChatData.lastMessage,
             lastCreatedAt: newChatData.lastCreatedAt,
-             participants: newChatData.participants,
+            participants: newChatData.participants,
             otherUserName: otherUser?.name!,
             thumbnailUrl: otherUser?.thumbnailUrl!,
           });
-        } 
+        }
       });
 
       await this.sendInviteMessage(chatId, otherUser?.id);
@@ -184,18 +182,18 @@ class ChatStore {
         userAvatar: userStore.currentUser?.thumbnailUrl,
         advrtId: this.advrtId,
         visibleToUserId: otherUserId, // ID пользователя, которому нужно показать кнопки
-          },
+      },
     };
 
     try {
       await push(ref(database, `messages/${chatId}`), initialMessage);
       console.log("Initial message sent");
       await update(ref(database, `chats/${chatId}`), {
-              lastCreatedAt: initialMessage.createdAt,
+        lastCreatedAt: initialMessage.createdAt,
       });
       runInAction(() => {
         chatStore.lastCreatedAt[chatId] = Date.now();
-      })
+      });
       if (recipientExpoPushToken) {
         await sendPushNotification(
           recipientExpoPushToken,
@@ -261,7 +259,6 @@ class ChatStore {
         chatStore.lastMessage[chatId] = text;
         chatStore.lastSeen[userId] = Date.now();
         chatStore.lastCreatedAt[chatId] = Date.now();
-       
       });
     } catch (error) {
       console.error("Error during sendMessage:", error);
@@ -294,14 +291,10 @@ class ChatStore {
         }
       });
       runInAction(() => {
-                this.messages = messagesList.reverse(); // Обратный порядок для правильного отображения
+        this.messages = messagesList.reverse(); // Обратный порядок для правильного отображения
       });
     });
   }
-
-
-
-  
 
   async getLastMessage(chatId: string) {
     const data = ref(database, `chats/${chatId}`);
@@ -334,16 +327,15 @@ class ChatStore {
       console.error("User is not defined");
       return;
     }
-      const timestamp = Date.now();
+    const timestamp = Date.now();
     await update(ref(database, `users/${userId}`), {
       lastSeen: timestamp,
     });
- 
+
     runInAction(() => {
       this.lastSeen[userId] = timestamp;
     });
   }
-  
 
   async deleteChat(chatId: string) {
     const userId = userStore.currentUser?.id;
@@ -495,10 +487,23 @@ class ChatStore {
   }
 
   // запоминаем id прогулки для использования в чате
-  setSelectedAdvrtId( id: string) {
+  setSelectedAdvrtId(id: string) {
     runInAction(() => {
-      this.advrtId = id ;  
-    })
+      this.advrtId = id;
+    });
+  }
+
+  sortChats() {
+    // Создаем массив sortedChats с добавлением lastCreatedAt для каждого чата
+    const sortedChats = chatStore.chats.map((chat) => {
+      return { ...chat, lastCreatedAt: chatStore.lastCreatedAt[chat.id] || 0 };
+    });
+    // Сортируем чаты по lastCreatedAt, чтобы самые последние чаты были в начале
+    sortedChats.sort((a, b) => b.lastCreatedAt - a.lastCreatedAt);
+    // Обновляем ChatStore.sortedChats с использованием runInAction
+    runInAction(() => {
+      chatStore.sortedChats = sortedChats;
+    });
   }
 
   clearMessages() {
