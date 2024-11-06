@@ -15,6 +15,8 @@ const SignIn = () => {
   const [isSecure, setIsSecure] = useState(true);
   const [isValidEmail, setIsValidEmail] = useState(true);
 
+  const [secureText, setSecureText] = useState(true); // состояние видимости пароля
+
   const handleLogin = async () => {
     const validEmail = validateEmail(email);
     setIsValidEmail(validEmail);
@@ -25,7 +27,7 @@ const SignIn = () => {
 
     try {
       await userStore.singInUser(email, password);
-      router.replace('/screenholder');
+      router.replace("/screenholder");
     } catch (error: any) {
       Alert.alert("Login Error", error.message.replace("Firebase:", ""));
     }
@@ -57,16 +59,16 @@ const SignIn = () => {
                   variant="titleSmall"
                   className="text-xl mb-2 font-nunitoSansBold"
                 >
-                  {i18n.t('signIn.welcomeBack')} 
+                  {i18n.t("signIn.welcomeBack")}
                 </Text>
                 <Text
                   variant="titleSmall"
                   className="pb-4 text-sm font-nunitoSansRegular"
                 >
-                  {i18n.t('signIn.enterCredentials')}
+                  {i18n.t("signIn.enterCredentials")}
                 </Text>
               </View>
-
+            
               <TextInput
                 mode="outlined"
                 label={i18n.t('signIn.email')} 
@@ -79,22 +81,32 @@ const SignIn = () => {
                 className="mb-2"
               />
               {!isValidEmail && (
-                <Text style={{ marginTop: -10 }} className="text-red-500 ml-1 mb-2">
-                  {i18n.t('signIn.invalidEmail')} 
+                <Text
+                  style={{ marginTop: -10 }}
+                  className="text-red-500 ml-1 mb-2"
+                >
+                  {i18n.t("signIn.invalidEmail")}
                 </Text>
               )}
-              <TextInput
+               <TextInput
                 mode="outlined"
-                label={i18n.t('signIn.password')} 
+                label={i18n.t("signIn.password")} // предполагаемый перевод для метки "Пароль"
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry={isSecure}
+                secureTextEntry={secureText} // управление видимостью текста
+                autoCapitalize="none"
                 theme={{ roundness: 8 }}
                 className="mb-2"
+                right={
+                  <TextInput.Icon
+                    icon={secureText ? "eye-off" : "eye"}
+                    onPress={() => setSecureText(!secureText)} // переключение видимости пароля
+                  />
+                }
               />
 
               <CustomLoadingButton
-                title={i18n.t('signIn.loginButton')} 
+                title={i18n.t("signIn.loginButton")}
                 handlePress={handleLogin}
                 containerStyles="w-full"
               />
@@ -104,23 +116,22 @@ const SignIn = () => {
                   href="/sign-up.mailvalidation"
                   className="pt-4 text-base text-indigo-800 font-nunitoSansBold"
                 >
-                  {i18n.t('signIn.forgotPassword')} 
+                  {i18n.t("signIn.forgotPassword")}
                 </Link>
               </View>
             </View>
           </View>
 
-
           <View className="pb-20">
             <View className="justify-center flex-row gap-2">
               <Text className="text-base text-gray-500 font-nunitoSansRegular">
-                {i18n.t('signIn.noAccount')}
+                {i18n.t("signIn.noAccount")}
               </Text>
               <Link
                 href="/sign-up"
                 className="text-base text-indigo-800 font-nunitoSansBold"
               >
-                {i18n.t('signIn.register')}
+                {i18n.t("signIn.register")}
               </Link>
             </View>
           </View>

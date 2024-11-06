@@ -128,14 +128,14 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
               iconName='restaurant-outline'
               iconSet='Ionicons'
               onPress={() => handleSelectTag('Ресторан', MapPointType.Restaurant)}
-              text={'Расторан'}
+              text={'Ресторан'}
               buttonStyle='bg-white'
             />
             <CustomButtonWithIcon
               iconName='heart-outline'
               iconSet='Ionicons'
               onPress={() => handleSelectTag('Ветеринария', MapPointType.Veterinary)}
-              text={'Ветеренария'}
+              text={'Ветеринария'}
               buttonStyle='bg-white'
             />
             <CustomButtonWithIcon

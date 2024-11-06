@@ -137,9 +137,12 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen, loadedUser }: { onEd
                   <Text className="font-nunitoSansBold text-lg">
                     {item.petName} {calculateDogAge(item.birthDate)}
                   </Text>
+                  <View className=''>
                   <Text className="font-nunitoSansRegular">{getTagsByIndex(BREEDS_TAGS, item.breed!)}</Text>
-                  <Text className="font-nunitoSansRegular">{getTagsByIndex(PETGENDERS_TAGS, item.gender!)}, {item.weight}kg</Text>
-                </Card>
+                  <Text className="font-nunitoSansRegular"> {getTagsByIndex(PETGENDERS_TAGS, Number(item.gender))}, {item.weight} кг</Text>
+            
+                  </View>
+                     </Card>
               </TouchableOpacity>
             )}
             

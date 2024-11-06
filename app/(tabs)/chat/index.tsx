@@ -14,48 +14,43 @@ import ChatStore from "@/stores/ChatStore";
 import { Divider, Surface, IconButton } from "react-native-paper";
 import ChatMenu from "@/components/chat/chatMenu";
 import EmptyChatScreen from "@/components/chat/EmptyChatScreen";
-import { runInAction } from "mobx";
-
-
-
 
 const ChatListItem: React.FC<{
   item: (typeof ChatStore.chats)[0];
 }> = ({ item }) => {
   const router = useRouter();
   const [lastMessage, setLastMessage] = useState<string | null>(null);
- const [lastSeen, setLastSeen] = useState<number | null>(null);
+  const [lastSeen, setLastSeen] = useState<number | null>(null);
 
+  //достаем время последнего посещения всех участников чата
+  const fetchLastSeen = async () => {
+    try {
+      const userId = item.id.slice(36, 72);
+      ChatStore.lastSeen[userId] = await ChatStore.getLastSeen(userId);
+      await ChatStore.setLastSeen();
+      setLastSeen(ChatStore.lastSeen[userId]);
+    } catch (error) {
+      console.error("Error fetching last seen:", error);
+    }
+  };
+  // нужно бкдет доработать, убрать обращение к базе
 
-  //достаем время последнего посещения всех участников чата 
-    const fetchLastSeen = async () => {
-      try {
-        const userId = item.id.slice(36, 72);
-        ChatStore.lastSeen[userId] = await ChatStore.getLastSeen(userId);
-       await ChatStore.setLastSeen();
-       
-        setLastSeen(ChatStore.lastSeen[userId]);
-      } catch (error) {
-        console.error('Error fetching last seen:', error);
-      }
-    }; 
-  
-    const fetchLastMessage = async () => {
-      const message = await ChatStore.getLastMessage(item.id);
-      setLastMessage(message);   
-    };
-  
+  const fetchLastMessage = async () => {
+    const message = await ChatStore.getLastMessage(item.id);
+    setLastMessage(message);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
-       await fetchLastSeen();
-       await fetchLastMessage();
+      await fetchLastSeen();
+      await fetchLastMessage();
     };
     fetchData();
- }, [item.id]);
+  }, [item.id]);
 
   const handleOpenChat = () => {
     router.push(`/chat/${item?.id}?otherUserId=${item.otherUserId}`);
-    console.log('open chat: ', item.id);
+    console.log("open chat: ", item.id);
   };
 
   const handleOpenProfile = () => {
@@ -104,15 +99,13 @@ const ChatListScreen: React.FC = observer(() => {
 
   useEffect(() => {
     fetchData();
-     
- }, []);
+  }, []);
 
-
- useEffect(() => {
-  if (!isLoading) {
-    sortChats();
-  }
-}, [isLoading, ChatStore.chats]);
+  useEffect(() => {
+    if (!isLoading) {
+      ChatStore.sortChats();
+    }
+  }, [isLoading, ChatStore.chats]);
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -148,26 +141,16 @@ const ChatListScreen: React.FC = observer(() => {
     );
   }
 
-  const sortChats = (): void => {
-    // Создаем массив sortedChats с добавлением lastCreatedAt для каждого чата
-    const sortedChats = ChatStore.chats.map((chat) => {
-            return { ...chat, lastCreatedAt: ChatStore.lastCreatedAt[chat.id] || 0 };
-    });
-      // Сортируем чаты по lastCreatedAt, чтобы самые последние чаты были в начале
-    sortedChats.sort((a, b) => b.lastCreatedAt - a.lastCreatedAt);
-        // Обновляем ChatStore.sortedChats с использованием runInAction
-    runInAction(() => {
-      ChatStore.sortedChats = sortedChats;
-    });
-  }; 
-
-
   return (
     <>
       {ChatStore.sortedChats.length === 0 && <EmptyChatScreen />}
       <View className="h-full">
         <View className="flex-row items-center justify-start gap-2 p-2 mt-4">
-          <IconButton icon="arrow-left" size={24} onPress={() => router.push('(tabs)/map')} />
+          <IconButton
+            icon="arrow-left"
+            size={24}
+            onPress={() => router.push("(tabs)/map")}
+          />
           <Text className="text-lg font-nunitoSansBold pb-1">Сообщения</Text>
         </View>
         <FlatList
