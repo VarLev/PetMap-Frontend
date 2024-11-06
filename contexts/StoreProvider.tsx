@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import userStore from '@/stores/UserStore';
+import uiStore from '@/stores/UIStore';
+import { Language } from '@/dtos/enum/Language';
 
 const StoreContext = createContext({
   ...userStore,
@@ -18,6 +20,10 @@ export const StoreProvider = ({ children }: StoreProviderProps) => {
       try{
         const user = await userStore.getCurrentUserForProvider();
         if (user) {
+          if (user.systemLanguage !== undefined && user.systemLanguage !== null) {
+            await uiStore.setLanguagei18n(user.systemLanguage as Language);
+          }
+        
           userStore.setLogged(true);
           userStore.setUser(user);
           

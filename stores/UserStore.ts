@@ -231,6 +231,9 @@ class UserStore {
       const token = await userCred.user.getIdToken();
       console.log('Token:', token);
       await AsyncStorage.setItem(process.env.EXPO_PUBLIC_F_TOKEN!, token);
+      
+
+      
       runInAction(() => {this.setLoginedUser(userCred);});
       await this.loadUserAfterSignIn();
       runInAction(() => {this.setLogged(true);});

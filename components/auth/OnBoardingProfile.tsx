@@ -516,7 +516,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
           <CustomButtonOutlined
             title={i18n.t("onboardingProfile.slide4.uploadPhotoButton")}
             handlePress={SetPetImage}
-            containerStyles="w-full  bg-[#2F00B6]"
+            containerStyles="w-full bg-[#2F00B6]"
             textStyles="text-white"
           />
         </View>

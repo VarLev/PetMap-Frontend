@@ -6,23 +6,16 @@ import userStore from '@/stores/UserStore';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import { BonusProvider } from '@/contexts/BonusContex';
 import PermissionsRequestComponent from '@/components/auth/PermissionsRequestComponent';
-import i18n from '@/i18n';
-
+import uiStore from '@/stores/UIStore';
 const Onboarding = () => {
 
-  const handleLanguageSelect = (selectedLanguage: number) => {
+  const handleLanguageSelect = async (selectedLanguage: number) => {
     userStore.updateUserOnbordingData({ 
       userLanguages: [selectedLanguage], 
       systemLanguage: selectedLanguage,
     });
-    if(selectedLanguage === 2) {
-      i18n.locale = 'en';
-    }
-    else if(selectedLanguage === 0) {
-      i18n.locale = 'es';
-    }else {
-      i18n.locale = 'ru';
-    }
+    await uiStore.setLanguagei18n(selectedLanguage);
+    await uiStore.setSystemLanguage(selectedLanguage);
   };
 
   const handleComplete = async (user: IUser) => {
@@ -49,3 +42,6 @@ const Onboarding = () => {
 };
 
 export default Onboarding;
+
+
+

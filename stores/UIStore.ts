@@ -1,3 +1,7 @@
+import { Language } from '@/dtos/enum/Language';
+import apiClient from '@/hooks/axiosConfig';
+import i18n from '@/i18n';
+import { handleAxiosError } from '@/utils/axiosUtils';
 import { makeAutoObservable } from 'mobx';
 
 class UIStore {
@@ -23,6 +27,38 @@ class UIStore {
   getIsBottomTableViewSheetOpen() {
     return this.isBottomTableViewSheetOpen;
   }
+
+  async setLanguagei18n(language: Language) {
+    if(language === Language.English)
+      i18n.locale = 'en';
+    else if(language === Language.Russian)
+      i18n.locale = 'ru';
+    else
+      i18n.locale = 'es';
+  }
+
+
+  async setSystemLanguage(language: Language) {
+    try { 
+      await apiClient.post('/system/language',language);
+    } 
+    catch (error) 
+    {
+      return handleAxiosError(error);
+    } 
+  }
+  
+  async getSystemLanguage() {
+    try { 
+      const response = await apiClient.get('/system/language');
+      return response.data;
+    } 
+    catch (error) 
+    {
+      return handleAxiosError(error);
+    } 
+  }
+
 }
 
 const uiStore = new UIStore();
