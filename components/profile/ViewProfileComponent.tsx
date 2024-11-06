@@ -71,6 +71,7 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen, loadedUser }: { onEd
   
   const logOut = () => {
     closeMenu();
+    userStore.signOut();
     router.replace('/(auth)/sign-in');
   }
 

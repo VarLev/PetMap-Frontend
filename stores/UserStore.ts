@@ -200,10 +200,12 @@ class UserStore {
         //return null;
       }
 
-      const userData = await apiClient.get('/users/me', { params: { fUid: currentUser!.firebaseUid } });
+      if(!currentUser?.firebaseUid) return null;
+
+      const userData = await apiClient.get('/users/me', { params: { fUid: currentUser?.firebaseUid } });
      
-      if (userData.data) {
-        this.fUid = currentUser!.firebaseUid;
+      if (userData.data && currentUser) {
+        this.fUid = currentUser?.firebaseUid;
         const user = userData.data as IUser;
 
         // Обновляем MobX состояние и возвращаем пользователя
@@ -231,7 +233,7 @@ class UserStore {
       const token = await userCred.user.getIdToken();
       console.log('Token:', token);
       await AsyncStorage.setItem(process.env.EXPO_PUBLIC_F_TOKEN!, token);
-      
+
 
       
       runInAction(() => {this.setLoginedUser(userCred);});
@@ -264,7 +266,7 @@ class UserStore {
       const token = await userCred.user.getIdToken();
       await AsyncStorage.setItem(process.env.EXPO_PUBLIC_F_TOKEN!, token);
 
-      const response = await apiClient.post('/users/register', userRegisterDTO);
+      const response = await apiClient.post('/auth/register', userRegisterDTO);
       const registeredUser = response.data as IUser;
      
       runInAction(() => {

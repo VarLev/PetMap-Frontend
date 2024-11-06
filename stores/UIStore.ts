@@ -40,7 +40,9 @@ class UIStore {
 
   async setSystemLanguage(language: Language) {
     try { 
-      await apiClient.post('/system/language',language);
+      await apiClient.post('/system/language', JSON.stringify(language), {
+        headers: { 'Content-Type': 'application/json' }
+    });
     } 
     catch (error) 
     {

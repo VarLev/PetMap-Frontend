@@ -152,7 +152,7 @@ const SignUp = () => {
                   {i18n.t('signUp.passwordMismatch')} 
                 </Text>
               )}
-              <View className="flex-row items-center justify-start gap-3 py-1 px-1.5">
+              <View className="flex-row items-center justify-start gap-2 py-4 px-0">
                 <Checkbox
                   status={isChecked ? "checked" : "unchecked"}
                   onPress={() => {
@@ -164,7 +164,7 @@ const SignUp = () => {
                 <TouchableOpacity onPress={() => Linking.openURL('https://www.privacypolicies.com/live/503edef7-c248-4fad-9387-7f7a0a91f751')}>
                   <Text
                     variant="titleSmall"
-                    className="mb-4 p-2 font-nunitoSansRegular text-xs underline text-blue-500"
+                    className="mb-2 p-0 font-nunitoSansRegular text-sm underline text-blue-500"
                   >
                     {i18n.t('signUp.dataPolicy')}
                   </Text>
