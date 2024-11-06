@@ -1,4 +1,4 @@
-import { View, ScrollView, Alert } from "react-native";
+import { View, ScrollView, Alert, TouchableOpacity, Linking } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TextInput, Text, Checkbox } from "react-native-paper";
@@ -161,12 +161,14 @@ const SignUp = () => {
                   }}
                   color="#3730a3"
                 />
-                <Text
-                  variant="titleSmall"
-                  className="mb-4 p-2 font-nunitoSansRegular text-xs"
-                >
-                  {i18n.t('signUp.dataPolicy')} 
-                </Text>
+                <TouchableOpacity onPress={() => Linking.openURL('https://www.privacypolicies.com/live/503edef7-c248-4fad-9387-7f7a0a91f751')}>
+                  <Text
+                    variant="titleSmall"
+                    className="mb-4 p-2 font-nunitoSansRegular text-xs underline text-blue-500"
+                  >
+                    {i18n.t('signUp.dataPolicy')}
+                  </Text>
+                </TouchableOpacity>
               </View>
               {!checkBoxAlert && (
                 <Text style={{ marginTop: -20 }} className="text-red-500 mb-2">
