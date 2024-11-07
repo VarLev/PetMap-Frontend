@@ -38,6 +38,7 @@ import MapItemList from '../navigation/points/MapItemList';
 import MapPointIconWithAnimation from './point/MapPointIscon';
 import { UserPointType } from '@/dtos/enum/UserPointType';
 import PointsOfInterestComponent from './PointsOfInterestComponent';
+import FabGroupComponent from './FabGroupComponent';
 
 
 const MapBoxMap = observer(() => {
@@ -620,6 +621,9 @@ const MapBoxMap = observer(() => {
 
           {/* Добавляем компонент точек интереса */}
           {userCoordinates && (<PointsOfInterestComponent userLocation={userCoordinates} onRouteReady={handleRouteReady}  />)}
+          {!isSheetVisible && 
+          <FabGroupComponent selectedNumber={currentPointType} setSelectedNumber={hangleSetSelectedNumberPoint} isVisible={!isCardView}  />
+        }  
           
         </MapView>)} 
         <View
@@ -651,6 +655,7 @@ const MapBoxMap = observer(() => {
             <IconButton size={30} icon="filter-variant" onPress={openDrawer} iconColor='#2F00B6'/>
         </View> 
         */}
+
 
         {isSheetVisible && (
           <BottomSheetComponent
