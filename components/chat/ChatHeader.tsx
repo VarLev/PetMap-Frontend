@@ -5,16 +5,17 @@ import { router } from "expo-router";
 import ChatStore from "@/stores/ChatStore";
 
 
+interface ChatHeaderProps {
+  item: string;
+}
 
-
-
-const ChatHeader = ({ item }) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({ item }) => {
   const [time, setTime] = useState(Date.now());
 
- const getChatData = () => {
-        return item ? ChatStore.chats.find((chat) => chat.id === item) : null;
- }   
-  
+  const getChatData = () => {
+    return item ? ChatStore.chats.find((chat) => chat.id === item) : null;
+  }
+
   const chatData = getChatData();
 
   const userId = chatData?.otherUserId
@@ -31,16 +32,16 @@ const ChatHeader = ({ item }) => {
     if (userId) {
       const lastSeen = ChatStore.lastSeen[userId];
 
-// если lastSeen нет то взять время последнего сообщения
+      // если lastSeen нет то взять время последнего сообщения
 
       if (lastSeen) {
         const now = Date.now();
         const diff = now - lastSeen;
-  
+
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  
+
         if (minutes < 1) {
           return 'менее минуты назад';
         } else if (minutes <= 10) {
@@ -55,19 +56,19 @@ const ChatHeader = ({ item }) => {
       }
       return 'Был(а): Неизвестно';
     } else {
-  
+
       console.log("User ID is undefined, cannot retrieve lastSeen");
       return '';
     }
   };
-  
+
   const handleBack = () => {
     router.push("/(tabs)/chat/");
   };
 
   return (
-    <> 
-          <View className="flex-row items-center justify-start gap-2 py-2 shadow-md">
+    <>
+      <View className="flex-row items-center justify-start gap-2 py-2 shadow-md">
         <IconButton icon="arrow-left" size={24} onPress={handleBack} />
         <Image
           source={{
@@ -76,12 +77,12 @@ const ChatHeader = ({ item }) => {
           className="rounded-xl h-16 w-16"
         />
         <View>
-        <Text className="text-lg font-nunitoSansBold">{chatData?.otherUserName}</Text>
-        <Text className="text-[13px] font-nunitoSansRegular text-[#87878A]">{showLastSeenTime(userId)}</Text>
+          <Text className="text-lg font-nunitoSansBold">{chatData?.otherUserName}</Text>
+          <Text className="text-[13px] font-nunitoSansRegular text-[#87878A]">{showLastSeenTime(userId)}</Text>
         </View>
-   
+
       </View>
-        <Divider className="w-full" style={{elevation: 2}} />
+      <Divider className="w-full" style={{ elevation: 2 }} />
     </>
   );
 };

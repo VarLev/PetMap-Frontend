@@ -1,7 +1,5 @@
-import React, { memo, useEffect, useState } from "react";
-import { observer } from "mobx-react-lite";
+import React, { useEffect, useState } from "react";
 import { View, Image, Text, TouchableOpacity } from "react-native";
-import { Button, Chip, Divider, Surface } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { MessageType } from "@flyerhq/react-native-chat-ui";
 import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
@@ -13,13 +11,10 @@ import { calculateDogAge, getTagsByIndex } from "@/utils/utils";
 import { BREEDS_TAGS, petUriImage } from "@/constants/Strings";
 import CustomTextComponent from "../custom/text/CustomTextComponent";
 import {
-  calculateDistance,
-  convertDistance,
   renderWalkDetails,
   calculateTimeUntilNextWalk
 } from "@/utils/utils";
 import CircleIcon from "../custom/icons/CircleIcon";
-
 import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
 
 
@@ -32,38 +27,31 @@ interface AdvtProps {
 
 const CustomMessageComponent = ({ message }: AdvtProps) => {
   const [userIsOwner, setUserIsOwner] = useState(false);
-   const [showButtons, setShowButtons] = useState(false);
-
+  const [showButtons, setShowButtons] = useState(false);
 
   const router = useRouter();
 
   const item = mapStore.walkAdvrts;
 
-   const advrtId = message.metadata?.advrtId;
+  const advrtId = message.metadata?.advrtId;
 
-   const visibleToUserId = message.metadata?.visibleToUserId;
-   
-   
-   const matchedItem = item.find((advrt) => advrtId === advrt.id);
-   
-   const walkDetails = matchedItem ? renderWalkDetails(matchedItem) : "Данные отсутствуют";
+  const visibleToUserId = message.metadata?.visibleToUserId;
+
+  const matchedItem = item.find((advrt) => advrtId === advrt.id);
+
+  const walkDetails = matchedItem ? renderWalkDetails(matchedItem) : "Данные отсутствуют";
 
   const pets = matchedItem?.userPets;
 
-  const nextWalk =matchedItem ?  calculateTimeUntilNextWalk(matchedItem) : "Данные отсутствуют";
+  const nextWalk = matchedItem ? calculateTimeUntilNextWalk(matchedItem) : "Данные отсутствуют";
 
-useEffect(() => {
-  if (visibleToUserId  === userStore.currentUser?.id) {
-    setShowButtons(true);  
-  }
-    
-}, [visibleToUserId]);
+  useEffect(() => {
+    if (visibleToUserId === userStore.currentUser?.id) {
+      setShowButtons(true);
+    }
 
+  }, [visibleToUserId]);
 
-
-  const handlePress = () => {
-    router.push(`/profile/${message.metadata!.userId}`);
-  };
 
   const handleUserProfileOpen = (userId: string) => {
     if (userIsOwner) {
@@ -74,7 +62,7 @@ useEffect(() => {
     mapStore.setBottomSheetVisible(false);
   };
 
-  
+
   return (
     <>
       <View className="p-4">
@@ -104,7 +92,7 @@ useEffect(() => {
           </View>
         </View>
         {pets &&
-          pets.map((pet, index) => (
+          pets.slice(0, 1).map((pet, index) => (
             <View
               key={index}
               className="mt-4 p-1 flex-row bg-purple-100 rounded-2xl"
@@ -198,23 +186,24 @@ useEffect(() => {
         />
       </View>
       {showButtons &&
-      <View>
+        <View>
           <View className="flex-row justify-between items-center bg-white ">
-          <CustomButtonOutlined
-              title={'Принять'} 
+            <CustomButtonOutlined
+              title={'Принять'}
               handlePress={() => console.log("Принять")}
-              containerStyles="flex-1 bg-[#ACFFB9] my-2 mr-2" 
+              containerStyles="flex-1 bg-[#ACFFB9] my-2 mr-2"
             />
-                <CustomButtonOutlined
-              title={'Отклонить'} 
+            <CustomButtonOutlined
+              title={'Отклонить'}
               handlePress={() => console.log("Отклонить")}
               containerStyles="flex-1 bg-[#FA8072] my-2 ml-2"
             />
           </View>
-    
-        </View>}     
+
+        </View>}
     </>
-  )}
+  )
+}
 
 
 export default CustomMessageComponent;

@@ -14,7 +14,7 @@ interface AdCardProps {
   pressDelete: (id: string) => Promise<void>;
 }
 
-const AdvrtCard: React.FC<AdCardProps> = ({ ad, pressDelete }) => {
+const MyAdvrtCard: React.FC<AdCardProps> = ({ ad, pressDelete }) => {
   const [petImage, setPetImage] = React.useState<string>();
   
   useEffect(() => {
@@ -77,4 +77,4 @@ const AdvrtCard: React.FC<AdCardProps> = ({ ad, pressDelete }) => {
   );
 };
 
-export default AdvrtCard;
+export default MyAdvrtCard;

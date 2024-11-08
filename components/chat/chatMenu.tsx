@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Image, Alert } from "react-native";
-import { Menu, Button, Divider, Switch, List } from "react-native-paper";
+import { View } from "react-native";
+import { Menu, Button, Switch } from "react-native-paper";
 import { FontAwesome6 } from "@expo/vector-icons";
 import ChatStore from "@/stores/ChatStore";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
+
 
 interface IChatMenuProps {
   chatId: string;
@@ -15,10 +16,8 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
   const [requestVisible, setRequestVisible] = useState(false);
   const [requestVisibleDel, setRequestVisibleDel] = useState(false);
   const [isIBlocked, setIsIBlocked] = useState<boolean>(false);
+;
 
-  const handleMenu = () => {
-    console.log(`handleMenu pressed ${chatId}`);
-  };
   const openMenu = () => setVisible(true);
 
   const closeMenu = () => setVisible(false);
@@ -54,7 +53,9 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
     }
   };
   useEffect(() => {
-    handleChekBlocked(otherUserId);
+    if (otherUserId) {
+      handleChekBlocked(otherUserId);
+    }
   }, [otherUserId]);
 
   const blockUser = async (otherUserId: string) => {
@@ -90,7 +91,7 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
               onPress={onToggleSwitch}
               title="Уведомления"
             />
-            <MySwitch value={onToggleSwitch} />
+            <MySwitch value={isSwitchOn} />
           </View>
 
           <Menu.Item
@@ -114,7 +115,7 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
         onClose={() => {
           setRequestVisible(false);
         }}
-        onConfirm={() => blockUser(otherUserId)}
+        onConfirm={() => otherUserId && blockUser(otherUserId)}
         message={
           isIBlocked
             ? "Разблокировать пользователя?"

@@ -64,11 +64,11 @@ const SidebarUserProfileComponent = () => {
           className="w-full mt-4 justify-center items-center  "
           onPress={handleProfilePress}
         >
-          <View className="h-9 w-16  flex-row justify-center items-center">
+          <View className="h-9 w-full  flex-row justify-center items-center">
             <Image source={images.bonuse} className="h-8 w-8" />
             <View className="flex-col ml-3">
-              <Text className="text-xl  text-gray-800 font-nunitoSansBold">
-                {currentUser?.balance}
+              <Text className="text-xl text-gray-800 font-nunitoSansBold">
+               {currentUser?.balance}
               </Text>
             </View>
           </View>

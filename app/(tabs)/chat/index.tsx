@@ -11,8 +11,8 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import ChatStore from "@/stores/ChatStore";
-import { Divider, Surface, IconButton } from "react-native-paper";
-import ChatMenu from "@/components/chat/chatMenu";
+import { Divider, IconButton } from "react-native-paper";
+import ChatMenu from "@/components/chat/ChatMenu";
 import EmptyChatScreen from "@/components/chat/EmptyChatScreen";
 
 const ChatListItem: React.FC<{

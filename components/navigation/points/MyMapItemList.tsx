@@ -75,7 +75,7 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
       switch (renderType) {
         case MapPointType.Walk:
           return (
-            <MyRenderItem
+            <MyAdvrtCard
               ad={item as IWalkAdvrtShortDto}
               pressDelete={handleDelete}
             />
