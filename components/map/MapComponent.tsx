@@ -39,6 +39,7 @@ import MapPointIconWithAnimation from './point/MapPointIscon';
 import { UserPointType } from '@/dtos/enum/UserPointType';
 import PointsOfInterestComponent from './PointsOfInterestComponent';
 import FabGroupComponent from './FabGroupComponent';
+import { IUserChat } from '@/dtos/Interfaces/user/IUserChat';
 
 
 const MapBoxMap = observer(() => {
@@ -371,9 +372,10 @@ const MapBoxMap = observer(() => {
     
   };
 
-  const handleChatInvite = async (otherUser: IUser) => {
+  const handleChatInvite = async (otherUser: IUserChat) => {
     try {
       sheetRef.current?.close();
+      console.log('Chat invite:', otherUser);
       const chatId = await chatStore.createNewChat(otherUser);
       if (chatId) {
         router.push(`/chat/${chatId}`);

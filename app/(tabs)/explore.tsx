@@ -1,6 +1,5 @@
 import { SafeAreaView } from 'react-native'
 import React from 'react'
-
 import TopUsers from '@/components/search/TopUsers'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Provider } from 'react-native-paper'
@@ -13,6 +12,7 @@ const explore = () => {
         <Provider>
         <TopUsers />
         </Provider>
+        
       </GestureHandlerRootView> 
     </SafeAreaView>
 
@@ -22,5 +22,3 @@ const explore = () => {
 }
 
 export default explore;
-
-      {/* <TextNotificationComponent/> */}

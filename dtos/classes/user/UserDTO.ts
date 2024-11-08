@@ -46,7 +46,6 @@ export class User implements IUser {
     this.interests = data.interests || [];
     this.work = data.work || [];
     this.education = data.education;
-    //this.passwordHash = data.passwordHash;
     this.fmcToken = data.fmcToken;
     this.provider = data.provider;
     this.isEmailVerified = data.isEmailVerified;

@@ -5,8 +5,6 @@ import { Button, Surface } from "react-native-paper";
 import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
 import { StarRatingDisplay } from "react-native-star-rating-widget";
 import userStore from "@/stores/UserStore";
-import { User } from "@/dtos/classes/user/UserDTO";
-import { IUser } from "@/dtos/Interfaces/user/IUser";
 import CustomTextComponent from "../custom/text/CustomTextComponent";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import {
@@ -20,6 +18,7 @@ import mapStore from "@/stores/MapStore";
 import { BREEDS_TAGS, petUriImage } from "@/constants/Strings";
 import { IUserAdvrt } from "@/dtos/Interfaces/user/IUserAdvrt";
 import { WalkRequestStatus } from "@/dtos/enum/WalkRequestStatus";
+import { IUserChat } from "@/dtos/Interfaces/user/IUserChat";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 import CircleIcon from "../custom/icons/CircleIcon";
 import chatStore from "@/stores/ChatStore";
@@ -27,7 +26,7 @@ import  { renderWalkDetails } from "@/utils/utils";
 
 interface AdvtProps {
   advrt: IWalkAdvrtDto;
-  onInvite: (uid: IUser) => void;
+  onInvite: (uid: IUserChat) => void;
   onClose: () => void;
 }
 
@@ -70,10 +69,11 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
     };
 
     const handleConfirmInvite = async () => {
-      var user = new User();
-      user.id = advrt.userId!;
-      user.name = advrt.userName!;
-      user.thumbnailUrl = advrt.userPhoto ?? "https://via.placeholder.com/100";
+      const user: IUserChat = {
+        id: advrt.userId!,
+        name: advrt.userName!,
+        thumbnailUrl: advrt.userPhoto ?? "https://via.placeholder.com/100",
+      };
       chatStore.setSelectedAdvrtId(advrt.id!);
       await mapStore.requestJoinWalk(advrt.id!, userStore.currentUser?.id);
       onInvite(user);

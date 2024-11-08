@@ -13,9 +13,9 @@ import {
 } from "firebase/database";
 import userStore from "@/stores/UserStore";
 import { MessageType } from "@flyerhq/react-native-chat-ui";
-import { IUser } from "@/dtos/Interfaces/user/IUser";
 import { randomUUID } from "expo-crypto";
-import { sendPushNotification } from "@/hooks/notifications";
+import { getPushTokenFromServer, sendPushNotification } from "@/hooks/notifications";
+import { IUserChat } from "@/dtos/Interfaces/user/IUserChat";
 
 interface Chat {
   id: string;
@@ -90,7 +90,7 @@ class ChatStore {
   }
 
   async createNewChat(
-    otherUser: IUser,
+    otherUser: IUserChat,
     initalMessage?: string
   ): Promise<string | undefined> {
     const userId = userStore.currentUser?.id;
@@ -112,10 +112,16 @@ class ChatStore {
     };
     const userId1 = userStore.currentUser?.id;
     const userId2 = otherUser?.id;
-
+    if (otherUser) {
+      console.log("userId2:", userId2);
+      const userId2fmcToken = await getPushTokenFromServer(userId2);
+      if (userId2fmcToken) {
+        otherUser.fmcToken = userId2fmcToken;
+      }
+      console.log("fmcTokenOtherUser:", userId2fmcToken);
+    }
     console.log("fmcTokenCurrentUser:", userStore.currentUser?.fmcToken);
-    console.log("fmcTokenOtherUser:", otherUser?.fmcToken);
-
+    
     const newUserData1 = {
       name: userStore.currentUser?.name,
       avatar: userStore.currentUser?.thumbnailUrl,

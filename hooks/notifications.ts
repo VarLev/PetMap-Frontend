@@ -3,9 +3,29 @@ import * as Notifications from 'expo-notifications';
 import {isDevice} from 'expo-device';
 import Constants from 'expo-constants';
 import apiClient from './axiosConfig';
+import { Platform } from 'react-native';
+
+// Устанавливаем обработчик уведомлений
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 // Регистрация устройства для получения пуш-уведомлений
 export async function registerForPushNotificationsAsync(): Promise<string | null> {
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  
   if (isDevice) {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
@@ -17,12 +37,13 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
       console.error('Failed to get push token for push notification!');
       return null;
     }
-    const projectId =
-      Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+
+    const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
     if (!projectId) {
       console.error('Project ID not found');
       return null;
     }
+
     try {
       const token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
       console.log("Push token:", token);
@@ -96,5 +117,22 @@ export async function savePushTokenToServer(userId: string | undefined , token: 
     }
   } catch (error) {
     console.error('Error saving push token:', error);
+  }
+}
+
+export async function getPushTokenFromServer(userId: string | undefined) {
+  try {
+    if (userId) {
+      const response = await apiClient.get(`/users/get-push-token/${userId}`);
+      if (response.status !== 200) {
+        throw new Error('Failed to retrieve push token from server');
+      }
+      const pushToken = response.data;
+      return pushToken;
+    } else {
+      console.log('Error retrieving push token, userId is not defined');
+    }
+  } catch (error) {
+    console.error('Error retrieving push token:', error);
   }
 }
