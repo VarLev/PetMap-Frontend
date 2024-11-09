@@ -16,6 +16,8 @@ import { MessageType } from "@flyerhq/react-native-chat-ui";
 import { randomUUID } from "expo-crypto";
 import { getPushTokenFromServer, sendPushNotification } from "@/hooks/notifications";
 import { IUserChat } from "@/dtos/Interfaces/user/IUserChat";
+import apiClient from "@/hooks/axiosConfig";
+import { handleAxiosError } from "@/utils/axiosUtils";
 
 interface Chat {
   id: string;
@@ -159,7 +161,7 @@ class ChatStore {
         }
       });
 
-      await this.sendInviteMessage(chatId, otherUser?.id);
+      await this.sendInviteMessage(chatId, otherUser);
 
       return chatId;
     } catch (error) {
@@ -168,11 +170,9 @@ class ChatStore {
     }
   }
 
-  async sendInviteMessage(chatId: string, otherUserId: string | undefined) {
+  async sendInviteMessage(chatId: string, otherUser: IUserChat) {
     const userId = userStore.currentUser?.id;
-    const recipientExpoPushToken = userStore.users.find(
-      (user) => user.id === otherUserId
-    )?.fmcToken;
+    
     if (!userId) return;
 
     const initialMessage: MessageType.Custom = {
@@ -187,7 +187,7 @@ class ChatStore {
         userName: userStore.currentUser?.name,
         userAvatar: userStore.currentUser?.thumbnailUrl,
         advrtId: this.advrtId,
-        visibleToUserId: otherUserId, // ID пользователя, которому нужно показать кнопки
+        visibleToUserId: otherUser.id, // ID пользователя, которому нужно показать кнопки
       },
     };
 
@@ -200,9 +200,10 @@ class ChatStore {
       runInAction(() => {
         chatStore.lastCreatedAt[chatId] = Date.now();
       });
-      if (recipientExpoPushToken) {
+
+      if (otherUser.fmcToken) {
         await sendPushNotification(
-          recipientExpoPushToken,
+          otherUser.fmcToken,
           "Приглашение на прогулку",
           userStore?.currentUser?.name ?? "Пользователь",
           { chatId }
@@ -302,6 +303,38 @@ class ChatStore {
     });
   }
 
+
+  async acceptUserJoinWalk(walkId: string, userId: string, chatId: string) {
+    try {
+      const userId2fmcToken = await getPushTokenFromServer(userId);
+      if (userId2fmcToken) {
+        await sendPushNotification(
+          userId2fmcToken,
+          "Ваш запрос на присоединение к прогулке принят",
+          userStore?.currentUser?.name ?? "Пользователь",
+          { chatId }
+        );
+      }
+      const response = await apiClient.patch(`walkadvrt/accept/${walkId}`, {
+        userId: userId // Передаем как объект
+      } );
+      return response.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+
+  async declineUserJoinWalk(walkId: string, userId: string) {
+    try {
+      const response = await apiClient.patch(`walkadvrt/reject/${walkId}`, {
+        userId: userId // Передаем как объект
+      } );
+      return response.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+  
   async getLastMessage(chatId: string) {
     const data = ref(database, `chats/${chatId}`);
     const snapshot = await get(data);

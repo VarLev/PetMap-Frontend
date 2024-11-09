@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { BackHandler, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -15,31 +15,28 @@ const ChatScreen: React.FC = observer(() => {
     chatId: string;
     otherUserId?: string;
   }>();
-  const userId: string | undefined = UserStore.currentUser?.id;
+  const userId = UserStore.currentUser?.id;
   const router = useRouter();
+  const [isBlocked, setIsBlocked] = useState(false);
 
-  const [isBlocked, setIsBlocked] = React.useState(false);
-
-  const checkUserIsBlocked = async (otherUserId: string) => {
+  const checkUserIsBlocked = useCallback(async () => {
+    if (!otherUserId) return;
     try {
-      if (await ChatStore.checkBlocked()) {
-        setIsBlocked(true);
+      const isUserBlocked = await ChatStore.checkBlocked();
+      if (isUserBlocked !== isBlocked) {
+        setIsBlocked(isUserBlocked);
         console.log("User is blocked?:", isBlocked);
         console.log("ID другого пользователя:", otherUserId);
-      } else {
-        setIsBlocked(false);
-        console.log("User is blocked?:", isBlocked);
       }
     } catch (error) {
       console.error("Ошибка при проверке блокировки пользователя:", error);
     }
-  };
+  }, [otherUserId, isBlocked]);
 
   useEffect(() => {
-    if (otherUserId) {
-      checkUserIsBlocked(otherUserId);
-    }
-  }, []);
+    checkUserIsBlocked();
+  }, [checkUserIsBlocked]);
+
   useEffect(() => {
     if (chatId) {
       ChatStore.fetchMessages(chatId);
@@ -47,7 +44,7 @@ const ChatScreen: React.FC = observer(() => {
 
     const backAction = () => {
       router.replace("/chat/");
-      mapStore.setBottomSheetVisible(false); // Возвращаемся на предыдущий экран
+      mapStore.setBottomSheetVisible(false);
       return true;
     };
 
@@ -58,74 +55,68 @@ const ChatScreen: React.FC = observer(() => {
 
     return () => {
       backHandler.remove();
-      //ChatStore.clearMessages();
     };
-
   }, [chatId, router]);
 
   const renderMessage = useCallback((message: MessageType.Custom) => {
-    return <CustomMessageComponent message={message} />;
-  }, []);
+    return <CustomMessageComponent message={message} otherUserId={otherUserId} chatId={chatId} />;
+  }, [chatId, otherUserId]);
 
-  const handleSendPress = (message: MessageType.PartialText) => {
-    if (isBlocked) return;
-    if (chatId && UserStore.currentUser) {
+  const handleSendPress = useCallback(
+    (message: MessageType.PartialText) => {
+      if (isBlocked || !chatId || !userId) return;
       ChatStore.sendMessage(chatId, message.text, otherUserId);
-    } else {
-      console.error("User or chat ID is not available");
-    }
-  };
+    },
+    [isBlocked, chatId, userId, otherUserId]
+  );
 
   if (!userId) {
     return <Text>Loading...</Text>;
   }
 
   return (
-    <>
-      <SafeAreaView className="bg-white h-full">
-        <ChatHeader item={chatId} />
-        <Chat
-          locale="ru" // ангийский и испанский есть, нужно только переключить
-          theme={{
-            ...defaultTheme,
-            colors: {
-              ...defaultTheme.colors,
-              inputBackground: "#e8e9eb",
-              inputText: "black",
-              primary: "#D9CBFF",
+    <SafeAreaView className="bg-white h-full">
+      <ChatHeader item={chatId} />
+      <Chat
+        locale="ru"
+        theme={{
+          ...defaultTheme,
+          colors: {
+            ...defaultTheme.colors,
+            inputBackground: "#e8e9eb",
+            inputText: "black",
+            primary: "#D9CBFF",
+          },
+          fonts: {
+            ...defaultTheme.fonts,
+            sentMessageBodyTextStyle: {
+              color: "black",
+              fontSize: 16,
+              fontWeight: "400",
+              lineHeight: 24,
             },
-            fonts: {
-              ...defaultTheme.fonts,
-              sentMessageBodyTextStyle: {
-                color: "black",
-                fontSize: 16,
-                fontWeight: "400",
-                lineHeight: 24,
-              },
-              receivedMessageBodyTextStyle: {
-                fontSize: 16,
-                fontWeight: "400",
-                lineHeight: 24,
-              },
+            receivedMessageBodyTextStyle: {
+              fontSize: 16,
+              fontWeight: "400",
+              lineHeight: 24,
             },
-            borders: {
-              ...defaultTheme.borders,
-              inputBorderRadius: 10,
-              messageBorderRadius: 16,
-            },
-            insets: {
-              ...defaultTheme.insets,
-              messageInsetsVertical: 12,
-
-            }
-          }}
-          messages={ChatStore.messages as any[]}
-          onSendPress={handleSendPress}
-          user={{ id: userId }}
-          renderCustomMessage={renderMessage}
-        />
-      </SafeAreaView>
-    </>
+          },
+          borders: {
+            ...defaultTheme.borders,
+            inputBorderRadius: 10,
+            messageBorderRadius: 16,
+          },
+          insets: {
+            ...defaultTheme.insets,
+            messageInsetsVertical: 12,
+          },
+        }}
+        messages={ChatStore.messages as any[]}
+        onSendPress={handleSendPress}
+        user={{ id: userId }}
+        renderCustomMessage={renderMessage}
+      />
+    </SafeAreaView>
   );
 });
 

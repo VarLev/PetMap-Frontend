@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, Image, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { MessageType } from "@flyerhq/react-native-chat-ui";
@@ -16,51 +16,74 @@ import {
 } from "@/utils/utils";
 import CircleIcon from "../custom/icons/CircleIcon";
 import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
+import chatStore from "@/stores/ChatStore";
+import { Pet } from "@/dtos/classes/pet/Pet";
 
 
 interface AdvtProps {
   item?: IWalkAdvrtDto[];
   message: MessageType.Custom;
-  latitude?: IWalkAdvrtDto;
-  longitude?: IWalkAdvrtDto;
+  otherUserId?: string;
+  chatId?: string;
 }
 
-const CustomMessageComponent = ({ message }: AdvtProps) => {
-  const [userIsOwner, setUserIsOwner] = useState(false);
-  const [showButtons, setShowButtons] = useState(false);
-
+const CustomMessageComponent = React.memo(({ message, otherUserId, chatId }: AdvtProps) => {
   const router = useRouter();
-
+  const [pets, setPets] = useState<Pet[] | null>(null);
+  const [showButtons, setShowButtons] = useState(false);
+  const currentUser = userStore.currentUser;
   const item = mapStore.walkAdvrts;
-
   const advrtId = message.metadata?.advrtId;
-
   const visibleToUserId = message.metadata?.visibleToUserId;
 
-  const matchedItem = item.find((advrt) => advrtId === advrt.id);
+  const matchedItem = useMemo(
+    () => item.find((advrt) => advrtId === advrt.id),
+    [item, advrtId]
+  );
 
-  const walkDetails = matchedItem ? renderWalkDetails(matchedItem) : "Данные отсутствуют";
+  const walkDetails = useMemo(
+    () => (matchedItem ? renderWalkDetails(matchedItem) : "Данные отсутствуют"),
+    [matchedItem]
+  );
 
-  const pets = matchedItem?.userPets;
-
-  const nextWalk = matchedItem ? calculateTimeUntilNextWalk(matchedItem) : "Данные отсутствуют";
+  const nextWalk = useMemo(
+    () => (matchedItem ? calculateTimeUntilNextWalk(matchedItem) : "Данные отсутствуют"),
+    [matchedItem]
+  );
 
   useEffect(() => {
-    if (visibleToUserId === userStore.currentUser?.id) {
-      setShowButtons(true);
+    // Инициализируем pets при изменении matchedItem
+    if (matchedItem) {
+      setPets(matchedItem.userPets ?? []);
     }
+  }, [matchedItem]);
 
-  }, [visibleToUserId]);
-
+  useEffect(() => {
+    // Устанавливаем видимость кнопок, если currentUser совпадает с visibleToUserId
+    setShowButtons(visibleToUserId === currentUser?.id);
+  }, [visibleToUserId, currentUser]);
 
   const handleUserProfileOpen = (userId: string) => {
-    if (userIsOwner) {
-      router.push("/profile");
-    } else {
-      router.push(`/(tabs)/profile/${userId}`);
-    }
+    const userIsOwner = userId === currentUser?.id;
+    const route = userIsOwner ? "/profile" : `/(tabs)/profile/${userId}`;
+    router.push(route);
     mapStore.setBottomSheetVisible(false);
   };
+
+  const handleAccept = async () => {
+    // Логика для принятия приглашения
+    if (matchedItem?.id && currentUser?.id) {
+      await chatStore.acceptUserJoinWalk(matchedItem.id, otherUserId!, chatId!);
+    }
+  };
+
+  const handleDecline = async () => {
+    // Логика для отклонения приглашения
+    if (matchedItem?.id && currentUser?.id) {
+      await chatStore.declineUserJoinWalk(matchedItem.id, otherUserId!);
+    }
+  }
+
 
 
   return (
@@ -190,12 +213,12 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
           <View className="flex-row justify-between items-center bg-white ">
             <CustomButtonOutlined
               title={'Принять'}
-              handlePress={() => console.log("Принять")}
+              handlePress={handleAccept}
               containerStyles="flex-1 bg-[#ACFFB9] my-2 mr-2"
             />
             <CustomButtonOutlined
               title={'Отклонить'}
-              handlePress={() => console.log("Отклонить")}
+              handlePress={handleDecline}
               containerStyles="flex-1 bg-[#FA8072] my-2 ml-2"
             />
           </View>
@@ -203,7 +226,9 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
         </View>}
     </>
   )
-}
+});
 
+
+CustomMessageComponent.displayName = "CustomMessageComponent";
 
 export default CustomMessageComponent;
