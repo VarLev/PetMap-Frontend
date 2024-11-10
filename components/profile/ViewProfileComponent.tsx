@@ -88,7 +88,7 @@ const ViewProfileComponent = observer(({ onEdit, onPetOpen, loadedUser }: { onEd
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={['#6200ee']} />       
         }>
           <View style={{ alignItems: 'center'}}>
-            <StatusBar  backgroundColor="transparent" translucent />
+            
             <View className="relative w-full aspect-square">
               <Image source={{ uri: user?.thumbnailUrl! }} className="w-full h-full" />
               <View style={styles.iconContainer}>

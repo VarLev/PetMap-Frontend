@@ -50,7 +50,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
     <GestureHandlerRootView className='h-full'>
       <PaperProvider>
         <View style={{ alignItems: 'center'}}>
-          <StatusBar backgroundColor="transparent" translucent />
+          
           <View className="relative w-full aspect-square">
  
             <Image source={{ uri: pet?.thumbnailUrl || petUriImage }} className="w-full h-full" />

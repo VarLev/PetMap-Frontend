@@ -1,4 +1,4 @@
-import { View, ScrollView, Alert, StatusBar } from "react-native";
+import { View, ScrollView, Alert } from "react-native";
 import { Text } from "react-native-paper";
 import { TextInput } from "react-native-paper";
 import React, { useState } from "react";
@@ -48,7 +48,7 @@ const SignIn = () => {
 
   return (
     <SafeAreaView className="bg-white h-full">
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="w-full justify-between h-full px-9 my-10">
           <View>
