@@ -9,6 +9,7 @@ import { IPet} from '@/dtos/Interfaces/pet/IPet';
 import { Pet } from "@/dtos/classes/pet/Pet";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "@/firebaseConfig";
+import { runInAction } from "mobx";
 
 
 class PetStore {
@@ -155,7 +156,7 @@ class PetStore {
         await apiClient.put('/petprofiles/update', this.currentPetProfile);
         console.log('Pet profile updated');
       }
-    } catch (error) {
+         } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('Axios error:', error);
       } else {

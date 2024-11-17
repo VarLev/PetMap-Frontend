@@ -15,7 +15,7 @@ import petStore from '@/stores/PetStore';
 import { BREEDS_TAGS, DOGGAMES_TAGS, DOGVACCINATIONS_TAGS, PETGENDERS_TAGS, PETHEALTHISSUES_TAGS, petUriImage } from '@/constants/Strings';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import CircleIcon from '../custom/icons/CircleIcon';
-
+import MenuItemWrapper from '@/components/custom/menuItem/MunuItemWrapper';
 
 const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: () => void}) => {
   const sheetRef = useRef<BottomSheet>(null);
@@ -46,17 +46,21 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
       
   }
 
+  const handleBack = () => {
+
+    router.back();
+  }
+
   return (
     <GestureHandlerRootView className='h-full'>
       <PaperProvider>
         <View style={{ alignItems: 'center'}}>
           <StatusBar backgroundColor="transparent" translucent />
-          <View className="relative w-full aspect-square">
- 
+          <View className="relative w-full aspect-square"> 
             <Image source={{ uri: pet?.thumbnailUrl || petUriImage }} className="w-full h-full" />
            <View className='flex-row w-full justify-between items-center pr-3' style={styles.iconBackContainer}>
             <View className='bg-white rounded-full opacity-70' >
-             <IconButton icon='arrow-left' size={25} iconColor='black'  onPress={()=>{router.back()}}/> 
+             <IconButton icon='arrow-left' size={25} iconColor='black'  onPress={handleBack}/> 
             </View>
             <View >
               {isCurrentUser &&(<Menu 
@@ -74,8 +78,8 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
                   />
                 }
               >
-                <Menu.Item onPress={onEdit} title="Редактировать" rippleColor='black' titleStyle={{color:'balck'}} leadingIcon='pencil-outline'/>
-                <Menu.Item onPress={onDelete} title="Удалить питомца" titleStyle={{color:'balck'}} leadingIcon='delete-outline'/>
+                <MenuItemWrapper onPress={onEdit} title="Редактировать"  icon='pencil-outline'/>
+                <MenuItemWrapper onPress={onDelete} title="Удалить питомца"  icon='delete-outline'/>
               </Menu>)}
               
             </View>
@@ -105,7 +109,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
             iconSet="ionicons"
           />
           <CustomTextComponent
-            text={getTagsByIndex(PETGENDERS_TAGS, pet.gender!)}
+            text={getTagsByIndex(PETGENDERS_TAGS, Number(pet.gender!))}
             rightIcon="chevron-right"
             onRightIconPress={onEdit}
             leftIcon="transgender-outline"
@@ -126,7 +130,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
             iconSet="materialCommunity"
           />
           <CustomTextComponent
-            text={`${pet.weight || ''} kg, ${pet.size} sm`}
+            text={`${pet.weight ? `${pet.weight} кг` : ''}${pet.weight && pet.size ? ', ' : ''}${pet.size ? `${pet.size} см` : ''}`}
             rightIcon="chevron-right"
             onRightIconPress={onEdit}
             leftIcon="resize-outline"

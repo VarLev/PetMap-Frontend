@@ -1,15 +1,17 @@
-import React from "react";
+import React, {  useRef } from "react";
 import {
   View,
   Dimensions,
   Image,
-  StyleSheet,
-  TouchableOpacity,
+  StyleSheet, 
 } from "react-native";
-import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
-
+import Carousel, {
+  ICarouselInstance,
+  Pagination,
+} from "react-native-reanimated-carousel";
+import { useSharedValue } from "react-native-reanimated";
 import { Text } from "react-native-paper";
-import i18n from '@/i18n';
+import i18n from "@/i18n";
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -38,11 +40,14 @@ const data = [
 ];
 
 const OnboardingCarousel: React.FC = () => {
-  const ref = React.useRef<ICarouselInstance>(null);
-  const [currentIndex, setCurrentIndex] = React.useState<number>(0);
+  const ref = useRef<ICarouselInstance>(null);
 
-  const handleScroll = (index: number) => {
-    setCurrentIndex(index);
+  const progress = useSharedValue<number>(0);
+  const onPressPagination = (index: number) => {
+    ref.current?.scrollTo({
+      count: index - progress.value,
+      animated: true,
+    });
   };
 
   return (
@@ -54,7 +59,7 @@ const OnboardingCarousel: React.FC = () => {
         height={height * 0.6} // 480
         autoPlay={true}
         data={data}
-        onSnapToItem={handleScroll}
+        onProgressChange={progress}
         scrollAnimationDuration={2500}
         autoPlayInterval={2500}
         renderItem={({ item }) => (
@@ -69,21 +74,20 @@ const OnboardingCarousel: React.FC = () => {
           </View>
         )}
       />
-      <View style={styles.paginationContainer}>
-        {data.map((_, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[styles.dot, currentIndex === index && styles.activeDot]}
-            onPress={() => {
-              ref.current?.scrollTo({
-                count: index - currentIndex,
-                animated: true,
-              });
-              setCurrentIndex(index);
-            }}
-          />
-        ))}
-      </View>
+      <Pagination.Basic
+        progress={progress}
+        data={data}
+        dotStyle={{
+          backgroundColor: "rgba(55, 48, 163, 0.4)",
+          borderRadius: 50,
+        }}
+        activeDotStyle={{
+          borderRadius: 50,
+          backgroundColor: "rgba(55, 48, 163, 1)",
+        }}
+        containerStyle={{ gap: 10, marginTop: 5, marginBottom: 5 }}
+        onPress={onPressPagination}
+      />
     </View>
   );
 };
@@ -107,23 +111,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     paddingTop: 1000,
   },
-  paginationContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 0,
-    marginBottom: 6,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "rgba(55, 48, 163, 0.4)",
-    margin: 6,
-  },
-  activeDot: {
-    backgroundColor: "rgba(55, 48, 163, 1)",
-  },
+ 
 });
 
 export default OnboardingCarousel;

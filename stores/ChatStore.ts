@@ -26,6 +26,8 @@ interface Chat {
   lastCreatedAt: number;
   participants: { [key: string]: boolean };
   lastSeen?: number;
+  userId1?: string;
+  userId2?: string;
 }
 
 interface Message {
@@ -102,6 +104,43 @@ class ChatStore {
       throw new Error("Unable to generate chat ID");
     }
 
+// проверяем существует ли чат в базе
+// Формируем два возможных chatId для проверки
+const chatId1 = userId + otherUser.id;
+const chatId2 = otherUser.id + userId;
+
+// Проверяем, существует ли чат в базе для обоих вариантов chatId
+let chatIdToUse: string | undefined;
+for (const chatId of [chatId1, chatId2]) {
+  const chatRef = ref(database, `chats/${chatId}`);
+  const snapshot = await get(chatRef);
+  if (snapshot.exists()) {
+    chatIdToUse = chatId;
+    break;
+  }
+}
+
+const userId1 = userStore.currentUser?.id;
+const userId2 = otherUser?.id;
+if (otherUser) {
+  console.log("userId2:", userId2);
+  const userId2fmcToken = await getPushTokenFromServer(userId2);
+  if (userId2fmcToken) {
+    otherUser.fmcToken = userId2fmcToken;
+  }
+  console.log("fmcTokenOtherUser:", userId2fmcToken);
+}
+console.log("fmcTokenCurrentUser:", userStore.currentUser?.fmcToken);
+
+
+// Если чат уже существует, отправляем сообщение и возвращаем chatId
+if (chatIdToUse) {
+  console.log("Chat already exists");
+  await this.sendInviteMessage(chatIdToUse, otherUser.id);
+  return chatIdToUse;
+}
+
+
     const newChatData = {
       lastMessage: "Чат начат",
       lastCreatedAt: Date.now(),
@@ -110,17 +149,7 @@ class ChatStore {
         [otherUser.id]: true,
       },
     };
-    const userId1 = userStore.currentUser?.id;
-    const userId2 = otherUser?.id;
-    if (otherUser) {
-      console.log("userId2:", userId2);
-      const userId2fmcToken = await getPushTokenFromServer(userId2);
-      if (userId2fmcToken) {
-        otherUser.fmcToken = userId2fmcToken;
-      }
-      console.log("fmcTokenOtherUser:", userId2fmcToken);
-    }
-    console.log("fmcTokenCurrentUser:", userStore.currentUser?.fmcToken);
+   
     
     const newUserData1 = {
       name: userStore.currentUser?.name,
@@ -142,12 +171,7 @@ class ChatStore {
     try {
       await update(ref(database), updates);
 
-      runInAction(() => {
-        // Проверяем, существует ли уже объект с таким chatId в массиве this.chats
-        const existingChat = this.chats.find((chat) => chat.id === chatId);
-
-        // Если такого chatId еще нет, добавляем новый объект в массив
-        if (!existingChat) {
+      runInAction(() => {      
           this.chats.push({
             id: chatId,
             lastMessage: newChatData.lastMessage,
@@ -156,7 +180,7 @@ class ChatStore {
             otherUserName: otherUser?.name!,
             thumbnailUrl: otherUser?.thumbnailUrl!,
           });
-        }
+       // }
       });
 
       await this.sendInviteMessage(chatId, otherUser?.id);
@@ -195,8 +219,10 @@ class ChatStore {
       await push(ref(database, `messages/${chatId}`), initialMessage);
       console.log("Initial message sent");
       await update(ref(database, `chats/${chatId}`), {
-        lastCreatedAt: initialMessage.createdAt,
+        lastCreatedAt: initialMessage.createdAt        
       });
+      await this.setLastSeen();
+      console.log("Last seen updated");
       runInAction(() => {
         chatStore.lastCreatedAt[chatId] = Date.now();
       });
@@ -422,7 +448,7 @@ class ChatStore {
     }
   }
 
-  async checkBlocked() {
+  async checkBlocked(otherUserId: string) {
     try {
       const userId = userStore.currentUser?.id; // Текущий пользователь
       if (!userId) {
@@ -436,7 +462,7 @@ class ChatStore {
         return false;
       }
 
-      const blockUserId = chatData[0]?.otherUserId; // Другой пользователь
+      const blockUserId = otherUserId // Другой пользователь
       if (!blockUserId) {
         console.error(
           "ID другого пользователя для проверки блокировки не найдено"

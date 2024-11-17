@@ -12,7 +12,7 @@ import {
 import { useRouter } from "expo-router";
 import ChatStore from "@/stores/ChatStore";
 import { Divider, IconButton } from "react-native-paper";
-import ChatMenu from "@/components/chat/ChatMenu";
+import ChatMenu from "@/components/chat/chatMenu";
 import EmptyChatScreen from "@/components/chat/EmptyChatScreen";
 
 const ChatListItem: React.FC<{
@@ -109,6 +109,7 @@ const ChatListScreen: React.FC = observer(() => {
   const fetchData = async () => {
     try {
       setIsLoading(true);
+      ChatStore.sortChats();
       await ChatStore.fetchChats();
     } catch (err) {
       setError("Failed to load chats");
@@ -143,7 +144,7 @@ const ChatListScreen: React.FC = observer(() => {
 
   return (
     <>
-      {ChatStore.sortedChats.length === 0 && <EmptyChatScreen />}
+      {ChatStore.chats.length === 0 && <EmptyChatScreen />}
       <View className="h-full">
         <View className="flex-row items-center justify-start gap-2 p-2 mt-4">
           <IconButton

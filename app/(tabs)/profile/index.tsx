@@ -16,7 +16,7 @@ const Profile = observer(() => {
       
       const loadedUser = await userStore.loadUser();
 
-      console.log('loadedUser',loadedUser);
+      console.log('loadedUser Index',loadedUser);
       setEditableUser(loadedUser as User);
       if(!loadedUser?.name || loadedUser?.name === '' || loadedUser?.name === null) {
         console.log(editableUser);

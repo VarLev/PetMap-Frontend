@@ -8,7 +8,8 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { router } from "expo-router";
 import { useDrawer } from "@/contexts/DrawerProvider";
 import { AntDesign, Feather } from "@expo/vector-icons";
-import CustomListItemWrapper from "@/components/custom/menuItem/MenuItemWrapper";
+import CustomListItemWrapper from "@/components/custom/menuItem/ListItemWrapper";
+
 
 const SidebarUserProfileComponent = () => {
   const [sosEnabled, setSosEnabled] = useState(false);
@@ -41,15 +42,22 @@ const SidebarUserProfileComponent = () => {
             style={{ width: 175, height: 43 }}
           />
         </View>
-        <TouchableRipple className="w-full mt-6 " onPress={handleProfilePress}>
+
+        <TouchableRipple
+          className="w-full mt-6"
+          rippleColor="#E8DFFF"
+          onPress={handleProfilePress}
+        >
           <View className="flex-row justify-start items-center">
             <Image
               source={{ uri: currentUser?.thumbnailUrl! }}
               className="h-20 w-20 rounded-xl"
             />
-            <View className="flex-col ml-3">
+            <View className="flex-col ml-3 flex-1">
               <Text className="text-xl text-gray-800 font-nunitoSansBold">
-                {currentUser?.name}
+                {currentUser?.name && currentUser.name.length > 31
+                  ? `${(currentUser.name as string).slice(0, 31)}...`
+                  : currentUser?.name ?? "Анонимный пользователь"}
               </Text>
               <Text className="-mt-1 text-gray-800 font-nunitoSansRegular">
                 {currentUser?.email}
@@ -68,7 +76,7 @@ const SidebarUserProfileComponent = () => {
             <Image source={images.bonuse} className="h-8 w-8" />
             <View className="flex-col ml-3">
               <Text className="text-xl text-gray-800 font-nunitoSansBold">
-               {currentUser?.balance}
+                {currentUser?.balance}
               </Text>
             </View>
           </View>

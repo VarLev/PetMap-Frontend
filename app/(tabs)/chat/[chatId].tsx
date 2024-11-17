@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import { BackHandler, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -18,11 +18,11 @@ const ChatScreen: React.FC = observer(() => {
   const userId: string | undefined = UserStore.currentUser?.id;
   const router = useRouter();
 
-  const [isBlocked, setIsBlocked] = React.useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
 
   const checkUserIsBlocked = async (otherUserId: string) => {
     try {
-      if (await ChatStore.checkBlocked()) {
+      if (await ChatStore.checkBlocked(otherUserId)) {
         setIsBlocked(true);
         console.log("User is blocked?:", isBlocked);
         console.log("ID другого пользователя:", otherUserId);
@@ -40,6 +40,7 @@ const ChatScreen: React.FC = observer(() => {
       checkUserIsBlocked(otherUserId);
     }
   }, []);
+
   useEffect(() => {
     if (chatId) {
       ChatStore.fetchMessages(chatId);
@@ -68,7 +69,10 @@ const ChatScreen: React.FC = observer(() => {
   }, []);
 
   const handleSendPress = (message: MessageType.PartialText) => {
-    if (isBlocked) return;
+    if (isBlocked) {
+      console.log("User is blocked", isBlocked);
+      return;
+    } 
     if (chatId && UserStore.currentUser) {
       ChatStore.sendMessage(chatId, message.text, otherUserId);
     } else {
