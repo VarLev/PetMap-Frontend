@@ -113,7 +113,7 @@ class MapStore {
 
   async deleteWalkAdvrt(walkId : string) {
     try {
-      const response = await apiClient.delete(`map/walk/${walkId}`);
+      await apiClient.delete(`map/walk/${walkId}`);
       await this.setWalkAdvrts();
       // Проверяем статус ответа или используем данные ответа
       // if (response.status === 200) {

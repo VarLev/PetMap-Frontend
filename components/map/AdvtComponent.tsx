@@ -80,9 +80,9 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
  
     };
 
-    const handleEdit = () => {
-      // Реализуйте редактирование прогулки
-    };
+    // const handleEdit = () => {
+    //   // Реализуйте редактирование прогулки
+    // };
 
     const handleDelete = () => {
       mapStore.deleteWalkAdvrt(advrt.id!);

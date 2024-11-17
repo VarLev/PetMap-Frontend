@@ -6,7 +6,6 @@ import { UserCredential } from 'firebase/auth';
 import { action, runInAction, makeAutoObservable } from 'mobx';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, storage, signOut, signInWithGoogle } from '@/firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import axios from 'axios';
 import apiClient from '@/hooks/axiosConfig';
 import {manipulateAsync,SaveFormat } from 'expo-image-manipulator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -22,7 +21,6 @@ import { JobType } from '@/dtos/enum/JobType';
 import { Job } from '@/dtos/classes/job/Job';
 import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
 import { IUserCardDto } from '@/dtos/Interfaces/user/IUserCardDto';
-import { router } from 'expo-router';
 
 
 class UserStore {

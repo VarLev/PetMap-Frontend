@@ -13,7 +13,6 @@ import chatStore from '@/stores/ChatStore';
 import AdvtEditComponent from './AdvtEditComponent';
 import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
 import { router, useFocusEffect } from 'expo-router';
-import { IUser } from '@/dtos/Interfaces/user/IUser';
 import Svg, { Path } from 'react-native-svg';
 import { useDrawer } from '@/contexts/DrawerProvider';
 import SearchAndTags from '../custom/inputs/FilterSearchAndTagsComponent';
@@ -161,30 +160,30 @@ const MapBoxMap = observer(() => {
     setRouteData(routeFeatureCollection);
 
     // Adjust camera to show the route
-    const coordinates = routeFeatureCollection.features[0].geometry.coordinates;
-    interface Bounds {
-      minX: number;
-      minY: number;
-      maxX: number;
-      maxY: number;
-    }
+    // const coordinates = routeFeatureCollection.features[0].geometry.coordinates;
+    // interface Bounds {
+    //   minX: number;
+    //   minY: number;
+    //   maxX: number;
+    //   maxY: number;
+    // }
 
-    const bounds: Bounds = coordinates.reduce(
-      (bounds: Bounds, coord: [number, number]) => {
-        return {
-          minX: Math.min(bounds.minX, coord[0]),
-          minY: Math.min(bounds.minY, coord[1]),
-          maxX: Math.max(bounds.maxX, coord[0]),
-          maxY: Math.max(bounds.maxY, coord[1]),
-        };
-      },
-      {
-        minX: coordinates[0][0],
-        minY: coordinates[0][1],
-        maxX: coordinates[0][0],
-        maxY: coordinates[0][1],
-      }
-    );
+    // const bounds: Bounds = coordinates.reduce(
+    //   (bounds: Bounds, coord: [number, number]) => {
+    //     return {
+    //       minX: Math.min(bounds.minX, coord[0]),
+    //       minY: Math.min(bounds.minY, coord[1]),
+    //       maxX: Math.max(bounds.maxX, coord[0]),
+    //       maxY: Math.max(bounds.maxY, coord[1]),
+    //     };
+    //   },
+    //   {
+    //     minX: coordinates[0][0],
+    //     minY: coordinates[0][1],
+    //     maxX: coordinates[0][0],
+    //     maxY: coordinates[0][1],
+    //   }
+    // );
 
     // cameraRef.current?.fitBounds(
     //   [bounds.minX, bounds.minY],
@@ -197,10 +196,10 @@ const MapBoxMap = observer(() => {
     setModifiedFieldsCount(count);
   };
 
-  const handleAddressChange = (text: string) => {
-    mapStore.setAddress(text);
-    mapStore.fetchSuggestions(text);
-  };
+  // const handleAddressChange = (text: string) => {
+  //   mapStore.setAddress(text);
+  //   mapStore.fetchSuggestions(text);
+  // };
 
   const handleLongPress = (event: any) => {
     setScrollEnabled(false);
@@ -401,13 +400,13 @@ const MapBoxMap = observer(() => {
     setRenderAdvrtForm(false);  // Сбрасываем форму редактирования прогулки
   };
 
-  const handleSheetChange = (index: number) => {
-    if (index === 1) {
-      setIsSheetExpanded(true);
-    } else {
-      setIsSheetExpanded(false);
-    }
-  };
+  // const handleSheetChange = (index: number) => {
+  //   if (index === 1) {
+  //     setIsSheetExpanded(true);
+  //   } else {
+  //     setIsSheetExpanded(false);
+  //   }
+  // };
 
   const handleSearchTextChange = () => { };
 
