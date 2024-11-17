@@ -1,0 +1,36 @@
+name: Validate Commit Messages
+
+on:
+  push:
+    branches:
+      - '**' # Проверять все ветки
+  pull_request:
+    branches:
+      - '**' # Проверять при открытии/обновлении PR
+
+jobs:
+  validate-commits:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Validate commit messages
+        run: |
+          # Получить список всех коммитов
+          commits=$(git log --format="%h %s" ${{ github.event.before }}..${{ github.sha }})
+
+          # Убедиться, что каждый коммит соответствует формату
+          echo "$commits" | while read -r commit; do
+            hash=$(echo $commit | awk '{print $1}')
+            message=$(echo $commit | awk '{$1=""; print $0}' | sed 's/^ //')
+
+            # Проверить формат сообщения коммита
+            if [[ ! $message =~ ^(SCRUM-[0-9]+): ]]; then
+              echo "::error::Commit $hash has an invalid message: \"$message\""
+              exit 1
+            fi
+          done
+
+          echo "All commit messages are valid!"
