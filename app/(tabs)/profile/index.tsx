@@ -12,11 +12,8 @@ const Profile = observer(() => {
   const [isEmpty, setIsEmpty] = useState(false);
  
   useEffect(() => {
-    const loadUser = async () => {
-      
+    const loadUser = async () => {      
       const loadedUser = await userStore.loadUser();
-
-      console.log('loadedUser Index',loadedUser);
       setEditableUser(loadedUser as User);
       if(!loadedUser?.name || loadedUser?.name === '' || loadedUser?.name === null) {
         console.log(editableUser);

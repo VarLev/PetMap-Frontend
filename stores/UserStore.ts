@@ -32,7 +32,8 @@ class UserStore {
   isLogged: boolean = false;
   loading: boolean = false;
   isInitialized: boolean = false;
-  
+
+   
 
   constructor() {
     makeAutoObservable(this, {

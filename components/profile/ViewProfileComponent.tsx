@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useIsFocused } from "@react-navigation/native";
+import React, { useRef, useState } from "react";
 import {
   TouchableOpacity,
   View,
@@ -58,22 +57,11 @@ const ViewProfileComponent = observer(
     onPetOpen: (petId: string) => void;
     loadedUser: IUser;
   }) => {
-    //const user = userStore.currentUser!;
     const [user, setUser] = useState<IUser>(loadedUser);
     const sheetRef = useRef<BottomSheet>(null);
     const [menuVisible, setMenuVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [isCurrentUser, setIsCurrentUser] = useState(false);
-
-    const isFocused = useIsFocused(); // Используем для отслеживания состояния экрана
-
-    useEffect(() => {
-      //sheetRef.current?.expand();
-      const fetchData = async () => {
-        await loadData();
-      };
-      fetchData();
-    }, [isFocused]);
 
     const loadData = async () => {
       if (user.id === userStore.currentUser?.id) {

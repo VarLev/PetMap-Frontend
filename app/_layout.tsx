@@ -76,14 +76,14 @@ const Layout = () => {
   return (
     <StoreProvider>
       <AlertProvider>
-        <PaperProvider theme={customTheme}>
+             <PaperProvider theme={customTheme}>
         <Stack initialRouteName='index'>
           <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
           <Stack.Screen name='(auth)' options={{ headerShown: false }} />
           <Stack.Screen name='index' options={{ headerShown: false }} />
         </Stack>
         </PaperProvider>
-      </AlertProvider>
+           </AlertProvider>
     </StoreProvider>
   );
 };

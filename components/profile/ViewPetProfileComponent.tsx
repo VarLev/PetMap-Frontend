@@ -48,7 +48,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
 
   const handleBack = () => {
 
-    router.back();
+    router.push('/profile');
   }
 
   return (

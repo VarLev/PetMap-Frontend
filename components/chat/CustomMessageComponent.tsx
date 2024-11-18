@@ -20,16 +20,12 @@ interface AdvtProps {
   message: MessageType.Custom;
   otherUserId?: string;
   chatId?: string;
-  otherUserId?: string;
-  chatId?: string;
 }
 
 const CustomMessageComponent = memo(({ message, otherUserId, chatId }: AdvtProps) => {
   const router = useRouter();
    const [showButtons, setShowButtons] = useState(false);
   const [user, setUser] = useState<IUser | null>(null);
-
-
 
   const item = mapStore.walkAdvrts; //нужно добавить метод вынимающий конкретную прогулку по id
 
@@ -43,10 +39,7 @@ const CustomMessageComponent = memo(({ message, otherUserId, chatId }: AdvtProps
     () => item.find((advrt) => advrtId === advrt.id),
     [item, advrtId]
   );
-  const matchedItem = useMemo(
-    () => item.find((advrt) => advrtId === advrt.id),
-    [item, advrtId]
-  );
+
 
   const walkDetails = matchedItem
     ? renderWalkDetails(matchedItem)
@@ -69,7 +62,7 @@ const CustomMessageComponent = memo(({ message, otherUserId, chatId }: AdvtProps
     if (!user) {
       getUser();
     }
-  }, [user]);
+  }, [getUser, user]);
 
   useEffect(() => {
     if (visibleToUserId === userStore.currentUser?.id) {
