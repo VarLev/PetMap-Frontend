@@ -9,27 +9,8 @@ import SidebarUserProfileComponent from './SidebarUserProfileComponent';
 
 const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   const primaryColor = Colors.light.primTextButtHigh;
-  //const greyColor = Colors.light.primTextButtDefault;
   const { openDrawer } = useDrawer();
-  //const [isVisible, setIsVisible] = useState(true);
-
-  // useEffect(() => {
-  //   //const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => setIsVisible(false));
-  //   //const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => setIsVisible(true));
-
-  //   return () => {
-  //     //keyboardDidShowListener.remove();
-  //     //keyboardDidHideListener.remove();
-  //   };
-  // }, []);
-
-  // if (mapStore.bottomSheetVisible) {
-  //   //return null;
-  // }
-  
-  // if (!isVisible || mapStore.bottomSheetVisible) {
-  //   //return null;
-  // }
+ 
 
   return (
    
@@ -47,9 +28,9 @@ const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation })
 
         const isFocused = state.index === index;
 
-        const onPress = () => {
+        const onPress = async () => {
           if (route.name === 'profile') {
-            openDrawer(<SidebarUserProfileComponent/>); // Открыть Drawer при нажатии на "Profile"
+            await openDrawer(<SidebarUserProfileComponent/>); // Открыть Drawer при нажатии на "Profile"
           } else {
             const event = navigation.emit({
               type: 'tabPress',

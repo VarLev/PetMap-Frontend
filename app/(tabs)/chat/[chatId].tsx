@@ -15,31 +15,27 @@ const ChatScreen: React.FC = observer(() => {
     chatId: string;
     otherUserId?: string;
   }>();
-  const userId: string | undefined = UserStore.currentUser?.id;
+  const userId = UserStore.currentUser?.id;
   const router = useRouter();
-
   const [isBlocked, setIsBlocked] = useState(false);
 
-  const checkUserIsBlocked = async (otherUserId: string) => {
+  const checkUserIsBlocked = useCallback(async (otherUserId: string) => {
     try {
       if (await ChatStore.checkBlocked(otherUserId)) {
         setIsBlocked(true);
         console.log("User is blocked?:", isBlocked);
         console.log("ID другого пользователя:", otherUserId);
-      } else {
-        setIsBlocked(false);
-        console.log("User is blocked?:", isBlocked);
       }
     } catch (error) {
       console.error("Ошибка при проверке блокировки пользователя:", error);
     }
-  };
+  }, [isBlocked]);
 
   useEffect(() => {
     if (otherUserId) {
       checkUserIsBlocked(otherUserId);
     }
-  }, []);
+  }, [otherUserId, checkUserIsBlocked]);
 
   useEffect(() => {
     if (chatId) {
@@ -48,7 +44,7 @@ const ChatScreen: React.FC = observer(() => {
 
     const backAction = () => {
       router.replace("/chat/");
-      mapStore.setBottomSheetVisible(false); // Возвращаемся на предыдущий экран
+      mapStore.setBottomSheetVisible(false);
       return true;
     };
 
@@ -59,77 +55,82 @@ const ChatScreen: React.FC = observer(() => {
 
     return () => {
       backHandler.remove();
-      //ChatStore.clearMessages();
     };
-
   }, [chatId, router]);
 
-  const renderMessage = useCallback((message: MessageType.Custom) => {
-    return <CustomMessageComponent message={message} />;
-  }, []);
+  const renderMessage = useCallback(
+    (message: MessageType.Custom) => {
+      return (
+        <CustomMessageComponent
+          message={message}
+          otherUserId={otherUserId}
+          chatId={chatId}
+        />
+      );
+    },
+    [chatId, otherUserId]
+  );
 
-  const handleSendPress = (message: MessageType.PartialText) => {
-    if (isBlocked) {
-      console.log("User is blocked", isBlocked);
-      return;
-    } 
-    if (chatId && UserStore.currentUser) {
-      ChatStore.sendMessage(chatId, message.text, otherUserId);
-    } else {
-      console.error("User or chat ID is not available");
-    }
-  };
+  const handleSendPress = useCallback(
+    (message: MessageType.PartialText) => {
+      if (isBlocked) {
+        console.log("User is blocked:", isBlocked);
+        return;
+      }
+      if (chatId && UserStore.currentUser) {
+        ChatStore.sendMessage(chatId, message.text, otherUserId);
+      }
+    },
+    [isBlocked, chatId, otherUserId]
+  );
 
   if (!userId) {
     return <Text>Loading...</Text>;
   }
 
   return (
-    <>
-      <SafeAreaView className="bg-white h-full">
-        <ChatHeader item={chatId} />
-        <Chat
-          locale="ru" // ангийский и испанский есть, нужно только переключить
-          theme={{
-            ...defaultTheme,
-            colors: {
-              ...defaultTheme.colors,
-              inputBackground: "#e8e9eb",
-              inputText: "black",
-              primary: "#D9CBFF",
+    <SafeAreaView className="bg-white h-full">
+      <ChatHeader item={chatId} />
+      <Chat
+        locale="ru"
+        theme={{
+          ...defaultTheme,
+          colors: {
+            ...defaultTheme.colors,
+            inputBackground: "#e8e9eb",
+            inputText: "black",
+            primary: "#D9CBFF",
+          },
+          fonts: {
+            ...defaultTheme.fonts,
+            sentMessageBodyTextStyle: {
+              color: "black",
+              fontSize: 16,
+              fontWeight: "400",
+              lineHeight: 24,
             },
-            fonts: {
-              ...defaultTheme.fonts,
-              sentMessageBodyTextStyle: {
-                color: "black",
-                fontSize: 16,
-                fontWeight: "400",
-                lineHeight: 24,
-              },
-              receivedMessageBodyTextStyle: {
-                fontSize: 16,
-                fontWeight: "400",
-                lineHeight: 24,
-              },
+            receivedMessageBodyTextStyle: {
+              fontSize: 16,
+              fontWeight: "400",
+              lineHeight: 24,
             },
-            borders: {
-              ...defaultTheme.borders,
-              inputBorderRadius: 10,
-              messageBorderRadius: 16,
-            },
-            insets: {
-              ...defaultTheme.insets,
-              messageInsetsVertical: 12,
-
-            }
-          }}
-          messages={ChatStore.messages as any[]}
-          onSendPress={handleSendPress}
-          user={{ id: userId }}
-          renderCustomMessage={renderMessage}
-        />
-      </SafeAreaView>
-    </>
+          },
+          borders: {
+            ...defaultTheme.borders,
+            inputBorderRadius: 10,
+            messageBorderRadius: 16,
+          },
+          insets: {
+            ...defaultTheme.insets,
+            messageInsetsVertical: 12,
+          },
+        }}
+        messages={ChatStore.messages as any[]}
+        onSendPress={handleSendPress}
+        user={{ id: userId }}
+        renderCustomMessage={renderMessage}
+      />
+    </SafeAreaView>
   );
 });
 

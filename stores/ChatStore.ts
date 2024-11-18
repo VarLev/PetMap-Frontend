@@ -14,8 +14,13 @@ import {
 import userStore from "@/stores/UserStore";
 import { MessageType } from "@flyerhq/react-native-chat-ui";
 import { randomUUID } from "expo-crypto";
-import { getPushTokenFromServer, sendPushNotification } from "@/hooks/notifications";
+import {
+  getPushTokenFromServer,
+  sendPushNotification,
+} from "@/hooks/notifications";
 import { IUserChat } from "@/dtos/Interfaces/user/IUserChat";
+import apiClient from "@/hooks/axiosConfig";
+import { handleAxiosError } from "@/utils/axiosUtils";
 
 interface Chat {
   id: string;
@@ -103,43 +108,40 @@ class ChatStore {
     if (!chatId) {
       throw new Error("Unable to generate chat ID");
     }
+    // проверяем существует ли чат в базе
+    // Формируем два возможных chatId для проверки
+    const chatId1 = userId + otherUser.id;
+    const chatId2 = otherUser.id + userId;
 
-// проверяем существует ли чат в базе
-// Формируем два возможных chatId для проверки
-const chatId1 = userId + otherUser.id;
-const chatId2 = otherUser.id + userId;
+    // Проверяем, существует ли чат в базе для обоих вариантов chatId
+    let chatIdToUse: string | undefined;
+    for (const chatId of [chatId1, chatId2]) {
+      const chatRef = ref(database, `chats/${chatId}`);
+      const snapshot = await get(chatRef);
+      if (snapshot.exists()) {
+        chatIdToUse = chatId;
+        break;
+      }
+    }
 
-// Проверяем, существует ли чат в базе для обоих вариантов chatId
-let chatIdToUse: string | undefined;
-for (const chatId of [chatId1, chatId2]) {
-  const chatRef = ref(database, `chats/${chatId}`);
-  const snapshot = await get(chatRef);
-  if (snapshot.exists()) {
-    chatIdToUse = chatId;
-    break;
-  }
-}
+    const userId1 = userStore.currentUser?.id;
+    const userId2 = otherUser?.id;
+    if (otherUser) {
+      console.log("userId2:", userId2);
+      const userId2fmcToken = await getPushTokenFromServer(userId2);
+      if (userId2fmcToken) {
+        otherUser.fmcToken = userId2fmcToken;
+      }
+      console.log("fmcTokenOtherUser:", userId2fmcToken);
+    }
+    console.log("fmcTokenCurrentUser:", userStore.currentUser?.fmcToken);
 
-const userId1 = userStore.currentUser?.id;
-const userId2 = otherUser?.id;
-if (otherUser) {
-  console.log("userId2:", userId2);
-  const userId2fmcToken = await getPushTokenFromServer(userId2);
-  if (userId2fmcToken) {
-    otherUser.fmcToken = userId2fmcToken;
-  }
-  console.log("fmcTokenOtherUser:", userId2fmcToken);
-}
-console.log("fmcTokenCurrentUser:", userStore.currentUser?.fmcToken);
-
-
-// Если чат уже существует, отправляем сообщение и возвращаем chatId
-if (chatIdToUse) {
-  console.log("Chat already exists");
-  await this.sendInviteMessage(chatIdToUse, otherUser.id);
-  return chatIdToUse;
-}
-
+    // Если чат уже существует, отправляем сообщение и возвращаем chatId
+    if (chatIdToUse) {
+      console.log("Chat already exists");
+      await this.sendInviteMessage(chatIdToUse, otherUser);
+      return chatIdToUse;
+    }
 
     const newChatData = {
       lastMessage: "Чат начат",
@@ -149,8 +151,7 @@ if (chatIdToUse) {
         [otherUser.id]: true,
       },
     };
-   
-    
+
     const newUserData1 = {
       name: userStore.currentUser?.name,
       avatar: userStore.currentUser?.thumbnailUrl,
@@ -171,19 +172,18 @@ if (chatIdToUse) {
     try {
       await update(ref(database), updates);
 
-      runInAction(() => {      
-          this.chats.push({
-            id: chatId,
-            lastMessage: newChatData.lastMessage,
-            lastCreatedAt: newChatData.lastCreatedAt,
-            participants: newChatData.participants,
-            otherUserName: otherUser?.name!,
-            thumbnailUrl: otherUser?.thumbnailUrl!,
-          });
-       // }
+      runInAction(() => {
+        this.chats.push({
+          id: chatId,
+          lastMessage: newChatData.lastMessage,
+          lastCreatedAt: newChatData.lastCreatedAt,
+          participants: newChatData.participants,
+          otherUserName: otherUser?.name!,
+          thumbnailUrl: otherUser?.thumbnailUrl!,
+        });
       });
 
-      await this.sendInviteMessage(chatId, otherUser?.id);
+      await this.sendInviteMessage(chatId, otherUser);
 
       return chatId;
     } catch (error) {
@@ -192,11 +192,9 @@ if (chatIdToUse) {
     }
   }
 
-  async sendInviteMessage(chatId: string, otherUserId: string | undefined) {
+  async sendInviteMessage(chatId: string, otherUser: IUserChat) {
     const userId = userStore.currentUser?.id;
-    const recipientExpoPushToken = userStore.users.find(
-      (user) => user.id === otherUserId
-    )?.fmcToken;
+
     if (!userId) return;
 
     const initialMessage: MessageType.Custom = {
@@ -211,7 +209,7 @@ if (chatIdToUse) {
         userName: userStore.currentUser?.name,
         userAvatar: userStore.currentUser?.thumbnailUrl,
         advrtId: this.advrtId,
-        visibleToUserId: otherUserId, // ID пользователя, которому нужно показать кнопки
+        visibleToUserId: otherUser.id, // ID пользователя, которому нужно показать кнопки
       },
     };
 
@@ -219,16 +217,17 @@ if (chatIdToUse) {
       await push(ref(database, `messages/${chatId}`), initialMessage);
       console.log("Initial message sent");
       await update(ref(database, `chats/${chatId}`), {
-        lastCreatedAt: initialMessage.createdAt        
+        lastCreatedAt: initialMessage.createdAt,
       });
       await this.setLastSeen();
       console.log("Last seen updated");
       runInAction(() => {
         chatStore.lastCreatedAt[chatId] = Date.now();
       });
-      if (recipientExpoPushToken) {
+
+      if (otherUser.fmcToken) {
         await sendPushNotification(
-          recipientExpoPushToken,
+          otherUser.fmcToken,
           "Приглашение на прогулку",
           userStore?.currentUser?.name ?? "Пользователь",
           { chatId }
@@ -326,6 +325,37 @@ if (chatIdToUse) {
         this.messages = messagesList.reverse(); // Обратный порядок для правильного отображения
       });
     });
+  }
+
+  async acceptUserJoinWalk(walkId: string, userId: string, chatId: string) {
+    try {
+      const userId2fmcToken = await getPushTokenFromServer(userId);
+      if (userId2fmcToken) {
+        await sendPushNotification(
+          userId2fmcToken,
+          "Ваш запрос на присоединение к прогулке принят",
+          userStore?.currentUser?.name ?? "Пользователь",
+          { chatId }
+        );
+      }
+      const response = await apiClient.patch(`walkadvrt/accept/${walkId}`, {
+        userId: userId, // Передаем как объект
+      });
+      return response.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+
+  async declineUserJoinWalk(walkId: string, userId: string) {
+    try {
+      const response = await apiClient.patch(`walkadvrt/reject/${walkId}`, {
+        userId: userId, // Передаем как объект
+      });
+      return response.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
   }
 
   async getLastMessage(chatId: string) {
@@ -462,7 +492,7 @@ if (chatIdToUse) {
         return false;
       }
 
-      const blockUserId = otherUserId // Другой пользователь
+      const blockUserId = otherUserId; // Другой пользователь
       if (!blockUserId) {
         console.error(
           "ID другого пользователя для проверки блокировки не найдено"

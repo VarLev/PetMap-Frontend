@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState, memo } from "react";
 import { View, Image, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { MessageType } from "@flyerhq/react-native-chat-ui";
@@ -18,16 +18,16 @@ import { IUser } from "@/dtos/Interfaces/user/IUser";
 interface AdvtProps {
   item?: IWalkAdvrtDto[];
   message: MessageType.Custom;
-  latitude?: IWalkAdvrtDto;
-  longitude?: IWalkAdvrtDto;
+  otherUserId?: string;
+  chatId?: string;
 }
 
-const CustomMessageComponent = ({ message }: AdvtProps) => {
-  const [userIsOwner, setUserIsOwner] = useState(false);
-  const [showButtons, setShowButtons] = useState(false);
+const CustomMessageComponent = memo(({ message, otherUserId, chatId }: AdvtProps) => {
+  const router = useRouter();
+   const [showButtons, setShowButtons] = useState(false);
   const [user, setUser] = useState<IUser | null>(null);
 
-  const router = useRouter();
+
 
   const item = mapStore.walkAdvrts; //нужно добавить метод вынимающий конкретную прогулку по id
 
@@ -37,15 +37,16 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
 
   const visibleToUserId = message.metadata?.visibleToUserId;
 
-  const matchedItem = item.find((advrt) => advrtId === advrt.id);
+  const matchedItem = useMemo(
+    () => item.find((advrt) => advrtId === advrt.id),
+    [item, advrtId]
+  );
 
   const walkDetails = matchedItem
     ? renderWalkDetails(matchedItem)
     : "Данные отсутствуют";
 
-  const pets = user?.petProfiles;
-
-  const nextWalk = matchedItem
+    const nextWalk = matchedItem
     ? calculateTimeUntilNextWalk(matchedItem)
     : "Данные отсутствуют";
 
@@ -54,8 +55,14 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
 
     return setUser(user);
   }
+
+  const pets = user?.petProfiles;
+
+
   useEffect(() => {
-    getUser();
+    if (!user) {
+      getUser();
+    }
   }, [user]);
 
   useEffect(() => {
@@ -65,11 +72,9 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
   }, [visibleToUserId]);
 
   const handleUserProfileOpen = (userId: string) => {
-    if (userIsOwner) {
-      router.push("/profile");
-    } else {
-      router.push(`/(tabs)/profile/${userId}`);
-    }
+    const userIsOwner = userId === userStore.currentUser?.id;
+    const route = userIsOwner ? "/profile" : `/(tabs)/profile/${userId}`;
+    router.push(route);
     mapStore.setBottomSheetVisible(false);
   };
 
@@ -222,6 +227,9 @@ const CustomMessageComponent = ({ message }: AdvtProps) => {
       )}
     </>
   );
-};
+});
+
+CustomMessageComponent.displayName = "CustomMessageComponent";
+
 
 export default CustomMessageComponent;

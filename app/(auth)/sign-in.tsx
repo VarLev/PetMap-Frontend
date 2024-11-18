@@ -4,7 +4,6 @@ import {
   Alert,
   StatusBar,
   Keyboard,
-  TouchableWithoutFeedback,
 } from "react-native";
 import { Text } from "react-native-paper";
 import { TextInput } from "react-native-paper";

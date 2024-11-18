@@ -1,6 +1,7 @@
 import React from "react";
 import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+
+
 
 const ChatLayout = () => {
   return (
@@ -15,7 +16,7 @@ const ChatLayout = () => {
           options={{ headerShown: false, title: "Chat" }}
         />
       </Stack>
-      <StatusBar style="dark" />
+      
     </>
   );
 };

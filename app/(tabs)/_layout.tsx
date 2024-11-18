@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { router, Tabs, usePathname } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import TabBar from '@/components/navigation/TabBar';
 import { DrawerProvider } from '@/contexts/DrawerProvider';
 import { registerForPushNotificationsAsync, setupNotificationListeners, savePushTokenToServer } from '@/hooks/notifications';
@@ -57,7 +56,7 @@ const Tabslayout = () => {
     <>
      <DrawerProvider> 
       <Tabs
-        tabBar={(props) =>  (!hideTabBar && isVisible) && <TabBar {...props} />}
+        tabBar={(props: any) =>  (!hideTabBar && isVisible) && <TabBar {...props} />}
         screenOptions={{
           tabBarShowLabel: false,
           tabBarActiveTintColor: '#2f0f48',
@@ -75,7 +74,7 @@ const Tabslayout = () => {
           name="search"
           options={{
             title: 'Search',
-            headerShown: true, 
+            headerShown: false, 
           }}
         />
         <Tabs.Screen
@@ -108,7 +107,7 @@ const Tabslayout = () => {
           }}
         />
       </Tabs>
-      <StatusBar backgroundColor="#161622" style="light" />
+      
       </DrawerProvider>
     </>
   );

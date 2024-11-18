@@ -341,7 +341,6 @@ class MapStore {
 
   async requestJoinWalk(walkId: string, userId: string) {
     try {
-      console.log('Request join walk', walkId, userId);
       const response = await apiClient.post(`walkadvrt/join/${walkId}`, {
         userId: userId // Передаем как объект
       } );
@@ -350,6 +349,8 @@ class MapStore {
       return handleAxiosError(error);
     }
   }
+
+
 
   async getAllWalkParticipants(walkId: string): Promise<IUserAdvrt[]> {
     try {

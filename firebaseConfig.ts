@@ -1,5 +1,5 @@
 import { getApps , initializeApp } from 'firebase/app';
-import { getStorage } from 'firebase/storage';
+import { getStorage, ref, listAll, getDownloadURL, StorageReference} from 'firebase/storage';
 import { signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword  } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getAuth, initializeAuth, getReactNativePersistence, onAuthStateChanged } from "firebase/auth";
@@ -35,6 +35,7 @@ if (getApps().length===0) {
 }
 const database = getDatabase(app);
 const storage = getStorage(app);
+
 export {database, storage };
 
 export const signInWithEmailAndPassword = async (email: string, password: string) => {
@@ -75,7 +76,7 @@ export const signInWithGoogle = async () => {
   try {
     await GoogleSignin.hasPlayServices();
     const userInfo = await GoogleSignin.signIn();
-    const idToken = userInfo?.idToken;
+    const idToken = userInfo?.data?.idToken;
     if (!idToken) {
       throw new Error('Не возможно войти через Google аккаунт, попробуйте другие способы хода.');
     }
@@ -84,6 +85,17 @@ export const signInWithGoogle = async () => {
   } catch (error) {
     throw error;
   }
+};
+
+export const getFoldersInDirectory = async (directory: string): Promise<StorageReference[]> => {
+  const directoryRef = ref(storage, directory);
+  const folderList = await listAll(directoryRef);
+  return folderList.prefixes;
+};
+
+export const getFileUrl = async (filePath: string): Promise<string> => {
+  const fileRef = ref(storage, filePath);
+  return await getDownloadURL(fileRef);
 };
 
 export const getCurrentAuth = () => {

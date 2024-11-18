@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Text, View, Image, TouchableOpacity } from "react-native";
 import { Divider, IconButton } from "react-native-paper";
 import { router } from "expo-router";
@@ -10,12 +10,12 @@ interface ChatHeaderProps {
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({ item }) => {
   const [time, setTime] = useState(Date.now());
-
-  const getChatData = () => {
+  // Извлекаем данные чата единожды, используя useMemo
+  const chatData = useMemo(() => {
     return item ? ChatStore.chats.find((chat) => chat.id === item) : null;
-  };
+  }, [item]);
 
-  const chatData = getChatData();
+  //const chatData = getChatData();
 
   const userId = chatData?.otherUserId;
 
@@ -29,10 +29,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ item }) => {
 
   const showLastSeenTime = (userId?: string) => {
     if (userId) {
-      const lastSeen = ChatStore.lastSeen[userId];
-
-      // если lastSeen нет то взять время последнего сообщения
-
+      const lastSeen = ChatStore.lastSeen[userId] ?? chatData?.lastCreatedAt;
       if (lastSeen) {
         const now = Date.now();
         const diff = now - lastSeen;
@@ -71,7 +68,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ item }) => {
     router.push("/(tabs)/chat/");
   };
 
-  return (
+   return (
     <>
       <View className="flex-row items-center justify-start gap-2 py-2 shadow-md">
         <IconButton icon="arrow-left" size={24} onPress={handleBack} />
@@ -83,9 +80,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ item }) => {
             className="rounded-xl h-16 w-16"
           />
         </TouchableOpacity>
-        <View>
+        <View className="flex-1">
           <Text className="text-lg font-nunitoSansBold">
-            {chatData?.otherUserName}
+          {chatData?.otherUserName}
           </Text>
           <Text className="text-[13px] font-nunitoSansRegular text-[#87878A]">
             {showLastSeenTime(userId)}
