@@ -16,8 +16,10 @@ const ChatScreen: React.FC = observer(() => {
     otherUserId?: string;
   }>();
   const userId = UserStore.currentUser?.id;
+
   const router = useRouter();
   const [isBlocked, setIsBlocked] = useState(false);
+
 
   const checkUserIsBlocked = useCallback(async (otherUserId: string) => {
     try {
@@ -45,6 +47,7 @@ const ChatScreen: React.FC = observer(() => {
     const backAction = () => {
       router.replace("/chat/");
       mapStore.setBottomSheetVisible(false);
+      mapStore.setBottomSheetVisible(false);
       return true;
     };
 
@@ -52,7 +55,6 @@ const ChatScreen: React.FC = observer(() => {
       "hardwareBackPress",
       backAction
     );
-
     return () => {
       backHandler.remove();
     };
@@ -131,7 +133,7 @@ const ChatScreen: React.FC = observer(() => {
         renderCustomMessage={renderMessage}
       />
     </SafeAreaView>
-  );
+     );
 });
 
 export default ChatScreen;

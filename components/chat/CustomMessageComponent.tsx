@@ -20,6 +20,8 @@ interface AdvtProps {
   message: MessageType.Custom;
   otherUserId?: string;
   chatId?: string;
+  otherUserId?: string;
+  chatId?: string;
 }
 
 const CustomMessageComponent = memo(({ message, otherUserId, chatId }: AdvtProps) => {
@@ -37,6 +39,10 @@ const CustomMessageComponent = memo(({ message, otherUserId, chatId }: AdvtProps
 
   const visibleToUserId = message.metadata?.visibleToUserId;
 
+  const matchedItem = useMemo(
+    () => item.find((advrt) => advrtId === advrt.id),
+    [item, advrtId]
+  );
   const matchedItem = useMemo(
     () => item.find((advrt) => advrtId === advrt.id),
     [item, advrtId]
@@ -231,5 +237,7 @@ const CustomMessageComponent = memo(({ message, otherUserId, chatId }: AdvtProps
 
 CustomMessageComponent.displayName = "CustomMessageComponent";
 
+
+CustomMessageComponent.displayName = "CustomMessageComponent";
 
 export default CustomMessageComponent;

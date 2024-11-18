@@ -194,7 +194,9 @@ class ChatStore {
 
   async sendInviteMessage(chatId: string, otherUser: IUserChat) {
     const userId = userStore.currentUser?.id;
-
+    const recipientExpoPushToken = userStore.users.find(
+      (user) => user.id === otherUserId
+    )?.fmcToken;
     if (!userId) return;
 
     const initialMessage: MessageType.Custom = {
@@ -325,37 +327,6 @@ class ChatStore {
         this.messages = messagesList.reverse(); // Обратный порядок для правильного отображения
       });
     });
-  }
-
-  async acceptUserJoinWalk(walkId: string, userId: string, chatId: string) {
-    try {
-      const userId2fmcToken = await getPushTokenFromServer(userId);
-      if (userId2fmcToken) {
-        await sendPushNotification(
-          userId2fmcToken,
-          "Ваш запрос на присоединение к прогулке принят",
-          userStore?.currentUser?.name ?? "Пользователь",
-          { chatId }
-        );
-      }
-      const response = await apiClient.patch(`walkadvrt/accept/${walkId}`, {
-        userId: userId, // Передаем как объект
-      });
-      return response.data;
-    } catch (error) {
-      return handleAxiosError(error);
-    }
-  }
-
-  async declineUserJoinWalk(walkId: string, userId: string) {
-    try {
-      const response = await apiClient.patch(`walkadvrt/reject/${walkId}`, {
-        userId: userId, // Передаем как объект
-      });
-      return response.data;
-    } catch (error) {
-      return handleAxiosError(error);
-    }
   }
 
   async getLastMessage(chatId: string) {
