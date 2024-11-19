@@ -22,7 +22,7 @@ import { Job } from '@/dtos/classes/job/Job';
 import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
 import { IUserCardDto } from '@/dtos/Interfaces/user/IUserCardDto';
 
-
+//fghjkl
 class UserStore {
   fUid: string | null = null;
   currentUser: User  = new User({});
