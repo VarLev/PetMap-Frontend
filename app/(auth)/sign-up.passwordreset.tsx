@@ -59,7 +59,7 @@ const SignUpPasswordReset = () => {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="w-full justify-between grow px-9 my-10">
           <View>
-            <ArrowHelp />
+            <ArrowHelp onPressArrow={() => router.back()} onPressHelp={() => {}} />
             <View className="justify-start mt-10">
               <View className="flex-col items-start justify-center ">
                 <Text

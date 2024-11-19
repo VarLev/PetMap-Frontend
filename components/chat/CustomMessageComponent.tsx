@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, memo } from "react";
 import { View, Image, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { MessageType } from "@flyerhq/react-native-chat-ui";
@@ -10,15 +10,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { calculateDogAge, getTagsByIndex } from "@/utils/utils";
 import { BREEDS_TAGS, petUriImage } from "@/constants/Strings";
 import CustomTextComponent from "../custom/text/CustomTextComponent";
-import {
-  renderWalkDetails,
-  calculateTimeUntilNextWalk
-} from "@/utils/utils";
+import { renderWalkDetails, calculateTimeUntilNextWalk } from "@/utils/utils";
 import CircleIcon from "../custom/icons/CircleIcon";
 import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
-import chatStore from "@/stores/ChatStore";
-import { Pet } from "@/dtos/classes/pet/Pet";
-
+import { IUser } from "@/dtos/Interfaces/user/IUser";
 
 interface AdvtProps {
   item?: IWalkAdvrtDto[];
@@ -27,13 +22,17 @@ interface AdvtProps {
   chatId?: string;
 }
 
-const CustomMessageComponent = React.memo(({ message, otherUserId, chatId }: AdvtProps) => {
+const CustomMessageComponent = memo(({ message, otherUserId, chatId }: AdvtProps) => {
   const router = useRouter();
-  const [pets, setPets] = useState<Pet[] | null>(null);
-  const [showButtons, setShowButtons] = useState(false);
-  const currentUser = userStore.currentUser;
-  const item = mapStore.walkAdvrts;
+   const [showButtons, setShowButtons] = useState(false);
+  const [user, setUser] = useState<IUser | null>(null);
+
+  const item = mapStore.walkAdvrts; //нужно добавить метод вынимающий конкретную прогулку по id
+
   const advrtId = message.metadata?.advrtId;
+
+  const userId = message.author.id;
+
   const visibleToUserId = message.metadata?.visibleToUserId;
 
   const matchedItem = useMemo(
@@ -41,50 +40,42 @@ const CustomMessageComponent = React.memo(({ message, otherUserId, chatId }: Adv
     [item, advrtId]
   );
 
-  const walkDetails = useMemo(
-    () => (matchedItem ? renderWalkDetails(matchedItem) : "Данные отсутствуют"),
-    [matchedItem]
-  );
 
-  const nextWalk = useMemo(
-    () => (matchedItem ? calculateTimeUntilNextWalk(matchedItem) : "Данные отсутствуют"),
-    [matchedItem]
-  );
+  const walkDetails = matchedItem
+    ? renderWalkDetails(matchedItem)
+    : "Данные отсутствуют";
+
+    const nextWalk = matchedItem
+    ? calculateTimeUntilNextWalk(matchedItem)
+    : "Данные отсутствуют";
+
+  async function getUser() {
+    const user: IUser = await userStore.getUserById(userId);
+
+    return setUser(user);
+  }
+
+  const pets = user?.petProfiles;
+
 
   useEffect(() => {
-    // Инициализируем pets при изменении matchedItem
-    if (matchedItem) {
-      setPets(matchedItem.userPets ?? []);
+    if (!user) {
+      getUser();
     }
-  }, [matchedItem]);
+  }, [getUser, user]);
 
   useEffect(() => {
-    // Устанавливаем видимость кнопок, если currentUser совпадает с visibleToUserId
-    setShowButtons(visibleToUserId === currentUser?.id);
-  }, [visibleToUserId, currentUser]);
+    if (visibleToUserId === userStore.currentUser?.id) {
+      setShowButtons(true);
+    }
+  }, [visibleToUserId]);
 
   const handleUserProfileOpen = (userId: string) => {
-    const userIsOwner = userId === currentUser?.id;
+    const userIsOwner = userId === userStore.currentUser?.id;
     const route = userIsOwner ? "/profile" : `/(tabs)/profile/${userId}`;
     router.push(route);
     mapStore.setBottomSheetVisible(false);
   };
-
-  const handleAccept = async () => {
-    // Логика для принятия приглашения
-    if (matchedItem?.id && currentUser?.id) {
-      await chatStore.acceptUserJoinWalk(matchedItem.id, otherUserId!, chatId!);
-    }
-  };
-
-  const handleDecline = async () => {
-    // Логика для отклонения приглашения
-    if (matchedItem?.id && currentUser?.id) {
-      await chatStore.declineUserJoinWalk(matchedItem.id, otherUserId!);
-    }
-  }
-
-
 
   return (
     <>
@@ -98,20 +89,24 @@ const CustomMessageComponent = React.memo(({ message, otherUserId, chatId }: Adv
         <View className="flex-row ">
           <TouchableOpacity
             className="rounded-2xl"
-            onPress={() => handleUserProfileOpen(matchedItem?.userId!)}
+            onPress={() => handleUserProfileOpen(userId)}
           >
             <Image
               source={{
-                uri:
-                  matchedItem?.userPhoto || "https://via.placeholder.com/100",
+                uri: user?.thumbnailUrl || "https://via.placeholder.com/100",
               }}
               className="w-20 h-20 rounded-2xl"
             />
           </TouchableOpacity>
-          <View className="w-60 ml-4 justify-between">
+          <View className="flex-1 ml-4">
             <Text className="w-full text-xl font-nunitoSansBold">
-              {matchedItem?.userName || "Owner"}
+              {user?.name || "Owner"}
             </Text>
+            {showButtons && (
+              <Text className="text-sm font-nunitoSansRegular">
+                Хочет присоеденится к прогулке
+              </Text>
+            )}
           </View>
         </View>
         {pets &&
@@ -135,12 +130,17 @@ const CustomMessageComponent = React.memo(({ message, otherUserId, chatId }: Adv
                         {pet.petName || "Pet"},
                       </Text>
                     </View>
-                    <Text className="text-xs -mt-1 font-nunitoSansRegular">
-                      {calculateDogAge(pet.birthDate)}{" "}
-                      {getTagsByIndex(BREEDS_TAGS, pet.breed!) || "Порода"}
-                    </Text>
+                    <View className="flex-row w-full ">
+                      <Text className="text-xs mt-1 font-nunitoSansRegular">
+                        {calculateDogAge(pet.birthDate)}{' '}
+                        </Text>
+                        <Text className="text-xs mt-1 font-nunitoSansRegular flex-1">
+                        {getTagsByIndex(BREEDS_TAGS, pet.breed!) || "Порода"}
+                      </Text>
+                    </View>
                   </View>
-                  <View className="flex-col pt-1 ">
+
+                  <View className="flex-col pt-1">
                     <View className="flex-row justify-between items-center ml-[-5px]">
                       <Text className="font-nunitoSansRegular text-xs">
                         Темперамент
@@ -208,25 +208,27 @@ const CustomMessageComponent = React.memo(({ message, otherUserId, chatId }: Adv
           textStyle={{ fontSize: 12 }}
         />
       </View>
-      {showButtons &&
+      {showButtons && (
         <View>
           <View className="flex-row justify-between items-center bg-white ">
             <CustomButtonOutlined
-              title={'Принять'}
-              handlePress={handleAccept}
+              title={"Принять"}
+              handlePress={() => console.log("Принять")}
               containerStyles="flex-1 bg-[#ACFFB9] my-2 mr-2"
             />
             <CustomButtonOutlined
-              title={'Отклонить'}
-              handlePress={handleDecline}
+              title={"Отклонить"}
+              handlePress={() => console.log("Отклонить")}
               containerStyles="flex-1 bg-[#FA8072] my-2 ml-2"
             />
           </View>
-
-        </View>}
+        </View>
+      )}
     </>
-  )
+  );
 });
+
+CustomMessageComponent.displayName = "CustomMessageComponent";
 
 
 CustomMessageComponent.displayName = "CustomMessageComponent";

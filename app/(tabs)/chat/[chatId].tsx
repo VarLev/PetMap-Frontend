@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import { BackHandler, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -16,26 +16,28 @@ const ChatScreen: React.FC = observer(() => {
     otherUserId?: string;
   }>();
   const userId = UserStore.currentUser?.id;
+
   const router = useRouter();
   const [isBlocked, setIsBlocked] = useState(false);
 
-  const checkUserIsBlocked = useCallback(async () => {
-    if (!otherUserId) return;
+
+  const checkUserIsBlocked = useCallback(async (otherUserId: string) => {
     try {
-      const isUserBlocked = await ChatStore.checkBlocked();
-      if (isUserBlocked !== isBlocked) {
-        setIsBlocked(isUserBlocked);
+      if (await ChatStore.checkBlocked(otherUserId)) {
+        setIsBlocked(true);
         console.log("User is blocked?:", isBlocked);
         console.log("ID другого пользователя:", otherUserId);
       }
     } catch (error) {
       console.error("Ошибка при проверке блокировки пользователя:", error);
     }
-  }, [otherUserId, isBlocked]);
+  }, [isBlocked]);
 
   useEffect(() => {
-    checkUserIsBlocked();
-  }, [checkUserIsBlocked]);
+    if (otherUserId) {
+      checkUserIsBlocked(otherUserId);
+    }
+  }, [otherUserId, checkUserIsBlocked]);
 
   useEffect(() => {
     if (chatId) {
@@ -45,6 +47,7 @@ const ChatScreen: React.FC = observer(() => {
     const backAction = () => {
       router.replace("/chat/");
       mapStore.setBottomSheetVisible(false);
+      mapStore.setBottomSheetVisible(false);
       return true;
     };
 
@@ -52,22 +55,35 @@ const ChatScreen: React.FC = observer(() => {
       "hardwareBackPress",
       backAction
     );
-
     return () => {
       backHandler.remove();
     };
   }, [chatId, router]);
 
-  const renderMessage = useCallback((message: MessageType.Custom) => {
-    return <CustomMessageComponent message={message} otherUserId={otherUserId} chatId={chatId} />;
-  }, [chatId, otherUserId]);
+  const renderMessage = useCallback(
+    (message: MessageType.Custom) => {
+      return (
+        <CustomMessageComponent
+          message={message}
+          otherUserId={otherUserId}
+          chatId={chatId}
+        />
+      );
+    },
+    [chatId, otherUserId]
+  );
 
   const handleSendPress = useCallback(
     (message: MessageType.PartialText) => {
-      if (isBlocked || !chatId || !userId) return;
-      ChatStore.sendMessage(chatId, message.text, otherUserId);
+      if (isBlocked) {
+        console.log("User is blocked:", isBlocked);
+        return;
+      }
+      if (chatId && UserStore.currentUser) {
+        ChatStore.sendMessage(chatId, message.text, otherUserId);
+      }
     },
-    [isBlocked, chatId, userId, otherUserId]
+    [isBlocked, chatId, otherUserId]
   );
 
   if (!userId) {
@@ -117,7 +133,7 @@ const ChatScreen: React.FC = observer(() => {
         renderCustomMessage={renderMessage}
       />
     </SafeAreaView>
-  );
+     );
 });
 
 export default ChatScreen;

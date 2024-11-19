@@ -21,6 +21,7 @@ const SignUp = () => {
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [strength, setStrength] = useState(0);
 
+
   const handleRegister = async () => {
     if (password !== confirmPassword) {
       setIsSamePassword(false);
@@ -79,7 +80,7 @@ const SignUp = () => {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="w-full justify-between px-9 my-10 flex-1">
           <View>
-            <ArrowHelp />
+            <ArrowHelp onPressArrow={() => router.replace("/sign-in")} onPressHelp={()=>Alert.alert('Помощь')} />
             <View className=" justify-start mt-10 ">
               <View className="flex-col items-start justify-center">
                 <Text

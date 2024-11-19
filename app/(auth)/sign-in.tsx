@@ -1,4 +1,10 @@
-import { View, ScrollView, Alert } from "react-native";
+import {
+  View,
+  ScrollView,
+  Alert,
+  StatusBar,
+  Keyboard,
+} from "react-native";
 import { Text } from "react-native-paper";
 import { TextInput } from "react-native-paper";
 import React, { useState } from "react";
@@ -10,14 +16,15 @@ import ArrowHelp from "@/components/auth/arrowHelp";
 import i18n from "@/i18n"; // Импорт i18n для мультиязычности
 
 const SignIn = () => {
-  const [email, setEmail] = useState("levromf@gmail.com");
-  const [password, setPassword] = useState("123456");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isSecure, setIsSecure] = useState(true);
   const [isValidEmail, setIsValidEmail] = useState(true);
 
   const [secureText, setSecureText] = useState(true); // состояние видимости пароля
 
   const handleLogin = async () => {
+    Keyboard.dismiss();
     const validEmail = validateEmail(email);
     setIsValidEmail(validEmail);
 
@@ -46,13 +53,31 @@ const SignIn = () => {
     return emailRegex.test(email);
   };
 
+  const tempfunc = () => {
+    Alert.alert(
+      "В разработке, временная ссылка на главную", // Заголовок сообщения
+      "",
+      [
+        {
+          text: "Переход",
+          onPress: () => router.replace("/"),
+        },
+      ],
+      { cancelable: true }
+    );
+  };
   return (
     <SafeAreaView className="bg-white h-full">
-      
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps='handled'>
         <View className="w-full justify-between h-full px-9 my-10">
           <View>
-            <ArrowHelp />
+            <ArrowHelp
+              onPressArrow={() => router.replace("/sign-up")}
+              onPressHelp={tempfunc}
+            />
+            {/* временная ссылка для отладки */}
+
             <View className="justify-start mt-10 ">
               <View className="flex-col items-start justify-center">
                 <Text
@@ -68,10 +93,10 @@ const SignIn = () => {
                   {i18n.t("signIn.enterCredentials")}
                 </Text>
               </View>
-            
+
               <TextInput
                 mode="outlined"
-                label={i18n.t('signIn.email')} 
+                label={i18n.t("signIn.email")}
                 value={email}
                 onChangeText={setEmail}
                 onBlur={() => setIsValidEmail(validateEmail(email))}
@@ -88,7 +113,7 @@ const SignIn = () => {
                   {i18n.t("signIn.invalidEmail")}
                 </Text>
               )}
-               <TextInput
+              <TextInput
                 mode="outlined"
                 label={i18n.t("signIn.password")} // предполагаемый перевод для метки "Пароль"
                 value={password}
@@ -104,12 +129,16 @@ const SignIn = () => {
                   />
                 }
               />
-
-              <CustomLoadingButton
-                title={i18n.t("signIn.loginButton")}
-                handlePress={handleLogin}
-                containerStyles="w-full"
-              />
+              
+                <CustomLoadingButton
+                  title={i18n.t("signIn.loginButton")}
+                  handlePress={() => {
+                    Keyboard.dismiss(); // Скрытие клавиатуры при нажатии на кнопку
+                    handleLogin(); // Выполнение функции handleLogin
+                  }}
+                  containerStyles="w-full"
+                />
+            
 
               <View className="items-center pt-5">
                 <Link

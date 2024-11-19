@@ -51,7 +51,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ item }) => {
   // Обработчик нажатия кнопки "Назад"
   const handleBack = () => router.push("/(tabs)/chat/");
 
-  return (
+   return (
     <>
       <View className="flex-row items-center justify-start gap-2 py-2 shadow-md">
         <IconButton icon="arrow-left" size={24} onPress={handleBack} />

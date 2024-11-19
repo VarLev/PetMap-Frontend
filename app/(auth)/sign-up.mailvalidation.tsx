@@ -43,7 +43,7 @@ const SignUpMailValidation = () => {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="w-full justify-between flex-1 px-9 my-10">
           <View>
-            <ArrowHelp />
+            <ArrowHelp onPressArrow={() => router.back()} onPressHelp={() => {}} />
             <View className="justify-start mt-10 ">
               <View className="flex-col items-start justify-center">
                 <Text

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { Menu, Button, Switch } from "react-native-paper";
+import { Menu, Button, Switch, TouchableRipple } from "react-native-paper";
 import { FontAwesome6 } from "@expo/vector-icons";
 import ChatStore from "@/stores/ChatStore";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
-
+import MenuItemWrapper from "@/components/custom/menuItem/MunuItemWrapper";
 
 interface IChatMenuProps {
   chatId: string;
@@ -16,7 +16,6 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
   const [requestVisible, setRequestVisible] = useState(false);
   const [requestVisibleDel, setRequestVisibleDel] = useState(false);
   const [isIBlocked, setIsIBlocked] = useState<boolean>(false);
-;
 
   const openMenu = () => setVisible(true);
 
@@ -80,29 +79,37 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
           visible={visible}
           onDismiss={closeMenu}
           anchor={
-            <Button onPress={openMenu}>
-              <FontAwesome6 name="bars-staggered" size={20} color="#212121" />
-            </Button>
+            <View className="overflow-hidden rounded-full">
+              <TouchableRipple onPress={openMenu} rippleColor="#E8DFFF">
+                <Button>
+                  <FontAwesome6
+                    name="bars-staggered"
+                    size={20}
+                    color="#212121"
+                  />
+                </Button>
+              </TouchableRipple>
+            </View>
           }
         >
           <View className="flex-row items-center justify-between">
-            <Menu.Item
-              leadingIcon="bell-outline"
+            <MenuItemWrapper
+              icon="bell-outline"
               onPress={onToggleSwitch}
               title="Уведомления"
             />
             <MySwitch value={isSwitchOn} />
           </View>
 
-          <Menu.Item
-            leadingIcon={isIBlocked ? "lock-outline" : "lock-open-outline"}
+          <MenuItemWrapper
+            icon={isIBlocked ? "lock-outline" : "lock-open-outline"}
             onPress={() => {
               handleBlock();
             }}
             title={isIBlocked ? "Разблокировать" : "Заблокировать"}
           />
-          <Menu.Item
-            leadingIcon="delete-outline"
+          <MenuItemWrapper
+            icon="delete-outline"
             onPress={() => {
               handleDelete();
             }}

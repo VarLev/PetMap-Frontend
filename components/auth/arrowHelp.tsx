@@ -1,19 +1,20 @@
 import { View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
-import { router } from "expo-router";
 import i18n from "@/i18n"; // Импорт i18n для мультиязычности
 
-function ArrowHelp() {
-  const handleBack = () => {
-    router.back(); // Возврат на предыдущий экран
-  };
+type ArrowHelpProps = {
+  onPressArrow: () => void;
+  onPressHelp: () => void;
+};
+
+function ArrowHelp({onPressArrow, onPressHelp}: ArrowHelpProps) {
+  
 
   return (
     <View className="flex-row justify-between items-center">
-      <IconButton icon="arrow-left" size={26} onPress={handleBack} />
+      <IconButton icon="arrow-left" size={26} onPress={onPressArrow} />
       <Text
-        onPress={() => {
-          alert("press help"); console.log("press help")}}
+        onPress={onPressHelp}
         className="text-lg font-nunitoSansBold"
       >
         {i18n.t('arrowHelp.help')}

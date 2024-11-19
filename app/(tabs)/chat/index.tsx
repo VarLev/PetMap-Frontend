@@ -59,6 +59,15 @@ const ChatListItem: React.FC<{
     // открытие профиля собеседника тапая по аватару
   };
 
+  const shortenName = (name: string | undefined) => {
+    if (!name) return ''
+    if (name.length > 10) {
+      return name.slice(0, 20) + '...'
+    } else {
+      return name
+    }
+  }
+
   return (
     <TouchableOpacity onPress={handleOpenChat}>
       <View className="flex-row justify-between p-1 ml-4 items-center h-17 bg-gray-100 rounded-l-xl ">
@@ -77,7 +86,7 @@ const ChatListItem: React.FC<{
           </TouchableOpacity>
           <View className="flex-col pl-4 ">
             <Text className="text-black text-[16px] font-nunitoSansBold">
-              {item.otherUserName}
+              {shortenName(item.otherUserName)}
             </Text>
             <Text className="text-gray-600">
               {lastMessage ?? "Загрузка..."}
@@ -109,6 +118,7 @@ const ChatListScreen: React.FC = observer(() => {
   const fetchData = async () => {
     try {
       setIsLoading(true);
+      ChatStore.sortChats();
       await ChatStore.fetchChats();
     } catch (err) {
       setError("Failed to load chats");
@@ -143,7 +153,7 @@ const ChatListScreen: React.FC = observer(() => {
 
   return (
     <>
-      {ChatStore.sortedChats.length === 0 && <EmptyChatScreen />}
+      {ChatStore.chats.length === 0 && <EmptyChatScreen />}
       <View className="h-full">
         <View className="flex-row items-center justify-start gap-2 p-2 mt-4">
           <IconButton

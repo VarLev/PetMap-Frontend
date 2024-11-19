@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { TouchableOpacity, View, Image } from "react-native";
 import { Text } from "react-native-paper";
 import OnboardingCarousel from "../components/auth/OnboardingCarousel";
@@ -15,6 +15,7 @@ import userStore from "@/stores/UserStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import i18n from '@/i18n';
 import ScreenHolderLogo from "@/components/common/ScreenHolderLogo";
+import { Platform } from 'react-native';
 
 GoogleSignin.configure({
   webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
@@ -24,6 +25,12 @@ GoogleSignin.configure({
 
 const App = () => {
   const { loading, isLogged, isInitialized  } = useStore();
+  const [isIos, setIsIos] = useState(false);
+
+  // проверка, если платформа IOS, показываем иконку регистрации через Aple
+  if (Platform.OS === 'ios') {
+    setIsIos(true);
+  }
   
   useEffect(() => {
     const checkAuthAndRedirect = async () => {
@@ -93,9 +100,9 @@ const App = () => {
               <TouchableOpacity onPress={handleGooglePress}>
                 <Image className="w-12 h-12" source={googleLogo} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => console.log("Pressed Apple")}>
+             {isIos && <TouchableOpacity onPress={() => console.log("Pressed Apple")}>
                 <Image className="w-12 h-12" source={appleLogo} />
-              </TouchableOpacity>
+              </TouchableOpacity>}
               <TouchableOpacity onPress={() => console.log("Pressed Facebook")}>
                 <Image className="w-12 h-12" source={facebookLogo} />
               </TouchableOpacity>
