@@ -195,7 +195,7 @@ class ChatStore {
   async sendInviteMessage(chatId: string, otherUser: IUserChat) {
     const userId = userStore.currentUser?.id;
     const recipientExpoPushToken = userStore.users.find(
-      (user) => user.id === otherUserId
+      (user) => user.id === otherUser.id
     )?.fmcToken;
     if (!userId) return;
 
