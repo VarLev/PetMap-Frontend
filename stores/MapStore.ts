@@ -210,6 +210,29 @@ class MapStore {
       return handleAxiosError(error);
     }
   }
+  
+  async getUserCity(location: [number, number]) {
+    try {
+      const response = await axios.get(
+        `https://api.mapbox.com/search/geocode/v6/reverse?&longitude=${location[0]}&latitude=${location[1]}&types=address&access_token=${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}`
+      );
+  
+      if (response.data.features && response.data.features.length > 0) {
+        const feature = response.data.features[0];
+        const context = feature.properties.context;
+  
+        const city = context.place?.name || '';
+
+        console.log('City:', city);
+        return city;
+      } else {
+        console.error("No address found for the provided coordinates.");
+      }
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+
 
   selectAddress(place: any) {
     const { center, place_name } = place;
@@ -223,6 +246,7 @@ class MapStore {
     try {
 
       const queryParams = new URLSearchParams({
+        city: pointTag.city,
         type: pointTag.type?.toString() || '',
         userId: pointTag.userId?.toString() || ''
       }).toString();

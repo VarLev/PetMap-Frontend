@@ -82,10 +82,29 @@ const MapBoxMap = observer(() => {
       await mapStore.setWalkAdvrts();
       const data = createGeoJSONFeatures();
       setGeoJSONData(data);
+
     };
     fetchData();
     setIsLoading(false);
   }, []);
+
+  useEffect(() => {
+    const fetchCity = async () => {
+      if (userCoordinates) {
+        try {
+          if(userStore.getCurrentUserCity() === ''){
+            const city = await mapStore.getUserCity(userCoordinates);
+            userStore.setCurrentUserCity(city);
+          }
+          console.log('Город успешно получен для координат:', userCoordinates);
+        } catch (error) {
+          console.error('Ошибка при получении города:', error);
+        }
+      }
+    };
+  
+    fetchCity();
+  }, [userCoordinates]);
 
   useEffect(() => {
     const data = createGeoJSONFeatures();
@@ -415,7 +434,8 @@ const MapBoxMap = observer(() => {
     if (type === MapPointType.Walk)
       await mapStore.setWalkAdvrts();
     else {
-      await mapStore.getMapPointsByType({ type: type, userId: currentUser?.id });
+      console.log(userStore.getCurrentUserCity());
+      await mapStore.getMapPointsByType({ type: type, userId: currentUser?.id, city: userStore.getCurrentUserCity() });
     }
 
 
