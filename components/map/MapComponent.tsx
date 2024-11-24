@@ -439,14 +439,14 @@ const MapBoxMap = observer(() => {
 
   const tagSelected = async (type: number) => {
     setCurrentPointType(type);
-    if (type === MapPointType.Walk)
-      await mapStore.setWalkAdvrts();
-    else {
-      console.log(userStore.getCurrentUserCity());
-      await mapStore.getMapPointsByType({ type: type, userId: currentUser?.id, city: userStore.getCurrentUserCity() });
+    if(!isCardView){
+      if (type === MapPointType.Walk)
+        await mapStore.setWalkAdvrts();
+      else {
+        console.log('Тег загружает данные для карты');
+        await mapStore.getMapPointsByType({ type: type, userId: currentUser?.id, city: userStore.getCurrentUserCity() });
+      }
     }
-
-
   }
 
   const handleOpenFilter = () => {
