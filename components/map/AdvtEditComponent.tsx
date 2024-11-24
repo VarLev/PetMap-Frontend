@@ -149,7 +149,8 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
       duration: duration,
       isRegular: isSwitchOn,
       selectedDays: selectedDays,
-      startTime: time.getHours() * 60 + time.getMinutes()
+      startTime: time.getHours() * 60 + time.getMinutes(),
+      city: userStore.getCurrentUserCity() || ''
     };
     const isGetedBonuses = await mapStore.addWalkAdvrt(updatedUserWalk)
     if(isGetedBonuses)

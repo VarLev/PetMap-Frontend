@@ -76,25 +76,26 @@ const MapBoxMap = observer(() => {
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   // const fetchData = async () => {
+  //   //   await mapStore.setWalkAdvrts();
+  //   //   const data = createGeoJSONFeatures();
+  //   //   setGeoJSONData(data);
+  //   // };
+  //   // fetchData();
+  //   setIsLoading(false);
+  // }, []);
+
   useEffect(() => {
     setIsLoading(true);
-    const fetchData = async () => {
-      await mapStore.setWalkAdvrts();
-      const data = createGeoJSONFeatures();
-      setGeoJSONData(data);
-
-    };
-    fetchData();
-    setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
     const fetchCity = async () => {
       if (userCoordinates) {
         try {
           if(userStore.getCurrentUserCity() === ''){
             const city = await mapStore.getUserCity(userCoordinates);
             userStore.setCurrentUserCity(city);
+            await mapStore.setWalkAdvrts();
           }
           console.log('Город успешно получен для координат:', userCoordinates);
         } catch (error) {
@@ -102,8 +103,15 @@ const MapBoxMap = observer(() => {
         }
       }
     };
-  
+
+    const fetchData = async () => {
+      const data = createGeoJSONFeatures();
+      setGeoJSONData(data);
+    };
+
     fetchCity();
+    fetchData();
+    setIsLoading(false);
   }, [userCoordinates]);
 
   useEffect(() => {

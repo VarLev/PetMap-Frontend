@@ -9,7 +9,7 @@ import { IPet} from '@/dtos/Interfaces/pet/IPet';
 import { Pet } from "@/dtos/classes/pet/Pet";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "@/firebaseConfig";
-import { runInAction } from "mobx";
+
 
 
 class PetStore {
