@@ -25,7 +25,7 @@ import { IUserCardDto } from '@/dtos/Interfaces/user/IUserCardDto';
 //fghjkl
 class UserStore {
   fUid: string | null = null;
-  currentUser: User  = new User({});
+  currentUser: User | null  = new User({}) ;
   users: User[] = [];
   isLogged: boolean = false;
   loading: boolean = false;
@@ -131,7 +131,7 @@ class UserStore {
     }
   }
 
-  async loadUser(): Promise<IUser> {
+  async loadUser(): Promise<IUser |null> {
     try {
       const fuid = this.fUid;
       console.log('fuid:', fuid);
@@ -351,7 +351,7 @@ class UserStore {
           console.log('thumbnailUrl:', thumUrl);
 
           runInAction(() => {
-            this.currentUser.thumbnailUrl = thumUrl;
+            this.currentUser!.thumbnailUrl = thumUrl;
           });
           
           user.thumbnailUrl = thumUrl;
@@ -445,12 +445,12 @@ class UserStore {
     }
   };
 
-
   async signOut() {
     try {
       
       await AsyncStorage.removeItem(process.env.EXPO_PUBLIC_F_TOKEN!);
       await AsyncStorage.removeItem(process.env.EXPO_PUBLIC_CURRENT_USER!);
+      this.currentUser = null;
       signOut();
      
     } catch (error) {

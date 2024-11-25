@@ -69,7 +69,7 @@ const ViewProfileComponent = observer(
         console.log("Загружаем текущего пользователя");
         const user = await userStore.loadUser();
         //console.log(user.thumbnailUrl);
-        setUser(user);
+        setUser(user!);
 
         setIsCurrentUser(true);
       } else {
