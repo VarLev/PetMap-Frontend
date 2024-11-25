@@ -17,4 +17,5 @@ export interface IWalkAdvrtFilterParams {
   friendliness?: number; // Оценка дружелюбности
   latitude?: number; // Для фильтрации по дистанции
   longitude?: number; // Для фильтрации по дистанции
+  city?: string; // Для фильтрации по городу
 }

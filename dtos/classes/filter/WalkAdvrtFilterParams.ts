@@ -19,6 +19,7 @@ export class WalkAdvrtFilterParams implements IWalkAdvrtFilterParams {
   friendliness?: number;
   latitude?: number;
   longitude?: number;
+  city?: string; // Для фильтрации по городу
 
   constructor(
     distance: number = 1,
@@ -38,7 +39,8 @@ export class WalkAdvrtFilterParams implements IWalkAdvrtFilterParams {
     temperament?: number,
     friendliness?: number,
     latitude?: number,
-    longitude?: number
+    longitude?: number,
+    city?: string // Для фильтрации по городу
   ) {
     this.showFullMap = showFullMap;
     this.distance = distance;
@@ -60,5 +62,6 @@ export class WalkAdvrtFilterParams implements IWalkAdvrtFilterParams {
     this.friendliness = friendliness;
     this.latitude = latitude;
     this.longitude = longitude;
+    this.city = city;
   }
 }

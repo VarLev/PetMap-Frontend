@@ -288,6 +288,8 @@ class MapStore {
 
   async getFilteredWalks(filter: IWalkAdvrtFilterParams){
     try {
+      filter.city = this.getCity();
+      console.log('Filter:', filter);
       const response = await apiClient.post('filter/walks-filtered',filter );
 
       runInAction(() => {

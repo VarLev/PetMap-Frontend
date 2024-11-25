@@ -97,7 +97,8 @@ const MapBoxMap = observer(() => {
             userStore.setCurrentUserCity(city);
             await mapStore.setWalkAdvrts();
           }
-          console.log('Город успешно получен для координат:', userCoordinates);
+          mapStore.setCity(userStore.getCurrentUserCity());
+          console.log('Город успешно получен для координат:', mapStore.getCity());
         } catch (error) {
           console.error('Ошибка при получении города:', error);
         }
