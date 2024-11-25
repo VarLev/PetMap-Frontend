@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, ActivityIndicator, TextStyle } from 'react-native';
+import { ScrollView, ActivityIndicator, TextStyle, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import Markdown from 'react-native-markdown-display';
 import { useRoute } from '@react-navigation/native';
@@ -131,11 +131,12 @@ const ArticleView: React.FC = () => {
       <Text variant="titleLarge" style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>
         {title}
       </Text>
-      {markdownContent ? (
+      {markdownContent ? (              
         <Markdown style={markdownStyles} >{markdownContent}</Markdown>
       ) : (
         <Text>Статья не найдена.</Text>
       )}
+      <View className='h-20'/>
     </ScrollView>
   );
 };

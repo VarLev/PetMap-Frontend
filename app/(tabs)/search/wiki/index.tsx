@@ -17,7 +17,7 @@ export default function WikiScreen() {
       <Stack.Screen
         name="articleView"
         component={ArticleView}
-        options={{ headerShown: true, headerBackButtonDisplayMode:'minimal', headerTitleStyle:{fontFamily: 'NunitoSans_700Bold'}, headerTitle: 'Назад' }}
+        options={{ headerShown: false, headerBackButtonDisplayMode:'minimal', headerTitleStyle:{fontFamily: 'NunitoSans_700Bold'}, headerTitle: 'Назад' }}
       />
     </Stack.Navigator>
 

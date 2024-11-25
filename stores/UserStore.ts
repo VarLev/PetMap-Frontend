@@ -30,8 +30,8 @@ class UserStore {
   isLogged: boolean = false;
   loading: boolean = false;
   isInitialized: boolean = false;
+  currentCity: string = '';
 
-   
 
   constructor() {
     makeAutoObservable(this, {
@@ -49,17 +49,13 @@ class UserStore {
       updateOnlyUserData: action,
       loadUsersOnce: action
     });
-
-   
   }
   
-
   setLoginedUser(user: any) {
     this.fUid = user.user.uid;
     this.isLogged = !!user;
   }
   
-
   setUser(user: IUser | null) {
     this.currentUser = new User({ ...user })
     this.isLogged = !!user;
@@ -76,11 +72,18 @@ class UserStore {
   setCreatedUser(user: UserCredential) {
     this.fUid = user.user.uid;
   }
+
+  setCurrentUserCity(city: string) {
+    this.currentCity = city;
+  }
+  
+  getCurrentUserCity() {
+    return this.currentCity;
+  }
+
   getUser(user: UserCredential) {
     this.fUid = user.user.uid;
   }
-
-  
 
   getCleanUser(obj: any): any  {
     if (Array.isArray(obj)) {
@@ -127,7 +130,6 @@ class UserStore {
       return handleAxiosError(error);
     }
   }
-
 
   async loadUser(): Promise<IUser> {
     try {

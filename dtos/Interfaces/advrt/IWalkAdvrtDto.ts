@@ -23,4 +23,5 @@ export interface IWalkAdvrtDto {
   isRegular?: boolean;
   selectedDays?: number[];
   startTime?: number;
+  city?: string;
 }

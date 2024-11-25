@@ -76,16 +76,44 @@ const MapBoxMap = observer(() => {
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   // const fetchData = async () => {
+  //   //   await mapStore.setWalkAdvrts();
+  //   //   const data = createGeoJSONFeatures();
+  //   //   setGeoJSONData(data);
+  //   // };
+  //   // fetchData();
+  //   setIsLoading(false);
+  // }, []);
+
   useEffect(() => {
     setIsLoading(true);
+    const fetchCity = async () => {
+      if (userCoordinates) {
+        try {
+          if(userStore.getCurrentUserCity() === ''){
+            const city = await mapStore.getUserCity(userCoordinates);
+            userStore.setCurrentUserCity(city);
+            await mapStore.setWalkAdvrts();
+          }
+          mapStore.setCity(userStore.getCurrentUserCity());
+          console.log('Город успешно получен для координат:', mapStore.getCity());
+        } catch (error) {
+          console.error('Ошибка при получении города:', error);
+        }
+      }
+    };
+
     const fetchData = async () => {
-      await mapStore.setWalkAdvrts();
       const data = createGeoJSONFeatures();
       setGeoJSONData(data);
     };
+
+    fetchCity();
     fetchData();
     setIsLoading(false);
-  }, []);
+  }, [userCoordinates]);
 
   useEffect(() => {
     const data = createGeoJSONFeatures();
@@ -412,13 +440,14 @@ const MapBoxMap = observer(() => {
 
   const tagSelected = async (type: number) => {
     setCurrentPointType(type);
-    if (type === MapPointType.Walk)
-      await mapStore.setWalkAdvrts();
-    else {
-      await mapStore.getMapPointsByType({ type: type, userId: currentUser?.id });
+    if(!isCardView){
+      if (type === MapPointType.Walk)
+        await mapStore.setWalkAdvrts();
+      else {
+        console.log('Тег загружает данные для карты');
+        await mapStore.getMapPointsByType({ type: type, userId: currentUser?.id, city: userStore.getCurrentUserCity() });
+      }
     }
-
-
   }
 
   const handleOpenFilter = () => {

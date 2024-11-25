@@ -1,5 +1,5 @@
 
-import { makeAutoObservable, runInAction } from 'mobx';
+import { get, makeAutoObservable, runInAction } from 'mobx';
 import axios from 'axios';
 // eslint-disable-next-line import/no-unresolved
 //import { MAPBOX_ACCESS_TOKEN } from '@env';
@@ -34,19 +34,14 @@ class MapStore {
   currentWalkId: string | undefined = undefined;
   currentWalkDate: Date | undefined = undefined; //mine
   pois: IPOI[] = [];
-
-
-  
+  city: string = '';
   isAvaliableToCreateWalk = true; // Переменная для проверки возможности создания прогулки
-  
   marker: [number, number] | null = null;
   selectedFeature: GeoJSON.Feature<GeoJSON.Point> | null = null;
 
   constructor() {
     makeAutoObservable(this);
   }
-
-  
 
   setAddress(address: string) {
     this.address = address;
@@ -64,8 +59,6 @@ class MapStore {
     this.suggestions = suggestions;
   }
 
-
-
   setMarker(coordinates: [number, number]) {
     this.marker = coordinates;
   }
@@ -76,6 +69,14 @@ class MapStore {
 
   setPoi(poi: IPOI[]) {
     this.pois = poi;
+  }
+
+  setCity(city: string) {
+    this.city = city;
+  }
+
+  getCity() {
+    return this.city;
   }
 
   getPoi() {
@@ -101,7 +102,7 @@ class MapStore {
 
   async setWalkAdvrts() {
     try {
-      const advrts = await this.getAllAdvrt();
+      const advrts = await this.getAllAdvrt(this.getCity());
       runInAction(() => {
         this.walkAdvrts = advrts;
         this.mapPoints = [];
@@ -144,9 +145,9 @@ class MapStore {
     }
   }
 
-  async getAllAdvrt(): Promise<IWalkAdvrtDto[]> {
+  async getAllAdvrt(city: string): Promise<IWalkAdvrtDto[]> {
     try {
-      const response = await apiClient.get('walkadvrt/walk/all');
+      const response = await apiClient.get(`walkadvrt/walk/all/${city}`);
       return response.data as IWalkAdvrtDto[];
     } catch (error) {
       return handleAxiosError(error);
@@ -210,6 +211,31 @@ class MapStore {
       return handleAxiosError(error);
     }
   }
+  
+  async getUserCity(location: [number, number]) {
+    try {
+      const response = await axios.get(
+        `https://api.mapbox.com/search/geocode/v6/reverse?&longitude=${location[0]}&latitude=${location[1]}&types=address&access_token=${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}`
+      );
+  
+      if (response.data.features && response.data.features.length > 0) {
+        const feature = response.data.features[0];
+        const context = feature.properties.context;
+  
+        const city = context.place?.name || '';
+
+        console.log('City:', city);
+        this.setCity(city);
+
+        return city;
+      } else {
+        console.error("No address found for the provided coordinates.");
+      }
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+
 
   selectAddress(place: any) {
     const { center, place_name } = place;
@@ -223,6 +249,7 @@ class MapStore {
     try {
 
       const queryParams = new URLSearchParams({
+        city: pointTag.city,
         type: pointTag.type?.toString() || '',
         userId: pointTag.userId?.toString() || ''
       }).toString();
@@ -261,6 +288,8 @@ class MapStore {
 
   async getFilteredWalks(filter: IWalkAdvrtFilterParams){
     try {
+      filter.city = this.getCity();
+      console.log('Filter:', filter);
       const response = await apiClient.post('filter/walks-filtered',filter );
 
       runInAction(() => {
@@ -273,7 +302,7 @@ class MapStore {
 
   async getPagenatedPointItems(type: MapPointType,page: number, pageSize: number): Promise<IPagedAdvrtDto | IPagedPointDangerDTO | IPagetPointUserDTO> {
     try {
-      const response = await apiClient.get(`map/get-points-paginated?type=${type}&page=${page}&pageSize=${pageSize}`);
+      const response = await apiClient.get(`map/get-points-paginated?type=${type}&city=${this.getCity()}&page=${page}&pageSize=${pageSize}`);
       return response.data;
     } catch (error) {
       return handleAxiosError(error);
