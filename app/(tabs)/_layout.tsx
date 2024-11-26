@@ -5,6 +5,7 @@ import { DrawerProvider } from '@/contexts/DrawerProvider';
 import { registerForPushNotificationsAsync, setupNotificationListeners, savePushTokenToServer } from '@/hooks/notifications';
 import UserStore from '@/stores/UserStore';
 import { Keyboard } from 'react-native';
+import {isDevice} from 'expo-device';
 
 const Tabslayout = () => {
   const pathname = usePathname();
@@ -15,13 +16,17 @@ const Tabslayout = () => {
     UserStore.loadUsersOnce();
     // Регистрация устройства для пуш-уведомлений
     console.log('Регистрация устройства для пуш-уведомлений');
+    if(isDevice){
+      registerForPushNotificationsAsync().then(token => {
+        if (token) {
+          // Отправьте токен на сервер или сохраните локально, если это необходимо
+          savePushTokenToServer(UserStore.currentUser?.id, token);
+        }
+      });
+    }else{
+      console.log('Пуш-уведомления не поддерживаются на симуляторе');
+    }
     
-    registerForPushNotificationsAsync().then(token => {
-      if (token) {
-        // Отправьте токен на сервер или сохраните локально, если это необходимо
-        savePushTokenToServer(UserStore.currentUser?.id, token);
-      }
-    });
 
     // Настройка слушателей уведомлений
     const removeListeners = setupNotificationListeners(
