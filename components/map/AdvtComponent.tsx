@@ -75,7 +75,9 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
         thumbnailUrl: advrt.userPhoto ?? "https://via.placeholder.com/100",
       };
       chatStore.setSelectedAdvrtId(advrt.id!);
-      await mapStore.requestJoinWalk(advrt.id!, userStore.currentUser?.id);
+      if (userStore.currentUser?.id) {
+        await mapStore.requestJoinWalk(advrt.id!, userStore.currentUser.id);
+      }
       onInvite(user);
  
     };

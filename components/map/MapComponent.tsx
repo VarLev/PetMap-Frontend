@@ -245,7 +245,7 @@ const MapBoxMap = observer(() => {
     });
 
     if (currentPointType === MapPointType.Walk) {
-      if ((currentUser.petProfiles ?? []).length > 0) {
+      if ((currentUser!.petProfiles ?? []).length > 0) {
         setMarkerCoordinate(coordinates);
         mapStore.setMarker(coordinates);
         setRenderAdvrtForm(true);
@@ -445,7 +445,7 @@ const MapBoxMap = observer(() => {
         await mapStore.setWalkAdvrts();
       else {
         console.log('Тег загружает данные для карты');
-        await mapStore.getMapPointsByType({ type: type, userId: currentUser?.id, city: userStore.getCurrentUserCity() });
+        await mapStore.getMapPointsByType({ type: type, userId: currentUser?.id!, city: userStore.getCurrentUserCity() || '' });
       }
     }
   }

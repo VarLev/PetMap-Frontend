@@ -168,7 +168,7 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, onR
           benefits: 400,
         });
 
-        userStore.updateUserJobs(userStore.currentUser.id, [job]);
+        userStore.updateUserJobs(userStore.currentUser!.id, [job]);
         userStore.collectPOI(point.id);
         setAlertImage(imageBonuse);
         setModalVisible(true);

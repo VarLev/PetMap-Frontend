@@ -218,24 +218,24 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       currentUser!.name = name;
       currentUser!.gender = gender;
       currentUser!.birthDate = age;
-      currentUser.interests = interests;
+      currentUser!.interests = interests;
       if (interests.length > 0) setSliderValue(sliderValue + 100);
 
       if (userImage === "" || userImage === null || userImage === undefined) {
         const newAvatar = SetRandomAvatarDependOnGender();
         userStore.fetchImageUrl(newAvatar).then((resp) => {
           if (resp) {
-            currentUser.thumbnailUrl = resp;
+            currentUser!.thumbnailUrl = resp;
           }
           currentUser!.petProfiles = [newPetProfile as IPet];
-          currentUser.jobs = completedJobs;
+          currentUser!.jobs = completedJobs;
           // Продолжает выполнение onComplete после получения результата
           onComplete(currentUser as IUser);
         });
       } else {
-        currentUser.thumbnailUrl = userImage;
+        currentUser!.thumbnailUrl = userImage;
         currentUser!.petProfiles = [newPetProfile as IPet];
-        currentUser.jobs = completedJobs;
+        currentUser!.jobs = completedJobs;
         onComplete(currentUser as IUser);
       }
     }
