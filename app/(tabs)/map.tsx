@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const Map = () => {
 
   useEffect(() => {
-    if(!userStore.currentUser.name || userStore.currentUser.name === '' || userStore.currentUser.name === null) {
+    if(!userStore.currentUser || !userStore.currentUser.name || userStore.currentUser.name === '' || userStore.currentUser.name === null) {
       router.push('/(tabs)/profile/');
     }
    
