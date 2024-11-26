@@ -28,11 +28,12 @@ const App = () => {
   const [isIos, setIsIos] = useState(false);
 
   // проверка, если платформа IOS, показываем иконку регистрации через Aple
-  if (Platform.OS === 'ios') {
-    setIsIos(true);
-  }
   
   useEffect(() => {
+    if (Platform.OS === 'ios') {
+      setIsIos(true);
+    }
+
     const checkAuthAndRedirect = async () => {
       if (isInitialized && !loading && isLogged) {
         await router.replace("/map"); // Перенаправление на карту, если пользователь авторизован
