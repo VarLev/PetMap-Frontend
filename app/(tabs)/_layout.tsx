@@ -6,6 +6,7 @@ import { registerForPushNotificationsAsync, setupNotificationListeners, savePush
 import UserStore from '@/stores/UserStore';
 import { Keyboard } from 'react-native';
 import {isDevice} from 'expo-device';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Tabslayout = () => {
   const pathname = usePathname();
@@ -58,7 +59,7 @@ const Tabslayout = () => {
   }, []);
 
   return (
-    <>
+    <GestureHandlerRootView >
      <DrawerProvider> 
       <Tabs
         tabBar={(props: any) =>  (!hideTabBar && isVisible) && <TabBar {...props} />}
@@ -114,7 +115,7 @@ const Tabslayout = () => {
       </Tabs>
       
       </DrawerProvider>
-    </>
+    </GestureHandlerRootView>
   );
 };
 
