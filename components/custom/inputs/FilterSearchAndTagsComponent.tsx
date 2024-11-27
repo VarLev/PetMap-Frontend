@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import CustomButtonWithIcon from '../buttons/CustomButtonWithIcon';
 import CustomBudgeButton from '../buttons/CustomBudgeButton';
@@ -56,7 +56,6 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
     <View style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex:1}}>
       <View className='flex-row w-full pt-3 px-3 justify-center items-center'>
         <Searchbar
-          
           onChangeText={onSearchTextChange}
           value={selectedTag}
           onClearIconPress={handleClearTag}
@@ -68,7 +67,7 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
         />
           <CustomBudgeButton iconSet={'Ionicons'} iconName={'filter'} badgeCount={badgeCount} onPress={onOpenFilter} />
           <TouchableOpacity onPress={hadleOpenCardView} activeOpacity={0.7}  >
-            <View className="bg-white justify-center items-center w-11 h-11 rounded-full"  style={{elevation: 3}}>
+            <View className="bg-white justify-center items-center w-11 h-11 rounded-full"  style={[styles.shadow, { elevation: 3 }]}>
               {isCardView ? 
               (<IconSelectorComponent iconSet='Ionicons' iconName='map-outline'  />)
               :
@@ -160,5 +159,18 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  shadow: {
+    // iOS тени
+    shadowColor: '#000', // Цвет тени
+    shadowOffset: { width: 0, height: 1 }, // Смещение тени
+    shadowOpacity: 0.3, // Прозрачность тени
+    shadowRadius: 1.5, // Радиус размытия
+
+    // Android тени через elevation
+    elevation: 3,
+  },
+});
 
 export default SearchAndTags;

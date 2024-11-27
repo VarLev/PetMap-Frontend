@@ -1,10 +1,10 @@
 
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, SafeAreaView, Image, Pressable, BackHandler, ImageSourcePropType } from 'react-native';
+import { View, Image, Pressable, BackHandler, ImageSourcePropType, StatusBar} from 'react-native';
 import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer, LineLayer } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
-import { Provider } from 'react-native-paper';
+import { Provider} from 'react-native-paper';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent'; // Импортируйте новый компонент
 import BottomSheet from '@gorhom/bottom-sheet';
 import AdvtComponent from './AdvtComponent';
@@ -41,6 +41,7 @@ import FabGroupComponent from './FabGroupComponent';
 import { IUserChat } from '@/dtos/Interfaces/user/IUserChat';
 
 
+
 const MapBoxMap = observer(() => {
   const [isLoading, setIsLoading] = useState(true);
   const sheetRef = useRef<BottomSheet>(null);
@@ -75,17 +76,6 @@ const MapBoxMap = observer(() => {
   const [renderAdvrtForm, setRenderAdvrtForm] = useState(false);
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
-
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   // const fetchData = async () => {
-  //   //   await mapStore.setWalkAdvrts();
-  //   //   const data = createGeoJSONFeatures();
-  //   //   setGeoJSONData(data);
-  //   // };
-  //   // fetchData();
-  //   setIsLoading(false);
-  // }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -187,47 +177,17 @@ const MapBoxMap = observer(() => {
     }
     setRouteData(routeFeatureCollection);
 
-    // Adjust camera to show the route
-    // const coordinates = routeFeatureCollection.features[0].geometry.coordinates;
-    // interface Bounds {
-    //   minX: number;
-    //   minY: number;
-    //   maxX: number;
-    //   maxY: number;
-    // }
-
-    // const bounds: Bounds = coordinates.reduce(
-    //   (bounds: Bounds, coord: [number, number]) => {
-    //     return {
-    //       minX: Math.min(bounds.minX, coord[0]),
-    //       minY: Math.min(bounds.minY, coord[1]),
-    //       maxX: Math.max(bounds.maxX, coord[0]),
-    //       maxY: Math.max(bounds.maxY, coord[1]),
-    //     };
-    //   },
-    //   {
-    //     minX: coordinates[0][0],
-    //     minY: coordinates[0][1],
-    //     maxX: coordinates[0][0],
-    //     maxY: coordinates[0][1],
-    //   }
-    // );
-
-    // cameraRef.current?.fitBounds(
-    //   [bounds.minX, bounds.minY],
-    //   [bounds.maxX, bounds.maxY],
-    //   100
-    // );
+    
   };
 
   const handleFilterChange = (count: number) => {
     setModifiedFieldsCount(count);
   };
 
-  // const handleAddressChange = (text: string) => {
-  //   mapStore.setAddress(text);
-  //   mapStore.fetchSuggestions(text);
-  // };
+  const handleAddressChange = (text: string) => {
+    mapStore.setAddress(text);
+    mapStore.fetchSuggestions(text);
+  };
 
   const handleLongPress = (event: any) => {
     setScrollEnabled(false);
@@ -487,180 +447,184 @@ const MapBoxMap = observer(() => {
 
   return (
     <Provider>
-      <SafeAreaView style={{ flex: 1 }}>
+     
         {isCardView && (
           <SlidingOverlay visible={isCardView}>
             <MapItemList renderType={currentPointType} />
           </SlidingOverlay>
         )}
-        {!isLoading && (<MapView
-          ref={mapRef}
-          style={{ flex: 1 }}
-          onLongPress={handleLongPress}
-          styleURL={Mapbox.StyleURL.Light}
-          logoEnabled={false}
-          attributionEnabled={false}
-          scaleBarEnabled={false}
-          onTouchEnd={handlePressOut}
-          scrollEnabled={!isCardView}
-          pitchEnabled={!isCardView}
-          zoomEnabled={!isCardView}
-          rotateEnabled={!isCardView}
-        >
-          <UserLocation minDisplacement={50} ref={userLocationRef} onUpdate={handleUserLocationUpdate} />
-          {routeData && (
-            <ShapeSource id="routeSource" shape={routeData}>
-              <LineLayer
-                id="routeLine"
-                style={{ lineColor: 'blue', lineWidth: 5 }}
-              />
-            </ShapeSource>
-          )}
-
-          {/* <UserLocation minDisplacement={10} ref={userLocationRef}  /> */}
-          {userCoordinates && (
-            <Camera
-              ref={cameraRef}
-              centerCoordinate={userCoordinates}
-              zoomLevel={10}
-              animationDuration={1}
-            />)}
-
-          {/* Добавдяем цифры, когда маркеры накладываются друг на друга */}
-          {!isCardView && geoJSONData && (
-            <ShapeSource
-              id="points"
-              shape={geoJSONData}
-              cluster
-              clusterRadius={38}
-            >
-              <SymbolLayer
-                id="clusteredPoints"
-                filter={["has", "point_count"]}
-                style={styles.clusterStyle}
-              />
-            </ShapeSource>
-          )}
-
-          {/* Маркеры прогулок */}
-          {!isCardView && mapStore.walkAdvrts.map((advrt, index) => (
-            <Mapbox.MarkerView
-              key={`advrt-${advrt.id}`}
-              id={`advrt-${index}`}
-              coordinate={[advrt.longitude!, advrt.latitude!]}
-              anchor={{ x: 0.5, y: 1 }}
-              onTouchStart={() => {
-                onPinPress(advrt);
-                setSelectedWalkMarker(advrt.id!);
-              }}
-              allowOverlap={false}
-
-            >
-              <Pressable onPress={() => {
-                onPinPress(advrt);
-                setSelectedWalkMarker(advrt.id!);
-              }} onLongPress={() => console.log('Long press detected')}>
-                <View>
-                  <Svg width="43" height="55" viewBox="0 0 43 55" fill="none">
-                    <Path d="M21.4481 54.8119C21.4481 54.8119 42.8963 35.7469 42.8963 21.4481C42.8963 9.60265 33.2936 0 21.4481 0C9.60265 0 0 9.60265 0 21.4481C0 35.7469 21.4481 54.8119 21.4481 54.8119Z" fill={selectedWalkMarker === advrt.id ? "#4338CA" : "#BFA8FF"} />
-                  </Svg>
-                  <Image className='ml-[3.5px] mt-[3px] rounded-full h-9 w-9 absolute'
-                    source={{ uri: advrt?.userPhoto || 'https://via.placeholder.com/100' }}
-                  />
-                </View>
-              </Pressable>
-            </Mapbox.MarkerView>
-          ))}
-
-          {/* Маркеры поинтов */}
-
-          {!isCardView && mapStore.mapPoints.map((point, index) => (
-            <Mapbox.MarkerView
-              key={`advrt-${point.id}`}
-              id={`advrt-${index}`}
-              anchor={{ x: 0.5, y: 1 }}
-              coordinate={[point.longitude!, point.latitude!]}
-              onTouchStart={() => { }}
-              allowOverlap={false}
-            >
-              <Pressable onPress={() => onMapPointPress(point)}>
-                <MapPointIconWithAnimation mapPointType={point.mapPointType} isSelected={selectedPointId === point.id} />
-              </Pressable>
-            </Mapbox.MarkerView>
-          ))}
-
-
-          {/* Маркер редактирования прогулки */}
-          {markerCoordinate && isSheetVisible && (
-            <PointAnnotation
-              ref={pointAnnotationCurrentUser}
-              id="currentUserMarker"
-              coordinate={markerCoordinate}
-              anchor={{ x: 0.5, y: 0.5 }}
-            >
-              <View>
-                <Image
-                  className="rounded-full h-10 w-10"
-                  source={{
-                    uri:
-                      currentUser?.thumbnailUrl ||
-                      "https://via.placeholder.com/100",
-                  }}
-                  onLoad={() => pointAnnotationCurrentUser.current?.refresh()}
-                  fadeDuration={0}
+        {!isLoading && (
+          <MapView
+            ref={mapRef}
+            style={{ flex: 1 }}
+            onLongPress={handleLongPress}
+            styleURL={Mapbox.StyleURL.Light}
+            logoEnabled={false}
+            attributionEnabled={false}
+            scaleBarEnabled={false}
+            onTouchEnd={handlePressOut}
+            scrollEnabled={!isCardView}
+            pitchEnabled={!isCardView}
+            zoomEnabled={!isCardView}
+            rotateEnabled={!isCardView}
+          >
+            <UserLocation minDisplacement={50} ref={userLocationRef} onUpdate={handleUserLocationUpdate} />
+            {routeData && (
+              <ShapeSource id="routeSource" shape={routeData}>
+                <LineLayer
+                  id="routeLine"
+                  style={{ lineColor: 'blue', lineWidth: 5 }}
                 />
-              </View>
-            </PointAnnotation>
-          )}
+              </ShapeSource>
+            )}
 
-          {/* Маркер редактирования поинта */}
-          {markerPointCoordinate && isSheetVisible && (
-            <PointAnnotation
-              ref={pointAnnotationCurrentUser}
-              id="currentUserMarker"
-              coordinate={markerPointCoordinate}
-              anchor={{ x: 0.5, y: 0.5 }}
-            >
-              {currentPointType === MapPointType.Danger ? (
-                // Условие если добавляется опасность
-                <View className='bg-indigo-700 rounded-full h-6 w-6'>
-                  <IconSelectorComponent
-                    iconName='alert-circle-outline'
-                    iconSet='MaterialCommunityIcons'
-                    size={24}
-                    color="white"
+            {/* <UserLocation minDisplacement={10} ref={userLocationRef}  /> */}
+            {userCoordinates && (
+              <Camera
+                ref={cameraRef}
+                centerCoordinate={userCoordinates}
+                zoomLevel={10}
+                animationDuration={1}
+              />)}
+
+            {/* Добавдяем цифры, когда маркеры накладываются друг на друга */}
+            {!isCardView && geoJSONData && (
+              <ShapeSource
+                id="points"
+                shape={geoJSONData}
+                cluster
+                clusterRadius={38}
+              >
+                <SymbolLayer
+                  id="clusteredPoints"
+                  filter={["has", "point_count"]}
+                  style={styles.clusterStyle}
+                />
+              </ShapeSource>
+            )}
+
+            {/* Маркеры прогулок */}
+            {!isCardView && mapStore.walkAdvrts.map((advrt, index) => (
+              <Mapbox.MarkerView
+                key={`advrt-${advrt.id}`}
+                id={`advrt-${index}`}
+                coordinate={[advrt.longitude!, advrt.latitude!]}
+                anchor={{ x: 0.5, y: 1 }}
+                onTouchStart={() => {
+                  onPinPress(advrt);
+                  setSelectedWalkMarker(advrt.id!);
+                }}
+                allowOverlap={false}
+
+              >
+                <Pressable onPress={() => {
+                  onPinPress(advrt);
+                  setSelectedWalkMarker(advrt.id!);
+                }} onLongPress={() => console.log('Long press detected')}>
+                  <View>
+                    <Svg width="43" height="55" viewBox="0 0 43 55" fill="none">
+                      <Path d="M21.4481 54.8119C21.4481 54.8119 42.8963 35.7469 42.8963 21.4481C42.8963 9.60265 33.2936 0 21.4481 0C9.60265 0 0 9.60265 0 21.4481C0 35.7469 21.4481 54.8119 21.4481 54.8119Z" fill={selectedWalkMarker === advrt.id ? "#4338CA" : "#BFA8FF"} />
+                    </Svg>
+                    <Image className='ml-[3.5px] mt-[3px] rounded-full h-9 w-9 absolute'
+                      source={{ uri: advrt?.userPhoto || 'https://via.placeholder.com/100' }}
+                    />
+                  </View>
+                </Pressable>
+              </Mapbox.MarkerView>
+            ))}
+
+            {/* Маркеры поинтов */}
+
+            {!isCardView && mapStore.mapPoints.map((point, index) => (
+              <Mapbox.MarkerView
+                key={`advrt-${point.id}`}
+                id={`advrt-${index}`}
+                anchor={{ x: 0.5, y: 1 }}
+                coordinate={[point.longitude!, point.latitude!]}
+                onTouchStart={() => { }}
+                allowOverlap={false}
+              >
+                <Pressable onPress={() => onMapPointPress(point)}>
+                  <MapPointIconWithAnimation mapPointType={point.mapPointType} isSelected={selectedPointId === point.id} />
+                </Pressable>
+              </Mapbox.MarkerView>
+            ))}
+
+
+            {/* Маркер редактирования прогулки */}
+            {markerCoordinate && isSheetVisible && (
+              <PointAnnotation
+                ref={pointAnnotationCurrentUser}
+                id="currentUserMarker"
+                coordinate={markerCoordinate}
+                anchor={{ x: 0.5, y: 0.5 }}
+              >
+                <View>
+                  <Image
+                    className="rounded-full h-10 w-10"
+                    source={{
+                      uri:
+                        currentUser?.thumbnailUrl ||
+                        "https://via.placeholder.com/100",
+                    }}
+                    onLoad={() => pointAnnotationCurrentUser.current?.refresh()}
+                    fadeDuration={0}
                   />
                 </View>
-              ) : (
-                // Условие если добавляется пользовательский поинт
-                <View className="bg-indigo-700 rounded-full h-6 w-6">
-                  <IconSelectorComponent
-                    iconName="help-circle-outline"
-                    iconSet="Ionicons"
-                    size={24}
-                    color="white"
-                  />
-                </View>
-              )}
-            </PointAnnotation>
-          )}
+              </PointAnnotation>
+            )}
 
-          {/* Добавляем компонент точек интереса */}
-          {userCoordinates && (<PointsOfInterestComponent userLocation={userCoordinates} onRouteReady={handleRouteReady} />)}
-          {!isSheetVisible &&
-            <FabGroupComponent selectedNumber={currentPointType} setSelectedNumber={hangleSetSelectedNumberPoint} isVisible={!isCardView} />
-          }
+            {/* Маркер редактирования поинта */}
+            {markerPointCoordinate && isSheetVisible && (
+              <PointAnnotation
+                ref={pointAnnotationCurrentUser}
+                id="currentUserMarker"
+                coordinate={markerPointCoordinate}
+                anchor={{ x: 0.5, y: 0.5 }}
+              >
+                {currentPointType === MapPointType.Danger ? (
+                  // Условие если добавляется опасность
+                  <View className='bg-indigo-700 rounded-full h-6 w-6'>
+                    <IconSelectorComponent
+                      iconName='alert-circle-outline'
+                      iconSet='MaterialCommunityIcons'
+                      size={24}
+                      color="white"
+                    />
+                  </View>
+                ) : (
+                  // Условие если добавляется пользовательский поинт
+                  <View className="bg-indigo-700 rounded-full h-6 w-6">
+                    <IconSelectorComponent
+                      iconName="help-circle-outline"
+                      iconSet="Ionicons"
+                      size={24}
+                      color="white"
+                    />
+                  </View>
+                )}
+              </PointAnnotation>
+            )}
 
-        </MapView>)}
+            {/* Добавляем компонент точек интереса */}
+            {userCoordinates && (<PointsOfInterestComponent userLocation={userCoordinates} onRouteReady={handleRouteReady} />)}
+            {!isSheetVisible &&
+              <FabGroupComponent selectedNumber={currentPointType} setSelectedNumber={hangleSetSelectedNumberPoint} isVisible={!isCardView} />
+            }
+
+          </MapView>)
+        }
+        
         <View
           style={{
             position: "absolute",
-            top: 0,
+            top: 20,
             left: 0,
             right: 0,
             padding: 10,
+            zIndex:10
           }}
-        >
+        > 
           <SearchAndTags
             selectedTag={selectedTag}
             setSelectedTag={setSelectedTag}
@@ -671,18 +635,7 @@ const MapBoxMap = observer(() => {
             badgeCount={modifiedFieldsCount}
           />
         </View>
-        {/* <View style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: 10,paddingRight:60, flexDirection: 'row' }}>
-          <TextInput
-            className='bg-white h-12 rounded-xl mt-1 pl-3 w-full border border-gray-400'
-            placeholder="Enter address"
-            value={mapStore.address}
-            onChangeText={handleAddressChange}
-          />
-            <IconButton size={30} icon="filter-variant" onPress={openDrawer} iconColor='#2F00B6'/>
-        </View> 
-        */}
-
-
+        
         {isSheetVisible && (
           <BottomSheetComponent
             ref={sheetRef}
@@ -705,7 +658,7 @@ const MapBoxMap = observer(() => {
           title={alertType === "error" ? "Ошибка" : ""}
           image={alertImage}
         />
-      </SafeAreaView>
+  
     </Provider>
   );
 });

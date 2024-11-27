@@ -18,12 +18,12 @@ const Map = () => {
 
   return (
    
-    <SafeAreaView className='bg-violet-100 h-full'>
+    <>
       <PermissionsRequestComponent/>
        <GestureHandlerRootView style={{ flex: 1 }}>
         <MapBoxMap />
       </GestureHandlerRootView>
-    </SafeAreaView>
+      </>
     
   )
 }

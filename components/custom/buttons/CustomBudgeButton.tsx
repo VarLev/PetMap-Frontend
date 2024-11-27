@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Badge } from 'react-native-paper';
 import IconSelectorComponent from '../icons/IconSelectorComponent';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
@@ -27,7 +27,7 @@ const BadgeIconButton: React.FC<BadgeIconButtonProps> = ({
           size={40}
         /> */}
         
-        <View className="bg-white m-1 justify-center items-center w-11 h-11 rounded-full" style={{elevation: 3}}>
+        <View className="bg-white m-1 justify-center items-center w-11 h-11 rounded-full" style={[styles.shadow, { elevation: 3 }]}>
           <IconSelectorComponent iconSet={iconSet} iconName={iconName}  />
         </View>
       
@@ -43,5 +43,16 @@ const BadgeIconButton: React.FC<BadgeIconButtonProps> = ({
     </TouchableOpacity>
   );
 };
+const styles = StyleSheet.create({
+  shadow: {
+    // iOS тени
+    shadowColor: '#000', // Цвет тени
+    shadowOffset: { width: 0, height: 1 }, // Смещение тени
+    shadowOpacity: 0.3, // Прозрачность тени
+    shadowRadius: 1.5, // Радиус размытия
 
+    // Android тени через elevation
+    elevation: 3,
+  },
+});
 export default BadgeIconButton;
