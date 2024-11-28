@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   TouchableOpacity,
   View,
@@ -62,6 +62,7 @@ const ViewProfileComponent = observer(
     const [menuVisible, setMenuVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [isCurrentUser, setIsCurrentUser] = useState(false);
+    const [rightIcon, setRightIcon] = useState<string | null>()
 
     const loadData = async () => {
       if (user.id === userStore.currentUser?.id) {
@@ -70,8 +71,8 @@ const ViewProfileComponent = observer(
         const user = await userStore.loadUser();
         //console.log(user.thumbnailUrl);
         setUser(user!);
-
         setIsCurrentUser(true);
+        setRightIcon("chevron-right");
       } else {
         // Загружаем другого пользователя
         if (!loadedUser.id) {
@@ -81,8 +82,13 @@ const ViewProfileComponent = observer(
         const otherUser = await userStore.getUserById(loadedUser.id);
         setUser(otherUser as User);
         setIsCurrentUser(false);
+        setRightIcon(null);
       }
     };
+
+    useEffect(() => {
+      loadData();
+    }, [])
 
     const handleRefresh = async () => {
       setRefreshing(true);
@@ -105,6 +111,10 @@ const ViewProfileComponent = observer(
       petStore.setPetProfile(newPat);
       router.push("/profile/pet/new/edit");
     };
+
+
+    // const rightIcon = !isCurrentUser ? null : "chevron-right";
+    
     return (
       <GestureHandlerRootView className="h-full">
         <PaperProvider>
@@ -197,6 +207,7 @@ const ViewProfileComponent = observer(
                         {calculateDogAge(item.birthDate)}
                       </Text>
 
+
                       <View className="">
                         <Text className="font-nunitoSansRegular">
                           {getTagsByIndex(BREEDS_TAGS, item.breed!)}
@@ -226,7 +237,7 @@ const ViewProfileComponent = observer(
                   </Text>
                   <CustomTextComponent
                     text={user.description}
-                    rightIcon="chevron-right"
+                    rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                   />
                   <Divider />
@@ -252,27 +263,27 @@ const ViewProfileComponent = observer(
                     text={user.location}
                     leftIcon="location-pin"
                     iconSet="simpleLine"
-                    rightIcon="chevron-right"
+                    rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                   />
                   <CustomTextComponent
                     text={getTagsByIndex(LANGUAGE_TAGS, user.userLanguages!)}
                     leftIcon="language-outline"
                     iconSet="ionicons"
-                    rightIcon="chevron-right"
+                    rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                   />
                   <CustomTextComponent
                     text={getTagsByIndex(PROFESSIONS_TAGS, user.work!)}
                     leftIcon="work-outline"
-                    rightIcon="chevron-right"
+                    rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                   />
                   <CustomTextComponent
                     text={user.education}
                     leftIcon="school-outline"
                     iconSet="ionicons"
-                    rightIcon="chevron-right"
+                    rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                   />
                   <Divider className="mt-3" />
@@ -285,7 +296,7 @@ const ViewProfileComponent = observer(
                     text={user.instagram!}
                     leftIcon="instagram"
                     iconSet="fontAwesome"
-                    rightIcon="chevron-right"
+                    rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                     platform={"instagram"}
                   />
@@ -293,13 +304,14 @@ const ViewProfileComponent = observer(
                     text={user.facebook!}
                     leftIcon="facebook"
                     iconSet="fontAwesome"
-                    rightIcon="chevron-right"
+                    rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                     platform={"facebook"}
                   />
                   <Divider className="mt-3" />
                 </View>
-              </View>
+
+                </View>
               <View className="h-28" />
             </View>
           }
