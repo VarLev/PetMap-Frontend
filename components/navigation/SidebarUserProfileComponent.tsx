@@ -12,11 +12,8 @@ import CustomListItemWrapper from "@/components/custom/menuItem/ListItemWrapper"
 
 
 const SidebarUserProfileComponent = () => {
-  const [sosEnabled, setSosEnabled] = useState(false);
   const currentUser = userStore.currentUser;
   const { closeDrawer } = useDrawer();
-
-  const handleToggleSos = () => setSosEnabled(!sosEnabled);
 
   const handleProfilePress = () => {
     router.replace("/profile");
@@ -30,6 +27,11 @@ const SidebarUserProfileComponent = () => {
 
   const handleWalksPress = () => {
     router.replace("/profile/mywalks");
+    closeDrawer();
+  };
+
+  const handleSettingsPress = () => {
+    router.replace("/profile/settings");
     closeDrawer();
   };
 
@@ -127,7 +129,6 @@ const SidebarUserProfileComponent = () => {
             )}
             onPress={handleWalksPress}
           />
-
           <CustomListItemWrapper
             onPress={() => console.log("Мои локации")}
             title="Мои локации"
@@ -139,8 +140,7 @@ const SidebarUserProfileComponent = () => {
               />
             )}
           />
-
-          <CustomListItemWrapper
+          {/* <CustomListItemWrapper
             title="Мои объявления"
             leftIcon={() => (
               <List.Icon
@@ -150,7 +150,7 @@ const SidebarUserProfileComponent = () => {
               />
             )}
             onPress={() => console.log("Мои объявления")}
-          />
+          /> */}
           <CustomListItemWrapper
             title="Настройки"
             leftIcon={() => (
@@ -160,23 +160,8 @@ const SidebarUserProfileComponent = () => {
                 )}
               />
             )}
-            onPress={() => console.log("Настройки")}
+            onPress={handleSettingsPress}
           />
-          <View className="pl-2">
-            <List.Item
-              title="SOS Оповещения"
-              left={() => (
-                <List.Icon
-                  icon={() => <Feather name="bell" size={20} color="#474747" />}
-                />
-              )}
-              right={() => (
-                <Switch value={sosEnabled} onValueChange={handleToggleSos} />
-              )}
-              titleStyle={{ fontFamily: "NunitoSans_400Regular" }}
-            />
-          </View>
-
           <CustomListItemWrapper
             title="Поддержка"
             leftIcon={() => (
