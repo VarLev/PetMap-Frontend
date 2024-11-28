@@ -51,6 +51,7 @@ const ArticlesList: React.FC = () => {
   return (
     <>
        <FlatList 
+       className="h-full mb-10"
       data={articles}
       keyExtractor={(item) => item.title}
       renderItem={({ item }) => (
@@ -79,7 +80,7 @@ const ArticlesList: React.FC = () => {
       )}
       
     />
-    <View className='h-20'/>
+    
 
     </>
    
