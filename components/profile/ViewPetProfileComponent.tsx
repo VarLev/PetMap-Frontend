@@ -20,7 +20,8 @@ import MenuItemWrapper from '@/components/custom/menuItem/MunuItemWrapper';
 const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: () => void}) => {
   const sheetRef = useRef<BottomSheet>(null);
   const [menuVisible, setMenuVisible] = useState(false);
-  const [isCurrentUser, setIsCurrentUser] = useState( false);
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [rightIcon, setRightIcon] = useState<string | null>()
   
   useEffect(() => {
     //console.log(pet);
@@ -28,6 +29,9 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
       console.log(p.id, pet.id);
       if(p.id === pet.id){
         setIsCurrentUser(true);
+        setRightIcon("chevron-right");
+      } else {
+        setRightIcon(null);
       }
     });
   }, [pet]);
@@ -98,40 +102,41 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
         {pet.petName} {calculateDogAge(pet.birthDate)}
       </Text>
 
+
       <View className="pr-3 pl-4">
         <View>
           <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Основное</Text>
           <CustomTextComponent
             text="Собака"
-            rightIcon="chevron-right"
+            rightIcon={rightIcon}
             onRightIconPress={onEdit}
             leftIcon="paw-outline"
             iconSet="ionicons"
           />
           <CustomTextComponent
             text={getTagsByIndex(PETGENDERS_TAGS, Number(pet.gender!))}
-            rightIcon="chevron-right"
+            rightIcon={rightIcon}
             onRightIconPress={onEdit}
             leftIcon="transgender-outline"
             iconSet="ionicons"
           />
           <CustomTextComponent
             text={getTagsByIndex(BREEDS_TAGS, pet.breed!)}
-            rightIcon="chevron-right"
+            rightIcon={rightIcon}
             onRightIconPress={onEdit}
             leftIcon="dog"
             iconSet="materialCommunity"
           />
           <CustomTextComponent
             text={pet?.birthDate?.toLocaleDateString()}
-            rightIcon="chevron-right"
+            rightIcon={rightIcon}
             onRightIconPress={onEdit}
             leftIcon="cake-variant-outline"
             iconSet="materialCommunity"
           />
           <CustomTextComponent
             text={`${pet.weight ? `${pet.weight} кг` : ''}${pet.weight && pet.size ? ', ' : ''}${pet.size ? `${pet.size} см` : ''}`}
-            rightIcon="chevron-right"
+            rightIcon={rightIcon}
             onRightIconPress={onEdit}
             leftIcon="resize-outline"
             iconSet="ionicons"
@@ -195,6 +200,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
           <Divider className="mt-3" />
         </View>
 
+
         {/* Игровые предпочтения */}
         <View>
           <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Игровые предпочтения</Text>
@@ -210,7 +216,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
         {/* О питомце */}
         <View>
           <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">О питомце</Text>
-          <CustomTextComponent text={pet.additionalNotes} rightIcon="chevron-right" onRightIconPress={onEdit} />
+          <CustomTextComponent text={pet.additionalNotes} rightIcon={rightIcon} onRightIconPress={onEdit} />
           <Divider className="mt-3" />
         </View>
 
@@ -221,7 +227,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
             text={pet.instagram!}
             leftIcon="instagram"
             iconSet="fontAwesome"
-            rightIcon="chevron-right"
+            rightIcon={rightIcon}
             onRightIconPress={onEdit}
             platform="instagram"
           />
@@ -229,7 +235,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
             text={pet.facebook!}
             leftIcon="facebook"
             iconSet="fontAwesome"
-            rightIcon="chevron-right"
+            rightIcon={rightIcon}
             onRightIconPress={onEdit}
             platform="facebook"
           />
