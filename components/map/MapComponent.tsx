@@ -190,103 +190,109 @@ const MapBoxMap = observer(() => {
   };
 
   const handleLongPress = (event: any) => {
-    setScrollEnabled(false);
-    const coordinates = event.geometry.coordinates;
+    if(currentPointType === MapPointType.Walk || 
+        currentPointType === MapPointType.Danger || 
+        currentPointType === MapPointType.UsersCustomPoint || 
+        currentPointType === MapPointType.Note){ 
+      setScrollEnabled(false);
+      console.log(currentPointType);
+      const coordinates = event.geometry.coordinates;
 
-    cameraRef.current?.setCamera({
-      centerCoordinate: coordinates,
-      animationDuration: 200,
-      padding: {
-        paddingLeft: 0,
-        paddingRight: 0,
-        paddingTop: 0,
-        paddingBottom: 350,
-      },
-    });
+      cameraRef.current?.setCamera({
+        centerCoordinate: coordinates,
+        animationDuration: 200,
+        padding: {
+          paddingLeft: 0,
+          paddingRight: 0,
+          paddingTop: 0,
+          paddingBottom: 350,
+        },
+      });
 
-    if (currentPointType === MapPointType.Walk) {
-      if ((currentUser!.petProfiles ?? []).length > 0) {
-        setMarkerCoordinate(coordinates);
-        mapStore.setMarker(coordinates);
-        setRenderAdvrtForm(true);
-        setRenderContent(() => (
-          <AdvtEditComponent
-            coordinates={coordinates}
-            onAdvrtAddedInvite={handleAdvrtAdded}
-          />
-        ));
-      } else {
-        setAlertText(
-          "Для создания прогулки необходимо заполнить профиль и добавить питомца"
-        );
-        showAlert("info");
-        return;
+      if (currentPointType === MapPointType.Walk) {
+        if ((currentUser!.petProfiles ?? []).length > 0) {
+          setMarkerCoordinate(coordinates);
+          mapStore.setMarker(coordinates);
+          setRenderAdvrtForm(true);
+          setRenderContent(() => (
+            <AdvtEditComponent
+              coordinates={coordinates}
+              onAdvrtAddedInvite={handleAdvrtAdded}
+            />
+          ));
+        } else {
+          setAlertText(
+            "Для создания прогулки необходимо заполнить профиль и добавить питомца"
+          );
+          showAlert("info");
+          return;
+        }
       }
-    }
-    else if (currentPointType === MapPointType.Danger) {
-      const mapPoint: IPointDangerDTO = {
-        dangerLevel: DangerLevel.Low,
-        dangerType: DangerType.Other,
-        availableHours: 0,
-        id: randomUUID(),
-        mapPointType: MapPointType.Danger,
-        status: MapPointStatus.InMap,
-        latitude: coordinates[1],
-        longitude: coordinates[0],
-        createdAt: new Date().toISOString(),
-        photos: [],
-        userId: currentUser?.id,
-      };
+      else if (currentPointType === MapPointType.Danger) {
+        const mapPoint: IPointDangerDTO = {
+          dangerLevel: DangerLevel.Low,
+          dangerType: DangerType.Other,
+          availableHours: 0,
+          id: randomUUID(),
+          mapPointType: MapPointType.Danger,
+          status: MapPointStatus.InMap,
+          latitude: coordinates[1],
+          longitude: coordinates[0],
+          createdAt: new Date().toISOString(),
+          photos: [],
+          userId: currentUser?.id,
+        };
 
-      setMarkerPointCoordinate(coordinates);
-      mapStore.setMarker(coordinates);
-      setRenderContent(() => (
-        <EditDangerPoint mapPoint={mapPoint} onClose={handleSheetClose} />
-      ));
-    } else if (currentPointType === MapPointType.UsersCustomPoint) {
-      const mapPoint: IPointUserDTO = {
-        id: randomUUID(),
-        mapPointType: MapPointType.UsersCustomPoint,
-        status: MapPointStatus.Pending,
-        latitude: coordinates[1],
-        longitude: coordinates[0],
-        createdAt: new Date().toISOString(),
-        photos: [],
-        userId: currentUser?.id,
-        userPointType: 0,
-      };
-      setMarkerPointCoordinate(coordinates);
-      mapStore.setMarker(coordinates);
-      setRenderContent(() => (
-        <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose} />
-      ));
-    }
-    else if (currentPointType === MapPointType.Note) {
-      const mapPoint: IPointUserDTO = {
-        id: randomUUID(),
-        mapPointType: MapPointType.Note,
-        status: MapPointStatus.Pending,
-        latitude: coordinates[1],
-        longitude: coordinates[0],
-        createdAt: new Date().toISOString(),
-        photos: [],
-        userId: currentUser?.id,
-        userPointType: UserPointType.Note,
-      };
-      setMarkerPointCoordinate(coordinates);
-      mapStore.setMarker(coordinates);
-      setRenderContent(() => (
-        <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose} />
-      ));
-    }
+        setMarkerPointCoordinate(coordinates);
+        mapStore.setMarker(coordinates);
+        setRenderContent(() => (
+          <EditDangerPoint mapPoint={mapPoint} onClose={handleSheetClose} />
+        ));
+      } else if (currentPointType === MapPointType.UsersCustomPoint) {
+        const mapPoint: IPointUserDTO = {
+          id: randomUUID(),
+          mapPointType: MapPointType.UsersCustomPoint,
+          status: MapPointStatus.Pending,
+          latitude: coordinates[1],
+          longitude: coordinates[0],
+          createdAt: new Date().toISOString(),
+          photos: [],
+          userId: currentUser?.id,
+          userPointType: 0,
+        };
+        setMarkerPointCoordinate(coordinates);
+        mapStore.setMarker(coordinates);
+        setRenderContent(() => (
+          <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose} />
+        ));
+      }
+      else if (currentPointType === MapPointType.Note) {
+        const mapPoint: IPointUserDTO = {
+          id: randomUUID(),
+          mapPointType: MapPointType.Note,
+          status: MapPointStatus.Pending,
+          latitude: coordinates[1],
+          longitude: coordinates[0],
+          createdAt: new Date().toISOString(),
+          photos: [],
+          userId: currentUser?.id,
+          userPointType: UserPointType.Note,
+        };
+        setMarkerPointCoordinate(coordinates);
+        mapStore.setMarker(coordinates);
+        setRenderContent(() => (
+          <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose} />
+        ));
+      }
 
-    if (!isSheetExpanded) {
-      setTimeout(() => {
-        sheetRef.current?.snapToIndex(0);
-        mapStore.setBottomSheetVisible(true);
+      if (!isSheetExpanded) {
+        setTimeout(() => {
+          sheetRef.current?.snapToIndex(0);
+          mapStore.setBottomSheetVisible(true);
 
-        setIsSheetVisible(true);
-      }, 200);
+          setIsSheetVisible(true);
+        }, 200);
+      }
     }
   };
 

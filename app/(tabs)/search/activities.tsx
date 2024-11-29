@@ -1,11 +1,14 @@
+import Feed from '@/components/search/feed/Feed';
 import React from 'react';
-import { View, Text } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function Activities() {
   return (
-    <View className="p-4">
-      <Text className="text-lg font-bold">Активности</Text>
-      <Text>Здесь будут отображаться активности.</Text>
-    </View>
+    <>
+      <GestureHandlerRootView className='flex-1'>
+        <Feed />
+      </GestureHandlerRootView>
+    </>
+ 
   );
 }

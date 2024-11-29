@@ -1,6 +1,8 @@
 import { avatarsStringF, avatarsStringM } from "@/constants/Avatars";
 import { IUser } from "@/dtos/Interfaces/user/IUser";
 import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+
 
 
 
@@ -309,3 +311,14 @@ export const calculateTimeUntilNextWalk = (advrt: IWalkAdvrtDto): string | undef
 
   return `Через ${[daysText, hoursText, minutesText].filter(Boolean).join(" ")}`;
 };
+
+
+
+export async function compressImage(uri: string): Promise<string> {
+  const manipResult = await manipulateAsync(
+    uri,
+    [{ resize: { width: 400 } }], // Изменение размера изображения
+    { compress: 0.5, format: SaveFormat.JPEG }
+  );
+  return manipResult.uri;
+}
