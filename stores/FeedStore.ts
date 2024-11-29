@@ -1,6 +1,6 @@
 // FeedStore.ts
 
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import apiClient from "@/hooks/axiosConfig";
 import { IImage, IPost } from "@/dtos/Interfaces/feed/IPost";
 import { Post, Comment } from "@/dtos/classes/feed/Post";
@@ -8,12 +8,14 @@ import { handleAxiosError } from "@/utils/axiosUtils";
 import { storage } from "@/firebaseConfig";
 import { randomUUID } from "expo-crypto";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { compressImage } from "@/utils/utils";
+import userStore from "./UserStore";
 
 class FeedStore {
   posts: IPost[] = [];
   loading: boolean = false;
   page: number = 1;
-  userId: string = "user-id"; // Получите текущего пользователя из аутентификации
+  
 
   constructor() {
     makeAutoObservable(this);
@@ -39,13 +41,21 @@ class FeedStore {
     this.page = 1;
   }
 
+  getUserId() {
+    return userStore.currentUser?.id;
+  }
+
   async fetchPosts() {
+    if (this.loading) return;
     this.setLoading(true);
     try {
-      const response = await apiClient.get(`/posts?page=${this.page}`);
-      const fetchedPosts = response.data.map(
-        (postData: any) => new Post(postData)
-      );
+      const response = await apiClient.get(`/post` );
+      console.log('Fetched posts:', response.data); // Лог данных от сервера
+      const fetchedPosts = response.data.map((postData: any) => new Post(postData));
+      if (fetchedPosts.length === 0) {
+        console.log('No more posts to load');
+        return;
+      }
       if (this.page === 1) {
         this.setPosts(fetchedPosts);
       } else {
@@ -60,7 +70,7 @@ class FeedStore {
 
   async likePost(postId: string) {
     try {
-      await apiClient.post(`/posts/${postId}/like`, { userId: this.userId });
+      await apiClient.post(`/post/${postId}/like`, { userId: this.getUserId() });
       const post = this.posts.find((p) => p.id === postId);
       if (post) {
         post.likesCount += 1;
@@ -73,7 +83,7 @@ class FeedStore {
 
   async unlikePost(postId: string) {
     try {
-      await apiClient.post(`/posts/${postId}/unlike`, { userId: this.userId });
+      await apiClient.post(`/post/${postId}/unlike`, { userId: this.getUserId() });
       const post = this.posts.find((p) => p.id === postId);
       if (post) {
         post.likesCount -= 1;
@@ -86,8 +96,8 @@ class FeedStore {
 
   async addComment(postId: string, content: string) {
     try {
-      const response = await apiClient.post(`/posts/${postId}/comments`, {
-        userId: this.userId,
+      const response = await apiClient.post(`/post/${postId}/comments`, {
+        userId: this.getUserId(),
         content,
       });
       const newComment = new Comment(response.data);
@@ -100,18 +110,22 @@ class FeedStore {
     }
   }
 
-  async createPost(title: string, content: string, images: string[]) {
+  async createPost(content: string, images: string[]) {
     this.setLoading(true);
     try {
       const uploadedImages = await this.uploadPostImages(images);
-      const response = await apiClient.post('/posts', {
-        userId: this.userId,
-        title,
+      const response = await apiClient.post('/post', {
+        userId: this.getUserId(),
         content,
-        images: uploadedImages,
+        postPhotos: uploadedImages.map(image => ({
+          id: image.id, // ID изображения
+          url: image.url, // URL загруженного изображения
+        })),
       });
       const newPost = new Post(response.data);
-      this.posts.unshift(newPost);
+      runInAction(() => {
+        this.posts.unshift(newPost); // Обновление в рамках действия
+      });
     } catch (error) {
     return handleAxiosError(error);
     } finally {
@@ -123,11 +137,11 @@ class FeedStore {
     const uploadedImages: IImage[] = [];
   
     for (const imageUri of images) {
-      const compressedImage = await this.compressImage(imageUri);
+      const compressedImage = await compressImage(imageUri);
       const response = await fetch(compressedImage);
       const blob = await response.blob();
       const imageId = randomUUID();
-      const storageRef = ref(storage, `posts/${imageId}`);
+      const storageRef = ref(storage, `post/${imageId}`);
   
       await uploadBytes(storageRef, blob);
   

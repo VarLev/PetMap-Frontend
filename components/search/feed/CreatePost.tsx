@@ -1,8 +1,6 @@
-// CreatePost.tsx
-
 import React, { useState } from 'react';
-import { View, TextInput, ScrollView, Image } from 'react-native';
-import { Button, Snackbar } from 'react-native-paper';
+import { View, ScrollView, Image, TextInput } from 'react-native';
+import { Button, IconButton, Snackbar } from 'react-native-paper';
 import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import feedStore from '@/stores/FeedStore';
 
@@ -28,7 +26,7 @@ const CreatePost: React.FC = () => {
 
   const handleCreatePost = async () => {
     try {
-      await feedStore.createPost('', content, images);
+      await feedStore.createPost(content, images);
       setContent('');
       setImages([]);
       setSnackbarMessage('Пост успешно создан!');
@@ -41,22 +39,34 @@ const CreatePost: React.FC = () => {
 
   return (
     <ScrollView className="flex-1 p-4">
-      <TextInput
-        className="border border-gray-300 p-2 mb-2"
-        placeholder="Что у вас нового?"
-        value={content}
-        onChangeText={setContent}
-        multiline
-      />
-      <Button mode="outlined" onPress={handleSelectImage}>
-        Добавить фотографии
-      </Button>
-      <View className="flex-row flex-wrap mt-4">
-        {images.map((uri, index) => (
-          <Image key={index} source={{ uri }} className="w-24 h-24 mr-2 mb-2" />
-        ))}
+      {/* Контейнер для текстового поля и иконки камеры */}
+      <View className="relative mb-2">
+        <TextInput
+          className="border border-gray-300 rounded-lg p-3 pr-12 min-h-[100px] text-sm"
+          placeholder="Что у вас нового?"
+          value={content}
+          onChangeText={setContent}
+          multiline
+        />
+        <IconButton
+          icon="camera"
+          size={24}
+          className="absolute bottom-2 right-2"
+          onPress={handleSelectImage}
+        />
       </View>
-      <Button mode="contained" onPress={handleCreatePost} className="mt-4">
+      {images.length > 0 && (
+        <View className="flex-row flex-wrap">
+          {images.map((uri, index) => (
+            <Image
+              key={index}
+              source={{ uri }}
+              className="w-24 h-24 mr-2 mb-2"
+            />
+          ))}
+        </View>
+      )}
+      <Button mode="contained" onPress={handleCreatePost}>
         Создать пост
       </Button>
       <Snackbar
