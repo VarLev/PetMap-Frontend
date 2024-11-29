@@ -42,7 +42,7 @@ const Feed: React.FC = observer(() => {
   };
   
   return (
-      <View className='flex-1'>
+    <View className='flex-1'>
         <FlatList
           ListHeaderComponent={
             feedStore.posts.length === 0 ? (

@@ -22,4 +22,6 @@ export interface IImage {
     hasLiked: boolean;
     comments: IComment[];
     createdAt: string;
+    userAvatar?: string;
+    userName?: string;
   }

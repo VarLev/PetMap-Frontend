@@ -50,7 +50,7 @@ class FeedStore {
     this.setLoading(true);
     try {
       const response = await apiClient.get(`/post` );
-      console.log('Fetched posts:', response.data); // Лог данных от сервера
+      
       const fetchedPosts = response.data.map((postData: any) => new Post(postData));
       if (fetchedPosts.length === 0) {
         console.log('No more posts to load');

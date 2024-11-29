@@ -12,6 +12,8 @@ export class Post implements IPost {
   hasLiked: boolean;
   comments: IComment[];
   createdAt: string;
+  userAvatar?: string;
+  userName?: string;
 
   constructor(data: any) {
     this.id = data.id;
@@ -23,7 +25,10 @@ export class Post implements IPost {
     this.hasLiked = data.hasLiked || false;
     this.comments = data.comments || [];
     this.createdAt = data.createdAt || '';
+    this.userAvatar = data.userAvatar || '';
+    this.userName = data.userName || '';
   }
+  
 }
 
 export class Comment implements IComment {

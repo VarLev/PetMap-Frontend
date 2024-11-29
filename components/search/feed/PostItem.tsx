@@ -26,16 +26,16 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
   const postStore = new PostStore(post.likesCount, post.hasLiked);
 
   return (
-    <Card className="mx-3 my-2  rounded-lg shadow-lg">
+    <Card className="mx-3 my-2  rounded-3xl ">
       <Card.Content>
         <View className="flex-row items-center justify-between mb-2">
           <View className="flex-row items-center">
             <Avatar.Image
               size={40}
-              source={{ uri: `https://example.com/avatar/${post.userId}` }}
+              source={{ uri: `${post.userAvatar}` }}
             />
             <View className="ml-2">
-              <Text className="font-bold">{post.title}</Text>
+              <Text className="font-bold">{post.userName}</Text>
               <Text className="text-gray-500">
                 {new Date(post.createdAt).toLocaleDateString()}
               </Text>

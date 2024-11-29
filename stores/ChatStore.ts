@@ -14,10 +14,7 @@ import {
 import userStore from "@/stores/UserStore";
 import { MessageType } from "@flyerhq/react-native-chat-ui";
 import { randomUUID } from "expo-crypto";
-import {
-  getPushTokenFromServer,
-  sendPushNotification,
-} from "@/hooks/notifications";
+import { getPushTokenFromServer, sendPushNotification } from "@/hooks/notifications";
 import { IUserChat } from "@/dtos/Interfaces/user/IUserChat";
 import apiClient from "@/hooks/axiosConfig";
 import { handleAxiosError } from "@/utils/axiosUtils";
