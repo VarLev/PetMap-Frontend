@@ -351,7 +351,7 @@ class ChatStore {
 
   async declineUserJoinWalk(walkId: string, userId: string) {
     try {
-      const response = await apiClient.patch(`walkdvrt/decline/${walkId}`, {
+      const response = await apiClient.patch(`walkadvrt/decline/${walkId}`, {
         userId: userId,
       });
       return response.data;
