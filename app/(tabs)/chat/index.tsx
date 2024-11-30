@@ -14,12 +14,13 @@ import ChatStore from "@/stores/ChatStore";
 import { Divider, IconButton } from "react-native-paper";
 import ChatMenu from "@/components/chat/ChatMenu";
 import EmptyChatScreen from "@/components/chat/EmptyChatScreen";
+import { shortenName } from "@/utils/utils";
 
 const ChatListItem: React.FC<{
   item: (typeof ChatStore.chats)[0];
 }> = ({ item }) => {
   const router = useRouter();
-  const [lastMessage, setLastMessage] = useState<string | null>(null);
+  const [lastMessage, setLastMessage] = useState<string | undefined>('');
   const [lastSeen, setLastSeen] = useState<number | null>(null);
 
   //достаем время последнего посещения всех участников чата
@@ -59,14 +60,7 @@ const ChatListItem: React.FC<{
     // открытие профиля собеседника тапая по аватару
   };
 
-  const shortenName = (name: string | undefined) => {
-    if (!name) return ''
-    if (name.length > 10) {
-      return name.slice(0, 20) + '...'
-    } else {
-      return name
-    }
-  }
+ 
 
   return (
     <TouchableOpacity onPress={handleOpenChat}>
@@ -89,7 +83,7 @@ const ChatListItem: React.FC<{
               {shortenName(item.otherUserName)}
             </Text>
             <Text className="text-gray-600">
-              {lastMessage ?? "Загрузка..."}
+              {shortenName(lastMessage) ?? "Загрузка..."}
             </Text>
           </View>
         </View>

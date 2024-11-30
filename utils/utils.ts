@@ -322,3 +322,12 @@ export async function compressImage(uri: string): Promise<string> {
   );
   return manipResult.uri;
 }
+
+export const shortenName = (name: string | undefined) => {
+  if (!name) return ''
+  if (name.length > 10) {
+    return name.slice(0, 24) + '...'
+  } else {
+    return name
+  }
+};

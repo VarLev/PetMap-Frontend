@@ -72,7 +72,7 @@ const App = () => {
   return (
     <SafeAreaView className="bg-white h-full">
       <ScrollView>
-        <View className="w-full h-full px-4 justify-center">
+        <View className="w-full h-full px-4 justify-center ">
           <View className="flex-row mt-2 items-start justify-center">
             <Text variant="titleSmall" className="ml-0 text-xl font-nunitoSansBold mt-4 mb-2">
               {i18n.t('index.welcome')} 

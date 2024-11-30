@@ -3,6 +3,7 @@ import { Text, View, Image } from "react-native";
 import { Divider, IconButton } from "react-native-paper";
 import { router } from "expo-router";
 import ChatStore from "@/stores/ChatStore";
+import { shortenName } from "@/utils/utils";
 
 interface ChatHeaderProps {
   item: string;
@@ -51,6 +52,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ item }) => {
   // Обработчик нажатия кнопки "Назад"
   const handleBack = () => router.push("/(tabs)/chat/");
 
+  const otherUserName = chatData?.otherUserName;
+
    return (
     <>
       <View className="flex-row items-center justify-start gap-2 py-2 shadow-md">
@@ -60,7 +63,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ item }) => {
           className="rounded-xl h-16 w-16"
         />
         <View>
-          <Text className="text-lg font-nunitoSansBold">{chatData?.otherUserName}</Text>
+          <Text className="text-lg font-nunitoSansBold">{shortenName(otherUserName)}</Text>
           <Text className="text-[13px] font-nunitoSansRegular text-[#87878A]">
             {showLastSeenTime(userId)}
           </Text>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, Platform } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import CustomButtonWithIcon from '../buttons/CustomButtonWithIcon';
 import CustomBudgeButton from '../buttons/CustomBudgeButton';
@@ -18,7 +18,7 @@ interface SearchAndTagsProps {
   onOpenFilter: () => void;
   onOpenCardView: () => void;
   badgeCount: number;
-}
+  }
 
 const SearchAndTags: React.FC<SearchAndTagsProps> = ({
   selectedTag,
@@ -27,7 +27,8 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
   onTagSelected,
   onOpenFilter,
   onOpenCardView,
-  badgeCount 
+  badgeCount,
+  
 }) => {
 
   const[isTagSelected, setIsTagSelected] = React.useState(false);
@@ -51,17 +52,19 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
     onOpenCardView();
   }
 
+  const isIOS = Platform.OS === 'ios';
 
   return (
     <View style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex:1}}>
-      <View className='flex-row w-full pt-3 px-3 justify-center items-center'>
+      <View className={`flex-row w-full ${isIOS ? 'pt-6' : 'pt-3'} px-3 justify-center items-center`}>
+
         <Searchbar
           onChangeText={onSearchTextChange}
           value={selectedTag}
           onClearIconPress={handleClearTag}
           elevation={1}
           style={{ backgroundColor: 'white'}}
-          inputStyle={{ color: 'black', fontFamily: 'NunitoSans_400Regular', padding: -10}}
+          inputStyle={{ color: 'black', fontFamily: 'NunitoSans_400Regular', padding: -10, alignSelf: 'center' }}
           className='flex-1 h-12'
           
         />
