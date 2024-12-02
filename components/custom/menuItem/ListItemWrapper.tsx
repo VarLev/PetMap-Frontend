@@ -1,11 +1,26 @@
-import React from 'react';
-import { View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Pressable, Platform, GestureResponderEvent  } from 'react-native';
 import { TouchableRipple, List } from 'react-native-paper';
 
 
-const CustomListItemWrapper = ({ onPress, title, leftIcon }) => {
+interface CustomListItemWrapperProps {
+  onPress: (event: GestureResponderEvent) => void; 
+  title: string; 
+  leftIcon?: (props: any) => JSX.Element; 
+}
+
+
+const CustomListItemWrapper: React.FC<CustomListItemWrapperProps> = ({ onPress, title, leftIcon }) => {
+const [isIOS, setIsIOS] = useState(false);
+
+useEffect(() => {
+  setIsIOS(Platform.OS === 'ios');
+}, [])
+  
   return (
-    <View className="overflow-hidden rounded-full">
+    <>
+ <View className="overflow-hidden rounded-full">
+    { !isIOS ? (
       <TouchableRipple
         onPress={onPress}
         rippleColor="#E8DFFF"
@@ -16,8 +31,27 @@ const CustomListItemWrapper = ({ onPress, title, leftIcon }) => {
           left={leftIcon}
           titleStyle={{ fontFamily: "NunitoSans_400Regular" }}
         />
-      </TouchableRipple>
+      </TouchableRipple>   
+    ) : 
+    (  
+      <Pressable
+        onPress={onPress}
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? '#E8DFFF' : 'white',
+           paddingLeft: 10           
+          },
+        ]}
+        >
+        <List.Item
+          title={title}
+          left={leftIcon}
+          titleStyle={{ fontFamily: "NunitoSans_400Regular" }}
+        />
+      </Pressable>
+    )}
     </View>
+</>
   );
 };
 
