@@ -67,7 +67,7 @@ const ReviewComment: React.FC<ReviewCommentProps> = ({ item, onUpdateReview, ref
           />
 
         </View>
-        {item.userId === userStore.currentUser.id && (
+        {userStore.currentUser && item.userId === userStore.currentUser.id && (
           <Menu 
             visible={menuVisible}
             onDismiss={closeMenu}
