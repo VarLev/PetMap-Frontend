@@ -1,6 +1,6 @@
 // IPоst.ts
 
-export interface IImage {
+export interface IPostPhotos {
     id: string;
     url: string;
   }
@@ -17,11 +17,14 @@ export interface IImage {
     userId: string;
     title: string;
     content: string;
-    images: IImage[];
+    postPhotos: IPostPhotos[];
     likesCount: number;
     hasLiked: boolean;
     comments: IComment[];
     createdAt: string;
     userAvatar?: string;
     userName?: string;
+
+    incrementLikes: () => void;
+    decrementLikes: () => void;
   }

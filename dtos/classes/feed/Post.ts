@@ -1,13 +1,14 @@
 // Post.ts
 
-import { IPost, IImage, IComment } from '@/dtos/Interfaces/feed/IPost';
+import { makeObservable, observable, action } from "mobx";
+import { IPost, IPostPhotos, IComment } from '@/dtos/Interfaces/feed/IPost';
 
 export class Post implements IPost {
   id: string;
   userId: string;
   title: string;
   content: string;
-  images: IImage[];
+  postPhotos: IPostPhotos[];
   likesCount: number;
   hasLiked: boolean;
   comments: IComment[];
@@ -20,15 +21,35 @@ export class Post implements IPost {
     this.userId = data.userId;
     this.title = data.title || '';
     this.content = data.content || '';
-    this.images = data.images || [];
+    this.postPhotos = data.postPhotos || [];
     this.likesCount = data.likesCount || 0;
     this.hasLiked = data.hasLiked || false;
     this.comments = data.comments || [];
     this.createdAt = data.createdAt || '';
     this.userAvatar = data.userAvatar || '';
     this.userName = data.userName || '';
+
+    makeObservable(this, {
+      likesCount: observable,
+      hasLiked: observable,
+      userAvatar: observable,
+      userName: observable,
+      comments: observable,
+      incrementLikes: action,
+      decrementLikes: action,
+    });
   }
-  
+
+  // Действия для изменения состояния
+  incrementLikes() {
+    this.likesCount++;
+    this.hasLiked = true;
+  }
+
+  decrementLikes() {
+    this.likesCount--;
+    this.hasLiked = false;
+  }
 }
 
 export class Comment implements IComment {

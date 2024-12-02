@@ -2,7 +2,7 @@
 
 import { makeAutoObservable, runInAction } from "mobx";
 import apiClient from "@/hooks/axiosConfig";
-import { IImage, IPost } from "@/dtos/Interfaces/feed/IPost";
+import { IPostPhotos, IPost } from "@/dtos/Interfaces/feed/IPost";
 import { Post, Comment } from "@/dtos/classes/feed/Post";
 import { handleAxiosError } from "@/utils/axiosUtils";
 import { storage } from "@/firebaseConfig";
@@ -52,8 +52,9 @@ class FeedStore {
       const response = await apiClient.get(`/post` );
       
       const fetchedPosts = response.data.map((postData: any) => new Post(postData));
+      console.log(fetchedPosts);
       if (fetchedPosts.length === 0) {
-        console.log('No more posts to load');
+        this.setPosts(fetchedPosts);
         return;
       }
       if (this.page === 1) {
@@ -68,27 +69,19 @@ class FeedStore {
     }
   }
 
-  async likePost(postId: string) {
+  async likePost(postId: string): Promise<boolean> {
     try {
       await apiClient.post(`/post/${postId}/like`, { userId: this.getUserId() });
-      const post = this.posts.find((p) => p.id === postId);
-      if (post) {
-        post.likesCount += 1;
-        post.hasLiked = true;
-      }
+      return true;
     } catch (error) {
       return handleAxiosError(error);
     }
   }
 
-  async unlikePost(postId: string) {
+  async unlikePost(postId: string): Promise<boolean> {
     try {
       await apiClient.post(`/post/${postId}/unlike`, { userId: this.getUserId() });
-      const post = this.posts.find((p) => p.id === postId);
-      if (post) {
-        post.likesCount -= 1;
-        post.hasLiked = false;
-      }
+      return true;
     } catch (error) {
       return handleAxiosError(error);
     }
@@ -123,6 +116,10 @@ class FeedStore {
         })),
       });
       const newPost = new Post(response.data);
+      console.log(response.data);
+      newPost.userAvatar = userStore.currentUser?.thumbnailUrl!;
+      newPost.userName = userStore.currentUser?.name!;
+      newPost.createdAt = new Date().toISOString();
       runInAction(() => {
         this.posts.unshift(newPost); // Обновление в рамках действия
       });
@@ -133,8 +130,8 @@ class FeedStore {
     }
   }
 
-  async uploadPostImages(images: string[]): Promise<IImage[]> {
-    const uploadedImages: IImage[] = [];
+  async uploadPostImages(images: string[]): Promise<IPostPhotos[]> {
+    const uploadedImages: IPostPhotos[] = [];
   
     for (const imageUri of images) {
       const compressedImage = await compressImage(imageUri);
@@ -151,12 +148,37 @@ class FeedStore {
   
     return uploadedImages;
   }
-  
-  async compressImage(uri: string): Promise<string> {
-    // Используйте ваш метод сжатиия изображений
-    // For now, return the original URI as a placeholder
-    return uri;
+
+  async fetchLikesCount(postId: string): Promise<number> {
+    try {
+      const response = await apiClient.get(`/post/${postId}/likes/count`);
+      
+      return response.data;
+    } catch (error) {
+      handleAxiosError(error);
+      return 0;
+    }
   }
+
+  async hasUserLiked(postId: string): Promise<boolean> {
+    try {
+      const userId = this.getUserId(); // Получаем ID текущего пользователя
+      if (!userId) {
+        throw new Error("User not authenticated");
+      }
+  
+      const response = await apiClient.get(`/post/${postId}/likes/hasLiked`, {
+        params: { userId },
+      });
+  
+      return response.data ?? false;;
+    } catch (error) {
+      handleAxiosError(error);
+      return false; // Если ошибка, возвращаем, что лайк отсутствует
+    }
+  }
+  
+
 }
 
 const feedStore = new FeedStore();
