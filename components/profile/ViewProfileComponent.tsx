@@ -192,7 +192,7 @@ const ViewProfileComponent = observer(
                     style={{ alignItems: "center" }}
                     onPress={() => onPetOpen(item.id)}
                   >
-                    <Card className="w-48 h-62 p-2 m-2 rounded-2xl shadow bg-purple-100">
+                    <Card className="w-48 h-[260px] p-2 m-2 rounded-2xl shadow bg-purple-100">
                       <Card.Cover
                         source={{ uri: item.thumbnailUrl || petUriImage }}
                         style={{ height: 150, borderRadius: 14 }}
@@ -200,13 +200,12 @@ const ViewProfileComponent = observer(
                       <Text className="block font-nunitoSansBold text-lg">
                         {item.petName}
                       </Text>
-                      <Text className="block font-nunitoSansBold text-lg">
+                      <Text className="block font-nunitoSansBold text-lg mb-auto">
                         {calculateDogAge(item.birthDate)}
                       </Text>
 
-
-                      <View className="">
-                        <Text className="font-nunitoSansRegular">
+                      <View style={{ marginTop: 12 }}>
+                        <Text className="font-nunitoSansRegular" numberOfLines = { 2 } ellipsizeMode = 'tail' >
                           {getTagsByIndex(BREEDS_TAGS, item.breed!)}
                         </Text>
                         <Text className="font-nunitoSansRegular">
