@@ -111,9 +111,6 @@ const ViewProfileComponent = observer(
       petStore.setPetProfile(newPat);
       router.push("/profile/pet/new/edit");
     };
-
-
-    // const rightIcon = !isCurrentUser ? null : "chevron-right";
     
     return (
       <GestureHandlerRootView className="h-full">
