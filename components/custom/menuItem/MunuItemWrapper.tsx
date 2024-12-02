@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Pressable, GestureResponderEvent, Platform } from "react-native";
 import { Menu, TouchableRipple } from "react-native-paper";
 
@@ -13,8 +13,12 @@ const MenuItemWrapper: React.FC<MenuItemWrapperProps> = ({
   title,
   onPress,
 }) => {
-  const isIOS = Platform.OS === "ios";
+  const [isIOS, setIsIOS] = useState(false);
 
+  useEffect(() => {
+    setIsIOS(Platform.OS === 'ios');
+  }, [])
+    
   return (
     <View className="overflow-hidden rounded-full">
       {!isIOS ? (

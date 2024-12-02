@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet, Platform } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import CustomButtonWithIcon from '../buttons/CustomButtonWithIcon';
@@ -30,9 +30,9 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
   badgeCount,
   
 }) => {
-
-  const[isTagSelected, setIsTagSelected] = React.useState(false);
-  const[isCardView, setIsCardView] = React.useState(false);
+  const[isTagSelected, setIsTagSelected] = useState(false);
+  const[isCardView, setIsCardView] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
 
   const handleSelectTag = (name: string, type: number = 0) => {
     setSelectedTag(name);
@@ -52,7 +52,10 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
     onOpenCardView();
   }
 
-  const isIOS = Platform.OS === 'ios';
+  useEffect(() => {
+    setIsIOS(Platform.OS === 'ios');
+  }, [])
+  ;
 
   return (
     <View style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex:1}}>

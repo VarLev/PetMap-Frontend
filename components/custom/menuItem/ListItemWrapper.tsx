@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Pressable, Platform, GestureResponderEvent  } from 'react-native';
 import { TouchableRipple, List } from 'react-native-paper';
 
@@ -11,9 +11,12 @@ interface CustomListItemWrapperProps {
 
 
 const CustomListItemWrapper: React.FC<CustomListItemWrapperProps> = ({ onPress, title, leftIcon }) => {
+const [isIOS, setIsIOS] = useState(false);
 
-  const isIOS = Platform.OS === 'ios';
-
+useEffect(() => {
+  setIsIOS(Platform.OS === 'ios');
+}, [])
+  
   return (
     <>
  <View className="overflow-hidden rounded-full">

@@ -326,7 +326,7 @@ export async function compressImage(uri: string): Promise<string> {
 export const shortenName = (name: string | undefined) => {
   if (!name) return ''
   if (name.length > 10) {
-    return name.slice(0, 24) + '...'
+    return name.slice(0, 20) + '...'
   } else {
     return name
   }

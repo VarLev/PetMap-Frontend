@@ -3,7 +3,7 @@ import { TouchableOpacity, View, Image } from "react-native";
 import { Text } from "react-native-paper";
 import OnboardingCarousel from "../components/auth/OnboardingCarousel";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView } from "react-native";
+import { ScrollView, Platform } from "react-native";
 import CustomButtonPrimary from "@/components/custom/buttons/CustomButtonPrimary";
 import { Redirect, router } from "expo-router";
 import { useStore } from "@/contexts/StoreProvider";
@@ -15,7 +15,6 @@ import userStore from "@/stores/UserStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import i18n from '@/i18n';
 import ScreenHolderLogo from "@/components/common/ScreenHolderLogo";
-import { Platform } from 'react-native';
 
 GoogleSignin.configure({
   webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
