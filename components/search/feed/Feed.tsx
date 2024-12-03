@@ -64,7 +64,8 @@ const Feed: React.FC = observer(() => {
         onRefresh={handleRefresh}
         ListFooterComponent={feedStore.loading ? <ActivityIndicator size="large" /> : <View className='h-20' />}
       />
-      <FAB icon="pen" size='small' className='bg-violet-200' style={styles.fab} onPress={handleCreatePost}/>
+      
+      <FAB icon="pen" size='medium' color='white' style={styles.fab} onPress={handleCreatePost}/>
       {isSheetVisible && (
         <BottomSheetComponent
           ref={sheetRef}
@@ -87,7 +88,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     margin: 16,
     right: 0,
-    bottom: 50,
+    bottom: 90,
+    borderWidth: 4,
+    borderColor: 'white',
+    borderRadius: 100,
+    backgroundColor: '#2F00B6'
   },
 })
 

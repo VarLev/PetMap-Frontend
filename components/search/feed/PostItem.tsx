@@ -3,13 +3,10 @@ import { View, Image, TextInput } from 'react-native';
 import { Text } from 'react-native-paper';
 import { Card, Avatar, IconButton } from 'react-native-paper';
 import { observer } from 'mobx-react-lite';
-
 import { IPost } from '@/dtos/Interfaces/feed/IPost';
 import { BG_COLORS } from '@/constants/Colors';
 import feedStore from '@/stores/FeedStore';
 import { runInAction } from 'mobx';
-
-
 
 const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
   const [hasLiked, setHasLiked] = React.useState<boolean>(post.hasLiked);
@@ -47,7 +44,7 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
   };
 
   return (
-    <Card className="mx-2 my-1 bg-white rounded-2xl">
+    <Card className="mx-2 mt-2 bg-white rounded-2xl">
       <Card.Content>
         <View className="flex-row items-center justify-between mb-1">
           <View className="flex-row items-center">
@@ -61,18 +58,19 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
           </View>
           <IconButton
             icon="dots-vertical"
+            style={{ margin: 0 }}
             onPress={() => console.log("Menu clicked")}
             size={20}
           />
         </View>
-        <Text className="mb-1 text-sm">{post.content}</Text>
+        <Text className="my-1 text-sm">{post.content}</Text>
         {post.postPhotos.length > 0 && (
           <View className="rounded-md overflow-hidden">
             {post.postPhotos.map((image) => (
               <Image
                 key={image.id}
                 source={{ uri: image.url }}
-                className="w-full h-72"
+                className="w-full aspect-square"
                 resizeMode="cover"
               />
             ))}
@@ -80,9 +78,9 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
         )}
       </Card.Content>
       <Card.Actions>
-        <View className="flex-row items-center w-full border-t border-gray-200 ">
+        <View className="flex-row items-center w-full">
           {/* Кнопки лайка и комментариев (слева) */}
-          <View className="-ml-1 flex-row items-center mr-2">
+          <View className="-ml-2 flex-row items-center mr-2">
             <IconButton
               icon={hasLiked ? "heart" : "heart-outline"}
               iconColor={hasLiked ? BG_COLORS.purple[400] : "gray"}
@@ -97,7 +95,7 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
           </View>
 
           {/* Поле ввода текста и кнопка отправки (справа) */}
-          <View className="flex-row items-center flex-1">
+          <View className="flex-row items-center flex-1 -mr-1">
             <TextInput
               placeholder="Напишите комментарий..."
               className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-sm"
