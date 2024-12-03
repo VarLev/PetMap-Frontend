@@ -58,8 +58,8 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
   ;
 
   return (
-    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex:1}}>
-      <View className={`flex-row w-full ${isIOS ? 'pt-6' : 'pt-3'} px-3 justify-center items-center`}>
+    <View style={{ position: 'relative', top: 0, left: 0, right: 0, zIndex:1}}>
+      <View className={`flex-row w-full ${isIOS ? 'pt-6' : 'pt-2'} px-2 justify-center items-center`}>
 
         <Searchbar
           onChangeText={onSearchTextChange}
@@ -86,7 +86,7 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
       
       {!isTagSelected && ( 
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-          <View className='flex-row space-x-2 px-2'>
+          <View className='flex-row space-x-2 px-1'>
             <CustomButtonWithIcon
               iconName='people-outline'
               iconSet='Ionicons'
