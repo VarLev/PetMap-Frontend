@@ -5,6 +5,7 @@ import {
   Image,
   StatusBar,
   StyleSheet,
+  Platform
 } from "react-native";
 import {
   Text,
@@ -46,6 +47,7 @@ import { User } from "@/dtos/classes/user/UserDTO";
 import { IUser } from "@/dtos/Interfaces/user/IUser";
 import AddCard from "../custom/buttons/AddCard";
 import MenuItemWrapper from "../custom/menuItem/MunuItemWrapper";
+import { shortenName } from "@/utils/utils";
 
 const ViewProfileComponent = observer(
   ({
@@ -63,6 +65,11 @@ const ViewProfileComponent = observer(
     const [refreshing, setRefreshing] = useState(false);
     const [isCurrentUser, setIsCurrentUser] = useState(false);
     const [rightIcon, setRightIcon] = useState<string | null>()
+    const [isIOS, setIsIOS] = useState(false);
+
+    useEffect(() => {
+      setIsIOS(Platform.OS === "ios");
+    }, []);
 
     const loadData = async () => {
       if (user.id === userStore.currentUser?.id) {
@@ -131,10 +138,10 @@ const ViewProfileComponent = observer(
                   source={{ uri: user?.thumbnailUrl! }}
                   className="w-full h-full"
                 />
-                <View style={styles.iconContainer}>
+                <View style={styles.iconContainer} className={`${isIOS ? 'mt-7' : 'mt-0'}`}>
                   {isCurrentUser && (
                     <Menu
-                      style={{ marginTop: 25 }}
+                    style={{ marginTop: 25 }}
                       visible={menuVisible}
                       onDismiss={closeMenu}
                       contentStyle={{ backgroundColor: "white" }}
@@ -197,12 +204,12 @@ const ViewProfileComponent = observer(
                         source={{ uri: item.thumbnailUrl || petUriImage }}
                         style={{ height: 150, borderRadius: 14 }}
                       />
-                      <Text className="block font-nunitoSansBold text-lg">
-                        {item.petName}
+                      <Text className="block font-nunitoSansBold text-lg mt-1 mb-[-8px] leading-5">
+                        {shortenName(item.petName)}, {calculateDogAge(item.birthDate)}
                       </Text>
-                      <Text className="block font-nunitoSansBold text-lg mb-auto">
+                      {/* <Text className="block font-nunitoSansBold text-lg mb-auto">
                         {calculateDogAge(item.birthDate)}
-                      </Text>
+                      </Text> */}
 
                       <View style={{ marginTop: 12 }}>
                         <Text className="font-nunitoSansRegular" numberOfLines = { 2 } ellipsizeMode = 'tail' >
@@ -335,6 +342,6 @@ const styles = StyleSheet.create({
     right: 8,
   },
   menuButton: {
-    backgroundColor: "white",
+    backgroundColor: "white",   
   },
 });

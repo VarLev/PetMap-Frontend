@@ -95,8 +95,9 @@ const FilterComponent:React.FC<FilterComponentProps> = observer(({ onFilterChang
           <Text className="-mb-1 text-base font-nunitoSansBold text-indigo-700">Общие</Text>
           <DistanceSlider distance={filter.distance} onDistanceChange={(d) => handleFieldChange('distance', d[0])} />
           <View className="pt-4  flex-row items-center">
-            <Checkbox
-              color='#3F00FF'
+          <Checkbox.Android 
+              color="blue"    
+              uncheckedColor="gray"      
               status={filter.showFullMap ? 'checked' : 'unchecked'}
               onPress={() => handleFieldChange('showFullMap', !filter.showFullMap)}
             />
@@ -104,8 +105,9 @@ const FilterComponent:React.FC<FilterComponentProps> = observer(({ onFilterChang
           </View>
           <TimeSlider startTime={filter.startTime || 0} endTime={filter.endTime || 1440 } onTimeChange={handleTimeChange}  />
           <View className="pt-4  flex-row items-center">
-            <Checkbox
-              color='#3F00FF'
+            <Checkbox.Android
+              color='blue'
+               uncheckedColor="gray"
               status={filter.showFullMap ? 'checked' : 'unchecked'}
               onPress={() => handleFieldChange('showFullMap', !filter.showFullMap)}
             />
