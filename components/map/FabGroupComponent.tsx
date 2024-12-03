@@ -53,8 +53,7 @@ const FabGroupComponent: React.FC<FabGroupProps> = ({ selectedNumber, setSelecte
         fabStyle={{
           backgroundColor: '#2F00B6',
           borderColor: 'white',
-          borderWidth: 5,
-          
+          borderWidth: 4,
         }}
         theme={{
           colors: { backdrop: 'black', text: 'black' },
