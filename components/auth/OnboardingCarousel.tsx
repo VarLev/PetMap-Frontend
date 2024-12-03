@@ -13,6 +13,7 @@ import { useSharedValue } from "react-native-reanimated";
 import { Text } from "react-native-paper";
 import i18n from "@/i18n";
 
+
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 
@@ -53,9 +54,11 @@ const OnboardingCarousel: React.FC = () => {
   return (
     <View style={{ flex: 1 }}>
       <Carousel
-        loop
+        loop={true}
         width={width}
         ref={ref}
+        pagingEnabled={true}
+        enabled={true}
         height={height * 0.6} // 480
         autoPlay={true}
         data={data}

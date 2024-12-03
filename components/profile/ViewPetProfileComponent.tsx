@@ -1,6 +1,6 @@
 import { Pet } from '@/dtos/classes/pet/Pet';
 import React, { useEffect, useRef, useState } from 'react';
-import { StatusBar, View,Image, StyleSheet } from 'react-native';
+import { StatusBar, View,Image, StyleSheet, Platform } from 'react-native';
 import { Text, IconButton, PaperProvider, Menu, Divider } from 'react-native-paper';
 import { calculateDogAge, getTagsByIndex } from '@/utils/utils';
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -22,6 +22,11 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
   const [menuVisible, setMenuVisible] = useState(false);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [rightIcon, setRightIcon] = useState<string | null>()
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    setIsIOS(Platform.OS === "ios");
+  }, []);
   
   useEffect(() => {
     //console.log(pet);
@@ -63,10 +68,10 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
           <View className="relative w-full aspect-square"> 
             <Image source={{ uri: pet?.thumbnailUrl || petUriImage }} className="w-full h-full" />
            <View className='flex-row w-full justify-between items-center pr-3' style={styles.iconBackContainer}>
-            <View className='bg-white rounded-full opacity-70' >
+           <View className={`bg-white rounded-full opacity-70 ${isIOS ? 'mt-8' : 'mt-0'}`}>
              <IconButton icon='arrow-left' size={25} iconColor='black'  onPress={handleBack}/> 
             </View>
-            <View >
+            <View className={`${isIOS ? 'mt-8' : 'mt-0'}`} >
               {isCurrentUser &&(<Menu 
                 style={{marginTop: 25}}
                 visible={menuVisible}
