@@ -61,11 +61,11 @@ class UIStore {
     } 
   }
 
-  async translateText(text: string, targetLanguage: string): Promise<string> {
+  async translateText(text: string): Promise<string> {
     try {
       const response = await apiClient.post('chatgpt/translate', {
         Text: text,
-        TargetLanguage: targetLanguage,
+        TargetLanguage: this.getSystemLanguage(),
       });
       return response.data.translatedText;
     } catch (error) {

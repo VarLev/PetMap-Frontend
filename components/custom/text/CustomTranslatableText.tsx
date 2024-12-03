@@ -7,15 +7,12 @@ import uiStore from '@/stores/UIStore';
 
 interface TranslatableTextProps {
   text: string;
-  sourceLanguage?: string;
-  targetLanguage?: string;
-  apiUrl: string;
+  className?: string;
 }
 
 const TranslatableText: React.FC<TranslatableTextProps> = ({
   text,
-  sourceLanguage = 'auto',
-  targetLanguage = 'ru',
+  className = '', // Указываем пустую строку как значение по умолчанию
 }) => {
   const [translatedText, setTranslatedText] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -25,8 +22,7 @@ const TranslatableText: React.FC<TranslatableTextProps> = ({
   const handleTranslate = async () => {
     setLoading(true);
     try {
-      const translatedText = await uiStore.translateText(text, targetLanguage);
-      console.log('sdsfsdfsdf',translatedText);
+      const translatedText = await uiStore.translateText(text);
       setTranslatedText(translatedText);
     } catch (error) {
       setModalVisible(true);
@@ -40,28 +36,47 @@ const TranslatableText: React.FC<TranslatableTextProps> = ({
     setTranslatedText(null);
   };
 
-
   return (
-    <View>
+    <View className={className}>
       <Text className="text-base font-nunitoSansRegular">
         {translatedText || text}
       </Text>
       {!translatedText ? (
-        <TouchableOpacity onPress={handleTranslate} disabled={loading} className='h-6 justify-start items-start'>
-          {!loading 
-            ? (
-              <IconSelectorComponent iconSet="MaterialIcons" iconName={'g-translate'} size={24} color={BG_COLORS.violet[300]} />
-            ) 
-            : (
-              <ActivityIndicator size="small" color={BG_COLORS.violet[300]} />
-            )}
+        <TouchableOpacity
+          onPress={handleTranslate}
+          disabled={loading}
+          className="h-6 justify-start items-start"
+        >
+          {!loading ? (
+            <IconSelectorComponent
+              iconSet="MaterialIcons"
+              iconName={'g-translate'}
+              size={24}
+              color={BG_COLORS.violet[300]}
+            />
+          ) : (
+            <ActivityIndicator size="small" color={BG_COLORS.violet[300]} />
+          )}
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity onPress={handleCancelTranslation} className='h-6 justify-start items-start'>
-          <IconSelectorComponent iconSet="Ionicons" iconName={'close-circle-outline'} size={24} color={BG_COLORS.violet[300]} />
+        <TouchableOpacity
+          onPress={handleCancelTranslation}
+          className="h-6 justify-start items-start"
+        >
+          <IconSelectorComponent
+            iconSet="Ionicons"
+            iconName={'close-circle-outline'}
+            size={24}
+            color={BG_COLORS.violet[300]}
+          />
         </TouchableOpacity>
       )}
-      <CustomAlert isVisible={isModalVisible} onClose={() => setModalVisible(false)} message={modalMessage} type="info" />
+      <CustomAlert
+        isVisible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        message={modalMessage}
+        type="info"
+      />
     </View>
   );
 };
