@@ -15,6 +15,7 @@ import userStore from "@/stores/UserStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import i18n from '@/i18n';
 import ScreenHolderLogo from "@/components/common/ScreenHolderLogo";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 GoogleSignin.configure({
   webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
@@ -69,6 +70,7 @@ const App = () => {
   }
 
   return (
+    <GestureHandlerRootView >
     <SafeAreaView className="bg-white h-full">
       <ScrollView>
         <View className="w-full h-full px-4 justify-center ">
@@ -111,6 +113,7 @@ const App = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </GestureHandlerRootView>
   );
 };
 
