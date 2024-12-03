@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Pressable, Platform, GestureResponderEvent  } from 'react-native';
+import { View, Pressable, Platform  } from 'react-native';
 import { TouchableRipple, List } from 'react-native-paper';
 
 
 interface CustomListItemWrapperProps {
-  onPress: (event: GestureResponderEvent) => void; 
+  onPress: () => void; 
   title: string; 
   leftIcon?: (props: any) => JSX.Element; 
 }

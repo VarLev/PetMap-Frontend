@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Pressable, GestureResponderEvent, Platform } from "react-native";
+import { View, Pressable, Platform } from "react-native";
 import { Menu, TouchableRipple } from "react-native-paper";
 
 type MenuItemWrapperProps = {
   icon: any;
   title: string;
-  onPress: () => (event: GestureResponderEvent) => void;
+  onPress: () => void;
 };
 
 const MenuItemWrapper: React.FC<MenuItemWrapperProps> = ({
