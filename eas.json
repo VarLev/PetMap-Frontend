@@ -27,6 +27,11 @@
         "simulator": true,
         "distribution": "internal"
       }
+    },
+    "testflight": {
+      "ios": {
+        "distribution": "internal"
+      }
     }
   },
   "submit": {
