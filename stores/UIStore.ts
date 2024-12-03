@@ -61,6 +61,18 @@ class UIStore {
     } 
   }
 
+  async translateText(text: string, targetLanguage: string): Promise<string> {
+    try {
+      const response = await apiClient.post('chatgpt/translate', {
+        Text: text,
+        TargetLanguage: targetLanguage,
+      });
+      return response.data.translatedText;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+
 }
 
 const uiStore = new UIStore();
