@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, ActivityIndicator, View } from 'react-native';
+import { FlatList, ActivityIndicator } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 import { getFileUrl, getFoldersInDirectory } from '@/firebaseConfig';
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';

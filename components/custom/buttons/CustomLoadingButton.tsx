@@ -38,7 +38,7 @@ const CustomLoadingButton = ({
       ${containerStyles} ${isLoading || loading ? "opacity-50" : ""}`}
     >
       {loading ||isLoading ? (
-        <ActivityIndicator size="small" color="#2F00B6" />
+        <ActivityIndicator size="small" color="white" />
       ) : (
         <Text
           className={`text-white font-nunitoSansRegular text-base ${textStyles}`}

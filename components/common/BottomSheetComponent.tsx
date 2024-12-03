@@ -56,6 +56,10 @@ const styles = StyleSheet.create({
   backgroundStyle: {
     zIndex: -10,
     elevation: 5,
+    shadowColor: '#000', // Цвет тени
+    shadowOffset: { width:0, height: 0 }, // Смещение тени
+    shadowOpacity: 0.4, // Прозрачность тени
+    shadowRadius: 5, // Радиус размытия тени
     backgroundColor: 'white',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,

@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { View, ScrollView, Image, TextInput } from 'react-native';
-import { Button, IconButton, Snackbar } from 'react-native-paper';
+import { IconButton, Snackbar } from 'react-native-paper';
 import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import feedStore from '@/stores/FeedStore';
+import CustomLoadingButton from '@/components/custom/buttons/CustomLoadingButton';
 
-const CreatePost: React.FC = () => {
+interface CreatePostProps {
+  onClose: () => void; // Метод для закрытия нижнего листа
+}
+
+const CreatePost: React.FC<CreatePostProps> = ({ onClose }) => {
   const [content, setContent] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -14,7 +19,7 @@ const CreatePost: React.FC = () => {
     let result = await launchImageLibraryAsync({
       mediaTypes: MediaTypeOptions.Images,
       allowsMultipleSelection: true,
-      selectionLimit: 3,
+      selectionLimit: 1,
       quality: 0.5,
     });
 
@@ -26,27 +31,38 @@ const CreatePost: React.FC = () => {
 
   const handleCreatePost = async () => {
     try {
+      if (!content) {
+        setSnackbarMessage('Добавьте текст поста.');
+        setSnackbarVisible(true);
+        return;
+      }
       await feedStore.createPost(content, images);
-      setContent('');
-      setImages([]);
-      setSnackbarMessage('Пост успешно создан!');
-      setSnackbarVisible(true);
-    } catch (error) {
+      handleClear();
+      onClose();
+    } catch {
       setSnackbarMessage('Ошибка при создании поста.');
       setSnackbarVisible(true);
     }
   };
+
+  const handleClear = () => {
+    setContent('');
+    setImages([]);
+    setSnackbarVisible(true);
+  }
 
   return (
     <ScrollView className="flex-1 p-4">
       {/* Контейнер для текстового поля и иконки камеры */}
       <View className="relative mb-2">
         <TextInput
-          className="border border-gray-300 rounded-lg p-3 pr-12 min-h-[100px] text-sm"
+          className="border border-gray-300 rounded-lg p-3 pr-12 min-h-[150px] text-sm"
           placeholder="Что у вас нового?"
           value={content}
           onChangeText={setContent}
           multiline
+          maxLength={250}
+          
         />
         <IconButton
           icon="camera"
@@ -66,13 +82,11 @@ const CreatePost: React.FC = () => {
           ))}
         </View>
       )}
-      <Button mode="contained" onPress={handleCreatePost}>
-        Создать пост
-      </Button>
+      <CustomLoadingButton handlePress={handleCreatePost} title='Создать пост'  />
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
-        duration={3000}
+        duration={2000}
       >
         {snackbarMessage}
       </Snackbar>
