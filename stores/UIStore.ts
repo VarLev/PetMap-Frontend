@@ -42,7 +42,7 @@ class UIStore {
     try { 
       await apiClient.post('/system/language', JSON.stringify(language), {
         headers: { 'Content-Type': 'application/json' }
-    });
+      });
     } 
     catch (error) 
     {
@@ -53,24 +53,12 @@ class UIStore {
   async getSystemLanguage() {
     try { 
       const response = await apiClient.get('/system/language');
-          return response.data;
+      return response.data;
     } 
     catch (error) 
     {
       return handleAxiosError(error);
     } 
-  }
-
-  async translateText(text: string): Promise<string> {
-    try {
-      const response = await apiClient.post('chatgpt/translate', {
-        Text: text,
-        TargetLanguage: this.getSystemLanguage(),
-      });
-      return response.data.translatedText;
-    } catch (error) {
-      return handleAxiosError(error);
-    }
   }
 
 }

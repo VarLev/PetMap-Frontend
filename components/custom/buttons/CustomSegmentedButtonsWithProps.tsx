@@ -13,6 +13,7 @@ interface CustomSegmentedButtonsProps {
   buttons: Button[]; // Кнопки передаются как пропс
   containerStyles?: string;
   buttonClassName?: string;
+  singleSelect?: boolean; // Флаг переключателя
 }
 
 const CustomSegmentedButtonsWithProps: React.FC<CustomSegmentedButtonsProps> = ({
@@ -21,14 +22,21 @@ const CustomSegmentedButtonsWithProps: React.FC<CustomSegmentedButtonsProps> = (
   buttons,
   containerStyles,
   buttonClassName,
+  singleSelect = false,
 }) => {
   const handlePress = (index: number) => {
-    if (values.includes(index)) {
-      // Если индекс уже есть в массиве, удаляем его
-      onValueChange(values.filter((value) => value !== index));
+    if (singleSelect) {
+      // Если включён режим переключателя, выбираем только один элемент
+      onValueChange(values.includes(index) ? [] : [index]);
     } else {
-      // Иначе добавляем его
-      onValueChange([...values, index]);
+      // Множественный выбор
+      if (values.includes(index)) {
+        // Если индекс уже есть в массиве, удаляем его
+        onValueChange(values.filter((value) => value !== index));
+      } else {
+        // Иначе добавляем его
+        onValueChange([...values, index]);
+      }
     }
   };
 
