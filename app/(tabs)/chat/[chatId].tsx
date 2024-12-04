@@ -22,16 +22,18 @@ const ChatScreen: React.FC = observer(() => {
 
 
   const checkUserIsBlocked = useCallback(async (otherUserId: string) => {
+    if (!otherUserId) return;
     try {
-      if (await ChatStore.checkBlocked(otherUserId)) {
-        setIsBlocked(true);
+      const isUserBlocked = await ChatStore.checkBlocked();
+      if (isUserBlocked !== isBlocked) {
+        setIsBlocked(isUserBlocked);
         console.log("User is blocked?:", isBlocked);
         console.log("ID другого пользователя:", otherUserId);
       }
     } catch (error) {
       console.error("Ошибка при проверке блокировки пользователя:", error);
     }
-  }, [isBlocked]);
+  }, [otherUserId, isBlocked]);
 
   useEffect(() => {
     if (otherUserId) {

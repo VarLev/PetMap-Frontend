@@ -1,6 +1,6 @@
 import { Pet } from '@/dtos/classes/pet/Pet';
 import React, { useEffect, useRef, useState } from 'react';
-import { StatusBar, View,Image, StyleSheet } from 'react-native';
+import { StatusBar, View,Image, StyleSheet, Platform } from 'react-native';
 import { Text, IconButton, PaperProvider, Menu, Divider } from 'react-native-paper';
 import { calculateDogAge, getTagsByIndex } from '@/utils/utils';
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -20,7 +20,13 @@ import MenuItemWrapper from '@/components/custom/menuItem/MunuItemWrapper';
 const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: () => void}) => {
   const sheetRef = useRef<BottomSheet>(null);
   const [menuVisible, setMenuVisible] = useState(false);
-  const [isCurrentUser, setIsCurrentUser] = useState( false);
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [rightIcon, setRightIcon] = useState<string | null>()
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    setIsIOS(Platform.OS === "ios");
+  }, []);
   
   useEffect(() => {
     //console.log(pet);
@@ -28,6 +34,9 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
       console.log(p.id, pet.id);
       if(p.id === pet.id){
         setIsCurrentUser(true);
+        setRightIcon("chevron-right");
+      } else {
+        setRightIcon(null);
       }
     });
   }, [pet]);
@@ -59,10 +68,10 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
           <View className="relative w-full aspect-square"> 
             <Image source={{ uri: pet?.thumbnailUrl || petUriImage }} className="w-full h-full" />
            <View className='flex-row w-full justify-between items-center pr-3' style={styles.iconBackContainer}>
-            <View className='bg-white rounded-full opacity-70' >
+           <View className={`bg-white rounded-full opacity-70 ${isIOS ? 'mt-8' : 'mt-0'}`}>
              <IconButton icon='arrow-left' size={25} iconColor='black'  onPress={handleBack}/> 
             </View>
-            <View >
+            <View className={`${isIOS ? 'mt-8' : 'mt-0'}`} >
               {isCurrentUser &&(<Menu 
                 style={{marginTop: 25}}
                 visible={menuVisible}
@@ -98,40 +107,41 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
         {pet.petName} {calculateDogAge(pet.birthDate)}
       </Text>
 
+
       <View className="pr-3 pl-4">
         <View>
           <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Основное</Text>
           <CustomTextComponent
             text="Собака"
-            rightIcon="chevron-right"
+            rightIcon={rightIcon}
             onRightIconPress={onEdit}
             leftIcon="paw-outline"
             iconSet="ionicons"
           />
           <CustomTextComponent
             text={getTagsByIndex(PETGENDERS_TAGS, Number(pet.gender!))}
-            rightIcon="chevron-right"
+            rightIcon={rightIcon}
             onRightIconPress={onEdit}
             leftIcon="transgender-outline"
             iconSet="ionicons"
           />
           <CustomTextComponent
             text={getTagsByIndex(BREEDS_TAGS, pet.breed!)}
-            rightIcon="chevron-right"
+            rightIcon={rightIcon}
             onRightIconPress={onEdit}
             leftIcon="dog"
             iconSet="materialCommunity"
           />
           <CustomTextComponent
             text={pet?.birthDate?.toLocaleDateString()}
-            rightIcon="chevron-right"
+            rightIcon={rightIcon}
             onRightIconPress={onEdit}
             leftIcon="cake-variant-outline"
             iconSet="materialCommunity"
           />
           <CustomTextComponent
             text={`${pet.weight ? `${pet.weight} кг` : ''}${pet.weight && pet.size ? ', ' : ''}${pet.size ? `${pet.size} см` : ''}`}
-            rightIcon="chevron-right"
+            rightIcon={rightIcon}
             onRightIconPress={onEdit}
             leftIcon="resize-outline"
             iconSet="ionicons"
@@ -195,6 +205,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
           <Divider className="mt-3" />
         </View>
 
+
         {/* Игровые предпочтения */}
         <View>
           <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Игровые предпочтения</Text>
@@ -210,7 +221,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
         {/* О питомце */}
         <View>
           <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">О питомце</Text>
-          <CustomTextComponent text={pet.additionalNotes} rightIcon="chevron-right" onRightIconPress={onEdit} />
+          <CustomTextComponent text={pet.additionalNotes} rightIcon={rightIcon} onRightIconPress={onEdit} />
           <Divider className="mt-3" />
         </View>
 
@@ -221,7 +232,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
             text={pet.instagram!}
             leftIcon="instagram"
             iconSet="fontAwesome"
-            rightIcon="chevron-right"
+            rightIcon={rightIcon}
             onRightIconPress={onEdit}
             platform="instagram"
           />
@@ -229,7 +240,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
             text={pet.facebook!}
             leftIcon="facebook"
             iconSet="fontAwesome"
-            rightIcon="chevron-right"
+            rightIcon={rightIcon}
             onRightIconPress={onEdit}
             platform="facebook"
           />

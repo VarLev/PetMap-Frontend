@@ -326,6 +326,37 @@ class ChatStore {
     });
   }
 
+   async acceptUserJoinWalk(walkId: string, userId: string, chatId: string) {
+    try {
+      const userId2fmcToken = await getPushTokenFromServer(userId);
+      if (userId2fmcToken) {
+        await sendPushNotification(
+          userId2fmcToken,
+          "Ваш запрос на присоединение к прогулке принят",
+          userStore?.currentUser?.name ?? "Пользователь",
+          { chatId }
+        );
+      }
+      const response = await apiClient.patch(`walkadvrt/accept/${walkId}`, {
+        userId: userId, // Передаем как объект
+      });
+      return response.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+
+  async declineUserJoinWalk(walkId: string, userId: string) {
+    try {
+      const response = await apiClient.patch(`walkadvrt/decline/${walkId}`, {
+        userId: userId,
+      });
+      return response.data;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+
   async getLastMessage(chatId: string) {
     const data = ref(database, `chats/${chatId}`);
     const snapshot = await get(data);
@@ -446,7 +477,7 @@ class ChatStore {
     }
   }
 
-  async checkBlocked(otherUserId: string) {
+  async checkBlocked() {
     try {
       const userId = userStore.currentUser?.id; // Текущий пользователь
       if (!userId) {
@@ -460,7 +491,7 @@ class ChatStore {
         return false;
       }
 
-      const blockUserId = otherUserId; // Другой пользователь
+      const blockUserId = chatData[0]?.otherUserId; // Другой пользователь
       if (!blockUserId) {
         console.error(
           "ID другого пользователя для проверки блокировки не найдено"

@@ -60,7 +60,13 @@ export default function ProfileLayout() {
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
         }} 
       />
-      
+      <Stack.Screen 
+        name="settings" 
+        options={{ 
+          title: 'Настройки',
+          headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
+        }} 
+      />
     </Stack>
    
    </>

@@ -1,10 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   TouchableOpacity,
   View,
   Image,
   StatusBar,
   StyleSheet,
+  Platform
 } from "react-native";
 import {
   Text,
@@ -46,6 +47,7 @@ import { User } from "@/dtos/classes/user/UserDTO";
 import { IUser } from "@/dtos/Interfaces/user/IUser";
 import AddCard from "../custom/buttons/AddCard";
 import MenuItemWrapper from "../custom/menuItem/MunuItemWrapper";
+import { shortenName } from "@/utils/utils";
 
 const ViewProfileComponent = observer(
   ({
@@ -62,6 +64,12 @@ const ViewProfileComponent = observer(
     const [menuVisible, setMenuVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [isCurrentUser, setIsCurrentUser] = useState(false);
+    const [rightIcon, setRightIcon] = useState<string | null>()
+    const [isIOS, setIsIOS] = useState(false);
+
+    useEffect(() => {
+      setIsIOS(Platform.OS === "ios");
+    }, []);
 
     const loadData = async () => {
       if (user.id === userStore.currentUser?.id) {
@@ -70,8 +78,8 @@ const ViewProfileComponent = observer(
         const user = await userStore.loadUser();
         //console.log(user.thumbnailUrl);
         setUser(user!);
-
         setIsCurrentUser(true);
+        setRightIcon("chevron-right");
       } else {
         // Загружаем другого пользователя
         if (!loadedUser.id) {
@@ -81,8 +89,13 @@ const ViewProfileComponent = observer(
         const otherUser = await userStore.getUserById(loadedUser.id);
         setUser(otherUser as User);
         setIsCurrentUser(false);
+        setRightIcon(null);
       }
     };
+
+    useEffect(() => {
+      loadData();
+    }, [])
 
     const handleRefresh = async () => {
       setRefreshing(true);
@@ -105,6 +118,7 @@ const ViewProfileComponent = observer(
       petStore.setPetProfile(newPat);
       router.push("/profile/pet/new/edit");
     };
+    
     return (
       <GestureHandlerRootView className="h-full">
         <PaperProvider>
@@ -124,10 +138,10 @@ const ViewProfileComponent = observer(
                   source={{ uri: user?.thumbnailUrl! }}
                   className="w-full h-full"
                 />
-                <View style={styles.iconContainer}>
+                <View style={styles.iconContainer} className={`${isIOS ? 'mt-7' : 'mt-0'}`}>
                   {isCurrentUser && (
                     <Menu
-                      style={{ marginTop: 25 }}
+                    style={{ marginTop: 25 }}
                       visible={menuVisible}
                       onDismiss={closeMenu}
                       contentStyle={{ backgroundColor: "white" }}
@@ -185,20 +199,20 @@ const ViewProfileComponent = observer(
                     style={{ alignItems: "center" }}
                     onPress={() => onPetOpen(item.id)}
                   >
-                    <Card className="w-48 h-62 p-2 m-2 rounded-2xl shadow bg-purple-100">
+                    <Card className="w-48 h-[260px] p-2 m-2 rounded-2xl shadow bg-purple-100">
                       <Card.Cover
                         source={{ uri: item.thumbnailUrl || petUriImage }}
                         style={{ height: 150, borderRadius: 14 }}
                       />
-                      <Text className="block font-nunitoSansBold text-lg">
-                        {item.petName}
+                      <Text className="block font-nunitoSansBold text-lg mt-1 mb-[-8px] leading-5">
+                        {shortenName(item.petName)}, {calculateDogAge(item.birthDate)}
                       </Text>
-                      <Text className="block font-nunitoSansBold text-lg">
+                      {/* <Text className="block font-nunitoSansBold text-lg mb-auto">
                         {calculateDogAge(item.birthDate)}
-                      </Text>
+                      </Text> */}
 
-                      <View className="">
-                        <Text className="font-nunitoSansRegular">
+                      <View style={{ marginTop: 12 }}>
+                        <Text className="font-nunitoSansRegular" numberOfLines = { 2 } ellipsizeMode = 'tail' >
                           {getTagsByIndex(BREEDS_TAGS, item.breed!)}
                         </Text>
                         <Text className="font-nunitoSansRegular">
@@ -226,7 +240,7 @@ const ViewProfileComponent = observer(
                   </Text>
                   <CustomTextComponent
                     text={user.description}
-                    rightIcon="chevron-right"
+                    rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                   />
                   <Divider />
@@ -252,27 +266,27 @@ const ViewProfileComponent = observer(
                     text={user.location}
                     leftIcon="location-pin"
                     iconSet="simpleLine"
-                    rightIcon="chevron-right"
+                    rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                   />
                   <CustomTextComponent
                     text={getTagsByIndex(LANGUAGE_TAGS, user.userLanguages!)}
                     leftIcon="language-outline"
                     iconSet="ionicons"
-                    rightIcon="chevron-right"
+                    rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                   />
                   <CustomTextComponent
                     text={getTagsByIndex(PROFESSIONS_TAGS, user.work!)}
                     leftIcon="work-outline"
-                    rightIcon="chevron-right"
+                    rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                   />
                   <CustomTextComponent
                     text={user.education}
                     leftIcon="school-outline"
                     iconSet="ionicons"
-                    rightIcon="chevron-right"
+                    rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                   />
                   <Divider className="mt-3" />
@@ -285,7 +299,7 @@ const ViewProfileComponent = observer(
                     text={user.instagram!}
                     leftIcon="instagram"
                     iconSet="fontAwesome"
-                    rightIcon="chevron-right"
+                    rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                     platform={"instagram"}
                   />
@@ -293,13 +307,14 @@ const ViewProfileComponent = observer(
                     text={user.facebook!}
                     leftIcon="facebook"
                     iconSet="fontAwesome"
-                    rightIcon="chevron-right"
+                    rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                     platform={"facebook"}
                   />
                   <Divider className="mt-3" />
                 </View>
-              </View>
+
+                </View>
               <View className="h-28" />
             </View>
           }
@@ -327,6 +342,6 @@ const styles = StyleSheet.create({
     right: 8,
   },
   menuButton: {
-    backgroundColor: "white",
+    backgroundColor: "white",   
   },
 });

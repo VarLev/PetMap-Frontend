@@ -9,7 +9,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 interface CustomSocialLinkInputProps {
   text?: string | string[] | null;
   leftIcon?: string;
-  rightIcon?: string;
+  rightIcon?: string | null;
   onRightIconPress?: () => void;
   maxLines?: number;
   iconSet?: 'material' | 'paper' | 'fontAwesome' | 'simpleLine' | 'ionicons'; // Поддержка разных наборов иконок

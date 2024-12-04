@@ -10,7 +10,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 interface CustomTextComponentProps {
   text?: string | number | string[] | null;
   leftIcon?: string;
-  rightIcon?: string;
+  rightIcon?: string | null;
   onRightIconPress?: () => void;
   maxLines?: number;
   iconSet?:

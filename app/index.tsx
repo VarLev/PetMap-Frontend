@@ -3,7 +3,7 @@ import { TouchableOpacity, View, Image } from "react-native";
 import { Text } from "react-native-paper";
 import OnboardingCarousel from "../components/auth/OnboardingCarousel";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView } from "react-native";
+import { ScrollView, Platform } from "react-native";
 import CustomButtonPrimary from "@/components/custom/buttons/CustomButtonPrimary";
 import { Redirect, router } from "expo-router";
 import { useStore } from "@/contexts/StoreProvider";
@@ -15,7 +15,7 @@ import userStore from "@/stores/UserStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import i18n from '@/i18n';
 import ScreenHolderLogo from "@/components/common/ScreenHolderLogo";
-import { Platform } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 GoogleSignin.configure({
   webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
@@ -70,9 +70,10 @@ const App = () => {
   }
 
   return (
+    <GestureHandlerRootView >
     <SafeAreaView className="bg-white h-full">
       <ScrollView>
-        <View className="w-full h-full px-4 justify-center">
+        <View className="w-full h-full px-4 justify-center ">
           <View className="flex-row mt-2 items-start justify-center">
             <Text variant="titleSmall" className="ml-0 text-xl font-nunitoSansBold mt-4 mb-2">
               {i18n.t('index.welcome')} 
@@ -112,6 +113,7 @@ const App = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </GestureHandlerRootView>
   );
 };
 

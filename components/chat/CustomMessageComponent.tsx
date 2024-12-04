@@ -14,6 +14,8 @@ import { renderWalkDetails, calculateTimeUntilNextWalk } from "@/utils/utils";
 import CircleIcon from "../custom/icons/CircleIcon";
 import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
 import { IUser } from "@/dtos/Interfaces/user/IUser";
+import chatStore from "@/stores/ChatStore";
+import { Pet } from "@/dtos/classes/pet/Pet";
 
 interface AdvtProps {
   item?: IWalkAdvrtDto[];
@@ -25,15 +27,15 @@ interface AdvtProps {
 const CustomMessageComponent = memo(({ message, otherUserId, chatId }: AdvtProps) => {
   const router = useRouter();
    const [showButtons, setShowButtons] = useState(false);
-  const [user, setUser] = useState<IUser | null>(null);
+    const [pets, setPets] = useState<Pet[] | null>(null);
+
+  const currentUser = userStore.currentUser;
 
   const item = mapStore.walkAdvrts; //нужно добавить метод вынимающий конкретную прогулку по id
 
   const advrtId = message.metadata?.advrtId;
 
-  const userId = message.author.id;
-
-  const visibleToUserId = message.metadata?.visibleToUserId;
+    const visibleToUserId = message.metadata?.visibleToUserId;
 
   const matchedItem = useMemo(
     () => item.find((advrt) => advrtId === advrt.id),
@@ -49,33 +51,38 @@ const CustomMessageComponent = memo(({ message, otherUserId, chatId }: AdvtProps
     ? calculateTimeUntilNextWalk(matchedItem)
     : "Данные отсутствуют";
 
-  async function getUser() {
-    const user: IUser = await userStore.getUserById(userId);
-
-    return setUser(user);
-  }
-
-  const pets = user?.petProfiles;
-
 
   useEffect(() => {
-    if (!user) {
-      getUser();
+    if (matchedItem) {
+setPets(matchedItem.userPets ?? []);
     }
-  }, [getUser, user]);
+  }, [matchedItem]);
 
   useEffect(() => {
-    if (visibleToUserId === userStore.currentUser?.id) {
+    if (visibleToUserId === currentUser?.id) {
       setShowButtons(true);
     }
-  }, [visibleToUserId]);
+  }, [visibleToUserId, currentUser]);
 
   const handleUserProfileOpen = (userId: string) => {
-    const userIsOwner = userId === userStore.currentUser?.id;
+    const userIsOwner = userId === currentUser?.id;
     const route = userIsOwner ? "/profile" : `/(tabs)/profile/${userId}`;
     router.push(route);
     mapStore.setBottomSheetVisible(false);
   };
+
+const handleAccept = async () => {
+  if (matchedItem?.id && currentUser?.id) {
+    await chatStore.acceptUserJoinWalk(matchedItem.id, otherUserId!, chatId!);
+  }
+};
+
+const handleDecline = async () => {
+  if (matchedItem?.id && currentUser?.id) {
+    await chatStore.declineUserJoinWalk(matchedItem.id, otherUserId!);
+  }
+}
+
 
   return (
     <>
@@ -89,18 +96,18 @@ const CustomMessageComponent = memo(({ message, otherUserId, chatId }: AdvtProps
         <View className="flex-row ">
           <TouchableOpacity
             className="rounded-2xl"
-            onPress={() => handleUserProfileOpen(userId)}
+            onPress={() => handleUserProfileOpen(matchedItem?.userId!)}
           >
             <Image
               source={{
-                uri: user?.thumbnailUrl || "https://via.placeholder.com/100",
+                uri: matchedItem?.userPhoto || "https://via.placeholder.com/100",
               }}
               className="w-20 h-20 rounded-2xl"
             />
           </TouchableOpacity>
           <View className="flex-1 ml-4">
             <Text className="w-full text-xl font-nunitoSansBold">
-              {user?.name || "Owner"}
+              {matchedItem?.userName || "Owner"}
             </Text>
             {showButtons && (
               <Text className="text-sm font-nunitoSansRegular">
@@ -213,12 +220,12 @@ const CustomMessageComponent = memo(({ message, otherUserId, chatId }: AdvtProps
           <View className="flex-row justify-between items-center bg-white ">
             <CustomButtonOutlined
               title={"Принять"}
-              handlePress={() => console.log("Принять")}
+              handlePress={handleAccept}
               containerStyles="flex-1 bg-[#ACFFB9] my-2 mr-2"
             />
             <CustomButtonOutlined
               title={"Отклонить"}
-              handlePress={() => console.log("Отклонить")}
+              handlePress={handleDecline}
               containerStyles="flex-1 bg-[#FA8072] my-2 ml-2"
             />
           </View>
@@ -231,6 +238,5 @@ const CustomMessageComponent = memo(({ message, otherUserId, chatId }: AdvtProps
 CustomMessageComponent.displayName = "CustomMessageComponent";
 
 
-CustomMessageComponent.displayName = "CustomMessageComponent";
 
 export default CustomMessageComponent;

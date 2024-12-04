@@ -10,7 +10,7 @@ interface AddCardProps {
 
 const AddCard: React.FC<AddCardProps> = ({ onPress, buttonText, cardClassName }) => {
   return (
-    <Card className={`w-full/2 h-[230px] m-2 p-2 border-3 border-dashed border-[#D9CBFF] rounded-2xl shadow-lg items-center justify-center ${cardClassName}`}
+    <Card className={`w-full/2 h-[260px] m-2 p-2 border-3 border-dashed border-[#D9CBFF] rounded-2xl shadow-lg items-center justify-center ${cardClassName}`}
     style={{ borderWidth: 3, borderColor: '#D9CBFF', width: 200 }}
     >
       <TouchableOpacity className="items-center" onPress={onPress}>

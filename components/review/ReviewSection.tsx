@@ -50,7 +50,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
 
       // Check if the current user has already left a review for this point
       const userReview = newReviews.find(
-        (review) => review.userId === userStore.currentUser.id
+        (review) => userStore.currentUser && review.userId === userStore.currentUser.id
       );
       if (userReview) {
         setExistingReview(userReview);
@@ -72,7 +72,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
     }
 
     try {
-      if (!userStore.currentUser.id || !userStore.currentUser.name) {
+      if (!userStore.currentUser || !userStore.currentUser.id || !userStore.currentUser.name) {
         console.error('User ID or name is missing');
         return;
       }
