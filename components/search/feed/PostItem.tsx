@@ -1,16 +1,23 @@
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Image, TextInput } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Text, Menu } from 'react-native-paper';
 import { Card, Avatar, IconButton } from 'react-native-paper';
 import { observer } from 'mobx-react-lite';
 import { IPost } from '@/dtos/Interfaces/feed/IPost';
 import { BG_COLORS } from '@/constants/Colors';
-import feedStore from '@/stores/FeedStore';
 import { runInAction } from 'mobx';
+import feedStore from '@/stores/FeedStore';
+import userStore from "@/stores/UserStore";
 
 const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
-  const [hasLiked, setHasLiked] = React.useState<boolean>(post.hasLiked);
-  const [commentText, setCommentText] = React.useState<string>('');
+  const [hasLiked, setHasLiked] = useState<boolean>(post.hasLiked);
+  const [commentText, setCommentText] = useState<string>('');
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
+
+  const openMenu = () => setMenuVisible(true);
+
+  const closeMenu = () => setMenuVisible(false);
 
   useEffect(() => {
     (async () => {
@@ -21,6 +28,12 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
       runInAction(() => {
         post.likesCount = updatedLikesCount; // Реактивное обновление
       });
+
+      if (post.userId === userStore.currentUser?.id) {
+        setIsCurrentUser(true);
+      } else {
+        setIsCurrentUser(false);
+      }
     })();
   }, [post]);
 
@@ -43,6 +56,14 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
     }
   };
 
+  const deletePost = () => {
+    console.log('Удалили пост')
+  }
+
+  const complainOnPost = () => {
+    console.log('Пожаловались на пост')
+  }
+
   return (
     <Card className="mx-2 mt-2 bg-white rounded-2xl">
       <Card.Content>
@@ -56,13 +77,29 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
               </Text>
             </View>
           </View>
-          <IconButton
-            icon="dots-vertical"
-            style={{ margin: 0 }}
-            onPress={() => console.log("Menu clicked")}
-            size={20}
-          />
+          <View>
+            <Menu
+              contentStyle={{
+                backgroundColor: "white",
+                borderRadius: 10,
+                top: 40
+              }}
+              visible={menuVisible}
+              onDismiss={closeMenu}
+              anchor={<IconButton
+                icon="dots-vertical"
+                style={{ margin: 0 }}
+                onPress={openMenu}
+                size={20}
+              />}
+            >
+              {isCurrentUser ?
+              <Menu.Item onPress={deletePost} title="Удалить" /> :
+              <Menu.Item onPress={complainOnPost} title="Пожаловаться" />}
+            </Menu>
+          </View>
         </View>
+
         <Text className="my-1 text-sm">{post.content}</Text>
         {post.postPhotos.length > 0 && (
           <View className="rounded-md overflow-hidden">
