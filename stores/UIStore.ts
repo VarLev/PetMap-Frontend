@@ -63,9 +63,11 @@ class UIStore {
 
   async translateText(text: string): Promise<string> {
     try {
+      const currentLanguageIndex = await this.getSystemLanguage(); 
+       
       const response = await apiClient.post('chatgpt/translate', {
         Text: text,
-        TargetLanguage: this.getSystemLanguage(),
+        TargetLanguage: Language[currentLanguageIndex]  
       });
       return response.data.translatedText;
     } catch (error) {
