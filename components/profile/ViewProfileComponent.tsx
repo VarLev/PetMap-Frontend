@@ -44,6 +44,7 @@ import AddCard from "../custom/buttons/AddCard";
 import MenuItemWrapper from "../custom/menuItem/MunuItemWrapper";
 import { shortenName } from "@/utils/utils";
 import i18n from "@/i18n";
+import TranslatableText from "../custom/text/CustomTranslatableText";
 
 const ViewProfileComponent = observer(
   ({
@@ -231,6 +232,7 @@ const ViewProfileComponent = observer(
 
               <View className="pr-3 pl-4">
                 <View>
+               
                   <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
                     {i18n.t('UserProfile.aboutMe')}
                   </Text>
@@ -238,6 +240,7 @@ const ViewProfileComponent = observer(
                     text={user.description}
                     rightIcon={rightIcon}
                     onRightIconPress={onEdit}
+                    enableTranslation={true}
                   />
                   <Divider />
                 </View>
