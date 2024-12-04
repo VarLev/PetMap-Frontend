@@ -15,10 +15,6 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
 
-  const openMenu = () => setMenuVisible(true);
-
-  const closeMenu = () => setMenuVisible(false);
-
   useEffect(() => {
     (async () => {
       const updatedLikesCount = await feedStore.fetchLikesCount(post.id);
@@ -55,6 +51,10 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
       console.error('Error updating like:', error);
     }
   };
+
+  const openMenu = () => setMenuVisible(true);
+
+  const closeMenu = () => setMenuVisible(false);
 
   const deletePost = () => {
     console.log('Удалили пост')
