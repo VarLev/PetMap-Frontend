@@ -85,6 +85,13 @@ class UserStore {
     this.fUid = user.user.uid;
   }
 
+  async getCurrentUser(): Promise<IUser | null> {
+    if(this.currentUser !== null && this.currentUser !== undefined)
+      return this.currentUser;
+    else
+      return await this.getCurrentUserForProvider();
+  }
+
   getCleanUser(obj: any): any  {
     if (Array.isArray(obj)) {
       return obj.map(item => this.getCleanUser(item));

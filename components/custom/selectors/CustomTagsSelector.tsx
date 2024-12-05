@@ -1,3 +1,4 @@
+import i18n from '@/i18n';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Tags from 'react-native-tags';
@@ -102,7 +103,7 @@ const CustomTagsSelector: React.FC<CustomTagsSelectorProps> = ({
       {!readonlyMode && visibleTagsCount && tags.length > visibleTagsCount && (
         <TouchableOpacity onPress={() => handleTagShortPress(!showAll)} className="mt-2">
           <Text className="text-indigo-700 text-sm font-nunitoSansBold">
-            {showAll ? 'Свернуть' : `Показать ещё (${tags.length - visibleTagsCount})`}
+            {showAll ? i18n.t('tagSelectors.collapse') : i18n.t('tagSelectors.showMore')+`(${tags.length - visibleTagsCount})`}
           </Text>
         </TouchableOpacity>
       )}

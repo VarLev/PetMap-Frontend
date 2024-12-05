@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -8,52 +8,97 @@ interface Button {
 }
 
 interface CustomSegmentedButtonsProps {
-  values: number[]; // Массив выбранных индексов
-  onValueChange: (value: number[]) => void; // Возвращаем массив выбранных индексов
+  values: number | number[]; // Может быть число или массив
+  onValueChange: (value: number | number[]) => void; // Возвращаем число или массив
   buttons: Button[]; // Кнопки передаются как пропс
-  containerStyles?: string;
-  buttonClassName?: string;
-  singleSelect?: boolean; // Флаг переключателя
+  containerStyles?: object;
+  buttonStyles?: object;
 }
 
 const CustomSegmentedButtonsWithProps: React.FC<CustomSegmentedButtonsProps> = ({
   values,
   onValueChange,
   buttons,
-  containerStyles,
-  buttonClassName,
-  singleSelect = false,
+  containerStyles = {},
+  buttonStyles = {},
 }) => {
+  const isSingleSelect = !Array.isArray(values);
+
   const handlePress = (index: number) => {
-    if (singleSelect) {
-      // Если включён режим переключателя, выбираем только один элемент
-      onValueChange(values.includes(index) ? [] : [index]);
+    if (isSingleSelect) {
+      // Если одинарный выбор, не позволяем снять выбор.
+      // Если выбранная кнопка уже активна, то ничего не делаем.
+      if (values !== index) {
+        onValueChange(index);
+      }
     } else {
-      // Множественный выбор
-      if (values.includes(index)) {
-        // Если индекс уже есть в массиве, удаляем его
-        onValueChange(values.filter((value) => value !== index));
+      const selectedValues = values as number[];
+      if (selectedValues.includes(index)) {
+        // Если уже выбран, снимаем выбор
+        onValueChange(selectedValues.filter((value) => value !== index));
       } else {
-        // Иначе добавляем его
-        onValueChange([...values, index]);
+        // Если не выбран, добавляем в список выбранных
+        onValueChange([...selectedValues, index]);
       }
     }
   };
 
+  const selectedIndexes = useMemo(() => {
+    if (isSingleSelect) {
+      return [values];
+    }
+    return values as number[];
+  }, [values, isSingleSelect]);
+
+  const isSelected = (index: number) => selectedIndexes.includes(index);
+
   return (
-    <View className={`flex-row h-[52px] mb-2 border border-gray-500 rounded-lg overflow-hidden ${containerStyles}`}>
+    <View
+      style={[
+        {
+          flexDirection: 'row',
+          height: 52,
+          marginBottom: 8,
+          borderWidth: 1,
+          borderColor: '#ccc',
+          borderRadius: 8,
+          overflow: 'hidden',
+        },
+        containerStyles,
+      ]}
+    >
       {buttons.map((button, index) => (
         <TouchableOpacity
-          key={index} // Используем индекс как ключ
-          className={`flex-1 p-2 items-center justify-center border-r border-gray-500 ${
-            values.includes(index) ? 'bg-indigo-800 border-indigo-800' : 'bg-white'
-          } ${index === 0 ? 'rounded-l-lg' : ''} ${index === buttons.length - 1 ? 'rounded-r-lg border-r-0' : ''} ${buttonClassName}`}
-          onPress={() => handlePress(index)} // Передаем индекс наружу
+          key={index}
+          style={[
+            {
+              flex: 1,
+              padding: 10,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: isSelected(index) ? '#4f46e5' : '#fff',
+              borderRightWidth: index !== buttons.length - 1 ? 1 : 0,
+              borderColor: '#ccc',
+            },
+            buttonStyles,
+          ]}
+          onPress={() => handlePress(index)}
         >
           {button.icon && (
-            <Ionicons name={button.icon} size={20} color={values.includes(index) ? 'white' : 'black'} />
+            <Ionicons
+              name={button.icon}
+              size={20}
+              color={isSelected(index) ? '#fff' : '#000'}
+            />
           )}
-          <Text style={{ color: values.includes(index) ? 'white' : 'black', marginTop: button.icon ? 4 : 0 }}>{button.label}</Text>
+          <Text
+            style={{
+              color: isSelected(index) ? '#fff' : '#000',
+              marginTop: button.icon ? 4 : 0,
+            }}
+          >
+            {button.label}
+          </Text>
         </TouchableOpacity>
       ))}
     </View>

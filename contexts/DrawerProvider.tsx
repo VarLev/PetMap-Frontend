@@ -33,7 +33,9 @@ export const DrawerProvider = ({ children, defaultComponent }: DrawerProviderPro
   };
 
   const closeDrawer = () => {
-    if (!isDrawerOpen.current) return;
+    
+    //if (!isDrawerOpen.current) return;
+    console.log('closeDrawer');
     drawerRef.current?.closeDrawer();
   };
 

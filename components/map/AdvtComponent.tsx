@@ -23,6 +23,7 @@ import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 import CircleIcon from "../custom/icons/CircleIcon";
 import chatStore from "@/stores/ChatStore";
 import  { renderWalkDetails } from "@/utils/utils";
+import i18n from "@/i18n";
 
 interface AdvtProps {
   advrt: IWalkAdvrtDto;
@@ -137,12 +138,12 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
             <View className="flex-1 ml-2 justify-between">
               <View className="flex-1 justify-center">
                 <Text className="w-full text-xl font-nunitoSansBold max-h-14">
-                  {advrt.userName || "Owner"}
+                  {advrt.userName || i18n.t("WalkDetails.owner")}
                 </Text>
               </View>
               <View className="flex-1 justify-center">
                 <CustomTextComponent
-                  text={walkDetails}                  
+                  text={walkDetails}
                   leftIcon="time-outline"
                   iconSet="ionicons"
                   className_="p-0"
@@ -162,14 +163,14 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                   (p) => p.id === userStore.currentUser?.id
                 ) ? (
                   <Button
-                mode="contained"
-                className="mt-2 bg-indigo-800"
-                onPress={handleDelete}
-              >
-                <Text className="font-nunitoSansRegular text-white">
-                  Удалить прогулку
-                </Text>
-              </Button>
+                    mode="contained"
+                    className="mt-2 bg-indigo-800"
+                    onPress={handleDelete}
+                  >
+                    <Text className="font-nunitoSansRegular text-white">
+                      {i18n.t("WalkDetails.deleteWalk")}
+                    </Text>
+                  </Button>
                 ) : (
                   <Button
                     mode="contained"
@@ -177,18 +178,18 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                     onPress={handleInvite}
                   >
                     <Text className="font-nunitoSansRegular text-white">
-                      Присоединиться
+                      {i18n.t("WalkDetails.joinWalk")}
                     </Text>
                   </Button>
                 )}
               </View>
             </View>
           </View>
-
+    
           {userIsOwner && (
             <>
               <Text className="text-base text-indigo-800 font-nunitoSansBold">
-                Участники
+                {i18n.t("WalkDetails.participants")}
               </Text>
               <View className="flex-row items-center">
                 {userIsOwner && participants && participants.length > 0 ? (
@@ -210,11 +211,14 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                           <Image
                             source={{
                               uri:
-                                p?.thumbnailUrl ||
-                                "https://via.placeholder.com/100",
+                                p?.thumbnailUrl || "https://via.placeholder.com/100",
                             }}
                             className="w-10 h-10 rounded-full"
-                            style={p.status === WalkRequestStatus.Pending ? { opacity: 0.5 } : {}}
+                            style={
+                              p.status === WalkRequestStatus.Pending
+                                ? { opacity: 0.5 }
+                                : {}
+                            }
                           />
                           <Text className="text-xs text-gray-500 font-nunitoSansBold text-center">
                             {p?.name}
@@ -224,117 +228,118 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                     ))
                 ) : (
                   <Text className="text-xs text-gray-400 font-nunitoSansRegular">
-                    Пока к вашей прогулке еще никто не присоединился
+                    {i18n.t("WalkDetails.noParticipants")}
                   </Text>
                 )}
               </View>
             </>
           )}
-
-        <Text className="text-base pt-2 text-indigo-800 font-nunitoSansBold">    
-          Питомцы
-        </Text>
-         <View className="w-full pt-1 items-center">
-         
-         {pets && 
-            pets.slice(0, showAllPets ? pets.length : 2).map((pet, index) => (
-
-              <Surface
-                key={index}
-                elevation={0}
-                className="mt-2 w-full flex-row bg-purple-100 rounded-2xl"
-              >
-                <View className="p-1 flex-row ">
-                  <TouchableOpacity
-                    className="rounded-2xl"
-                    onPress={() => handlePetProfileOpen(pet.id)}
+    
+          <Text className="text-base pt-2 text-indigo-800 font-nunitoSansBold">
+            {i18n.t("WalkDetails.pets")}
+          </Text>
+          <View className="w-full pt-1 items-center">
+            {pets &&
+              pets
+                .slice(0, showAllPets ? pets.length : 2)
+                .map((pet, index) => (
+                  <Surface
+                    key={index}
+                    elevation={0}
+                    className="mt-2 w-full flex-row bg-purple-100 rounded-2xl"
                   >
-                    <Image
-                      source={{ uri: pet?.thumbnailUrl || petUriImage }}
-                      className=" w-24 h-24 rounded-xl"
-                    />
-                  </TouchableOpacity>
-                  <View className="ml-2">
-                    <View className="flex-col items-start">
-                      <View className="justify-center items-center flex-row">
-                        <Ionicons name="male" size={18} color="indigo" />
-                        <Text className="pl-1 text-lg font-nunitoSansBold">
-                          {pet.petName || "Pet"},
-                        </Text>
-                      </View>
-                      <Text className="text-sm -mt-1 font-nunitoSansRegular">
-                        {calculateDogAge(pet.birthDate)} {getTagsByIndex(BREEDS_TAGS, pet.breed!) || "Порода"}
-                      </Text>
-                    </View>
-                    <View className="flex-col pt-0 ">
-                      <View className="flex-row justify-between items-center">
-                        <Text className="font-nunitoSansRegular text-sm">
-                          Дружелюбность
-                        </Text>
-                        <StarRatingDisplay
-                          rating={pet.friendliness ?? 0}
-                          starSize={15}
-                          color="#BFA8FF"
-                          maxStars={5}
-                          starStyle={{ marginHorizontal: 2 }}
-                          StarIconComponent={CircleIcon}
+                    <View className="p-1 flex-row ">
+                      <TouchableOpacity
+                        className="rounded-2xl"
+                        onPress={() => handlePetProfileOpen(pet.id)}
+                      >
+                        <Image
+                          source={{ uri: pet?.thumbnailUrl || petUriImage }}
+                          className=" w-24 h-24 rounded-xl"
                         />
-                      </View>
-                      <View className=" flex-row justify-between items-center">
-                        <Text className="font-nunitoSansRegular text-sm">
-                          Активность
-                        </Text>
-                        <StarRatingDisplay
-                          rating={pet.activityLevel ?? 0}
-                          starSize={15}
-                          color="#BFA8FF"
-                          starStyle={{ marginHorizontal: 2 }}
-                          StarIconComponent={CircleIcon}
-                        />
+                      </TouchableOpacity>
+                      <View className="ml-2">
+                        <View className="flex-col items-start">
+                          <View className="justify-center items-center flex-row">
+                            <Ionicons name="male" size={18} color="indigo" />
+                            <Text className="pl-1 text-lg font-nunitoSansBold">
+                              {pet.petName || i18n.t("WalkDetails.pet")},{" "}
+                            </Text>
+                          </View>
+                          <Text className="text-sm -mt-1 font-nunitoSansRegular">
+                            {calculateDogAge(pet.birthDate)}{" "}
+                            {getTagsByIndex(BREEDS_TAGS, pet.breed!) ||
+                              i18n.t("WalkDetails.breed")}
+                          </Text>
+                        </View>
+                        <View className="flex-col pt-0 ">
+                          <View className="flex-row justify-between items-center">
+                            <Text className="font-nunitoSansRegular text-sm">
+                              {i18n.t("WalkDetails.friendliness")}
+                            </Text>
+                            <StarRatingDisplay
+                              rating={pet.friendliness ?? 0}
+                              starSize={15}
+                              color="#BFA8FF"
+                              maxStars={5}
+                              starStyle={{ marginHorizontal: 2 }}
+                              StarIconComponent={CircleIcon}
+                            />
+                          </View>
+                          <View className=" flex-row justify-between items-center">
+                            <Text className="font-nunitoSansRegular text-sm">
+                              {i18n.t("WalkDetails.activity")}
+                            </Text>
+                            <StarRatingDisplay
+                              rating={pet.activityLevel ?? 0}
+                              starSize={15}
+                              color="#BFA8FF"
+                              starStyle={{ marginHorizontal: 2 }}
+                              StarIconComponent={CircleIcon}
+                            />
+                          </View>
+                        </View>
                       </View>
                     </View>
-                  </View>
-                </View>
-              </Surface>
-            ))
-          }
-
-          {pets && pets.length > 2 && !showAllPets && (
-            <Button onPress={() => setShowAllPets(true)} mode="text" >
-              <Text className="font-nunitoSansBold">
-               Показать всех
-              </Text>
-              
-            </Button>
-          )}
-
-          {showAllPets && (
-            <Button onPress={() => setShowAllPets(false)} mode="text" >
-              <Text className="font-nunitoSansBold">
-               Скрыть
-              </Text>
-            </Button>
-          )}
-         </View>
-          
-                
-          
-
-          <View >
+                  </Surface>
+                ))}
+    
+            {pets && pets.length > 2 && !showAllPets && (
+              <Button onPress={() => setShowAllPets(true)} mode="text">
+                <Text className="font-nunitoSansBold">
+                  {i18n.t("WalkDetails.showAllPets")}
+                </Text>
+              </Button>
+            )}
+    
+            {showAllPets && (
+              <Button onPress={() => setShowAllPets(false)} mode="text">
+                <Text className="font-nunitoSansBold">
+                  {i18n.t("WalkDetails.hidePets")}
+                </Text>
+              </Button>
+            )}
+          </View>
+    
+          <View>
             <ScrollView>
               <Text className="mt-2 text-justify text-base text-gray-600 font-nunitoSansRegular">
-                {advrt.description || "Описание"}
+                {advrt.description || i18n.t("WalkDetails.description")}
               </Text>
               <Text className="mt-2 text-justify text-base text-indigo-800 font-nunitoSansBold">
-               Детали прогулки
+                {i18n.t("WalkDetails.walkDetails")}
               </Text>
-              <CustomTextComponent text={advrt.address}  leftIcon='location-pin' iconSet="simpleLine"/>
-            
-              <CustomTextComponent text={walkDetails}  leftIcon='calendar-outline' iconSet="ionicons" /> 
-                
-               
-             
-            
+              <CustomTextComponent
+                text={advrt.address}
+                leftIcon="location-pin"
+                iconSet="simpleLine"
+              />
+    
+              <CustomTextComponent
+                text={walkDetails}
+                leftIcon="calendar-outline"
+                iconSet="ionicons"
+              />
             </ScrollView>
           </View>
         </View>
@@ -344,10 +349,10 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
             setRequestVisible(false);
           }}
           onConfirm={() => handleConfirmInvite()}
-          message="Между вами и владельцем питомца будет создан чат и отправлен запрос на присоединение к прогулке"
-          title="Отправка запроса"
-          confirmText="Ок"
-          cancelText="Отмена"
+          message={i18n.t("WalkDetails.confirmMessage")}
+          title={i18n.t("WalkDetails.confirmTitle")}
+          confirmText={i18n.t("WalkDetails.confirm")}
+          cancelText={i18n.t("WalkDetails.cancel")}
         />
       </ScrollView>
     );

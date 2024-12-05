@@ -15,6 +15,7 @@ import DateOrTimeRangePicker from "../custom/pickers/DateOrTimeRangePicker";
 import CustomSegmentedButtonsWithProps from "../custom/buttons/CustomSegmentedButtonsWithProps";
 import CustomLoadingButton from "../custom/buttons/CustomLoadingButton";
 import CustomAlert from "../custom/alert/CustomAlert";
+import i18n from "@/i18n";
 
 interface AdvtEditProps {
   coordinates: [number, number];
@@ -66,12 +67,12 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
         })
         .catch((error) => {
           console.error("Error fetching address:", error);
-          setAddress("Не удалось получить адрес");
+          setAddress(i18n.t("WalkEditDetails.addressNotFound"));
         });
     }, [coordinates]);
 
-    const handleSelectedDays = (newSelectedIndices: number[]) => {
-      setselectedDays(newSelectedIndices); // Обновляем выбранные индексы
+    const handleSelectedDays = (newSelectedIndices: number | number[]) => {
+      setselectedDays(newSelectedIndices as number[]); // Обновляем выбранные индексы
     };
 
     const showAlert = (title: string, message: string) => {
@@ -82,84 +83,46 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
 
     const handleSave = async () => {
       if (selectedPets.length === 0) {
-        showAlert(
-          "Ошибка",
-          "Выберите хотя бы одного питомца для участия в прогулке."
-        );
+        showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.selectAtLeastOnePet"));
         return;
       }
-
+    
       // Проверка доступности создания прогулки в выбранном месте
       if (!mapStore.isAvaliableToCreateWalk) {
-        showAlert("Ошибка", "В этом месте нельзя создать прогулку.");
+        showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.cannotCreateWalkHere"));
         return;
       }
-
+    
       // Проверка на заполнение адреса
       if (!address.trim()) {
-        showAlert("Ошибка", "Укажите адрес прогулки.");
+        showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.provideAddress"));
         return;
       }
-      console.log("duration", duration);
+    
       if (duration <= 0 || duration > 180) {
-        showAlert("Ошибка", "Укажите корректную продолжительность прогулки.");
+        showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.invalidDuration"));
         return;
       }
-
+    
       // Проверка на заполнение описания
       if (!description.trim()) {
-        showAlert("Ошибка", "Добавьте описание прогулки.");
+        showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.addDescription"));
         return;
       }
-
+    
       // Проверка на заполнение времени и даты
       if (isSwitchOn) {
-        // Если регулярная прогулка, проверяем, что дни недели выбраны
         if (selectedDays.length === 0) {
-          showAlert(
-            "Ошибка",
-            "Выберите хотя бы один день для регулярной прогулки."
-          );
+          showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.selectAtLeastOneDay"));
           return;
         }
       } else {
-        // Если разовая прогулка, проверяем, что дата установлена
         if (!date) {
-          showAlert("Ошибка", "Укажите дату для разовой прогулки.");
+          showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.provideDate"));
           return;
         }
       }
-
-    const updatedUserWalk :IWalkAdvrtDto = {
-      id: undefined,
-      isEnabled: true,
-      createdAt: new Date(),
-      date: new Date(),
-      latitude: coordinates[1],
-      longitude: coordinates[0],
-      participants: [],
-      address: address,
-      userId: userStore.currentUser?.id || '',
-      description: description,
-      status: WalkAdvrtStatus.Active,
-      type: AdvrtType.Single,
-      userPhoto: userStore.currentUser?.thumbnailUrl || '',
-      userName: userStore.currentUser?.name || '',
-      userPets: userStore.currentUser?.petProfiles || [],
-      duration: duration,
-      isRegular: isSwitchOn,
-      selectedDays: selectedDays,
-      startTime: time.getHours() * 60 + time.getMinutes(),
-      city: userStore.getCurrentUserCity() || ''
     };
-    const isGetedBonuses = await mapStore.addWalkAdvrt(updatedUserWalk)
-    if(isGetedBonuses)
-      onAdvrtAddedInvite(true);
-    else
-      onAdvrtAddedInvite(false);
-
-    
-  };
 
     const togglePetSelection = (petId: string) => {
       setSelectedPets((prevSelectedPets) =>
@@ -181,7 +144,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
         >
           <View className="h-full bg-white rounded-lg px-2 flex-1 justify-between">
             <Text className="text-base font-nunitoSansBold text-indigo-700">
-              Детали прогулки
+              {i18n.t("WalkEditDetails.walkDetails")}
             </Text>
             <View className="pt-4">
               <DateOrTimeRangePicker
@@ -193,7 +156,9 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
               />
               <Checkbox.Item
                 label={`${
-                  isSwitchOn ? "Регулярная прогулка" : "Разовая прогулка"
+                  isSwitchOn
+                    ? i18n.t("WalkEditDetails.regularWalk")
+                    : i18n.t("WalkEditDetails.singleWalk")
                 }`}
                 labelVariant="bodyLarge"
                 status={isSwitchOn ? "checked" : "unchecked"}
@@ -211,13 +176,13 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
                   values={selectedDays}
                   onValueChange={handleSelectedDays}
                   buttons={[
-                    { label: "ПН" },
-                    { label: "ВТ" },
-                    { label: "СР" },
-                    { label: "ЧТ" },
-                    { label: "ПТ" },
-                    { label: "СБ" },
-                    { label: "ВС" },
+                    { label: i18n.t("WalkEditDetails.monday") },
+                    { label: i18n.t("WalkEditDetails.tuesday") },
+                    { label: i18n.t("WalkEditDetails.wednesday") },
+                    { label: i18n.t("WalkEditDetails.thursday") },
+                    { label: i18n.t("WalkEditDetails.friday") },
+                    { label: i18n.t("WalkEditDetails.saturday") },
+                    { label: i18n.t("WalkEditDetails.sunday") },
                   ]}
                 />
               ) : (
@@ -231,13 +196,13 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
 
             <View className="mt-2">
               <CustomOutlineInputText
-                label="Адрес"
+                label={i18n.t("WalkEditDetails.address")}
                 value={address}
                 handleChange={setAddress}
               />
               <View className="pt-2" />
               <CustomOutlineInputText
-                label="Описание"
+                label={i18n.t("WalkEditDetails.description")}
                 value={description}
                 handleChange={setDescription}
                 numberOfLines={3}
@@ -285,17 +250,21 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
             {petProfiles.length > 2 && (
               <Button onPress={() => setShowAllPets(!showAllPets)} mode="text">
                 <Text className="font-nunitoSansBold">
-                  {showAllPets ? "Скрыть" : "Показать еще"}
+                  {showAllPets
+                    ? i18n.t("WalkEditDetails.hide")
+                    : i18n.t("WalkEditDetails.showMore")}
                 </Text>
               </Button>
             )}
 
             <View className="h-20 mt-4 ">
-              <CustomLoadingButton title="Сохранить" handlePress={handleSave} />
+              <CustomLoadingButton
+                title={i18n.t("WalkEditDetails.save")}
+                handlePress={handleSave}
+              />
             </View>
           </View>
         </ScrollView>
-     
 
         <CustomAlert
           isVisible={alertVisible}
@@ -304,7 +273,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
           title={alertTitle}
           type="error"
         />
-          </>
+      </>
     );
   }
 );

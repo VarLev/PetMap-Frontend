@@ -44,7 +44,7 @@ import AddCard from "../custom/buttons/AddCard";
 import MenuItemWrapper from "../custom/menuItem/MunuItemWrapper";
 import { shortenName } from "@/utils/utils";
 import i18n from "@/i18n";
-import TranslatableText from "../custom/text/CustomTranslatableText";
+
 
 const ViewProfileComponent = observer(
   ({

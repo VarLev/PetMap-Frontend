@@ -6,7 +6,6 @@ import { Button, Text, Divider } from 'react-native-paper';
 import userStore from '@/stores/UserStore';
 import { observer } from 'mobx-react-lite';
 import { User } from '@/dtos/classes/user/UserDTO';
-import { GENDERS_TAGS, INTEREST_TAGS, LANGUAGE_TAGS, PROFESSIONS_TAGS } from '@/constants/Strings';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import PhotoSelector from '../common/PhotoSelector';
 import { parseDateToString, parseStringToDate, setUserAvatarDependOnGender } from '@/utils/utils';
@@ -233,7 +232,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
               />
 
               <CustomDropdownList 
-                tags={GENDERS_TAGS} 
+                tags={i18n.t('tags.gender') as string[]} 
                 label={i18n.t('EditProfileComponent.genderLabel')} 
                 initialSelectedTag={editableUser.gender!} 
                 onChange={(text) => handleChange('gender', text)}
@@ -250,7 +249,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
               <Text className="text-lg font-nunitoSansBold text-indigo-800">{i18n.t('EditProfileComponent.interestsTitle')}</Text>
               <Text className='font-nunitoSansRegular text-gray-600'>{i18n.t('EditProfileComponent.interestsSubtitle')}</Text>
               <CustomTagsSelector
-                tags={INTEREST_TAGS}
+                tags={i18n.t('tags.interests') as string[]}
                 initialSelectedTags={editableUser.interests || []}
                 onSelectedTagsChange={(selectedTags) => handleChange('interests', selectedTags)}
                 maxSelectableTags={5}
@@ -267,9 +266,9 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 handleChange={(text) => handleChange('location', text)} 
                
               />
-              <MultiTagDropdown tags={LANGUAGE_TAGS} initialSelectedTags={editableUser.userLanguages} label={i18n.t('EditProfileComponent.languagesLabel')} onChange={(text) => handleChange('userLanguages', text)} />
+              <MultiTagDropdown tags={i18n.t('tags.languages') as string[]} initialSelectedTags={editableUser.userLanguages} label={i18n.t('EditProfileComponent.languagesLabel')} onChange={(text) => handleChange('userLanguages', text)} />
              
-              <MultiTagDropdown tags={PROFESSIONS_TAGS} initialSelectedTags={editableUser.work || []} label={i18n.t('EditProfileComponent.professionLabel')} onChange={(text) => handleChange('work', text)} searchable listMode='MODAL'  />
+              <MultiTagDropdown tags={i18n.t('tags.professions') as string[] } initialSelectedTags={editableUser.work || []} label={i18n.t('EditProfileComponent.professionLabel')} onChange={(text) => handleChange('work', text)} searchable listMode='MODAL'  />
               
               <CustomOutlineInputText 
                 containerStyles='mt-4' 

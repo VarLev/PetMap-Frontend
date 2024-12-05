@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, Image } from "react-native";
-import { Button, List, Switch, TouchableRipple } from "react-native-paper";
+import { Button, List, TouchableRipple } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/Images";
 import userStore from "@/stores/UserStore";
@@ -9,7 +9,7 @@ import { router } from "expo-router";
 import { useDrawer } from "@/contexts/DrawerProvider";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import CustomListItemWrapper from "@/components/custom/menuItem/ListItemWrapper";
-
+import i18n from "@/i18n";
 
 const SidebarUserProfileComponent = () => {
   const currentUser = userStore.currentUser;
@@ -56,16 +56,28 @@ const SidebarUserProfileComponent = () => {
               className="h-20 w-20 rounded-xl"
             />
             <View className="flex-col ml-3 flex-1">
-              <Text className="text-xl text-gray-800 font-nunitoSansBold">
-                {currentUser?.name && currentUser.name.length > 31
-                  ? `${(currentUser.name as string).slice(0, 31)}...`
-                  : currentUser?.name ?? "Анонимный пользователь"}
+              <Text
+                className="text-xl text-gray-800 font-nunitoSansBold"
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {currentUser?.name
+                  ? currentUser?.name
+                  : i18n.t("Sidebar.anonymousUser")}
               </Text>
-              <Text className="-mt-1 text-gray-800 font-nunitoSansRegular">
+              <Text
+                className="-mt-1 text-gray-800 font-nunitoSansRegular"
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
                 {currentUser?.email}
               </Text>
-              <Text className="mt-1 text-indigo-800 font-nunitoSansBold">
-                Открыть профиль
+              <Text
+                className="mt-1 text-indigo-800 font-nunitoSansBold"
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {i18n.t("Sidebar.openProfile")}
               </Text>
             </View>
           </View>
@@ -74,10 +86,14 @@ const SidebarUserProfileComponent = () => {
           className="w-full mt-4 justify-center items-center  "
           onPress={handleProfilePress}
         >
-          <View className="h-9 w-full  flex-row justify-center items-center">
+          <View className="h-9 w-full flex-row justify-center items-center">
             <Image source={images.bonuse} className="h-8 w-8" />
             <View className="flex-col ml-3">
-              <Text className="text-xl text-gray-800 font-nunitoSansBold">
+              <Text
+                className="text-xl text-gray-800 font-nunitoSansBold"
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
                 {currentUser?.balance}
               </Text>
             </View>
@@ -85,32 +101,43 @@ const SidebarUserProfileComponent = () => {
         </TouchableRipple>
 
         {/* Подписка */}
-        <View className="flex-row mt-4  content-center items-center">
+        <View className="flex-row mt-4 content-center items-center">
           <Button
             icon={() => (
               <FontAwesome
                 name="diamond"
                 size={20}
-                className="bg-indigo-800"
                 color="#8F00FF"
               />
             )}
           >
-            <Text className="font-nunitoSansBold">Подписка</Text>
+            <Text
+              className="font-nunitoSansBold"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {i18n.t("Sidebar.subscription")}
+            </Text>
           </Button>
           <Button
             mode="elevated"
             className="bg-purple-100 text-xs rounded-3xl text-indigo-800"
-            onPress={() => console.log("7 дней бесплатно")}
+            onPress={() => console.log(i18n.t("Sidebar.freeTrial"))}
           >
-            <Text className="font-nunitoSansBold">Подписаться</Text>
+            <Text
+              className="font-nunitoSansBold"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {i18n.t("Sidebar.subscribe")}
+            </Text>
           </Button>
         </View>
 
         {/* Меню */}
         <List.Section>
           <CustomListItemWrapper
-            title="Задания и бонусы"
+            title={i18n.t("Sidebar.tasksAndBonuses")}
             leftIcon={() => (
               <List.Icon
                 icon={() => (
@@ -121,7 +148,7 @@ const SidebarUserProfileComponent = () => {
             onPress={handleJobPress}
           />
           <CustomListItemWrapper
-            title="Мои прогулки"
+            title={i18n.t("Sidebar.myWalks")}
             leftIcon={() => (
               <List.Icon
                 icon={() => <Feather name="users" size={20} color="#474747" />}
@@ -130,8 +157,8 @@ const SidebarUserProfileComponent = () => {
             onPress={handleWalksPress}
           />
           <CustomListItemWrapper
-            onPress={() => console.log("Мои локации")}
-            title="Мои локации"
+            onPress={() => console.log(i18n.t("Sidebar.myLocations"))}
+            title={i18n.t("Sidebar.myLocations")}
             leftIcon={() => (
               <List.Icon
                 icon={() => (
@@ -140,19 +167,8 @@ const SidebarUserProfileComponent = () => {
               />
             )}
           />
-          {/* <CustomListItemWrapper
-            title="Мои объявления"
-            leftIcon={() => (
-              <List.Icon
-                icon={() => (
-                  <Feather name="briefcase" size={20} color="#474747" />
-                )}
-              />
-            )}
-            onPress={() => console.log("Мои объявления")}
-          /> */}
           <CustomListItemWrapper
-            title="Настройки"
+            title={i18n.t("Sidebar.settings")}
             leftIcon={() => (
               <List.Icon
                 icon={() => (
@@ -163,7 +179,7 @@ const SidebarUserProfileComponent = () => {
             onPress={handleSettingsPress}
           />
           <CustomListItemWrapper
-            title="Поддержка"
+            title={i18n.t("Sidebar.support")}
             leftIcon={() => (
               <List.Icon
                 icon={() => (
@@ -171,7 +187,7 @@ const SidebarUserProfileComponent = () => {
                 )}
               />
             )}
-            onPress={() => console.log("Поддержка")}
+            onPress={() => console.log(i18n.t("Sidebar.support"))}
           />
         </List.Section>
       </View>
