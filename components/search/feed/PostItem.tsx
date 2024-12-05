@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, Image, TextInput } from 'react-native';
-import { Text, Menu } from 'react-native-paper';
+import { Text, Menu, ActivityIndicator } from 'react-native-paper';
 import { Card, Avatar, IconButton } from 'react-native-paper';
 import { observer } from 'mobx-react-lite';
 import { IPost } from '@/dtos/Interfaces/feed/IPost';
@@ -14,6 +14,7 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
   const [commentText, setCommentText] = useState<string>('');
   const [menuVisible, setMenuVisible] = useState(false);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [isLoadingDeletingPost, setIsLoadingDeletingPost] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -56,8 +57,17 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
 
   const closeMenu = () => setMenuVisible(false);
 
-  const deletePost = () => {
-    console.log('Удалили пост')
+  const deletePost = async (postId: string) => {
+    try {
+      setIsLoadingDeletingPost(true);
+      await feedStore.deletePost(postId);
+      await feedStore.fetchPosts();
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    } finally {
+      setMenuVisible(false);
+      setIsLoadingDeletingPost(false);
+    }
   }
 
   const complainOnPost = () => {
@@ -94,7 +104,18 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
               />}
             >
               {isCurrentUser ?
-              <Menu.Item onPress={deletePost} title="Удалить" /> :
+              <Menu.Item
+                contentStyle={{
+                  display: "flex"
+                }}
+                onPress={() => deletePost(post.id)}
+                title={isLoadingDeletingPost ?
+                  <ActivityIndicator
+                    size="small"
+                    color={BG_COLORS.purple[400]}
+                  /> : 
+                  "Удалить"}
+              /> :
               <Menu.Item onPress={complainOnPost} title="Пожаловаться" />}
             </Menu>
           </View>

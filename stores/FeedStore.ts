@@ -178,6 +178,15 @@ class FeedStore {
     }
   }
   
+  async deletePost(postId: string) {
+    try {
+      if (postId) {
+        await apiClient.delete(`/post/${postId}`);
+      }
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
 
 }
 
