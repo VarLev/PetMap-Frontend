@@ -3,7 +3,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import apiClient from "@/hooks/axiosConfig";
 import { IPostPhotos, IPost } from "@/dtos/Interfaces/feed/IPost";
-import { Post, Comment } from "@/dtos/classes/feed/Post";
+import { Post, CommentWithUser } from "@/dtos/classes/feed/Post";
 import { handleAxiosError } from "@/utils/axiosUtils";
 import { storage } from "@/firebaseConfig";
 import { randomUUID } from "expo-crypto";
@@ -52,7 +52,6 @@ class FeedStore {
       const response = await apiClient.get(`/post` );
       
       const fetchedPosts = response.data.map((postData: any) => new Post(postData));
-      console.log(fetchedPosts);
       if (fetchedPosts.length === 0) {
         this.setPosts(fetchedPosts);
         return;
@@ -87,19 +86,43 @@ class FeedStore {
     }
   }
 
+  async fetchGetComments(postId: string) {
+    this.setLoading(true);
+    try {
+      const response = await apiClient.get(`/post/${postId}/comments`);
+      return response.data;
+    } catch (error) {
+      handleAxiosError(error);
+      return 0;
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
   async addComment(postId: string, content: string) {
+    this.setLoading(true);
     try {
       const response = await apiClient.post(`/post/${postId}/comments`, {
         userId: this.getUserId(),
         content,
       });
-      const newComment = new Comment(response.data);
+      const newComment = new CommentWithUser(response.data);
+      newComment.userAvatar = userStore.currentUser?.thumbnailUrl!;
+      newComment.userName = userStore.currentUser?.name!;
+      newComment.userId = userStore.currentUser?.id!;
+
       const post = this.posts.find((p) => p.id === postId);
-      if (post) {
-        post.comments.push(newComment);
-      }
+
+      runInAction(() => {
+        if (post) {
+          post.comments.push(newComment);
+        }; // Обновление в рамках действия
+      });
+
     } catch (error) {
       return handleAxiosError(error);
+    } finally {
+      this.setLoading(false);
     }
   }
 
@@ -116,10 +139,9 @@ class FeedStore {
         })),
       });
       const newPost = new Post(response.data);
-      console.log(response.data);
       newPost.userAvatar = userStore.currentUser?.thumbnailUrl!;
       newPost.userName = userStore.currentUser?.name!;
-      newPost.createdAt = new Date().toISOString();
+      newPost.createdAt = new Date();
       runInAction(() => {
         this.posts.unshift(newPost); // Обновление в рамках действия
       });

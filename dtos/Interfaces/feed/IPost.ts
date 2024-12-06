@@ -5,26 +5,36 @@ export interface IPostPhotos {
     url: string;
   }
   
-  export interface IComment {
-    id: string;
-    userId: string;
-    content: string;
-    createdAt: string;
-  }
+export interface IComment {
+  id: string;
+  userId: string;
+  content: string;
+  createdAt: string;
+}
   
-  export interface IPost {
-    id: string;
-    userId: string;
-    title: string;
-    content: string;
-    postPhotos: IPostPhotos[];
-    likesCount: number;
-    hasLiked: boolean;
-    comments: IComment[];
-    createdAt: string;
-    userAvatar?: string;
-    userName?: string;
+export interface IPost {
+  id: string;
+  userId: string;
+  title: string;
+  content: string;
+  postPhotos: IPostPhotos[];
+  likesCount: number;
+  hasLiked: boolean;
+  comments: ICommentWithUser[];
+  createdAt: Date;
+  userAvatar?: string;
+  userName?: string;
 
-    incrementLikes: () => void;
-    decrementLikes: () => void;
-  }
+  incrementLikes: () => void;
+  decrementLikes: () => void;
+}
+
+export interface ICommentWithUser {
+  id: string;
+  postId: string;
+  userId: string;
+  content: string;
+  createdAt: Date;
+  userAvatar?: string;
+  userName?: string;
+}
