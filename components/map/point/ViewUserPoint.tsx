@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Linking, View, Text } from 'react-native';
-import { AMENITIES_TAGS, USERSPOINTTYPE_TAGS } from '@/constants/Strings';
 import CustomButtonPrimary from '../../custom/buttons/CustomButtonPrimary';
 import CustomTagsSelector from '@/components/custom/selectors/CustomTagsSelector';
 import ImageModalViewer from '@/components/common/ImageModalViewer';
@@ -10,7 +9,7 @@ import { getTagsByIndex } from '@/utils/utils';
 import SkeletonCard from '@/components/custom/cards/SkeletonCard';
 import ReviewSection from '@/components/review/ReviewSection';
 import { MapPointType } from '@/dtos/enum/MapPointType';
-
+import i18n from '@/i18n'; // Импорт i18n
 
 interface CompositeFormProps {
   mapPoint: IPointEntityDTO;
@@ -22,7 +21,7 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    console.log('Загружается полная информация о точке');
+    console.log(i18n.t('ViewUserPoint.loading'));
     const fetchData = async () => {
       if (!mapPoint) return;
 
@@ -35,7 +34,7 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
         await getImageUrl(point.thumbnailUrl);
         setPointData(point);
       } catch (error) {
-        console.error('Ошибка при получении данных точки:', error);
+        console.error(i18n.t('ViewUserPoint.errors.fetchError'), error);
       } finally {
         setLoading(false);
       }
@@ -50,7 +49,7 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
       const image = await mapStore.requestDownloadURL(url);
       if (image) setImageUrl(image);
     } catch (error) {
-      return;
+      console.error(i18n.t('ViewUserPoint.errors.imageError'), error);
     }
   };
 
@@ -60,12 +59,13 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
     )}`;
 
     Linking.openURL(mapUrl).catch((err) => {
-      Alert.alert('Ошибка', 'Не удается открыть карту.');
-      console.error('Ошибка при попытке открыть URL:', err);
+      Alert.alert(
+        i18n.t('ViewUserPoint.errors.openMapErrorTitle'),
+        i18n.t('ViewUserPoint.errors.openMapErrorMessage')
+      );
+      console.error(i18n.t('ViewUserPoint.errors.openMapErrorConsole'), err);
     });
   };
-
- 
 
   const handleFetchReviews = useCallback(
     async (page: number) => {
@@ -73,7 +73,7 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
         const reviews = await mapStore.getReviewsByPointId(mapPoint.id);
         return reviews;
       } catch (error) {
-        console.error('Ошибка при загрузке отзывов:', error);
+        console.error(i18n.t('ViewUserPoint.errors.fetchReviewsError'), error);
         return [];
       }
     },
@@ -83,28 +83,25 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
   return (
     <View className="px-4">
       {loading ? (
-        // Рендерите здесь ваши скелетоны или индикаторы загрузки
-        <View className="">
+        <View>
           <SkeletonCard />
           <SkeletonCard />
         </View>
       ) : (
         <>
           {pointData.mapPointType === MapPointType.Note ? (
-            // Если это заметка, рендерим только описание
             <>
               <Text className="pt-2 text-lg font-nunitoSansBold text-indigo-700">
-                Описание
+                {i18n.t('ViewUserPoint.description')}
               </Text>
               <Text className="text-base font-nunitoSansRegular">
                 {pointData.description}
               </Text>
             </>
           ) : (
-            // Если это не заметка, рендерим все остальное
             <>
               <Text className="px-2 text-2xl font-nunitoSansBold">
-                {getTagsByIndex(USERSPOINTTYPE_TAGS, mapPoint.mapPointType)}
+                {getTagsByIndex(i18n.t('tags.USERSPOINTTYPE_TAGS') as string[], mapPoint.mapPointType)}
               </Text>
               <View className="-mt-2 h-36 overflow-hidden flex-row">
                 <ImageModalViewer
@@ -120,13 +117,13 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
                 />
                 <View className="pt-2 flex-col w-56">
                   <Text className="text-lg font-nunitoSansBold text-indigo-700">
-                    Название
+                    {i18n.t('ViewUserPoint.name')}
                   </Text>
                   <Text className="text-sm font-nunitoSansRegular">
                     {pointData.name}
                   </Text>
                   <Text className=" text-lg font-nunitoSansBold text-indigo-700">
-                    Адрес
+                    {i18n.t('ViewUserPoint.address')}
                   </Text>
                   <Text className="text-sm font-nunitoSansRegular">
                     {pointData.address}
@@ -135,21 +132,21 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
               </View>
               <View className="flex-col">
                 <CustomButtonPrimary
-                  title="Открыть в Google Maps"
+                  title={i18n.t('ViewUserPoint.openInGoogleMaps')}
                   handlePress={handleOpenMap}
                 />
                 <Text className="pt-2 text-lg font-nunitoSansBold text-indigo-700">
-                  Описание
+                  {i18n.t('ViewUserPoint.description')}
                 </Text>
                 <Text className="text-base font-nunitoSansRegular">
                   {pointData.description}
                 </Text>
                 <View>
                   <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
-                    Удобства
+                    {i18n.t('ViewUserPoint.amenities')}
                   </Text>
                   <CustomTagsSelector
-                    tags={AMENITIES_TAGS}
+                    tags={i18n.t('tags.AMENITIES_TAGS') as string[]}
                     initialSelectedTags={pointData.amenities!}
                     readonlyMode
                     visibleTagsCount={10}
@@ -161,7 +158,6 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
         </>
       )}
 
-      {/* Рендерим отзывы только если это не заметка */}
       {pointData.mapPointType !== MapPointType.Note && (
         <ReviewSection
           key={mapPoint.id}

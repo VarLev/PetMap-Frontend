@@ -3,6 +3,7 @@ import { Portal, FAB } from 'react-native-paper';
 import IconSelectorComponent from '../custom/icons/IconSelectorComponent'; // Ваш компонент для отображения иконок
 import { MapPointType } from '@/dtos/enum/MapPointType';
 import { BG_COLORS } from '@/constants/Colors';
+import i18n from '@/i18n';
 
 interface FabGroupProps {
   selectedNumber: number;
@@ -63,82 +64,73 @@ const FabGroupComponent: React.FC<FabGroupProps> = ({ selectedNumber, setSelecte
           {
             icon: () => (
               <IconSelectorComponent
-                iconName='people-outline'
-                iconSet='Ionicons'
+                iconName="people-outline"
+                iconSet="Ionicons"
                 size={24}
-                color='white'
+                color="white"
               />
             ),
-            label: 'Прогулка',
-            color: 'white',
-            labelTextColor: 'white',
-            labelStyle: { fontFamily: 'NunitoSans_700Bold' },
+            label: i18n.t("FabGroup.walk"),
+            color: "white",
+            labelTextColor: "white",
+            labelStyle: { fontFamily: "NunitoSans_700Bold" },
             onPress: () => {
-              handleIconChange('people-outline', 'Ionicons'); // Изменяем иконку FAB
+              handleIconChange("people-outline", "Ionicons"); // Изменяем иконку FAB
               handleActionPress(MapPointType.Walk); // Обновляем число
             },
-            style: { backgroundColor: '#9076ea' },
+            style: { backgroundColor: "#9076ea" },
           },
           {
             icon: () => (
               <IconSelectorComponent
-                iconName='alert-circle-outline'
-                iconSet='MaterialCommunityIcons'
+                iconName="alert-circle-outline"
+                iconSet="MaterialCommunityIcons"
                 size={24}
-                color='white'
+                color="white"
               />
             ),
-            label: 'Опасность',
-            labelTextColor: 'white',
-            labelStyle: { fontFamily: 'NunitoSans_700Bold' },
+            label: i18n.t("FabGroup.danger"),
+            labelTextColor: "white",
+            labelStyle: { fontFamily: "NunitoSans_700Bold" },
             onPress: () => {
-              handleIconChange(
-                'alert-octagram-outline',
-                'MaterialCommunityIcons'
-              ); // Изменяем иконку FAB
-              handleActionPress(MapPointType.Danger); // Обновляем число
+              handleIconChange("alert-octagram-outline", "MaterialCommunityIcons");
+              handleActionPress(MapPointType.Danger);
             },
             style: { backgroundColor: `${BG_COLORS.indigo[700]}` },
           },
           {
             icon: () => (
               <IconSelectorComponent
-                iconName='note-alert-outline'
-                iconSet='MaterialCommunityIcons'
+                iconName="note-alert-outline"
+                iconSet="MaterialCommunityIcons"
                 size={24}
-                color='white'
+                color="white"
               />
             ),
-            label: 'Предложить метку',
-            labelTextColor: 'white',
-            labelStyle: { fontFamily: 'NunitoSans_700Bold' },
+            label: i18n.t("FabGroup.proposeMarker"),
+            labelTextColor: "white",
+            labelStyle: { fontFamily: "NunitoSans_700Bold" },
             onPress: () => {
-              handleIconChange(
-                'note-alert-outline',
-                'MaterialCommunityIcons'
-              ); // Изменяем иконку FAB
-              handleActionPress(MapPointType.UsersCustomPoint); // Обновляем число
+              handleIconChange("note-alert-outline", "MaterialCommunityIcons");
+              handleActionPress(MapPointType.UsersCustomPoint);
             },
             style: { backgroundColor: `${BG_COLORS.indigo[700]}` },
           },
           {
             icon: () => (
               <IconSelectorComponent
-                iconName='location-pin'
-                iconSet='SimpleLine'
+                iconName="location-pin"
+                iconSet="SimpleLine"
                 size={24}
-                color='white'
+                color="white"
               />
             ),
-            label: 'Моя заметка',
-            labelTextColor: 'white',
-            labelStyle: { fontFamily: 'NunitoSans_700Bold' },
+            label: i18n.t("FabGroup.myNote"),
+            labelTextColor: "white",
+            labelStyle: { fontFamily: "NunitoSans_700Bold" },
             onPress: () => {
-              handleIconChange(
-                'location-pin',
-                'SimpleLine'
-              ); // Изменяем иконку FAB
-              handleActionPress(MapPointType.Note); // Обновляем число
+              handleIconChange("location-pin", "SimpleLine");
+              handleActionPress(MapPointType.Note);
             },
             style: { backgroundColor: `${BG_COLORS.indigo[700]}` },
           },

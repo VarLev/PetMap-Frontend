@@ -1,10 +1,11 @@
+//интегрирован перевод
+
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Alert, BackHandler, View } from 'react-native';
 import { Button, Text, Divider } from 'react-native-paper';
 import userStore from '@/stores/UserStore';
 import { observer } from 'mobx-react-lite';
 import { User } from '@/dtos/classes/user/UserDTO';
-import { GENDERS_TAGS, INTEREST_TAGS, LANGUAGE_TAGS, PROFESSIONS_TAGS } from '@/constants/Strings';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import PhotoSelector from '../common/PhotoSelector';
 import { parseDateToString, parseStringToDate, setUserAvatarDependOnGender } from '@/utils/utils';
@@ -20,6 +21,7 @@ import { router } from 'expo-router';
 import CustomLoadingButton from '../custom/buttons/CustomLoadingButton';
 import { useControl } from '@/hooks/useBonusControl';
 import { BonusContex } from '@/contexts/BonusContex';
+import i18n from '@/i18n';
 
 const TASK_IDS = {
   userEdit:{
@@ -66,18 +68,18 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
     
     // Функция, которая срабатывает при нажатии кнопки "назад"
     const backAction = () => {
-      Alert.alert("Подтверждение", "Вы уверены, что хотите выйти?", [
+      Alert.alert(i18n.t('EditProfileComponent.confirmTitle'), i18n.t('EditProfileComponent.confirmMessage'), [
         {
-          text: "Отмена",
-          onPress: () => null, // Ничего не делать, просто закрыть диалог
-          style: "cancel"
+          text: i18n.t('EditProfileComponent.cancel'),
+          onPress: () => null,
+          style: 'cancel'
         },
-        { 
-          text: "Да", 
-          onPress: () => router.back() // Выйти из приложения
+        {
+          text: i18n.t('EditProfileComponent.exit'),
+          onPress: () => router.back()
         }
       ]);
-      return true; // Возвращаем true, чтобы предотвратить стандартное поведение (закрытие экрана)
+      return true;
     };
 
     // Подписываемся на событие нажатия кнопки "назад"
@@ -102,14 +104,14 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
   const CheckErrors = () => {
     if (!editableUser.name || !birthDate ) {
       // Вывод ошибки, если не все обязательные поля заполнены
-      alert("Пожалуйста, заполните все обязательные поля: Имя, Дата рождения.");
+      alert(i18n.t('EditProfileComponent.error.requiredFields'));
       return false;
     }
     else{
       // Проверка корректности введенной даты
       const date = parseStringToDate(birthDate);
       if (!date) {
-        alert("Некорректная дата рождения. Пожалуйста, введите дату в формате YYYY-MM-DD.");
+        alert(i18n.t('EditProfileComponent.error.invalidDate'));
         return false;
       }
       else{
@@ -117,7 +119,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
         const birthDateObj = new Date(date);
         const age = today.getFullYear() - birthDateObj.getFullYear();
         if (age < 14 ) {
-          alert("Не корректная дата рождения");
+          alert(i18n.t('EditProfileComponent.error.ageRestriction'));
           return false;
         }
       }
@@ -215,44 +217,39 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
             <View className="p-2">
               <CustomOutlineInputText 
                 containerStyles='mt-2' 
-                label='Как вас зовут?' 
+                label={i18n.t('EditProfileComponent.nameLabel')}
                 value={editableUser.name || ''} 
                 handleChange={(text) => handleChange('name', text)}
               />
               <CustomOutlineInputText
                 containerStyles="mt-4"
-                placeholder='Дата рождения YYYY-MM-DD'
+                placeholder={i18n.t('EditProfileComponent.birthDatePlaceholder')}
                 mask="9999-99-99"
-                label="Дата рождения"
+                label={i18n.t('EditProfileComponent.birthDateLabel')}
                 value={birthDate}
                 handleChange={setBirthDate}
                 keyboardType='number-pad'
               />
-              {/* <CustomOutlineInputText 
-                containerStyles='mt-4' 
-                label='День рождения' 
-                value={editableUser.birthDate ? editableUser.birthDate.toLocaleDateString() : undefined} 
-                handleChange={(text) => handleChange('birthDate', new Date(text))}
-              /> */}
+
               <CustomDropdownList 
-                tags={GENDERS_TAGS} 
-                label='Пол' 
+                tags={i18n.t('tags.gender') as string[]} 
+                label={i18n.t('EditProfileComponent.genderLabel')} 
                 initialSelectedTag={editableUser.gender!} 
                 onChange={(text) => handleChange('gender', text)}
               />
               <CustomOutlineInputText 
                 containerStyles='mt-4' 
-                label='Обо мне' 
+                label={i18n.t('EditProfileComponent.descriptionLabel')} 
                 value={editableUser.description || ''} 
                 handleChange={(text) => handleChange('description', text)} 
                 numberOfLines={7}
               />
             </View>
             <View className="p-2 ">
-              <Text className="text-lg font-nunitoSansBold text-indigo-800">Интересы</Text>
-              <Text className='font-nunitoSansRegular text-gray-600'>Выберите до 5 интересов</Text>
+              <Text className="text-lg font-nunitoSansBold text-indigo-800">{i18n.t('EditProfileComponent.interestsTitle')}</Text>
+              <Text className='font-nunitoSansRegular text-gray-600'>{i18n.t('EditProfileComponent.interestsSubtitle')}</Text>
               <CustomTagsSelector
-                tags={INTEREST_TAGS}
+                tags={i18n.t('tags.interests') as string[]}
                 initialSelectedTags={editableUser.interests || []}
                 onSelectedTagsChange={(selectedTags) => handleChange('interests', selectedTags)}
                 maxSelectableTags={5}
@@ -261,33 +258,21 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
             </View>
             <Divider className="mt-4"/>
             <View className="p-2">
-              <Text className="text-lg font-nunitoSansBold text-indigo-800">Основные</Text>
+              <Text className="text-lg font-nunitoSansBold text-indigo-800">{i18n.t('EditProfileComponent.mainInfoTitle')}</Text>
               <CustomOutlineInputText 
                 containerStyles='mt-4' 
-                label='Локация (город, район)' 
+                label={i18n.t('EditProfileComponent.locationLabel')} 
                 value={editableUser.location || ''} 
                 handleChange={(text) => handleChange('location', text)} 
                
               />
-              <MultiTagDropdown tags={LANGUAGE_TAGS} initialSelectedTags={editableUser.userLanguages} label='Язык' onChange={(text) => handleChange('userLanguages', text)} />
-              {/* <CustomOutlineInputText 
-                containerStyles='mt-4' 
-                label='Профессия' 
-                value={editableUser.work || ''} 
-                handleChange={(text) => handleChange('work', text)} 
-               
-              /> */}
-              <MultiTagDropdown tags={PROFESSIONS_TAGS} initialSelectedTags={editableUser.work || []} label='Профессия' onChange={(text) => handleChange('work', text)} searchable listMode='MODAL'  />
-              {/* <CustomDropdownList 
-                tags={PROFESSIONS_TAGS} 
-                label='Профессия' 
-                initialSelectedTag={editableUser.work || ''} 
-                searchable={true}
-                onChange={(text) => handleChange('work', text)}
-              /> */}
+              <MultiTagDropdown tags={i18n.t('tags.languages') as string[]} initialSelectedTags={editableUser.userLanguages} label={i18n.t('EditProfileComponent.languagesLabel')} onChange={(text) => handleChange('userLanguages', text)} />
+             
+              <MultiTagDropdown tags={i18n.t('tags.professions') as string[] } initialSelectedTags={editableUser.work || []} label={i18n.t('EditProfileComponent.professionLabel')} onChange={(text) => handleChange('work', text)} searchable listMode='MODAL'  />
+              
               <CustomOutlineInputText 
                 containerStyles='mt-4' 
-                label='Образование' 
+                label={i18n.t('EditProfileComponent.educationLabel')} 
                 value={editableUser.education || ''} 
                 handleChange={(text) => handleChange('education', text)} 
                
@@ -296,23 +281,23 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
              
             </View>
             <View className="p-2">
-              <Text className="text-lg font-nunitoSansBold text-indigo-800">Социальные сети</Text>
+              <Text className="text-lg font-nunitoSansBold text-indigo-800">{i18n.t('EditProfileComponent.socialMediaTitle')}</Text>
               <CustomOutlineInputText 
                 containerStyles='mt-4' 
-                label='Instagram' 
+                label={i18n.t('EditProfileComponent.instagramLabel')} 
                 value={editableUser.instagram || ''} 
                 handleChange={(text) => handleChange('instagram', text)} 
               />
               <CustomOutlineInputText 
                 containerStyles='mt-4' 
-                label='Facebook' 
+                label={i18n.t('EditProfileComponent.facebookLabel')} 
                 value={editableUser.facebook || ''} 
                 handleChange={(text) => handleChange('facebook', text)}/>
             </View>
-              <CustomLoadingButton title='Сохранить' handlePress={handleSave} />
+              <CustomLoadingButton title={i18n.t('EditProfileComponent.saveButton')} handlePress={handleSave} />
              
               <Button mode="outlined" onPress={onCancel} className='mt-4'>
-                Отмена
+                {i18n.t('EditProfileComponent.cancelButton')}
               </Button>
             <View className="h-32"/>
           </View>

@@ -124,21 +124,465 @@
       "Pointer", "Russian Toy", "Fox Terrier", "Galgo", "Shetland Sheepdog", "Weimaraner"
     ],
     "interests": [
-      "Viajes", "Música", "Cocina", "Deportes", "Cine",
-      "Fotografía", "Arte", "Baile", "Animales", "Mascotas",
-      "Yoga", "Meditación", "Desarrollo Personal", "Psicología", "Moda",
-      "Tecnología", "Coches", "Motocicletas", "Ciclismo", "Senderismo",
-      "Fitness", "Dibujo", "Teatro", "Juegos de Mesa", "Ajedrez",
-      "Manualidades", "Historia", "Ciencia", "Política", "Blogging",
-      "Fantasía", "Fútbol", "Esports", "Negocios", "Startups",
-      "Estilo de Vida Saludable", "Natación", "Correr", "Tenis", "Rock",
-      "Música Clásica", "Música Electrónica", "Comedia", "Thrillers", 
-      "Ciencia Ficción", "Aventuras", "Romance", "Series", "Anime"
+      "Viajar", "Música", "Cocina", "Deportes", "Libros",
+      "Películas", "Fotografía", "Arte", "Bailar", "Voluntariado",
+      "Naturaleza", "Senderismo", "Videojuegos", "Animales", "Mascotas",
+      "Vino", "Salud", "Yoga", "Meditación", "Desarrollo Personal",
+      "Psicología", "Moda", "Tecnología", "Gadgets", "Coches",
+      "Motos", "Ciclismo", "Pesca", "Dibujo", "Teatro",
+      "Crucigramas", "Juegos de Mesa", "Ajedrez", "Fitness", "Manualidades",
+      "Cosmética", "Jardinería", "Artesanía", "Historia", "Ciencia",
+      "Política", "Blogging", "Marketing en Internet", "Fantasía", "Astronomía",
+      "Electrónica", "Fútbol", "Esports", "Negocios", "Startups"
+    ],
+    "languages": ["Español", "Ruso", "Inglés"],
+    "petGender": ["Macho", "Hembra"],
+    "gender": ["Masculino", "Femenino", "N/A"],
+    "professions": [
+      "Programación", "Diseño", "Marketing", "Finanzas", "Ingeniería",
+      "Derecho", "Medicina", "Educación", "Periodismo", "Análisis de Datos",
+      "Gestión de Proyectos", "Reclutamiento", "Logística", "Psicología", "Ventas",
+      "Construcción", "Ciberseguridad", "Ecología", "Arte", "Investigación Científica",
+      "Arquitectura", "Farmacia", "Agricultura", "Veterinaria", "Producción Industrial",
+      "Energía", "Turismo", "Hotelería", "Gastronomía", "Comercio",
+      "Recursos Humanos (RRHH)", "Relaciones Públicas (PR)", "Publicidad", "Redacción", "Edición",
+      "Traducción", "Trabajo Administrativo", "Administración de TI", "Desarrollo de Juegos", "Diseño UX/UI",
+      "Diseño Gráfico", "Diseño Web", "Multimedia", "Edición de Video", "Ingeniería de Sonido",
+      "Fotografía", "Trabajo Social", "Cosmetología", "Peluquería", "Fisioterapia",
+      "Entrenamiento Deportivo", "Análisis Deportivo", "Servicio Militar", "Ciencias Políticas", "Administración Pública",
+      "Relaciones Internacionales", "Filosofía", "Historia", "Sociología", "Estudios Culturales",
+      "Literatura", "Biología", "Química", "Física", "Matemáticas",
+      "Astronomía", "Geología", "Geografía", "Economía", "Gestión",
+      "Gestión de Calidad", "Contabilidad", "Auditoría", "Consultoría Fiscal", "Análisis Financiero",
+      "Banca", "Seguros", "Inversiones", "Logopedia", "Educación Especial",
+      "Ingeniería de Radio", "Aviación", "Tecnología Espacial", "Ingeniería Mecánica", "Industria Automotriz",
+      "Industria Química", "Pesca", "Oceanografía", "Diseño de Interiores", "Diseño de Paisajes",
+      "Artesanía", "Joyería", "Relojería", "Robótica", "Nanotecnología",
+      "Genética", "Farmacología", "Seguridad Informática", "Desarrollo de Aplicaciones Móviles", "Redes Informáticas",
+      "Administración de Sistemas", "Gestión General", "Logística y Suministro", "Compras", "Transporte",
+      "Comercio Internacional", "Redes de Ingeniería", "Telecomunicaciones", "Desarrollo de Software", "Gestión de Infraestructura de TI",
+      "Gestión de Contenidos", "Optimización SEO", "Redes Sociales (SMM)", "Email Marketing", "Publicidad Contextual",
+      "Marketing Móvil", "Computación en la Nube", "Aprendizaje Automático", "Inteligencia Artificial", "Criptografía",
+      "Análisis de Sistemas", "Automatización de Procesos", "Internet de las Cosas (IoT)", "Modelado 3D", "Realidad Aumentada (AR)",
+      "Realidad Virtual (VR)", "Procesamiento de Imágenes", "Guionismo", "Animación", "Dirección",
+      "Producción", "Producción de Televisión", "Radio", "Actuación", "Medicina (Doctor)",
+      "Odontología", "Pediatría", "Psiquiatría", "Neurología", "Cardiología",
+      "Terapia", "Cirugía", "Oftalmología", "Farmacia", "Obstetricia",
+      "Rehabilitación", "Psicoterapia", "Endocrinología", "Inmunología", "Alergología",
+      "Gastroenterología", "Urología", "Acústica", "Paleontología", "Zoología",
+      "Ornitología", "Botánica", "Antropología", "Arqueología", "Etnografía",
+      "Estudios Museísticos", "Antigüedades", "Ingeniería Eléctrica", "Microelectrónica", "Tecnologías de Semiconductores",
+      "Ciencia de Materiales", "Tecnología de Producción", "Estandarización", "Control de Calidad", "Metalurgia",
+      "Carpintería", "Industria del Papel", "Industria Textil", "Industria del Cuero", "Diseño Industrial",
+      "Tecnologías Alimentarias", "Tecnologías de Residuos", "Gestión Ambiental", "Energías Renovables", "Industria Petrolera y del Gas",
+      "Maquinaria Pesada", "Ganadería", "Acuicultura", "Economía de Recursos Naturales", "Gestión de Recursos Hídricos",
+      "Gestión de Innovaciones", "Gestión de Marca", "Gestión de Productos", "Recaudación de Fondos", "Coaching",
+      "Consultoría", "Gestión del Tiempo"
+    ],
+    "petGames": [
+      "Recoger", "Tira y Afloja", "Escondidas", "Frisbee", "Agilidad", 
+      "Perseguir la Pelota", "Parque para Perros", "Circuito de Obstáculos", "Juegos de Correr", 
+      "Esconder Juguetes", "Entrenamiento de Trucos", "Juegos de Olfato", "Rompecabezas para Perros", 
+      "Juegos de Agua", "Juego en Grupo", "Tiempo de Juego", "Atrapar la Pelota", 
+      "Atrapar y Traer", "Tirar de la Cuerda", "Juegos Activos"
+    ],
+    "vaccines": [
+      "Rabia", "Moquillo Canino", "Parvovirus", 
+      "Adenovirus", "Parainfluenza", 
+      "Leptospirosis", "Coronavirus", "Bordetella", 
+      "Enfermedad de Lyme", "Dermatofitosis", "Borreliosis"
+    ],
+    "petHealthIssues": [
+      "Alergia", "Anemia", "Artritis", "Artrosis", "Asma", "Enfermedades de la Piel", "Enfermedades del Hígado", 
+      "Sordera", "Enfermedades Oculares", "Diabetes", "Miocardiopatía Dilatada", "Displasia", "Enfermedades Respiratorias", 
+      "Agresión", "Criptorquidia", "Mutación MDR1", "Oncología", "Trastornos Mentales", "Insuficiencia Hepática", 
+      "Problemas de la Columna Vertebral", "Problemas del Corazón", "Problemas Articulares", "Problemas de los Oídos", "Problemas de la Cola", 
+      "Ceguera", "Fobia al Ruido", "Epilepsia", "Enfermedades Endocrinas", "Enteropatía", "Encefalopatía"
+    ],
+    "DANGERTYPE_TAGS": [
+      "Otro",
+      "Tráfico",
+      "Perros Agresivos",
+      "Cebos Envenenados",
+      "Poca Iluminación",
+      "Crimen",
+      "Animales Salvajes",
+      "Zonas Abiertas sin Cercas",
+      "Vidrio Roto",
+      "Perros Callejeros",
+      "Zonas de Construcción",
+      "Lugares con Ruidos Fuertes",
+      "Áreas Superpobladas",
+      "Zonas Contaminadas",
+      "Plantas Peligrosas",
+      "Aceras Rotas",
+      "Serpientes",
+      "Garrapatas",
+      "Basura"
+    ],
+    "USERSPOINTTYPE_TAGS": [
+      "Otro",
+      "Peligro",
+      "Parque",
+      "Zona de Juegos",
+      "Zona para Perros",
+      "Cafetería",
+      "Restaurante",
+      "Clínica Veterinaria",
+      "Tienda para Mascotas",
+      "Nota",
+      "Paseo",
+      "Punto Personalizado"
+    ],
+   "AMENITIES_TAGS": [
+      "Zona sin Correa", "Totalmente Cercado", "Sendero para Perros", "Campo Abierto", "Zona para Nadar",
+      "Zona Solo con Correa", "Zona para Acampar", "Vida Silvestre", "Separación para Perros Grandes y Pequeños", "Obstáculos",
+      "Entrada de Doble Puerta", "Fuente de Agua", "Entrada Gratuita", "Solo para Miembros", "Estacionamiento Gratuito Cercano",
+      "Accesible para Sillas de Ruedas", "Zona para Sentarse", "Zona con Sombra", "Bolsas para Residuos Disponibles", "Se Permiten Juguetes para Perros",
+      "Iluminación Nocturna", "Manguera", "Legislación Específica de Razas", "Kit de Seguridad para Retirar Collares"
     ]
   },
   "emptyProfile": {
     "welcome": "Bienvenido",
     "description": "Para continuar, por favor completa tu perfil.",
     "button": "Cuéntanos sobre ti"
-  }
+  },
+  "ProfileLayout": {
+    "profileTitle": "Perfil",
+    "editUserTitle": "Editar Perfil",
+    "petProfileTitle": "Perfil de Mascota",
+    "editPetTitle": "Editar Mascota",
+    "myJobsTitle": "Tareas y Bonos",
+    "myWalksTitle": "Mis Paseos",
+    "settingsTitle": "Configuraciones"
+  },
+  "EditProfileComponent": {
+    "confirmTitle": "Confirmación",
+    "confirmMessage": "¿Estás seguro de que quieres salir?",
+    "cancel": "Cancelar",
+    "exit": "Salir",
+    "error": {
+      "requiredFields": "Por favor, completa todos los campos obligatorios.",
+      "invalidDate": "Fecha de nacimiento inválida.",
+      "ageRestriction": "La edad debe ser mayor a 14 años."
+    },
+    "nameLabel": "¿Cómo te llamas?",
+    "birthDateLabel": "Fecha de Nacimiento",
+    "birthDatePlaceholder": "Introduce la fecha en formato YYYY-MM-DD",
+    "genderLabel": "Género",
+    "descriptionLabel": "Sobre Mí",
+    "interestsTitle": "Intereses",
+    "interestsSubtitle": "Selecciona hasta 5 intereses",
+    "mainInfoTitle": "Información Principal",
+    "locationLabel": "Ubicación (ciudad, barrio)",
+    "languagesLabel": "Idioma",
+    "professionLabel": "Profesión",
+    "educationLabel": "Educación",
+    "socialMediaTitle": "Redes Sociales",
+    "instagramLabel": "Instagram",
+    "facebookLabel": "Facebook",
+    "saveButton": "Guardar",
+    "cancelButton": "Cancelar"
+  },
+  "UserProfile": {
+    "edit": "Editar",
+    "logout": "Cerrar sesión",
+    "deleteAccount": "Eliminar cuenta",
+    "addPet": "Agregar Mascota",
+    "aboutMe": "Sobre Mí",
+    "interests": "Intereses",
+    "mainInfo": "Información Principal",
+    "socialMedia": "Redes Sociales"
+  },
+  "PetProfile": {
+    "edit": "Editar",
+    "delete": "Eliminar Mascota",
+    "main": "Principal",
+    "dog": "Perro",
+    "health": "Salud",
+    "healthUpdate": "Estamos trabajando en crear un pasaporte de salud para tu mascota. Mantente al tanto de las actualizaciones.",
+    "healthFeatures": "Características de Salud",
+    "vaccinations": "Vacunas",
+    "indicators": "Indicadores",
+    "temperament": "Temperamento",
+    "friendliness": "Amistad",
+    "activity": "Actividad",
+    "playPreferences": "Preferencias de Juego",
+    "aboutPet": "Sobre la Mascota",
+    "socialMedia": "Redes Sociales"
+  },
+  "EditPetProfile": {
+    "confirmationTitle": "Confirmación",
+    "confirmationMessage": "¿Estás seguro de que quieres salir?",
+    "cancel": "Cancelar",
+    "exit": "Sí",
+    "errors": {
+      "missingFields": "Por favor, completa todos los campos obligatorios: Nombre, Fecha de Nacimiento y Raza.",
+      "invalidDate": "Fecha de nacimiento inválida. Por favor, ingresa la fecha en formato YYYY-MM-DD.",
+      "saveError": "Error al guardar el perfil de la mascota",
+      "saveErrorMessage": "Ocurrió un error al guardar el perfil de la mascota. Por favor, intenta de nuevo.",
+      "addError": "Error al agregar el perfil de la mascota",
+      "addErrorMessage": "Ocurrió un error al agregar el perfil de la mascota. Por favor, intenta de nuevo."
+    },
+    "main": "Principal",
+    "name": "Nombre",
+    "birthDate": "Fecha de Nacimiento",
+    "birthDatePlaceholder": "Introduce la fecha en formato YYYY-MM-DD",
+    "gender": "Género",
+    "selectGender": "Selecciona Género",
+    "defaultGender": "Macho",
+    "breed": "Raza",
+    "selectBreed": "Selecciona Raza",
+    "weight": "Peso",
+    "interests": "Intereses",
+    "health": "Salud",
+    "healthUpdate": "Estamos trabajando en crear un pasaporte de salud para tu mascota. Mantente al tanto de las actualizaciones.",
+    "healthFeatures": "Características de Salud",
+    "vaccinations": "Vacunas",
+    "neutered": "¿Esterilizado?",
+    "indicators": "Indicadores",
+    "temperament": "Temperamento",
+    "friendliness": "Amistad",
+    "activity": "Actividad",
+    "additionalNotes": "Notas Adicionales",
+    "socialMedia": "Redes Sociales",
+    "add": "Agregar",
+    "save": "Guardar"
+  },
+  "Sidebar": {
+    "anonymousUser": "Usuario Anónimo",
+    "openProfile": "Abrir Perfil",
+    "subscription": "Suscripción",
+    "freeTrial": "7 Días Gratis",
+    "subscribe": "Suscribirse",
+    "tasksAndBonuses": "Tareas y Bonos",
+    "myWalks": "Mis Paseos",
+    "myLocations": "Mis Ubicaciones",
+    "settings": "Configuraciones",
+    "support": "Soporte"
+  },
+  "UserJobsList": {
+    "reward": "Recompensa",
+    "noJobs": "No Hay Tareas"
+  },
+  "EditDangerPoint": {
+    "title": "Peligro",
+    "addPhoto": "Agregar Foto",
+    "description": "Descripción",
+    "addButton": "Agregar",
+    "errors": {
+      "missingFields": "Por favor, completa todos los campos obligatorios: Tipo, Descripción.",
+      "saveError": "Error al guardar el punto."
+    }
+  },
+  "EditUserPoint": {
+    "myNote": "Mi Nota",
+    "publicMark": "Marcador Público",
+    "addPhoto": "Agregar Foto",
+    "name": "Nombre",
+    "address": "Dirección",
+    "description": "Descripción",
+    "amenities": "Comodidades",
+    "addButton": "Agregar",
+    "errors": {
+      "missingFields": "Por favor, completa todos los campos obligatorios: Tipo, Descripción.",
+      "saveError": "Error al guardar el marcador."
+    }
+  },
+  "ViewDangerPoint": {
+    "title": "Peligro",
+    "loadingPointInfo": "Cargando información completa del punto",
+    "dangerType": "Tipo de Peligro",
+    "description": "Descripción",
+    "openInGoogleMaps": "Abrir en Google Maps",
+    "errors": {
+      "fetchError": "Error al obtener los datos del punto.",
+      "imageError": "Error al cargar la imagen.",
+      "openMapErrorTitle": "Error",
+      "openMapErrorMessage": "No se puede abrir el mapa.",
+      "openMapErrorConsole": "Error al intentar abrir el mapa.",
+      "fetchReviewsError": "Error al cargar las reseñas."
+    }
+  },
+  "ViewUserPoint": {
+    "loading": "Cargando información completa del punto...",
+    "name": "Nombre",
+    "address": "Dirección",
+    "description": "Descripción",
+    "amenities": "Comodidades",
+    "openInGoogleMaps": "Abrir en Google Maps",
+    "errors": {
+      "fetchError": "Error al obtener los datos del punto.",
+      "imageError": "Error al cargar la imagen.",
+      "openMapErrorTitle": "Error",
+      "openMapErrorMessage": "No se puede abrir el mapa.",
+      "openMapErrorConsole": "Error al intentar abrir el mapa.",
+      "fetchReviewsError": "Error al cargar las reseñas."
+    }
+  },
+  "WalkDetails": {
+    "owner": "Propietario",
+    "deleteWalk": "Eliminar Paseo",
+    "joinWalk": "Unirse al Paseo",
+    "participants": "Participantes",
+    "noParticipants": "Nadie se ha unido a tu paseo todavía",
+    "pets": "Mascotas",
+    "pet": "Mascota",
+    "breed": "Raza",
+    "friendliness": "Amistad",
+    "activity": "Actividad",
+    "showAllPets": "Mostrar Todas",
+    "hidePets": "Ocultar",
+    "description": "Descripción",
+    "walkDetails": "Detalles del Paseo",
+    "confirmMessage": "Se creará un chat entre tú y el propietario de la mascota, y se enviará una solicitud para unirse al paseo.",
+    "confirmTitle": "Enviar Solicitud",
+    "confirm": "OK",
+    "cancel": "Cancelar"
+  },
+  "WalkEditDetails": {
+    "addressNotFound": "No se pudo obtener la dirección",
+    "error": "Error",
+    "selectAtLeastOnePet": "Selecciona al menos una mascota para participar en el paseo.",
+    "cannotCreateWalkHere": "No se puede crear un paseo en este lugar.",
+    "provideAddress": "Proporciona la dirección del paseo.",
+    "invalidDuration": "Proporciona una duración válida para el paseo.",
+    "addDescription": "Agrega una descripción para el paseo.",
+    "selectAtLeastOneDay": "Selecciona al menos un día para un paseo regular.",
+    "provideDate": "Proporciona una fecha para un paseo único.",
+    "walkDetails": "Detalles del Paseo",
+    "regularWalk": "Paseo Regular",
+    "singleWalk": "Paseo Único",
+    "monday": "LUN",
+    "tuesday": "MAR",
+    "wednesday": "MIÉ",
+    "thursday": "JUE",
+    "friday": "VIE",
+    "saturday": "SÁB",
+    "sunday": "DOM",
+    "address": "Dirección",
+    "description": "Descripción",
+    "hide": "Ocultar",
+    "showMore": "Mostrar Más",
+    "save": "Guardar"
+  },
+  "FabGroup": {
+    "walk": "Paseo",
+    "danger": "Peligro",
+    "proposeMarker": "Proponer Marcador",
+    "myNote": "Mi Nota"
+  },
+  "Poi": {
+    "nearby": "¡Has ganado 400 puntos de bonificación!",
+    "tooFar": "¡Estás demasiado lejos del bono!"
+  },
+  "Map": {
+    "fillProfileAndAddPet": "Para crear un paseo, necesitas completar tu perfil y agregar una mascota.",
+    "walkCreatedWithBonus": "El paseo se creó con éxito. Has ganado 400 puntos de bonificación por crear tu primer paseo."
+  },
+  "FilterSearchTags": {
+    "walk": "Paseo",
+    "danger": "Peligro",
+    "park": "Parque",
+    "playground": "Zona de Juegos",
+    "zone": "Zona",
+    "cafe": "Cafetería",
+    "restaurant": "Restaurante",
+    "veterinary": "Veterinaria",
+    "store": "Tienda",
+    "note": "Nota"
+  },
+  "ReviewComment": {
+    "oneDayAgo": "Hace 1 día",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "deleteLog": "Reseña eliminada"
+  },
+  "ReviewsSection": {
+    "title": "Calificaciones y Reseñas",
+    "inputPlaceholder": "Escribe tu reseña",
+    "submitButton": "Enviar Reseña",
+    "noReviews": "Nadie ha dejado una reseña para este lugar todavía. Sé el primero y gana puntos de bonificación adicionales.",
+    "loadMoreButton": "Cargar Más",
+    "alertMessage": "Por favor, califica y escribe una reseña",
+    "alertTitle": "Error"
+  },
+  "TopUsers": {
+    "title": "¡Usuarios Más Activos!",
+    "description": "Gana más monedas y obtén bonificaciones.",
+    "learnMore": "Más Información",
+    "rate": "Clasificación"
+  },
+  "AddPhoto": {
+    "title": "Agregar Foto",
+    "description": "Elige una fuente",
+    "takePhoto": "Tomar una Foto",
+    "chooseFromGallery": "Elegir de la Galería",
+    "cancel": "Cancelar"
+  },
+  "AdvrtCard": {
+    "noDate": "Fecha no especificada",
+    "invite": "Invitar",
+    "profile": "Perfil"
+  },
+  "MapPointCard": {
+    "openMap": "Abrir en el Mapa",
+    "details": "Detalles",
+    "errorOpenMap": "No se puede abrir el mapa.",
+    "openMapErrorLog": "Error al intentar abrir la URL:",
+    "danger": "Peligro"
+  },
+  "MyAdvrtCard": {
+    "delete": "Eliminar",
+    "noDate": "Fecha no especificada"
+  },
+  "dateOrTimePicker": {
+    "timeLabel": "Hora",
+    "durationLabel": "Duración (min)",
+    "dateLabel": "Fecha",
+    "minutes": "min"
+  },
+  "settings": {
+    "general": "Configuraciones Generales",
+    "pushNotifications": "Notificaciones Push",
+    "appLanguage": "Idioma de la Aplicación",
+    "languages": {
+      "russian": "Ruso",
+      "english": "Inglés",
+      "spanish": "Español"
+    }
+  },
+  "filters": {
+    "general": "General",
+    "showAllOptions": "Mostrar Todas las Opciones",
+    "availableNow": "Disponible Ahora",
+    "petOwner": "Dueño de Mascota",
+    "gender": "Género",
+    "interests": "Intereses",
+    "pet": "Mascota",
+    "breed": "Raza",
+    "indicators": "Indicadores",
+    "temperament": "Temperamento",
+    "friendly": "Amistad",
+    "activity": "Actividad",
+    "apply": "Aplicar",
+    "reset": "Restablecer"
+  },
+  "distanceSlider": {
+    "label": "Distancia",
+    "current": "Distancia Actual",
+    "km": "km"
+  },
+  "timeSlider": {
+    "label": "Time"
+  },
+  "tagSelectors": {
+  "selectTag": "Seleccionar Etiqueta",
+  "collapse": "Colapsar",
+  "showMore": "Mostrar Más"
+}
+
+
 }

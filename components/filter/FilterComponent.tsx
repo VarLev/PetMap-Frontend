@@ -4,7 +4,6 @@ import { Checkbox, Divider } from 'react-native-paper';
 import CustomDropdownList from '../custom/selectors/CustomDropdownList';
 import { observer } from 'mobx-react-lite';
 import StarRating from 'react-native-star-rating-widget';
-import { BREEDS_TAGS, DOGGAMES_TAGS, GENDERS_TAGS, INTEREST_TAGS } from '@/constants/Strings';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import { FlatList } from 'react-native';
 import TimeSlider from '../custom/sliders/TimeSlider';
@@ -13,6 +12,7 @@ import { WalkAdvrtFilterParams } from '@/dtos/classes/filter/WalkAdvrtFilterPara
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
 import CustomButtonPrimary from '../custom/buttons/CustomButtonPrimary';
 import mapStore from '@/stores/MapStore';
+import i18n from '@/i18n';
 
 interface FilterComponentProps {
   onFilterChange: (count: number) => void;  // Пропс для передачи количества измененных полей
@@ -88,131 +88,172 @@ const FilterComponent:React.FC<FilterComponentProps> = observer(({ onFilterChang
 
   // Данные для FlatList
   const formItems = [
-    {
-      id: '1',
-      component: (
-        <View className='pt-10 px-4'>
-          <Text className="-mb-1 text-base font-nunitoSansBold text-indigo-700">Общие</Text>
-          <DistanceSlider distance={filter.distance} onDistanceChange={(d) => handleFieldChange('distance', d[0])} />
-          <View className="pt-4  flex-row items-center">
-          <Checkbox.Android 
-              color="blue"    
-              uncheckedColor="gray"      
-              status={filter.showFullMap ? 'checked' : 'unchecked'}
-              onPress={() => handleFieldChange('showFullMap', !filter.showFullMap)}
-            />
-            <Text className='text-base font-nunitoSansRegular'>Все варианты</Text>
-          </View>
-          <TimeSlider startTime={filter.startTime || 0} endTime={filter.endTime || 1440 } onTimeChange={handleTimeChange}  />
-          <View className="pt-4  flex-row items-center">
-            <Checkbox.Android
-              color='blue'
-               uncheckedColor="gray"
-              status={filter.showFullMap ? 'checked' : 'unchecked'}
-              onPress={() => handleFieldChange('showFullMap', !filter.showFullMap)}
-            />
-            <Text className='text-base font-nunitoSansRegular'>Доступные сейчас</Text>
-          </View>
-         
-          <Divider className="mt-6" />
-        </View>
-      ),
-    },
-    {
-      id: '2',
-      component: (
-        <View className='px-4'>
-          <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
-            Владелец питомца
+  {
+    id: '1',
+    component: (
+      <View className="pt-10 px-4">
+        <Text className="-mb-1 text-base font-nunitoSansBold text-indigo-700">
+          {i18n.t('filters.general')}
+        </Text>
+        <DistanceSlider
+          distance={filter.distance}
+          onDistanceChange={(d) => handleFieldChange('distance', d[0])}
+        />
+        <View className="pt-4 flex-row items-center">
+          <Checkbox.Android
+            color="blue"
+            uncheckedColor="gray"
+            status={filter.showFullMap ? 'checked' : 'unchecked'}
+            onPress={() => handleFieldChange('showFullMap', !filter.showFullMap)}
+          />
+          <Text className="text-base font-nunitoSansRegular">
+            {i18n.t('filters.showAllOptions')}
           </Text>
-          <CustomDropdownList
-            tags={GENDERS_TAGS}
-            label=""
-            placeholder="Пол"
-            initialSelectedTag={filter.gender || ''}
-            onChange={(selectedGender) => handleFieldChange('gender', selectedGender)}
-          />
-          {/* <MultiTagDropdown tags={LANGUAGE_TAGS} initialSelectedTags={filter.language || []} placeholder="Языки" onChange={(selectedLanguage) => handleFieldChange('language', selectedLanguage)} /> */}
-          <View className="pt-4">
-            <Text className="text-sm font-nunitoSansBold text-gray-400">Интересы</Text>
-            <CustomTagsSelector
-              tags={INTEREST_TAGS}
-              initialSelectedTags={filter.interests || []}
-              onSelectedTagsChange={(interests) => handleFieldChange('interests', interests)}
-              maxSelectableTags={5}
-              visibleTagsCount={10}
-            />
-          </View>
-          <Divider className="mt-6" />
         </View>
-      ),
-    },
-    {
-      id: '3',
-      component: (
-        <View className='px-4 z-10'>
-          <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Питомец</Text>
-          <CustomDropdownList
-            tags={BREEDS_TAGS}
-            label=""
-            placeholder="Порода"
-            initialSelectedTag={filter.petBreed || ''}
-            onChange={(text) => handleFieldChange('petBreed', text)}
-            searchable={true}
+        <TimeSlider
+          startTime={filter.startTime || 0}
+          endTime={filter.endTime || 1440}
+          onTimeChange={handleTimeChange}
+        />
+        <View className="pt-4 flex-row items-center">
+          <Checkbox.Android
+            color="blue"
+            uncheckedColor="gray"
+            status={ 'unchecked'}
+            onPress={()=>{}}
           />
-          <CustomDropdownList
-            tags={GENDERS_TAGS}
-            label=""
-            placeholder="Пол"
-            initialSelectedTag={filter.petGender || ''}
-            onChange={(selectedGender) => handleFieldChange('petGender', selectedGender)}
+          <Text className="text-base font-nunitoSansRegular">
+            {i18n.t('filters.availableNow')}
+          </Text>
+        </View>
+        <Divider className="mt-6" />
+      </View>
+    ),
+  },
+  {
+    id: '2',
+    component: (
+      <View className="px-4">
+        <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
+          {i18n.t('filters.petOwner')}
+        </Text>
+        <CustomDropdownList
+          tags={ i18n.t('tags.gender') as string[] }
+          placeholder={i18n.t('filters.gender')}
+          initialSelectedTag={filter.gender || ''}
+          onChange={(selectedGender) => handleFieldChange('gender', selectedGender)}
+        />
+        <View className="pt-4">
+          <Text className="text-sm font-nunitoSansBold text-gray-400">
+            {i18n.t('filters.interests')}
+          </Text>
+          <CustomTagsSelector
+            tags={ i18n.t('tags.interests') as string[] }
+            initialSelectedTags={filter.interests || []}
+            onSelectedTagsChange={(interests) => handleFieldChange('interests', interests)}
+            maxSelectableTags={5}
+            visibleTagsCount={10}
           />
-          <View className="pt-4">
-            <Text className="text-sm font-nunitoSansBold text-gray-400">Интересы</Text>
-            <CustomTagsSelector
-              tags={DOGGAMES_TAGS}
-              initialSelectedTags={filter.petInterests || []}
-              onSelectedTagsChange={(interests) => handleFieldChange('petInterests', interests)}
-              maxSelectableTags={5}
-              visibleTagsCount={10}
-            />
-          </View>
-          
-          <View>
-            <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
-              Показатели
+        </View>
+        <Divider className="mt-6" />
+      </View>
+    ),
+  },
+  {
+    id: '3',
+    component: (
+      <View className="px-4 z-10">
+        <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
+          {i18n.t('filters.pet')}
+        </Text>
+        <CustomDropdownList
+          tags={ i18n.t('tags.breeds') as string[] }
+          label=""
+          placeholder={i18n.t('filters.breed')}
+          initialSelectedTag={filter.petBreed || ''}
+          onChange={(text) => handleFieldChange('petBreed', text)}
+          searchable={true}
+          listMode='MODAL'
+        />
+        <CustomDropdownList
+          tags={ i18n.t('tags.petGender') as string[] }
+          label=""
+          placeholder={i18n.t('filters.gender')}
+          initialSelectedTag={filter.petGender || ''}
+          onChange={(selectedGender) => handleFieldChange('petGender', selectedGender)}
+        />
+        <View className="pt-4">
+          <Text className="text-sm font-nunitoSansBold text-gray-400">
+            {i18n.t('filters.interests')}
+          </Text>
+          <CustomTagsSelector
+            tags={ i18n.t('tags.petGames') as string[] }
+            initialSelectedTags={filter.petInterests || []}
+            onSelectedTagsChange={(interests) => handleFieldChange('petInterests', interests)}
+            maxSelectableTags={5}
+            visibleTagsCount={10}
+          />
+        </View>
+        <View>
+          {/* <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
+            {i18n.t('filters.indicators')}
+          </Text>
+          <View className="pt-2 flex-row justify-between">
+            <Text className="font-nunitoSansRegular text-base">
+              {i18n.t('filters.temperament')}
             </Text>
-            <View className="pt-2 flex-row justify-between">
-              <Text className="font-nunitoSansRegular text-base">Темперамент</Text>
-              <StarRating rating={temperament} starSize={25} color="#BFA8FF" onChange={handleTemperament} />
-            </View>
-            <View className="pt-2 flex-row justify-between">
-              <Text className="font-nunitoSansRegular text-base">Дружелюбность</Text>
-              <StarRating rating={friendly} starSize={25} color="#BFA8FF" onChange={handleFriendly} />
-            </View>
-            <View className="pt-2 flex-row justify-between">
-              <Text className="font-nunitoSansRegular text-base">Активность</Text>
-              <StarRating rating={activity} starSize={25} color="#BFA8FF" onChange={handleActivity} />
-            </View>
-            <Divider className="mt-3" />
+            <StarRating
+              rating={temperament}
+              starSize={25}
+              color="#BFA8FF"
+              onChange={handleTemperament}
+            />
           </View>
-          <View className=' z-0'>
-            <CustomButtonPrimary title='Применить' handlePress={handleSaveFilter} containerStyles='mt-5'/>
-            
-            <CustomButtonOutlined title='Сбросить' handlePress={handleResetFilter}/>
-          <View className="h-10" />
+          <View className="pt-2 flex-row justify-between">
+            <Text className="font-nunitoSansRegular text-base">
+              {i18n.t('filters.friendly')}
+            </Text>
+            <StarRating
+              rating={friendly}
+              starSize={25}
+              color="#BFA8FF"
+              onChange={handleFriendly}
+            />
           </View>
+          <View className="pt-2 flex-row justify-between">
+            <Text className="font-nunitoSansRegular text-base">
+              {i18n.t('filters.activity')}
+            </Text>
+            <StarRating
+              rating={activity}
+              starSize={25}
+              color="#BFA8FF"
+              onChange={handleActivity}
+            />
+          </View> */}
+          <Divider className="mt-3" />
         </View>
-      ),
-    }
-   
-  ];
+        <View className="z-0">
+          <CustomButtonPrimary
+            title={i18n.t('filters.apply')}
+            handlePress={handleSaveFilter}
+            containerStyles="mt-5"
+          />
+          <CustomButtonOutlined
+            title={i18n.t('filters.reset')}
+            handlePress={handleResetFilter}
+          />
+          <View className="h-10" />
+        </View>
+      </View>
+    ),
+  },
+];
 
   // Используем FlatList для виртуализированных списков
   return (
     <FlatList
       data={formItems}
-      className='p-2'
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => <View>{item.component}</View>}
     />

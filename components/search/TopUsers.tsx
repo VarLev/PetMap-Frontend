@@ -10,10 +10,13 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-na
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import LottieView from 'lottie-react-native';
+import i18n from '@/i18n';
+import SkeletonCard from '../custom/cards/SkeletonCard';
 
 const TopUsers = () => {
   const [topUsers, setTopUsers] = useState<IUserCardDto[]>([]);
-  const translateY = useSharedValue(0); // Управление положением компонента
+  const [isLoading, setIsLoading] = useState(true);
+  const translateY = useSharedValue(0);
 
   const StarIcon = () => (
     <Svg width="23" height="21" viewBox="0 0 23 21" fill="none">
@@ -24,37 +27,29 @@ const TopUsers = () => {
     </Svg>
   );
 
-  // Функция для получения пользователей
   const fetchTopUsers = useCallback(async () => {
     const users = await usersStore.getAllTopUsers();
     setTopUsers(users);
+    setIsLoading(false); // Данные загружены, снимаем состояние загрузки
   }, []);
 
   useEffect(() => {
     fetchTopUsers();
-    // При загрузке страницы верхний компонент выезжает вниз
     translateY.value = withTiming(0, { duration: 500 });
   }, [fetchTopUsers]);
 
-  // Анимационный стиль для верхнего компонента
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        {
-          translateY: translateY.value, // Управляем положением с помощью sharedValue
-        },
-      ],
+      transform: [{ translateY: translateY.value }],
     };
   });
 
-  // Обработчик скролла для управления положением верхнего компонента
   const handleScroll = (event: { nativeEvent: { contentOffset: { y: any; }; }; }) => {
     const offsetY = event.nativeEvent.contentOffset.y;
-
     if (offsetY > 50) {
-      translateY.value = withTiming(-280, { duration: 300 }); // Прячем компонент
+      translateY.value = withTiming(-280, { duration: 300 });
     } else {
-      translateY.value = withTiming(0, { duration: 300 }); // Возвращаем компонент
+      translateY.value = withTiming(0, { duration: 300 });
     }
   };
 
@@ -62,137 +57,144 @@ const TopUsers = () => {
     router.push(`/(tabs)/profile/${uiserId}`);
   };
 
-  // Рендерим верхних пользователей
-  const renderTopThreeUsers = useCallback(() => (
-    <Animated.View className="rounded-b-3xl"
-      style={[
-        {
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: '#2F00B6',
-          paddingVertical: 20,
-          zIndex: 100
-        },
-        animatedStyle,
-      ]}
-    >
-      <Svg height="100%" width="100%" className="absolute">
-        <Defs>
-          <RadialGradient
-            id="grad"
-            cx="0.1"  // Центрируем градиент по горизонтали
-            cy="0.1"  // Центрируем градиент по вертикали
-            rx="100%"  // Увеличиваем радиус по горизонтали, чтобы светлая часть занимала половину
-            ry="100%"  // Увеличиваем радиус по вертикали
-            fx="0.1"  // Начальная точка градиента по горизонтали (центр)
-            fy="0.1"  // Начальная точка градиента по вертикали (центр)
-            gradientUnits="userSpaceOnUse"
-          >
-            <Stop offset="0%" stopColor="#BC88FF" />
-            <Stop offset="100%" stopColor="#2F00B6" />
-          </RadialGradient>
-        </Defs>
-        <Rect x="0" y="0" width="100%" height="100%" fill="url(#grad)" />
-      </Svg>
-      <View className="flex-col justify-between">    
-        <View className="rounded-b-3xl p-4 rounded-full">
-          <Text className="pt-2 text-white text-center mb-2 text-lg font-nunitoSansBold">
-            Самые активные пользователи!
-          </Text>
-          <Text className="text-white text-center mb-4 text-base font-nunitoSansRegular">
-            Зарабатывай больше монет и получай бонусы. {''}
-            <Text className="text-[#ACFFB9] text-base font-nunitoSansBold" onPress={() => router.replace('/profile/myjobs')}>
-              Подробнее.
+  const renderTopThreeUsers = useCallback(() => {
+    // Если данных ещё нет или их меньше 3-х, не отрисовываем блок топ-3
+    if (topUsers.length < 3) return null;
+
+    return (
+      <Animated.View className="rounded-b-3xl"
+        style={[
+          {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: '#2F00B6',
+            paddingVertical: 20,
+            zIndex: 100
+          },
+          animatedStyle,
+        ]}
+      >
+        <Svg height="100%" width="100%" className="absolute">
+          <Defs>
+            <RadialGradient
+              id="grad"
+              cx="0.1" cy="0.1"
+              rx="100%" ry="100%"
+              fx="0.1" fy="0.1"
+              gradientUnits="userSpaceOnUse"
+            >
+              <Stop offset="0%" stopColor="#BC88FF" />
+              <Stop offset="100%" stopColor="#2F00B6" />
+            </RadialGradient>
+          </Defs>
+          <Rect x="0" y="0" width="100%" height="100%" fill="url(#grad)" />
+        </Svg>
+        <View className="flex-col justify-between">    
+          <View className="rounded-b-3xl p-4 rounded-full">
+            <Text className="pt-2 text-white text-center mb-2 text-lg font-nunitoSansBold">
+              {i18n.t("TopUsers.title")}
             </Text>
-          </Text>
-        </View>
-        <View className="flex-row items-center justify-center mx-2">
-          {/* Второй пользователь (слева) */}
-          <View key={topUsers[1]?.id} className="items-center">
-            <TouchableOpacity onPress={() => handleUserProfileOpen(topUsers[1]?.id)} >
-              <View className='border-2 rounded-full bg-white border-white'>
-                <Avatar.Image size={60} source={{ uri: topUsers[1]?.thumbnailUrl ?? 'https://placehold.it/100x100' }} />
-                <View style={{ position: 'absolute', top: -3, right: -3 }}>
-                  <StarIcon />
-                </View>
-              </View>
-            </TouchableOpacity>
-            <Text numberOfLines={1} className="text-white mt-2 font-nunitoSansBold text-lg w-[120px] text-center">
-              {topUsers[1]?.name}
+            <Text className="text-white text-center mb-4 text-base font-nunitoSansRegular">
+              {i18n.t("TopUsers.description")}{' '}
+              <Text 
+                className="text-[#ACFFB9] text-base font-nunitoSansBold" 
+                onPress={() => router.replace('/profile/myjobs')}
+              >
+                {i18n.t("TopUsers.learnMore")}
+              </Text>
             </Text>
-            <View className="flex-row items-center mt-1">
-              <Image source={require('@/assets/images/bonuse.png')} style={{ width: 26, height: 26, marginRight: 4 }} />
-              <Text className="text-white text-base font-nunitoSansBold">{topUsers[1]?.balance}</Text>
-            </View>
           </View>
-          {/* Первый пользователь (центральный и больший) */}
-          <View key={topUsers[0]?.id} className="items-center -mt-2">
-            <View>
-              <TouchableOpacity onPress={() => handleUserProfileOpen(topUsers[0]?.id)}>
-              <View className='border-2 rounded-full bg-white border-white'>
-                <Avatar.Image size={80} source={{ uri: topUsers[0]?.thumbnailUrl ?? 'https://placehold.it/100x100' }} />
-                {/* <View style={{ position: 'absolute', top: -1, right: -1}}>
-                  <StarIcon />
-                </View> */}
-                 {/* Заменяем звезду на Lottie-анимацию для первого пользователя */}
-                 <View style={{ position: 'absolute', top: -15, right: -15}}>
-                  <LottieView
-                    source={require('@/assets/animations/FlashAnimation.json')}
-                    autoPlay
-                    loop
-                    style={{ width: 50, height: 50 }}  // Размер анимации
-             
-                  />
+          <View className="flex-row items-center justify-center mx-2">
+            {/* Второй пользователь (слева) */}
+            <View key={topUsers[1]?.id} className="items-center">
+              <TouchableOpacity onPress={() => handleUserProfileOpen(topUsers[1]?.id)} >
+                <View className='border-2 rounded-full bg-white border-white'>
+                  <Avatar.Image size={60} source={{ uri: topUsers[1]?.thumbnailUrl ?? 'https://placehold.it/100x100' }} />
+                  <View style={{ position: 'absolute', top: -3, right: -3 }}>
+                    <StarIcon />
+                  </View>
                 </View>
-              </View>
               </TouchableOpacity>
-              
-            </View>
-            <Text numberOfLines={1} className="text-white font-nunitoSansBold text-lg w-[120px] text-center">
-              {topUsers[0]?.name}
-            </Text>
-            <View className="flex-row items-center mt-1">
-              <Image source={require('@/assets/images/bonuse.png')} style={{ width: 26, height: 26, marginRight: 4 }} />
-              <Text className="text-white text-base font-nunitoSansBold">{topUsers[0]?.balance}</Text>
-            </View>
-          </View>
-          {/* Третий пользователь (справа) */}
-          <View key={topUsers[2]?.id} className="items-center">
-            <TouchableOpacity onPress={() => handleUserProfileOpen(topUsers[2]?.id)}>
-              <View className='border-2 rounded-full bg-white border-white'>
-                <Avatar.Image size={60} source={{ uri: topUsers[2]?.thumbnailUrl ?? 'https://placehold.it/100x100' }}/>
-                <View style={{ position: 'absolute', top: -3, right: -3 }}>
-                  <StarIcon />
-                </View>
+              <Text numberOfLines={1} className="text-white mt-2 font-nunitoSansBold text-lg w-[120px] text-center">
+                {topUsers[1]?.name}
+              </Text>
+              <View className="flex-row items-center mt-1">
+                <Image source={require('@/assets/images/bonuse.png')} style={{ width: 26, height: 26, marginRight: 4 }} />
+                <Text className="text-white text-base font-nunitoSansBold">{topUsers[1]?.balance}</Text>
               </View>
-            </TouchableOpacity>
-           
-            <Text numberOfLines={1} className="text-white mt-2 font-nunitoSansBold text-lg w-[120px] text-center">
-              {topUsers[2]?.name}
-            </Text>
-            <View className="flex-row items-center mt-1">
-              <Image source={require('@/assets/images/bonuse.png')} style={{ width: 26, height: 26, marginRight: 4 }} />
-              <Text className="text-white text-base font-nunitoSansBold">{topUsers[2]?.balance}</Text>
+            </View>
+            {/* Первый пользователь (центральный и больший) */}
+            <View key={topUsers[0]?.id} className="items-center -mt-2">
+              <View>
+                <TouchableOpacity onPress={() => handleUserProfileOpen(topUsers[0]?.id)}>
+                  <View className='border-2 rounded-full bg-white border-white'>
+                    <Avatar.Image size={80} source={{ uri: topUsers[0]?.thumbnailUrl ?? 'https://placehold.it/100x100' }} />
+                    <View style={{ position: 'absolute', top: -15, right: -15}}>
+                      <LottieView
+                        source={require('@/assets/animations/FlashAnimation.json')}
+                        autoPlay
+                        loop
+                        style={{ width: 50, height: 50 }}
+                      />
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <Text numberOfLines={1} className="text-white font-nunitoSansBold text-lg w-[120px] text-center">
+                {topUsers[0]?.name}
+              </Text>
+              <View className="flex-row items-center mt-1">
+                <Image source={require('@/assets/images/bonuse.png')} style={{ width: 26, height: 26, marginRight: 4 }} />
+                <Text className="text-white text-base font-nunitoSansBold">{topUsers[0]?.balance}</Text>
+              </View>
+            </View>
+            {/* Третий пользователь (справа) */}
+            <View key={topUsers[2]?.id} className="items-center">
+              <TouchableOpacity onPress={() => handleUserProfileOpen(topUsers[2]?.id)}>
+                <View className='border-2 rounded-full bg-white border-white'>
+                  <Avatar.Image size={60} source={{ uri: topUsers[2]?.thumbnailUrl ?? 'https://placehold.it/100x100' }}/>
+                  <View style={{ position: 'absolute', top: -3, right: -3 }}>
+                    <StarIcon />
+                  </View>
+                </View>
+              </TouchableOpacity>
+              <Text numberOfLines={1} className="text-white mt-2 font-nunitoSansBold text-lg w-[120px] text-center">
+                {topUsers[2]?.name}
+              </Text>
+              <View className="flex-row items-center mt-1">
+                <Image source={require('@/assets/images/bonuse.png')} style={{ width: 26, height: 26, marginRight: 4 }} />
+                <Text className="text-white text-base font-nunitoSansBold">{topUsers[2]?.balance}</Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-    </Animated.View>
-  ), [topUsers, animatedStyle]);
+      </Animated.View>
+    );
+  }, [topUsers, animatedStyle]);
+
+  // Если идёт загрузка, покажем несколько скелетонов вместо реальных карточек
+  const skeletonCount = 5; // Количество скелетон-карт
+  
+  const renderItem = ({ item }: { item: IUserCardDto | number }) => {
+    if (isLoading) {
+      return <SkeletonCard />;
+    } else {
+      return <UserCard user={item as IUserCardDto} />;
+    }
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       {renderTopThreeUsers()}
 
-      {/* Основной список пользователей, начиная с четвертого */}
       <FlatList
-        data={topUsers} // Исключаем первых 3 пользователей
-        keyExtractor={(item) => item.id.toString()} // Использование уникальных ключей
-        renderItem={({ item }) => <UserCard user={item} />}
+        data={isLoading ? Array.from({ length: skeletonCount }, (_, i) => i) : topUsers.slice(3)}
+        keyExtractor={(item, index) => isLoading ? index.toString() : (item as IUserCardDto).id.toString()}
+        renderItem={renderItem}
         contentContainerStyle={{ padding: 16 }}
-        onScroll={handleScroll} // Подключаем обработчик скролла
+        onScroll={handleScroll}
         scrollEventThrottle={16}
       />
     </GestureHandlerRootView>

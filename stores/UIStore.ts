@@ -2,15 +2,27 @@ import { Language } from '@/dtos/enum/Language';
 import apiClient from '@/hooks/axiosConfig';
 import i18n from '@/i18n';
 import { handleAxiosError } from '@/utils/axiosUtils';
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class UIStore {
   isPointSearchFilterTagSelected : boolean = false;
   isBottomTableViewSheetOpen: boolean = false;
+  currentLanguage: Language = Language.Spanish; 
 
   constructor() {
     makeAutoObservable(this);
+    this.initLanguage();
   }
+
+  async initLanguage() {
+    const lang = await this.getSystemLanguage();
+    runInAction(() => {
+      this.currentLanguage = lang;
+    });
+    await this.setLanguagei18n(lang);
+  }
+
 
   setIsPointSearchFilterTagSelected(isSelected: boolean) {
     this.isPointSearchFilterTagSelected = isSelected;
@@ -39,33 +51,74 @@ class UIStore {
 
 
   async setSystemLanguage(language: Language) {
-    try { 
+    try {
       await apiClient.post('/system/language', JSON.stringify(language), {
         headers: { 'Content-Type': 'application/json' }
-    });
-    } 
-    catch (error) 
-    {
+      });
+      await AsyncStorage.setItem(process.env.EXPO_PUBLIC_SYSTEM_LANGUAGE!, language.toString());
+      console.log('Язык сохранен в AsyncStorage:', language);
+      
+      // Сначала обновляем i18n
+      await this.setLanguagei18n(language);
+      
+      // Затем меняем наблюдаемое значение
+      runInAction(() => {
+        this.currentLanguage = language; 
+      });
+    } catch (error) {
       return handleAxiosError(error);
-    } 
+    }
   }
   
-  async getSystemLanguage() {
-    try { 
-      const response = await apiClient.get('/system/language');
-          return response.data;
-    } 
-    catch (error) 
-    {
-      return handleAxiosError(error);
-    } 
+  
+  async getSystemLanguage(): Promise<Language> {
+    try {
+      const stored = await AsyncStorage.getItem(process.env.EXPO_PUBLIC_SYSTEM_LANGUAGE!);
+      console.log('Загружено из AsyncStorage:', stored);
+      let lang = Language.Spanish;
+      if (stored === '0' || stored?.toLowerCase().includes('spanish')) lang = Language.Spanish;
+      if (stored === '1' || stored?.toLowerCase().includes('russian')) lang = Language.Russian;
+      if (stored === '2' || stored?.toLowerCase().includes('english')) lang = Language.English;
+
+      if (!stored) {
+        const response = await apiClient.get('/system/language');
+        const serverLang = response.data;
+        console.log('Загружено с сервера:', serverLang);
+        if (serverLang === Language.Russian) lang = Language.Russian;
+        if (serverLang === Language.English) lang = Language.English;
+      }
+
+      return lang;
+    } catch (error) {
+      console.error('Ошибка получения языка:', error);
+      return Language.Spanish; // Дефолт
+    }
   }
+
+  // Преобразование строки или числа в тип Language
+  private parseLanguage(value: string | number | null): Language {
+    if (typeof value === 'number') {
+      if (value === Language.Spanish || value === Language.Russian || value === Language.English) {
+        return value;
+      }
+    } else if (typeof value === 'string') {
+      const lower = value.toLowerCase();
+      if (lower.includes('spanish') || lower === '0') return Language.Spanish;
+      if (lower.includes('russian') || lower === '1') return Language.Russian;
+      if (lower.includes('english') || lower === '2') return Language.English;
+    }
+    // Если ничего не подошло - дефолт
+    return Language.Spanish;
+  }
+
 
   async translateText(text: string): Promise<string> {
     try {
+      const currentLanguageIndex = await this.getSystemLanguage(); 
+       
       const response = await apiClient.post('chatgpt/translate', {
         Text: text,
-        TargetLanguage: this.getSystemLanguage(),
+        TargetLanguage: Language[currentLanguageIndex]  
       });
       return response.data.translatedText;
     } catch (error) {

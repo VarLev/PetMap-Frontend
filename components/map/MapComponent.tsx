@@ -12,8 +12,6 @@ import {
   Pressable,
   BackHandler,
   ImageSourcePropType,
-  StatusBar,
-  Platform,
 } from "react-native";
 import Mapbox, {
   MapView,
@@ -60,6 +58,7 @@ import { UserPointType } from "@/dtos/enum/UserPointType";
 import PointsOfInterestComponent from "./PointsOfInterestComponent";
 import FabGroupComponent from "./FabGroupComponent";
 import { IUserChat } from "@/dtos/Interfaces/user/IUserChat";
+import i18n from "@/i18n";
 
 const MapBoxMap = observer(() => {
   const [isLoading, setIsLoading] = useState(true);
@@ -248,7 +247,7 @@ const MapBoxMap = observer(() => {
           ));
         } else {
           setAlertText(
-            "Для создания прогулки необходимо заполнить профиль и добавить питомца"
+            i18n.t('Map.fillProfileAndAddPet') 
           );
           showAlert("info");
           return;
@@ -398,7 +397,7 @@ const MapBoxMap = observer(() => {
     if (isGetedBonuses) {
       setAlertImage(require("@/assets/images/alert-dog-bonuses.webp"));
       setAlertText(
-        "Прогулка успешно создана. Вам начислены 400 бонусов за создание первой прогулки."
+        i18n.t('MapAlerts.walkCreatedWithBonus')
       );
       showAlert("info");
     }
@@ -436,7 +435,7 @@ const MapBoxMap = observer(() => {
         await mapStore.getMapPointsByType({
           type: type,
           userId: currentUser?.id!,
-          city: userStore.getCurrentUserCity() || "",
+          city: await userStore.getCurrentUserCity() || "",
         });
       }
     }
@@ -712,7 +711,7 @@ const MapBoxMap = observer(() => {
         onClose={() => setModalVisible(false)}
         message={alertText}
         type={alertType}
-        title={alertType === "error" ? "Ошибка" : ""}
+        title={alertType === "error" ? "Error" : ""}
         image={alertImage}
       />
     </Provider>

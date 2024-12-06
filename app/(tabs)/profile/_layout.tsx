@@ -1,5 +1,6 @@
 import React from 'react';
 import { Stack } from 'expo-router';
+import i18n from '@/i18n';
 
 export default function ProfileLayout() {
   return (
@@ -8,7 +9,7 @@ export default function ProfileLayout() {
       <Stack.Screen 
         name="index" 
         options={{ 
-          title: 'Профиль',
+          title: i18n.t('ProfileLayout.profileTitle'),
           headerStyle: {
             backgroundColor: 'transparent', // Прозрачный заголовок
           },
@@ -24,7 +25,7 @@ export default function ProfileLayout() {
       <Stack.Screen 
         name="editUser" 
         options={{ 
-          title: 'Редактирование профиля',
+          title: i18n.t('ProfileLayout.editUserTitle'),
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
         }} 
         
@@ -32,7 +33,7 @@ export default function ProfileLayout() {
       <Stack.Screen 
         name="pet/[petId]/index" 
         options={{ 
-          title: 'Профиль питомца',
+          title: i18n.t('ProfileLayout.petProfileTitle'),
           headerStyle: {
             backgroundColor: 'transparent', // Прозрачный заголовок
           },
@@ -42,28 +43,28 @@ export default function ProfileLayout() {
       <Stack.Screen 
         name="pet/[petId]/edit" 
         options={{ 
-          title: 'Редактирование питомца',
+          title:i18n.t('ProfileLayout.editPetTitle'),
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
         }} 
       />
       <Stack.Screen 
         name="myjobs" 
         options={{ 
-          title: 'Задания и бонусы',
+          title: i18n.t('ProfileLayout.myJobsTitle'),
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
         }} 
       />
       <Stack.Screen 
         name="mywalks" 
         options={{ 
-          title: 'Мои прогулки',
+          title: i18n.t('ProfileLayout.myWalksTitle'),
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
         }} 
       />
       <Stack.Screen 
         name="settings" 
         options={{ 
-          title: 'Настройки',
+          title: i18n.t('ProfileLayout.settingsTitle'),
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
         }} 
       />

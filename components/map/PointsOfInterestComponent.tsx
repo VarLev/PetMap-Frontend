@@ -16,6 +16,7 @@ import userStore from '@/stores/UserStore';
 import { Job } from '@/dtos/classes/job/Job';
 import { IPOI } from '@/dtos/Interfaces/map/POI/IPOI';
 import mapStore from '@/stores/MapStore';
+import i18n from '@/i18n';
 
 interface Props {
   userLocation: [number, number];
@@ -172,11 +173,11 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, onR
         userStore.collectPOI(point.id);
         setAlertImage(imageBonuse);
         setModalVisible(true);
-        setAlertText('Вам начислено 400 бонусов!');
+        setAlertText(i18n.t('Poi.nearby'));
       } else {
         setAlertImage(imageSad);
         setModalVisible(true);
-        setAlertText('Вы слишком далеко от бонуса!');
+        setAlertText(i18n.t('Poi.tooFar'));
       }
     },
     [pointsOfInterest, userLocation]

@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, FlatList, Text, Image } from 'react-native';
-import { Card, Divider } from 'react-native-paper';
-import StarRating from 'react-native-star-rating-widget';
-import CustomButtonPrimary from '../custom/buttons/CustomButtonPrimary';
-import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
-import CustomOutlineInputText from '../custom/inputs/CustomOutlineInputText';
-import { ReviewDTO } from '@/dtos/classes/review/Review';
-import userStore from '@/stores/UserStore';
-import CustomAlert from '../custom/alert/CustomAlert';
-import ReviewComment from './ReviewComment';
-import mapStore from '@/stores/MapStore';
-import StarSvgIcon from '../custom/icons/StarSvgIcon';
+import React, { useState, useEffect, useRef } from "react";
+import { View, FlatList, Text } from "react-native";
+import StarRating from "react-native-star-rating-widget";
+import CustomButtonPrimary from "../custom/buttons/CustomButtonPrimary";
+import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
+import CustomOutlineInputText from "../custom/inputs/CustomOutlineInputText";
+import { ReviewDTO } from "@/dtos/classes/review/Review";
+import userStore from "@/stores/UserStore";
+import CustomAlert from "../custom/alert/CustomAlert";
+import ReviewComment from "./ReviewComment";
+import mapStore from "@/stores/MapStore";
+import StarSvgIcon from "../custom/icons/StarSvgIcon";
+import i18n from "@/i18n";
 
 interface ReviewSectionProps {
   mapPointId: string;
@@ -21,12 +21,14 @@ interface ReviewSectionProps {
 const ReviewSection: React.FC<ReviewSectionProps> = ({
   mapPointId,
   fetchReviews,
-  totalPages
+  totalPages,
 }) => {
-  const [reviewText, setReviewText] = useState('');
+  const [reviewText, setReviewText] = useState("");
   const [rating, setRating] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [localReviews, setLocalReviews] = useState<ReviewDTO[]>(new Array<ReviewDTO>());
+  const [localReviews, setLocalReviews] = useState<ReviewDTO[]>(
+    new Array<ReviewDTO>()
+  );
   const [isModalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [existingReview, setExistingReview] = useState<ReviewDTO | null>(null);
@@ -34,7 +36,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   const hasLoadedInitialReviews = useRef(false); // Use ref to track if initial load has occurred
 
   useEffect(() => {
-    console.log('Загрузка отзывов');
+    console.log("Загрузка отзывов");
     if (!hasLoadedInitialReviews.current) {
       loadReviews(1); // Load first page on initial mount
       hasLoadedInitialReviews.current = true;
@@ -50,16 +52,16 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
 
       // Check if the current user has already left a review for this point
       const userReview = newReviews.find(
-        (review) => userStore.currentUser && review.userId === userStore.currentUser.id
+        (review) =>
+          userStore.currentUser && review.userId === userStore.currentUser.id
       );
       if (userReview) {
         setExistingReview(userReview);
         setReviewText(userReview.comment);
         setRating(userReview.rating);
       }
-    
     } catch (error) {
-      console.error('Ошибка при загрузке отзывов:', error);
+      console.error("Ошибка при загрузке отзывов:", error);
     } finally {
       setIsLoading(false);
     }
@@ -72,21 +74,25 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
     }
 
     try {
-      if (!userStore.currentUser || !userStore.currentUser.id || !userStore.currentUser.name) {
-        console.error('User ID or name is missing');
+      if (
+        !userStore.currentUser ||
+        !userStore.currentUser.id ||
+        !userStore.currentUser.name
+      ) {
+        console.error("User ID or name is missing");
         return;
       }
       const review = new ReviewDTO(
-        existingReview ? existingReview.id : '',
+        existingReview ? existingReview.id : "",
         rating,
         reviewText,
         new Date(),
         userStore.currentUser.id,
-        userStore.currentUser.name ?? 'User',
+        userStore.currentUser.name ?? "User",
         mapPointId // Include pointId in the constructor
       );
 
-      console.log('Отправка отзыва:', reviewText, rating);
+      console.log("Отправка отзыва:", reviewText, rating);
       await mapStore.addReview(review);
       setLocalReviews((prevReviews) => {
         if (existingReview) {
@@ -95,11 +101,11 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
           return [review, ...prevReviews];
         }
       });
-      setReviewText('');
+      setReviewText("");
       setRating(0);
       setExistingReview(null);
     } catch (error) {
-      console.error('Ошибка при отправке/обновлении отзыва:', error);
+      console.error("Ошибка при отправке/обновлении отзыва:", error);
     }
   };
 
@@ -116,7 +122,9 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
       onUpdateReview={handleSubmitOrUpdateReview}
       refreshReviews={(updatedReview: ReviewDTO) => {
         setLocalReviews((prevReviews) =>
-          prevReviews.map((r) => (r.id === updatedReview.id ? updatedReview : r))
+          prevReviews.map((r) =>
+            r.id === updatedReview.id ? updatedReview : r
+          )
         );
       }}
     />
@@ -124,12 +132,14 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
 
   return (
     <View className="pt-2">
-      <Text className='ml-1 text-base font-nunitoSansBold text-indigo-700  '>Оценки и отзывы</Text>
+      <Text className="ml-1 text-base font-nunitoSansBold text-indigo-700">
+        {i18n.t("ReviewsSection.title")}
+      </Text>
       {!existingReview && (
         <View className="m-2">
           <CustomOutlineInputText
             numberOfLines={3}
-            label="Напишите ваш отзыв"
+            label={i18n.t("ReviewsSection.inputPlaceholder")}
             value={reviewText}
             handleChange={setReviewText}
           />
@@ -139,20 +149,20 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
             maxStars={5}
             onChange={setRating}
             emptyColor="#2F00B6"
-            style={{ paddingVertical: 10, alignSelf: 'center' }}
+            style={{ paddingVertical: 10, alignSelf: "center" }}
             color="#2F00B6"
             starStyle={{ marginHorizontal: 10 }}
             StarIconComponent={StarSvgIcon}
           />
           <CustomButtonPrimary
-            title="Отправить отзыв"
+            title={i18n.t("ReviewsSection.submitButton")}
             handlePress={handleSubmitOrUpdateReview}
           />
         </View>
       )}
       {localReviews.length === 0 ? (
-        <Text className='m-2 text-sm font-nunitoSansBold text-gray-400'>
-          Никто еще не оставил отзыв об этом месте, будь первым и получи повышенные бонусы.
+        <Text className="m-2 text-sm font-nunitoSansBold text-gray-400">
+          {i18n.t("ReviewsSection.noReviews")}
         </Text>
       ) : (
         <FlatList
@@ -164,7 +174,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
           ListFooterComponent={() =>
             currentPage < totalPages ? (
               <CustomButtonOutlined
-                title="Загрузить еще"
+                title={i18n.t("ReviewsSection.loadMoreButton")}
                 handlePress={handleLoadMore}
               />
             ) : null
@@ -174,9 +184,9 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
       <CustomAlert
         isVisible={isModalVisible}
         onClose={() => setModalVisible(false)}
-        message={'Поставьте рейтинг и напишите отзыв'}
-        type={'error'}
-        title={'Ошибка'}
+        message={i18n.t("ReviewsSection.alertMessage")}
+        type={"error"}
+        title={i18n.t("ReviewsSection.alertTitle")}
       />
     </View>
   );
