@@ -1,7 +1,7 @@
 // Post.ts
 
 import { makeObservable, observable, action } from "mobx";
-import { IPost, IPostPhotos, IComment } from '@/dtos/Interfaces/feed/IPost';
+import { IPost, IPostPhotos, IComment, ICommentWithUser } from '@/dtos/Interfaces/feed/IPost';
 
 export class Post implements IPost {
   id: string;
@@ -11,8 +11,8 @@ export class Post implements IPost {
   postPhotos: IPostPhotos[];
   likesCount: number;
   hasLiked: boolean;
-  comments: IComment[];
-  createdAt: string;
+  comments: ICommentWithUser[];
+  createdAt: Date;
   userAvatar?: string;
   userName?: string;
 
@@ -53,15 +53,35 @@ export class Post implements IPost {
 }
 
 export class Comment implements IComment {
-    id: string;
-    userId: string;
-    content: string;
-    createdAt: string;
-  
-    constructor(data: any) {
-      this.id = data.id;
-      this.userId = data.userId;
-      this.content = data.content || '';
-      this.createdAt = data.createdAt || '';
-    }
+  id: string;
+  userId: string;
+  content: string;
+  createdAt: string;
+
+  constructor(data: any) {
+    this.id = data.id;
+    this.userId = data.userId;
+    this.content = data.content || '';
+    this.createdAt = data.createdAt || '';
   }
+}
+
+export class CommentWithUser implements ICommentWithUser {
+  id: string;
+  postId: string;
+  userId: string;
+  content: string;
+  createdAt: Date;
+  userAvatar?: string;
+  userName?: string;
+
+  constructor(data: any) {
+    this.id = data.id;
+    this.postId = data.postId;
+    this.userId = data.userId;
+    this.content = data.content || '';
+    this.createdAt = data.createdAt || '';
+    this.userAvatar = data.userAvatar || '';
+    this.userName = data.userName || '';
+  }
+}

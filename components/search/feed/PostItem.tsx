@@ -1,26 +1,43 @@
-import React, { useEffect } from 'react';
-import { View, Image, TextInput } from 'react-native';
-import { Text } from 'react-native-paper';
+import { FC, useEffect, useState } from 'react';
+import { View, Image, TextInput, FlatList, StyleSheet } from 'react-native';
+import { Text, Menu, ActivityIndicator, Button } from 'react-native-paper';
 import { Card, Avatar, IconButton } from 'react-native-paper';
+import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { IPost } from '@/dtos/Interfaces/feed/IPost';
 import { BG_COLORS } from '@/constants/Colors';
 import feedStore from '@/stores/FeedStore';
-import { runInAction } from 'mobx';
+import userStore from "@/stores/UserStore";
 
-const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
-  const [hasLiked, setHasLiked] = React.useState<boolean>(post.hasLiked);
-  const [commentText, setCommentText] = React.useState<string>('');
+type PostCardProps = {
+  post: IPost,
+  handleSheetCommentsOpenById: (postId: string) => void
+}
+
+const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenById }) => {
+  const [hasLiked, setHasLiked] = useState<boolean>(post.hasLiked);
+  const [commentText, setCommentText] = useState<string>('');
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [isLoadingDeletingPost, setIsLoadingDeletingPost] = useState(false);
 
   useEffect(() => {
     (async () => {
+      const comments = await feedStore.fetchGetComments(post.id);
       const updatedLikesCount = await feedStore.fetchLikesCount(post.id);
       const hasLiked = await feedStore.hasUserLiked(post.id);
       setHasLiked(hasLiked);
-      console.log("Пост имеет лайков:", updatedLikesCount);
+
       runInAction(() => {
         post.likesCount = updatedLikesCount; // Реактивное обновление
+        post.comments = comments;
       });
+
+      if (post.userId === userStore.currentUser?.id) {
+        setIsCurrentUser(true);
+      } else {
+        setIsCurrentUser(false);
+      }
     })();
   }, [post]);
 
@@ -43,6 +60,31 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
     }
   };
 
+  const openMenu = () => setMenuVisible(true);
+
+  const closeMenu = () => setMenuVisible(false);
+
+  const deletePost = async (postId: string) => {
+    try {
+      setIsLoadingDeletingPost(true);
+      await feedStore.deletePost(postId);
+      await feedStore.fetchPosts();
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    } finally {
+      setMenuVisible(false);
+      setIsLoadingDeletingPost(false);
+    }
+  }
+
+  const complainOnPost = () => {
+    console.log('Пожаловались на пост')
+  }
+
+  const handleSheetCommentsOpen = (postId: string) => {
+    handleSheetCommentsOpenById(postId);
+  };
+
   return (
     <Card className="mx-2 mt-2 bg-white rounded-2xl">
       <Card.Content>
@@ -56,12 +98,38 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
               </Text>
             </View>
           </View>
-          <IconButton
-            icon="dots-vertical"
-            style={{ margin: 0 }}
-            onPress={() => console.log("Menu clicked")}
-            size={20}
-          />
+          <View>
+            <Menu
+              contentStyle={{
+                backgroundColor: "white",
+                borderRadius: 10,
+                top: 40
+              }}
+              visible={menuVisible}
+              onDismiss={closeMenu}
+              anchor={<IconButton
+                icon="dots-vertical"
+                style={{ margin: 0 }}
+                onPress={openMenu}
+                size={20}
+              />}
+            >
+              {isCurrentUser ?
+              <Menu.Item
+                contentStyle={{
+                  display: "flex"
+                }}
+                onPress={() => deletePost(post.id)}
+                title={isLoadingDeletingPost ?
+                  <ActivityIndicator
+                    size="small"
+                    color="#6200ee"
+                  /> : 
+                  "Удалить"}
+              /> :
+              <Menu.Item onPress={complainOnPost} title="Пожаловаться" />}
+            </Menu>
+          </View>
         </View>
         <Text className="my-1 text-sm">{post.content}</Text>
         {post.postPhotos.length > 0 && (
@@ -90,7 +158,12 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
             <Text className="-ml-2 text-sm text-gray-500 font-medium">
               {post.likesCount}
             </Text>
-            <IconButton icon="comment-outline" className='-ml-0' iconColor="gray" size={20} />
+            <IconButton
+              icon="comment-outline"
+              className='-ml-0'
+              iconColor="gray"
+              size={20}
+              onPress={() => handleSheetCommentsOpen(post.id)}/>
             <Text className="-ml-2 text-sm text-gray-500 font-medium">{post.comments.length}</Text>
           </View>
 
@@ -110,6 +183,7 @@ const PostCard: React.FC<{ post: IPost }> = observer(({ post }) => {
                 if (commentText.trim()) {
                   await feedStore.addComment(post.id, commentText.trim());
                   setCommentText("");
+                  await feedStore.fetchPosts();
                 }
               }}
               size={20}
