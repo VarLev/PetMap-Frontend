@@ -91,7 +91,7 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
       >
         {translatedText || displayText}
       </Text>
-      {enableTranslation && (
+      {enableTranslation && text && (
         <>
           {!translatedText ? (
             <TouchableOpacity

@@ -579,10 +579,11 @@
     "label": "Time"
   },
   "tagSelectors": {
-  "selectTag": "Seleccionar Etiqueta",
-  "collapse": "Colapsar",
-  "showMore": "Mostrar Más"
-}
+    "selectTag": "Seleccionar Etiqueta",
+    "selectTags": "Seleccionar Etiquetas",
+    "collapse": "Colapsar",
+    "showMore": "Mostrar Más"
+  }
 
 
 }

@@ -65,31 +65,36 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
   useControl('thumbnailUrl', editableUser.thumbnailUrl, { id: TASK_IDS.userEdit.thumbnailUrl, description:'thumbnailUrl' });
   
   useEffect(() => {
-    
-    // Функция, которая срабатывает при нажатии кнопки "назад"
-    const backAction = () => {
-      Alert.alert(i18n.t('EditProfileComponent.confirmTitle'), i18n.t('EditProfileComponent.confirmMessage'), [
-        {
-          text: i18n.t('EditProfileComponent.cancel'),
-          onPress: () => null,
-          style: 'cancel'
-        },
-        {
-          text: i18n.t('EditProfileComponent.exit'),
-          onPress: () => router.back()
-        }
-      ]);
-      return true;
+    const initializeAvatar = async () => {
+      await SetRandomAvatarDependOnGender();
     };
 
-    // Подписываемся на событие нажатия кнопки "назад"
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
+    initializeAvatar();
+  //   // Функция, которая срабатывает при нажатии кнопки "назад"
+  //   const backAction = () => {
+  //     Alert.alert(i18n.t('EditProfileComponent.confirmTitle'), i18n.t('EditProfileComponent.confirmMessage'), [
+  //       {
+  //         text: i18n.t('EditProfileComponent.cancel'),
+  //         onPress: () => null,
+  //         style: 'cancel'
+  //       },
+  //       {
+  //         text: i18n.t('EditProfileComponent.exit'),
+  //         onPress: () => router.back()
+  //       }
+  //     ]);
+  //     return true;
+  //   };
 
-    // Возвращаем функцию для очистки эффекта (отписка от события)
-    return () => backHandler.remove();
+  //   // Подписываемся на событие нажатия кнопки "назад"
+  //   const backHandler = BackHandler.addEventListener(
+  //     "hardwareBackPress",
+  //     backAction
+  //   );
+
+  //   // Возвращаем функцию для очистки эффекта (отписка от события)
+  //   return () => backHandler.remove();
+
   }, []);
 
   useEffect(() => {
@@ -137,15 +142,11 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
     if (!CheckErrors()) return;
 
     // Обновляем фото пользователя
-    if (editableUser.thumbnailUrl !== user.thumbnailUrl) {
-      const resp = await userStore.uploadUserThumbnailImage(editableUser);
-      editableUser.thumbnailUrl = resp;
-    }
-
+    editableUser.thumbnailUrl = userPhoto;
      // Парсим дату рождения
     editableUser.birthDate = parseStringToDate(birthDate);
     editableUser.jobs = completedJobs;
-
+    
     // Вызываем метод в userStore для обновления данных пользователя и выполнения заданий
     await userStore.updateOnlyUserData(editableUser);
 
@@ -162,8 +163,8 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
   };
 
   const DeleteUserPhoto = async () => {
-    const newAvatar = SetRandomAvatarDependOnGender();
-    userStore.fetchImageUrl(newAvatar).then(resp => {
+    
+    userStore.fetchImageUrl(userPhoto!).then(resp => {
       if (resp) {
         setUserPhoto(resp);
         setEditableUser({ ...editableUser, thumbnailUrl: resp });
@@ -172,8 +173,12 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
     });
   };
 
-  const SetRandomAvatarDependOnGender = () => {
-    return setUserAvatarDependOnGender(user);
+  const SetRandomAvatarDependOnGender = async () => {
+    if(!user.thumbnailUrl){
+      const userAvatar = setUserAvatarDependOnGender(user);
+      const userAvatarUrl = await userStore.fetchImageUrl(userAvatar);
+      setUserPhoto(userAvatarUrl);
+    }
   };
 
   const handleSheetOpen = () => {
@@ -208,7 +213,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
           <View className="p-2">
             <View className="items-center">
               <PhotoSelector
-                imageUrl={userPhoto || SetRandomAvatarDependOnGender()}
+                imageUrl={userPhoto! }
                 onReplace={SetUserPhoto}
                 onDelete={DeleteUserPhoto}
                 onChooseAvatar={shouldShowChooseAvatar ? handleSheetOpen : undefined}
@@ -236,6 +241,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 label={i18n.t('EditProfileComponent.genderLabel')} 
                 initialSelectedTag={editableUser.gender!} 
                 onChange={(text) => handleChange('gender', text)}
+                listMode='MODAL'
               />
               <CustomOutlineInputText 
                 containerStyles='mt-4' 
@@ -266,7 +272,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 handleChange={(text) => handleChange('location', text)} 
                
               />
-              <MultiTagDropdown tags={i18n.t('tags.languages') as string[]} initialSelectedTags={editableUser.userLanguages} label={i18n.t('EditProfileComponent.languagesLabel')} onChange={(text) => handleChange('userLanguages', text)} />
+              <MultiTagDropdown tags={i18n.t('tags.languages') as string[]} initialSelectedTags={editableUser.userLanguages} label={i18n.t('EditProfileComponent.languagesLabel')} onChange={(text) => handleChange('userLanguages', text)} listMode='MODAL' />
              
               <MultiTagDropdown tags={i18n.t('tags.professions') as string[] } initialSelectedTags={editableUser.work || []} label={i18n.t('EditProfileComponent.professionLabel')} onChange={(text) => handleChange('work', text)} searchable listMode='MODAL'  />
               

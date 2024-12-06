@@ -142,8 +142,8 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
             <CustomButtonWithIcon
               iconName="restaurant-outline"
               iconSet="Ionicons"
-              onPress={() => handleSelectTag(i18n.t('Tags.restaurant'), MapPointType.Restaurant)}
-              text={i18n.t('Tags.restaurant')}
+              onPress={() => handleSelectTag(i18n.t('FilterSearchTags.restaurant'), MapPointType.Restaurant)}
+              text={i18n.t('FilterSearchTags.restaurant')}
               buttonStyle="bg-white"
             />
             <CustomButtonWithIcon

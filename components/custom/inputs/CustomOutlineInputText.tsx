@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TextInput } from 'react-native-paper';
 import { TextInputMask } from 'react-native-masked-text';
 import { View, Text } from 'react-native';
+import { BG_COLORS } from '@/constants/Colors';
 
 
 type InputTextProps = {
@@ -40,12 +41,12 @@ const CustomOutlineInputText = ({
         <View>
           {label && (
             <Text className='font-nunitoSansRegular' style={{
-              color: '#bdbcbc',
+              color: BG_COLORS.gray[700],
               fontFamily: 'NunitoSans_400Regular',
               fontSize: 12,
               position: 'absolute',
-              top: 8,
-              left: 22,
+              top:9,
+              left: 8,
               backgroundColor: '#fff',
               paddingHorizontal: 4,
               

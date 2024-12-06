@@ -52,14 +52,14 @@ const OnboardingCarousel: React.FC = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View>
       <Carousel
         loop={true}
         width={width}
         ref={ref}
         pagingEnabled={true}
         enabled={true}
-        height={height * 0.6} // 480
+        height={height * 0.55} // 480
         autoPlay={true}
         data={data}
         onProgressChange={progress}
@@ -88,7 +88,7 @@ const OnboardingCarousel: React.FC = () => {
           borderRadius: 50,
           backgroundColor: "rgba(55, 48, 163, 1)",
         }}
-        containerStyle={{ gap: 10, marginTop: 5, marginBottom: 5 }}
+        containerStyle={{ gap: 10 }}
         onPress={onPressPagination}
       />
     </View>
@@ -98,12 +98,12 @@ const OnboardingCarousel: React.FC = () => {
 const styles = StyleSheet.create({
   carouselItem: {
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   image: {
-    justifyContent: "center",
+    justifyContent: "flex-start",
     width: "80%",
-    height: 360, //400
+    height: 340, //400
     borderStartColor: "transparent",
     top: 0,
     borderRadius: 30,

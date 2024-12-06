@@ -77,33 +77,33 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
   useEffect(() => {
     
     // Функция, которая срабатывает при нажатии кнопки "назад"
-    const backAction = () => {
-      Alert.alert(
-        i18n.t('EditPetProfile.confirmationTitle'),
-        i18n.t('EditPetProfile.confirmationMessage'),
-        [
-          {
-            text: i18n.t('EditPetProfile.cancel'),
-            onPress: () => null, // Ничего не делать, просто закрыть диалог
-            style: "cancel",
-          },
-          {
-            text: i18n.t('EditPetProfile.exit'),
-            onPress: () => router.back(), // Выйти из приложения
-          },
-        ]
-      );
-      return true; // Возвращаем true, чтобы предотвратить стандартное поведение (закрытие экрана)
-    };
+    // const backAction = () => {
+    //   Alert.alert(
+    //     i18n.t('EditPetProfile.confirmationTitle'),
+    //     i18n.t('EditPetProfile.confirmationMessage'),
+    //     [
+    //       {
+    //         text: i18n.t('EditPetProfile.cancel'),
+    //         onPress: () => null, // Ничего не делать, просто закрыть диалог
+    //         style: "cancel",
+    //       },
+    //       {
+    //         text: i18n.t('EditPetProfile.exit'),
+    //         onPress: () => router.back(), // Выйти из приложения
+    //       },
+    //     ]
+    //   );
+    //   return true; // Возвращаем true, чтобы предотвратить стандартное поведение (закрытие экрана)
+    // };
 
-    // Подписываемся на событие нажатия кнопки "назад"
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
+    // // Подписываемся на событие нажатия кнопки "назад"
+    // const backHandler = BackHandler.addEventListener(
+    //   "hardwareBackPress",
+    //   backAction
+    // );
 
-    // Возвращаем функцию для очистки эффекта (отписка от события)
-    return () => backHandler.remove();
+    // // Возвращаем функцию для очистки эффекта (отписка от события)
+    // return () => backHandler.remove();
   }, []);
 
   const handleFieldChange = (field: keyof Pet, value: any) => {
@@ -337,15 +337,15 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
 
       <View >
         <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'> {i18n.t('EditPetProfile.indicators')}</Text>
-        <View className='pt-2 flex-row justify-between'>              
+        <View className='pl-1 pt-2 flex-row justify-between'>              
           <Text className='font-nunitoSansRegular text-base'>{i18n.t('EditPetProfile.temperament')}</Text>
           <StarRating rating={temperament} starSize={25} color='#BFA8FF' onChange={handleTemperament} StarIconComponent={CircleIcon}/>
         </View>
-        <View className='pt-2 flex-row justify-between'>              
+        <View className='pl-1 pt-2 flex-row justify-between'>              
           <Text className='font-nunitoSansRegular text-base'>{i18n.t('EditPetProfile.friendliness')}</Text>
           <StarRating rating={friendly} starSize={25}  color='#BFA8FF' onChange={handleFriendly}  StarIconComponent={CircleIcon}/>
         </View>
-        <View className='pt-2 flex-row justify-between'>              
+        <View className='pl-1 pt-2 flex-row justify-between'>              
           <Text className='font-nunitoSansRegular text-base'>{i18n.t('EditPetProfile.activity')}</Text>
           <StarRating rating={activity} starSize={25} color='#BFA8FF' onChange={handleActivity}  StarIconComponent={CircleIcon}/>
         </View>
@@ -360,18 +360,19 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
           maxSelectableTags={5}
         />
       </View> */}
+      <View >
+        <CustomOutlineInputText
+          containerStyles="mt-4"
+          label={i18n.t('EditPetProfile.additionalNotes')}
+          value={editablePet.additionalNotes || ''}
+          handleChange={(text) => handleFieldChange('additionalNotes', text)}
+          numberOfLines={4}
+        />
+     
+      </View>
 
-      <CustomOutlineInputText
-        containerStyles="mt-4"
-        label={i18n.t('EditPetProfile.additionalNotes')}
-        value={editablePet.additionalNotes || ''}
-        handleChange={(text) => handleFieldChange('additionalNotes', text)}
-        numberOfLines={4}
-      />
-
-
-        <View className="p-2">
-          <Text className="text-lg font-nunitoSansBold text-indigo-800">{i18n.t('EditPetProfile.socialMedia')}</Text>
+        <View >
+          <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">{i18n.t('EditPetProfile.socialMedia')}</Text>
           <CustomOutlineInputText
             containerStyles="mt-4"
             label="Instagram"
@@ -384,16 +385,22 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
             value={editablePet.facebook || ''}
             handleChange={(text) => handleFieldChange('facebook', text)}
           />
+           <Divider className='mt-6' />
         </View>
 
-        {isNewPet ? (
-          <CustomLoadingButton title={i18n.t('EditPetProfile.add')} handlePress={handleAddPet} />
-        ) : (
-          <CustomLoadingButton title={i18n.t('EditPetProfile.save')} handlePress={handleSave} />
-        )}
-        <Button mode="outlined" onPress={onCancel} className="mt-4">
-          {i18n.t('EditPetProfile.cancel')}
-        </Button>
+        <View className='mt-4'>
+          {isNewPet ? (
+            <CustomLoadingButton title={i18n.t('EditPetProfile.add')} handlePress={handleAddPet} />
+          ) : (
+            <CustomLoadingButton title={i18n.t('EditPetProfile.save')} handlePress={handleSave} />
+          )}
+          <Button mode="outlined" onPress={onCancel} className="mt-4">
+            {i18n.t('EditPetProfile.cancel')}
+          </Button>
+         
+        </View>
+       
+        
         <View className="h-32" />
       </View>
   ), [editablePet, temperament, friendly, activity, petPhoto, birthDate]);

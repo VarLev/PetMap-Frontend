@@ -155,7 +155,7 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
     <View className="flex-1">
       <LinearGradient
         colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0)']}
-        className={`absolute top-0 left-0 right-0 ${uiStore.getIsPointSearchFilterTagSelected() ? 'h-14':'h-32'} z-10`}
+        className={`absolute top-0 left-0 right-0 ${uiStore.getIsPointSearchFilterTagSelected() ? 'h-40':'h-48'} z-10`}
       />
       {isLoading && page === 1 ? (
         // Показываем скелетоны только если загружается первая страница
@@ -163,7 +163,7 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
       ) : (
         <FlatList
           data={points}
-          ListHeaderComponent={<View className={`${uiStore.getIsPointSearchFilterTagSelected() ? 'h-16':'h-28'}`} />}
+          ListHeaderComponent={<View className={`${uiStore.getIsPointSearchFilterTagSelected() ? 'h-24':'h-36'}`} />}
           keyExtractor={(_, index) => index.toString()}
           renderItem={renderItem}
           initialNumToRender={10} // Количество элементов для рендеринга при старте

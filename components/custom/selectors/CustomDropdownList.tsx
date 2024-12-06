@@ -111,7 +111,7 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
           const selectedIndex = parseInt(selectedValue || '', 10); // Преобразуем обратно в число
           if (!isNaN(selectedIndex)) {
             if (onChange) {
-              onChange(tags[selectedIndex]); // Возвращаем строку, если начальный тег был строкой
+              onChange(selectedIndex); // Возвращаем строку, если начальный тег был строкой
             }
           } else if (onChange) {
             onChange(null);

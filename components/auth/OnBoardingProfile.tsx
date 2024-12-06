@@ -1,4 +1,4 @@
-import React, { ReactNode, useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import {
   View,
   Dimensions,
@@ -339,7 +339,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     {
       id: 1,
       content: (
-        <View style={styles.contentContainer} className="">
+        <View style={styles.contentContainer} >
           <Image
             source={require("@/assets/images/onboardingProfile/1lang.webp")}
             className="h-[55%] w-full "
@@ -374,11 +374,12 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     {
       id: 2,
       content: (
-        <View className="w-full justify-start items-center ">
+        <View style={styles.contentContainer} >
+        
           <Image
             source={require("@/assets/images/onboardingProfile/2start.webp")}
-            className="h-[70%]"
-            resizeMode="center"
+            className="h-[80%] w-full"
+            resizeMode="contain"
           />
           <Text className="px-4 leading-tight text-[18px] font-nunitoSansBold text-center mb-1">
             {i18n.t("onboardingProfile.slide2.title")}
@@ -386,6 +387,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
           <Text className=" text-md font-nunitoSansRegular text-center">
             {i18n.t("onboardingProfile.slide2.subtitle")}
           </Text>
+ 
         </View>
       ),
     },
@@ -398,8 +400,8 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
           ) : (
             <Image
               source={require("@/assets/images/onboardingProfile/3user.webp")}
-              className="h-[40%]"
-              resizeMode="center"
+              className="h-[40%] w-full"
+              resizeMode="contain"
             />
           )}
           <Text className="px-4 leading-tight text-[18px] font-nunitoSansBold text-center my-2">
@@ -462,7 +464,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             <Image
               source={require("@/assets/images/onboardingProfile/4pet.webp")}
               className="h-[40%]"
-              resizeMode="center"
+              resizeMode="contain"
             />
           )}
           <Text className="px-4 leading-tight text-[18px] font-nunitoSansBold text-center my-2">
@@ -549,25 +551,28 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View className="flex-1 h-full">
+      <View style={{ flex: 1, justifyContent: 'space-between' }}>
         <BonusSlider min={0} max={1200} value={sliderValue} />
-        <View className="mr-6 items-end">
+  
+        <View style={{ marginRight: 24, alignItems: 'flex-end' }}>
           <TouchableOpacity onPress={() => setAlertEscapeVisible(true)}>
-            <Text className="text-md font-nunitoSansBold">
+            <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
               {i18n.t("onboardingProfile.skip")}
             </Text>
           </TouchableOpacity>
         </View>
+  
+        {/* Ваш контент-карусель в середине */}
         <FlatList
           data={[{ key: "carousel" }]}
           renderItem={() => (
-            <View style={styles.container}>
+            <View style={{ flex: 1 }}> 
               <Carousel
                 ref={carouselRef}
                 width={width}
-                height={height - 100}
+                height={height * 0.85}
                 data={data}
-                pagingEnabled={true}
+                pagingEnabled
                 loop={false}
                 enabled={false}
                 onSnapToItem={(index) => setCurrentIndex(index)}
@@ -577,50 +582,52 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                   </View>
                 )}
               />
-              <View style={styles.bottomNavigationContainer}>
-                <Button onPress={handlePrev} style={styles.navigationButton}>
-                  <Text className="font-nunitoSansBold text-black">
-                    {currentIndex === 0 ? "" : i18n.t("onboardingProfile.back")}
-                  </Text>
-                </Button>
-                <View style={styles.indicatorContainer}>
-                  {data.map((_, index) => (
-                    <View
-                      key={index}
-                      style={[
-                        styles.indicator,
-                        currentIndex === index
-                          ? styles.activeIndicator
-                          : styles.inactiveIndicator,
-                      ]}
-                    />
-                  ))}
-                </View>
-                <CustomLoadingButton
-                  title={
-                    currentIndex < 4
-                      ? i18n.t("onboardingProfile.next")
-                      : i18n.t("onboardingProfile.finish")
-                  }
-                  containerStyles="-mt-1 w-1/3 bg-white"
-                  textStyles="text-black text-sm font-nunitoSansBold"
-                  handlePress={handleNext}
-                  isLoading={isLoading}
-                />
-              </View>
             </View>
           )}
           keyExtractor={(item) => item.key}
         />
+  
+        {/* Нижняя навигация вынесена на один уровень с остальными элементами */}
+        <View style={styles.bottomNavigationContainer}>
+          <Button onPress={handlePrev} style={styles.navigationButton}>
+            <Text style={{ fontWeight: 'bold', color: 'black' }}>
+              {currentIndex === 0 ? "" : i18n.t("onboardingProfile.back")}
+            </Text>
+          </Button>
+          <View style={styles.indicatorContainer}>
+            {data.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.indicator,
+                  currentIndex === index ? styles.activeIndicator : styles.inactiveIndicator,
+                ]}
+              />
+            ))}
+          </View>
+          <CustomLoadingButton
+            title={
+              currentIndex < 4
+                ? i18n.t("onboardingProfile.next")
+                : i18n.t("onboardingProfile.finish")
+            }
+            containerStyles="-mt-1 w-1/3 bg-white"
+            textStyles="text-black text-sm font-nunitoSansBold"
+            handlePress={handleNext}
+            isLoading={isLoading}
+          />
+        </View>
+  
         {isSheetVisible && (
           <BottomSheetComponent
             ref={sheetRef}
             snapPoints={["60%", "100%"]}
             renderContent={renderContent}
             onClose={handleSheetClose}
-            enablePanDownToClose={true}
+            enablePanDownToClose
           />
         )}
+  
         <CustomConfirmAlert
           isVisible={alertEscapeVisible}
           onClose={() => setAlertEscapeVisible(false)}
@@ -635,10 +642,12 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'space-between',
     backgroundColor: "white",
   },
   contentContainer: {
     width: "100%",
+    height: "100%",
     alignItems: "center",
   },
 
@@ -650,11 +659,8 @@ const styles = StyleSheet.create({
   },
   bottomNavigationContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: 50,
-    paddingHorizontal: 20,
-    marginTop: -10,
+    marginBottom: Platform.OS ==='ios'? 0 :24,
+    
   },
   navigationButton: {
     width: 130,

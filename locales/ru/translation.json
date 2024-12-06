@@ -581,6 +581,7 @@
   },
   "tagSelectors": {
     "selectTag": "Выберите тег",
+    "selectTags": "Выберите теги",
     "collapse": "Свернуть",
     "showMore": "Показать ещё"
   }
