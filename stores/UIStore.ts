@@ -4,6 +4,7 @@ import i18n from '@/i18n';
 import { handleAxiosError } from '@/utils/axiosUtils';
 import { makeAutoObservable, runInAction } from 'mobx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getLocales } from 'expo-localization';
 
 class UIStore {
   isPointSearchFilterTagSelected : boolean = false;
@@ -41,6 +42,7 @@ class UIStore {
   }
 
   async setLanguagei18n(language: Language) {
+    console.log('Установка языка:', Language[language]);
     if(language === Language.English)
       i18n.locale = 'en';
     else if(language === Language.Russian)
@@ -90,8 +92,9 @@ class UIStore {
 
       return lang;
     } catch (error) {
-      console.error('Ошибка получения языка:', error);
-      return Language.Spanish; // Дефолт
+      console.info('Ошибка получения языка:', error);
+      console.info('Попытка получить язык из системы',getLocales()[0].languageCode);
+      return this.parseLanguage(getLocales()[0].languageCode);// Дефолт
     }
   }
 
@@ -103,9 +106,9 @@ class UIStore {
       }
     } else if (typeof value === 'string') {
       const lower = value.toLowerCase();
-      if (lower.includes('spanish') || lower === '0') return Language.Spanish;
-      if (lower.includes('russian') || lower === '1') return Language.Russian;
-      if (lower.includes('english') || lower === '2') return Language.English;
+      if (lower === 'es' ||lower.includes('spanish') || lower === '0') return Language.Spanish;
+      if (lower === 'ru' || lower.includes('russian') || lower === '1') return Language.Russian;
+      if (lower === 'en' ||lower.includes('english') || lower === '2') return Language.English;
     }
     // Если ничего не подошло - дефолт
     return Language.Spanish;
@@ -115,7 +118,7 @@ class UIStore {
   async translateText(text: string): Promise<string> {
     try {
       const currentLanguageIndex = await this.getSystemLanguage(); 
-       
+      console.log('Текущий язык:', Language[currentLanguageIndex]);
       const response = await apiClient.post('chatgpt/translate', {
         Text: text,
         TargetLanguage: Language[currentLanguageIndex]  

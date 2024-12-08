@@ -3,7 +3,7 @@ import { TouchableOpacity, View, Image } from "react-native";
 import { Text } from "react-native-paper";
 import OnboardingCarousel from "../components/auth/OnboardingCarousel";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView, Platform } from "react-native";
+import { Platform } from "react-native";
 import CustomButtonPrimary from "@/components/custom/buttons/CustomButtonPrimary";
 import { Redirect, router } from "expo-router";
 import { useStore } from "@/contexts/StoreProvider";
@@ -16,6 +16,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import i18n from '@/i18n';
 import ScreenHolderLogo from "@/components/common/ScreenHolderLogo";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useAlert } from "@/contexts/AlertContext";
 
 GoogleSignin.configure({
   webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
@@ -24,8 +25,10 @@ GoogleSignin.configure({
 
 
 const App = () => {
-  const { loading, isLogged, isInitialized  } = useStore();
+  const { loading, isLogged, isInitialized, isError } = useStore();
+  
   const [isIos, setIsIos] = useState(false);
+  const { showAlert } = useAlert();
 
   // проверка, если платформа IOS, показываем иконку регистрации через Aple
   
@@ -40,12 +43,23 @@ const App = () => {
       }
     };
     checkAuthAndRedirect();
-  }, [loading, isLogged, isInitialized]);
+
+    if (isError) {
+      showAlert(
+        i18n.t("index.error"),
+        "OK",
+        require("../assets/images/InternetError.webp")
+      );
+    }
+  }, [loading, isLogged, isInitialized, isError]);
 
    // Отображаем загрузочный экран или ничего, пока идет проверка авторизации
-  if (loading || !isInitialized) return <ScreenHolderLogo/>;
-    else 
-  if (!loading && isLogged && isInitialized ) return <Redirect href="/map" />;   
+   if (!isError && (loading || !isInitialized)) return <ScreenHolderLogo />;
+   if (!isError && !loading && isLogged && isInitialized) return <Redirect href="/map" />;
+   if (isError && !isInitialized) {
+    return <Redirect href="/" />;
+   }
+
   // signOut();
   // console.log("User signed out");
   //console.log(loading, isLogged);

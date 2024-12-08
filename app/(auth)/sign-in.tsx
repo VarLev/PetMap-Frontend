@@ -124,9 +124,9 @@ const SignIn = () => {
               
                 <CustomLoadingButton
                   title={i18n.t("signIn.loginButton")}
-                  handlePress={() => {
-                    Keyboard.dismiss(); // Скрытие клавиатуры при нажатии на кнопку
-                    handleLogin(); // Выполнение функции handleLogin
+                  handlePress={async () => {
+                    Keyboard.dismiss();
+                    await handleLogin();
                   }}
                   containerStyles="w-full"
                 />

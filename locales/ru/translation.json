@@ -3,7 +3,8 @@
     "welcome": "Добро пожаловать в PetMap!",
     "signUp": "Регистрация",
     "alreadyHaveAccount": "Уже есть аккаунт",
-    "otherSignInMethods": "Другие способы входа"
+    "otherSignInMethods": "Другие способы входа",
+    "error": "Возникла проблема с подключением"
   },
   "onboarding": {
     "slide1": {
