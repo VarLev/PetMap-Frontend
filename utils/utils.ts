@@ -323,10 +323,10 @@ export async function compressImage(uri: string): Promise<string> {
   return manipResult.uri;
 }
 
-export const shortenName = (name: string | undefined) => {
+export const shortenName = (name: string | undefined, maxLength: number = 20) => {
   if (!name) return ''
-  if (name.length > 10) {
-    return name.slice(0, 20) + '...'
+  if (name.length > maxLength) {
+    return name.slice(0, maxLength) + '...'
   } else {
     return name
   }

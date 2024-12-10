@@ -5,6 +5,7 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import ChatStore from "@/stores/ChatStore";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 import MenuItemWrapper from "@/components/custom/menuItem/MunuItemWrapper";
+import userStore from "@/stores/UserStore";
 
 interface IChatMenuProps {
   chatId: string;
@@ -15,7 +16,8 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
   const [visible, setVisible] = useState<boolean>(false);
   const [requestVisible, setRequestVisible] = useState(false);
   const [requestVisibleDel, setRequestVisibleDel] = useState(false);
-  const [isIBlocked, setIsIBlocked] = useState<boolean>(false);
+  const [isBlocked, setIsBlocked] = useState<boolean>(false);
+  const [isUserBlocked, setIsUserBlocked] = useState<boolean>(false);
 
   const openMenu = () => setVisible(true);
 
@@ -44,31 +46,36 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
     setRequestVisible(true);
   };
 
-  const handleChekBlocked = async (otherUserId: string) => {
-    if (await ChatStore.chekIfIBlocked()) {
-      return setIsIBlocked(true);
-    } else {
-      return setIsIBlocked(false);
-    }
-  };
   useEffect(() => {
-    if (otherUserId) {
-      handleChekBlocked(otherUserId);
+    const userId = userStore.currentUser?.id;
+    if (userId && otherUserId) {
+      const isBlocked = ChatStore.checkBlocked(userId, otherUserId);
+      setIsBlocked(isBlocked);
+      setIsUserBlocked(isBlocked);
     }
-  }, [otherUserId]);
+  }, []);
 
   const blockUser = async (otherUserId: string) => {
-    if (!isIBlocked) {
-      await ChatStore.addBlacklist();
-      console.log("Blocking user", otherUserId);
-    } else {
-      await ChatStore.removeBlacklist();
-      console.log("Unblocking user", otherUserId);
+    try {
+      if (!isUserBlocked) {
+        await ChatStore.addBlacklist(otherUserId);
+        console.log("Blocking user", otherUserId);
+        setIsUserBlocked(true);
+        setIsBlocked(true);
+      } else {
+        await ChatStore.removeBlacklist(otherUserId);
+        console.log("Unblocking user", otherUserId);
+        setIsUserBlocked(false);
+        setIsBlocked(false);
+      }
+    } catch (error) {
+      console.error("Error blocking/unblocking user:", error);
+    } finally {
+      setRequestVisible(false);
+      setVisible(false);
     }
-    setIsIBlocked(!isIBlocked);
-    setRequestVisible(false);
-    setVisible(false);
   };
+  
 
   return (
     <View className="mr-2">
@@ -102,11 +109,11 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
           </View>
 
           <MenuItemWrapper
-            icon={isIBlocked ? "lock-outline" : "lock-open-outline"}
+            icon={isBlocked ? "lock-outline" : "lock-open-outline"}
             onPress={() => {
               handleBlock();
             }}
-            title={isIBlocked ? "Разблокировать" : "Заблокировать"}
+            title={isBlocked ? "Разблокировать" : "Заблокировать"}
           />
           <MenuItemWrapper
             icon="delete-outline"
@@ -124,12 +131,12 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
         }}
         onConfirm={() => otherUserId && blockUser(otherUserId)}
         message={
-          isIBlocked
+          isBlocked
             ? "Разблокировать пользователя?"
             : "Вы действительно хотите заблокировать пользователя?"
         }
         title={
-          isIBlocked
+          isBlocked
             ? "Разблокировать пользователя"
             : "Заблокировать пользователя"
         }

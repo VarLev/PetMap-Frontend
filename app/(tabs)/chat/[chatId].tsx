@@ -18,28 +18,34 @@ const ChatScreen: React.FC = observer(() => {
   const userId = UserStore.currentUser?.id;
 
   const router = useRouter();
-  const [isBlocked, setIsBlocked] = useState(false);
-
-
-  const checkUserIsBlocked = useCallback(async (otherUserId: string) => {
-    if (!otherUserId) return;
-    try {
-      const isUserBlocked = await ChatStore.checkBlocked();
-      if (isUserBlocked !== isBlocked) {
-        setIsBlocked(isUserBlocked);
-        console.log("User is blocked?:", isBlocked);
-        console.log("ID другого пользователя:", otherUserId);
-      }
-    } catch (error) {
-      console.error("Ошибка при проверке блокировки пользователя:", error);
-    }
-  }, [otherUserId, isBlocked]);
+  const [isBlocked, setIsBlocked] = useState<boolean>(false);
 
   useEffect(() => {
-    if (otherUserId) {
-      checkUserIsBlocked(otherUserId);
+    const fetchBlacklist = async () => {
+      try {
+        await ChatStore.loadBlacklist();
+        console.log("Blacklist successfully loaded.");
+      } catch (error) {
+        console.error("Failed to load blacklist:", error);
+      }
+    };
+  
+    fetchBlacklist();
+  }, []);
+
+
+  useEffect(() => {
+ 
+if (!userId || !otherUserId) {
+      return;
     }
-  }, [otherUserId, checkUserIsBlocked]);
+    
+    setIsBlocked(ChatStore.checkIfIBlocked( otherUserId ));
+    console.log("is blocked:", isBlocked);
+    console.log("blacklist from useEffect:", ChatStore.blacklist);
+
+}, [userId, otherUserId, ChatStore.blacklist]);
+
 
   useEffect(() => {
     if (chatId) {

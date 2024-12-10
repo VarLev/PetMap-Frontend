@@ -48,7 +48,8 @@ class ChatStore {
   allMessages: MessageType.Any[] = [];
   advrtId: string | undefined = "";
   lastCreatedAt: { [key: string]: number } = {};
-
+  blacklist: { userId: string; blockedUserId: string }[] = [];
+  
   constructor() {
     makeAutoObservable(this);
   }
@@ -56,24 +57,25 @@ class ChatStore {
   async fetchChats() {
     const userId = userStore.currentUser?.id;
     if (!userId) return;
-
+  
     const chatsRef = ref(database, "chats");
     const snapshot = await get(chatsRef);
-
+  
     if (snapshot.exists()) {
       const data = snapshot.val();
       const chatsList: Chat[] = [];
-
+  
       for (const chatId in data) {
         const chatData = data[chatId];
         const participantIds = Object.keys(chatData.participants);
         const otherUserId = participantIds.find((id) => id !== userId);
         const currentUserId = participantIds.find((id) => id === userId);
-
+  
         if (currentUserId && otherUserId) {
           const userSnapshot = await get(ref(database, `users/${otherUserId}`));
           const otherUserName = userSnapshot.val().name;
           const thumbnailUrl = userSnapshot.val().avatar;
+  
           chatsList.push({
             id: chatId,
             lastMessage: chatData.lastMessage,
@@ -84,16 +86,23 @@ class ChatStore {
             thumbnailUrl,
             lastCreatedAt: chatData.lastCreatedAt,
           });
+  
+          // Обновляем MobX lastMessage
+          runInAction(() => {
+            chatStore.lastMessage[chatId] = chatData.lastMessage || "Нет сообщений";
+          });
         }
       }
-
+  
       runInAction(() => {
         this.chats = chatsList;
+        this.sortChats();
       });
     }
   }
+  
 
-  async createNewChat(
+   async createNewChat(
     otherUser: IUserChat,
     initalMessage?: string
   ): Promise<string | undefined> {
@@ -286,14 +295,33 @@ class ChatStore {
 
       // Обновляем локальное состояние lastMessage и lastSeen в chatStore
       runInAction(() => {
-        chatStore.lastMessage[chatId] = text;
-        chatStore.lastSeen[userId] = Date.now();
-        chatStore.lastCreatedAt[chatId] = Date.now();
+        chatStore.updateChat(chatId, {
+          lastMessage: text,
+          lastCreatedAt: Date.now(),
+        })
+        chatStore.lastSeen[userId] = Date.now()   
+        chatStore.lastMessage[chatId] = text
       });
+
     } catch (error) {
       console.error("Error during sendMessage:", error);
     }
   }
+
+  updateChat(chatId: string, updatedFields: Partial<Chat>) {
+    runInAction(() => {
+      const chatIndex = this.chats.findIndex((chat) => chat.id === chatId);
+      if (chatIndex !== -1) {
+        this.chats[chatIndex] = {
+          ...this.chats[chatIndex],
+          ...updatedFields,
+        };
+        this.sortChats(); // Сортируем чаты после обновления
+        console.log("Chat updated:", this.chats[chatIndex]);
+      }
+    });
+  }
+
 
   fetchMessages(chatId: string) {
     const messagesRef = ref(database, `messages/${chatId}`);
@@ -357,17 +385,36 @@ class ChatStore {
     }
   }
 
+  getLastMessageFromStore(chatId: string) {
+    const message = this.lastMessage[chatId];
+    return message;
+  }
+
+
   async getLastMessage(chatId: string) {
-    const data = ref(database, `chats/${chatId}`);
-    const snapshot = await get(data);
-    if (snapshot.exists()) {
-      const lastMessage = snapshot.val().lastMessage;
-      runInAction(() => {
-        this.lastMessage[chatId] = lastMessage;
-      });
-      return lastMessage;
+    try {
+      const data = ref(database, `chats/${chatId}`);
+      const snapshot = await get(data);
+  
+      if (snapshot.exists()) {
+        const lastMessage = snapshot.val().lastMessage;
+  
+        // Обновляем MobX-стор
+        runInAction(() => {
+          this.lastMessage[chatId] = lastMessage;
+        });
+  
+        return lastMessage;
+      } else {
+        console.warn(`No last message found for chat ID: ${chatId}`);
+        return null; // Если данных нет
+      }
+    } catch (error) {
+      console.error(`Failed to fetch last message for chat ID: ${chatId}`, error);
+      throw error; // Перебрасываем ошибку, если нужно обрабатывать её выше
     }
   }
+  
 
   async getLastSeen(userId: string) {
     const data = ref(database, `users/${userId}`);
@@ -419,7 +466,50 @@ class ChatStore {
     }
   }
 
-  async addBlacklist() {
+  async loadBlacklist() {
+    try {
+      const userId = userStore.currentUser?.id; // Текущий пользователь
+      if (!userId) {
+        console.error("Пользователь не авторизован");
+        return;
+      }
+  
+      // Получаем ссылку на blacklist в базе данных
+      const blacklistRef = ref(database, `/blacklist`);
+      const snapshot = await get(blacklistRef);
+  
+      if (snapshot.exists()) {
+        // Указываем тип данных, возвращаемых Firebase
+        const data = snapshot.val() as Record<string, Record<string, boolean>>;
+  
+        // Преобразуем данные из объекта в массив
+        const formattedBlacklist = Object.entries(data).flatMap(([userId, blockedUsers]) =>
+          Object.keys(blockedUsers).map((blockedUserId) => ({
+            userId,
+            blockedUserId,
+          }))
+        );
+  
+        // Обновляем состояние в MobX
+        runInAction(() => {
+          this.blacklist = formattedBlacklist;
+        });
+  
+        console.log("Blacklist loaded successfully:", this.blacklist);
+      } else {
+        console.log("Blacklist is empty in the database.");
+        runInAction(() => {
+          this.blacklist = [];
+        });
+      }
+    } catch (error) {
+      console.error("Ошибка при загрузке blacklist:", error);
+    }
+  }
+  
+  
+
+  async addBlacklist(otherUserId: string) {
     try {
       const userId = userStore.currentUser?.id; // Текущий пользователь
       if (!userId) {
@@ -432,8 +522,8 @@ class ChatStore {
         console.error("Чат не найден");
         return;
       }
-
-      const blockUserId = data[0]?.otherUserId; // Другой пользователь
+     
+      const blockUserId = otherUserId; // Другой пользователь
       if (!blockUserId) {
         console.error("ID пользователя для блокировки не найдено");
         return;
@@ -442,6 +532,13 @@ class ChatStore {
       // Текущий пользователь блокирует другого пользователя
       await set(ref(database, `/blacklist/${userId}/${blockUserId}`), true);
       console.log("Пользователь заблокирован:", blockUserId);
+   
+      runInAction(() => {
+      
+        this.blacklist.push({ userId, blockedUserId: blockUserId });
+        console.log('blockstate state',this.blacklist);
+      });
+   
     } catch (error) {
       console.error(
         "Ошибка при добавлении пользователя в черный список:",
@@ -450,25 +547,36 @@ class ChatStore {
     }
   }
 
-  async removeBlacklist() {
+  async removeBlacklist(otherUserId: string) {
     try {
       const userId = userStore.currentUser?.id; // Текущий пользователь
       if (!userId) {
         console.error("Пользователь не авторизован");
         return;
       }
+  
       const data = this.chats;
       if (!data || data.length === 0) {
         console.error("Чат не найден");
         return;
       }
-      const blockUserId = data[0]?.otherUserId; // Другой пользователь
+  
+      const blockUserId = otherUserId; // Другой пользователь
       if (!blockUserId) {
         console.error("ID пользователя для разблокировки не найдено");
         return;
       }
+  
       // Текущий пользователь разблокирует другого пользователя
       await remove(ref(database, `/blacklist/${userId}/${blockUserId}`));
+  
+      runInAction(() => {
+        // Удаляем запись из массива
+        this.blacklist = this.blacklist.filter(
+          (entry) => !(entry.userId === userId && entry.blockedUserId === blockUserId)
+        );
+        console.log("Updated blacklist state:", this.blacklist);
+      });
     } catch (error) {
       console.error(
         "Ошибка при удалении пользователя из черного списка:",
@@ -476,78 +584,26 @@ class ChatStore {
       );
     }
   }
+  
 
-  async checkBlocked() {
-    try {
-      const userId = userStore.currentUser?.id; // Текущий пользователь
-      if (!userId) {
-        console.error("Пользователь не авторизован");
-        return false;
-      }
-
-      const chatData = this.chats;
-      if (!chatData || chatData.length === 0) {
-        console.error("Чат не найден");
-        return false;
-      }
-
-      const blockUserId = chatData[0]?.otherUserId; // Другой пользователь
-      if (!blockUserId) {
-        console.error(
-          "ID другого пользователя для проверки блокировки не найдено"
-        );
-        return false;
-      }
-      // Проверяем, заблокировал ли другой пользователь текущего пользователя
-      const data = ref(database, `/blacklist/${blockUserId}/${userId}`);
-      const snapshot = await get(data);
-
-      if (snapshot.exists()) {
-        return true;
-      } else return false;
-    } catch (error) {
-      console.error("Ошибка при проверке статуса блокировки:", error);
-      return false;
-    }
+  checkBlocked(userId: string, otherUserId: string): boolean {
+    return this.blacklist.some(
+      (entry) => entry.userId === userId && entry.blockedUserId === otherUserId
+    );
   }
+  
 
-  async chekIfIBlocked() {
-    try {
-      const userId = userStore.currentUser?.id; // Текущий пользователь
-      if (!userId) {
-        console.error("Пользователь не авторизован");
-        return false;
-      }
-
-      const chatData = this.chats;
-      if (!chatData || chatData.length === 0) {
-        console.error("Чат не найден");
-        return false;
-      }
-
-      const blockUserId = chatData[0]?.otherUserId; // Другой пользователь
-      if (!blockUserId) {
-        console.error(
-          "ID другого пользователя для проверки блокировки не найдено"
-        );
-        return false;
-      }
-
-      // Проверяем, заблокировал ли другой пользователь текущего пользователя
-      const data = ref(database, `/blacklist/${userId}/${blockUserId}`);
-      const snapshot = await get(data);
-      if (snapshot.exists()) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (error) {
-      console.error("Ошибка при проверке статуса блокировки:", error);
-      return false;
-    }
+  checkIfIBlocked(otherUserId: string): boolean {
+    const userId = userStore.currentUser?.id; // Текущий пользователь
+    if (!userId || !otherUserId) return false;
+     
+    // Ищем в массиве запись, где другой пользователь заблокировал текущего
+    return this.blacklist.some(
+      (entry) => entry.userId === otherUserId && entry.blockedUserId === userId
+    );
   }
-
-  // запоминаем id прогулки для использования в чате
+  
+  
   setSelectedAdvrtId(id: string) {
     runInAction(() => {
       this.advrtId = id;
@@ -555,17 +611,13 @@ class ChatStore {
   }
 
   sortChats() {
-    // Создаем массив sortedChats с добавлением lastCreatedAt для каждого чата
-    const sortedChats = chatStore.chats.map((chat) => {
-      return { ...chat, lastCreatedAt: chatStore.lastCreatedAt[chat.id] || 0 };
-    });
     // Сортируем чаты по lastCreatedAt, чтобы самые последние чаты были в начале
-    sortedChats.sort((a, b) => b.lastCreatedAt - a.lastCreatedAt);
+    const sortedChats = chatStore.chats.slice().sort((a, b) => b.lastCreatedAt - a.lastCreatedAt);
     // Обновляем ChatStore.sortedChats с использованием runInAction
     runInAction(() => {
-      chatStore.sortedChats = sortedChats;
+      this.sortedChats = sortedChats;
     });
-  }
+}
 
   clearMessages() {
     runInAction(() => {
