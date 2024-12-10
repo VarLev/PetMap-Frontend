@@ -36,7 +36,7 @@ const PostComment: FC<{comment: ICommentWithUser}> = observer(({comment}) => {
             {timeSince(comment.createdAt)}
           </Text>
         </View>
-        <Text className="text-sm">{comment.content}</Text>
+        <Text className="text-sm pr-1">{comment.content}</Text>
       </View>
     </View>
   )
