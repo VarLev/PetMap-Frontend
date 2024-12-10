@@ -3,21 +3,20 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { FlatList, View, ActivityIndicator, StyleSheet, TextInput } from 'react-native';
 import { Text, IconButton } from 'react-native-paper';
+import { FAB } from 'react-native-paper';
+import { ICommentWithUser } from '@/dtos/Interfaces/feed/IPost';
+import { BG_COLORS } from '@/constants/Colors';
+import { runInAction } from 'mobx';
+import BottomSheet, { BottomSheetFlatList, BottomSheetFooter, BottomSheetFooterProps } from '@gorhom/bottom-sheet';
+import PostComment from './PostComment';
 import feedStore from '@/stores/FeedStore';
 import PostItem from '@/components/search/feed/PostItem';
 import CreatePost from '@/components/search/feed/CreatePost';
-import BottomSheetComponent from '@/components/common/BottomSheetComponent';
-import BottomSheet from '@gorhom/bottom-sheet';
-import { FAB } from 'react-native-paper';
-import PostComment from './PostComment';
-import { ICommentWithUser } from '@/dtos/Interfaces/feed/IPost';
-import { BG_COLORS } from '@/constants/Colors';
 
 const Feed: FC = observer(() => {
   const [bottomSheetType, setBottomSheetType ] = useState<'create-post' | 'comments' | ''>('')
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [postComments, setPostComments] = useState<ICommentWithUser[]>();
-  const [commentText, setCommentText] = useState('');
   const [selectedPostId, setSelectedPostId] = useState('');
   const sheetRef = useRef<BottomSheet>(null);
 
@@ -58,8 +57,45 @@ const Feed: FC = observer(() => {
     sheetRef.current?.expand();
   };
 
+  const BottomSheetCommentsFooter = ({ animatedFooterPosition }: BottomSheetFooterProps) => {
+    const [commentText, setCommentText] = useState('');
+
+    const addComment = async () => {
+      if (commentText.trim()) {
+        await feedStore.addComment(selectedPostId, commentText.trim());
+        setCommentText("");
+        runInAction( async () => {
+          const comments = await feedStore.fetchGetComments(selectedPostId);
+          setPostComments(comments);
+        })
+      }
+    }
+
+      return (
+        <BottomSheetFooter animatedFooterPosition={animatedFooterPosition}>
+          <View style={styles.footer} className="flex-row items-center flex-1">
+            <TextInput
+              multiline
+              style={{maxHeight: 60}}
+              placeholder="Напишите комментарий..."
+              className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-sm"
+              onChangeText={(text) => setCommentText(text)}
+              value={commentText}
+            /> 
+            <IconButton
+              icon="send"
+              iconColor={BG_COLORS.purple[400]}
+              onPress={addComment}
+              size={20}
+              style={{ marginLeft: 4, marginRight: -6 }}
+            />
+          </View>
+        </BottomSheetFooter>
+      )
+    }
+
   return (
-    <View className='flex-1 pb-[88px]' >
+    <View className='flex-1' >
       <FlatList
         ListHeaderComponent={
           feedStore.posts.length === 0 ? (
@@ -83,57 +119,61 @@ const Feed: FC = observer(() => {
       <FAB icon="pen" size='medium' color='white' style={styles.fab} onPress={handleCreatePost}/>
       {
         bottomSheetType && 
-        <BottomSheetComponent
+        <BottomSheet
+          style={{paddingHorizontal: 12}}
           ref={sheetRef}
-          snapPoints={['30%', '60%', '100%']}
-          renderContent={
-            bottomSheetType === 'create-post' ?
-            <CreatePost onClose={handleSheetClose}/> :
-            <View className="px-4">
-              <FlatList
-                data={postComments}
-                keyExtractor={(_, index) => index.toString()}
-                renderItem={({ item }) => {
-                  return (
-                    <PostComment comment={item}/>
-                  )
-                }}
-              />
-              <View className="flex-row items-center flex-1 -mr-1">
-                <TextInput
-                  placeholder="Напишите комментарий..."
-                  className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-sm"
-                  onChangeText={(text) => setCommentText(text)}
-                  value={commentText}
-                  multiline={false}
-                />
-                <IconButton
-                  icon="send"
-                  iconColor={BG_COLORS.purple[400]}
-                  onPress={async () => {
-                    if (commentText.trim()) {
-                      await feedStore.addComment(selectedPostId, commentText.trim());
-                      setCommentText("");
-                      await feedStore.fetchPosts();
-                    }
-                  }}
-                  size={20}
-                  style={{ marginLeft: 4 }}
-                />
-              </View>
-            </View>
-          }
-          initialIndex={0}
+          snapPoints={['50%', '100%']}
           onClose={handleSheetClose}
           enablePanDownToClose={true}
-          usePortal={false}
-        />
+          handleHeight={0}
+          footerComponent={bottomSheetType === "comments" ? BottomSheetCommentsFooter : undefined}
+          backgroundStyle={styles.backgroundStyle}
+          handleStyle={styles.handleStyle}
+        >
+          {bottomSheetType === "comments" ?
+          <BottomSheetFlatList
+            enableFooterMarginAdjustment
+            style={{paddingHorizontal: 12}}
+            data={postComments}
+            keyExtractor={(_, index) => index.toString()}
+            renderItem={({ item }) => {
+              return (
+                <PostComment comment={item}/>
+              )
+            }}
+          /> :
+          <CreatePost onClose={handleSheetClose}/>}
+        </BottomSheet>
       }
     </View>
   );
 });
 
 const styles = StyleSheet.create({
+  backgroundStyle: {
+    zIndex: -10,
+    elevation: 5,
+    shadowColor: '#000', // Цвет тени
+    shadowOffset: { width:0, height: 0 }, // Смещение тени
+    shadowOpacity: 0.4, // Прозрачность тени
+    shadowRadius: 5, // Радиус размытия тени
+    backgroundColor: 'white',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30
+  },
+  handleStyle: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 80,
+    borderTopRightRadius: 80
+  },
+  footer: {
+    backgroundColor: 'white',
+    height: 148,
+    paddingBottom: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 12
+  },
   fab: {
     position: 'absolute',
     margin: 16,
