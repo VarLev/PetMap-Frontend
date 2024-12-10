@@ -269,10 +269,12 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
 
       <View className='flex-row justify-between space-x-4 w-auto'>
         <CustomOutlineInputText
+          keyboardType='numeric'
+          maxLength={2}
           containerStyles="mt-4 w-1/3 flex-1 mr-1"
           label={i18n.t('EditPetProfile.weight')}
           value={editablePet.weight || ''}
-          handleChange={(text) => handleFieldChange('weight', text)}
+          handleChange={(text) => handleFieldChange('weight', text.replace(/[^0-9]/g, '') )}
         />
 
         {/* <CustomOutlineInputText

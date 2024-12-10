@@ -14,6 +14,7 @@ type InputTextProps = {
   numberOfLines?: number;
   keyboardType?: 'default' | 'number-pad' | 'decimal-pad' | 'numeric' | 'email-address' | 'phone-pad';
   mask?: string; // Опциональная маска
+  maxLength?: number;
 };
 
 const CustomOutlineInputText = ({
@@ -24,7 +25,8 @@ const CustomOutlineInputText = ({
   label,
   numberOfLines,
   keyboardType,
-  mask // Опциональная маска для поля ввода
+  mask, // Опциональная маска для поля ввода
+  maxLength
 }: InputTextProps) => {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -85,6 +87,7 @@ const CustomOutlineInputText = ({
         
       ) : (
         <TextInput
+          maxLength={maxLength}
           multiline={!!numberOfLines && numberOfLines > 1}
           label={label}
           value={value !== undefined ? String(value) : ''}
