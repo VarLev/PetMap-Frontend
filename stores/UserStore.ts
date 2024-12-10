@@ -192,7 +192,7 @@ class UserStore {
     
   }
   
-  async getCurrentUserForProvider(): Promise<IUser | null | false > {
+  async getCurrentUserForProvider(): Promise<IUser | null> {
     try{
       // Проверяем, есть ли пользователь уже в состоянии
       if (this.currentUser?.id) {
@@ -205,34 +205,22 @@ class UserStore {
 
       //Пытаемся загрузить пользователя из AsyncStorage
       if (!currentUser || !currentUser?.firebaseUid) {
-        console.log('Пользователь не найден в AsyncStorage');
         this.signOut();
-        return false;
+        return null;
       }
 
-     
-      const fetchUserData = async () => {
-        const userData = await apiClient.get('/users/me', { params: { fUid: currentUser.firebaseUid } });
-        return userData.data as IUser;
-      };
+      if(!currentUser?.firebaseUid) return null;
 
-      // Тайм-аут через 5 секунд (можешь изменить значение)
-      const timeout = new Promise<null>((_, reject) => {
-          setTimeout(() => reject(new Error('Timeout: сервер не ответил вовремя')), 10000);
-          return false;
-        }
-      );
-
-       // Ждем либо данных, либо тайм-аута
-      const userData = await Promise.race([fetchUserData(), timeout]);
+      const userData = await apiClient.get('/users/me', { params: { fUid: currentUser?.firebaseUid } });
      
-      if (userData && currentUser) {
-        
+      if (userData.data && currentUser) {
+        this.fUid = currentUser?.firebaseUid;
+        const user = userData.data as IUser;
+
+        // Обновляем MobX состояние и возвращаем пользователя
         runInAction(() => {
-          this.fUid = currentUser?.firebaseUid;
-          this.currentUser = new User(userData);
+          this.currentUser = new User(user);
         });
-
         console.log('Пользователь загружен из AsyncStorage');
         return this.currentUser;
       } 
@@ -240,7 +228,7 @@ class UserStore {
       console.log('Пользователь не найден');
       return null; // Возвращаем null, если пользователь не найден
     }catch (error) {
-      this.signOut();
+      //this.signOut();
       return handleAxiosError(error);
     }
    

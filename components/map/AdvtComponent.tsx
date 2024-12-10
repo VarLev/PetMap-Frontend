@@ -17,12 +17,11 @@ import { router } from "expo-router";
 import mapStore from "@/stores/MapStore";
 import { BREEDS_TAGS, petUriImage } from "@/constants/Strings";
 import { IUserAdvrt } from "@/dtos/Interfaces/user/IUserAdvrt";
-import { WalkRequestStatus } from "@/dtos/enum/WalkRequestStatus";
 import { IUserChat } from "@/dtos/Interfaces/user/IUserChat";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 import CircleIcon from "../custom/icons/CircleIcon";
 import chatStore from "@/stores/ChatStore";
-import  { renderWalkDetails } from "@/utils/utils";
+//import  { renderWalkDetails } from "@/utils/utils";
 import i18n from "@/i18n";
 
 interface AdvtProps {
@@ -34,7 +33,7 @@ interface AdvtProps {
 const AdvtComponent: React.FC<AdvtProps> = React.memo(
   ({ advrt, onInvite, onClose }) => {
     const pets = advrt.userPets; // Берем первого питомца из списка
-    const [participants, setParticipants] = React.useState<IUserAdvrt[]>([]);
+    //const [participants, setParticipants] = React.useState<IUserAdvrt[]>([]);
     const [requestVisible, setRequestVisible] = React.useState(false);
     const [userIsOwner, setUserIsOwner] = React.useState(false);
     const [distance, setDistance] = React.useState(0);
@@ -43,9 +42,9 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
     useEffect(() => {
       const fetchParticipants = async () => {
         if (advrt.id) {
-          const users = await mapStore.getAllWalkParticipants(advrt.id);
-          setParticipants(users);
-          advrt.participants = users;
+          //const users = await mapStore.getAllWalkParticipants(advrt.id);
+          //setParticipants(users);
+          //advrt.participants = users;
           setUserIsOwner(true);
           mapStore.currentWalkDate = advrt.date;  // Сохраняем дату прогулки
         }
@@ -59,11 +58,9 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
       setDistance(dist);
       if (advrt.userId === userStore.currentUser?.id) fetchParticipants();
       else {
-
-        
-
+        setUserIsOwner(false);
       }
-    }, [advrt]);
+    }, [advrt,userIsOwner]);
 
     const handleInvite = async () => {
       setRequestVisible(true);
@@ -116,7 +113,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
       mapStore.setBottomSheetVisible(false);
     };
 
-    const walkDetails = renderWalkDetails(advrt);
+    //const walkDetails = renderWalkDetails(advrt);
 
        
 
@@ -132,7 +129,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                 source={{
                   uri: advrt?.userPhoto || "https://via.placeholder.com/100",
                 }}
-                className="w-28 h-32 rounded-2xl"
+                className="w-24 h-24 rounded-2xl"
               />
             </TouchableOpacity>
             <View className="flex-1 ml-2 justify-between">
@@ -141,14 +138,14 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                   {advrt.userName || i18n.t("WalkDetails.owner")}
                 </Text>
               </View>
-              <View className="flex-1 justify-center">
+              {/* <View className="flex-1 justify-center">
                 <CustomTextComponent
                   text={walkDetails}
                   leftIcon="time-outline"
                   iconSet="ionicons"
                   className_="p-0"
                 />
-              </View>
+              </View> */}
               <View className="flex-1 justify-center">
                 <CustomTextComponent
                   text={convertDistance(distance)}
@@ -158,10 +155,8 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                 />
               </View>
               <View className="flex-1 justify-center">
-                {userIsOwner ||
-                advrt.participants?.find(
-                  (p) => p.id === userStore.currentUser?.id
-                ) ? (
+                {userIsOwner 
+                 ? (
                   <Button
                     mode="contained"
                     className="mt-2 bg-indigo-800"
@@ -186,7 +181,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
             </View>
           </View>
     
-          {userIsOwner && (
+          {/* {userIsOwner && (
             <>
               <Text className="text-base text-indigo-800 font-nunitoSansBold">
                 {i18n.t("WalkDetails.participants")}
@@ -233,7 +228,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                 )}
               </View>
             </>
-          )}
+          )} */}
     
           <Text className="text-base pt-2 text-indigo-800 font-nunitoSansBold">
             {i18n.t("WalkDetails.pets")}
@@ -262,8 +257,8 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                         <View className="flex-col items-start">
                           <View className="justify-center items-center flex-row">
                             <Ionicons name="male" size={18} color="indigo" />
-                            <Text className="pl-1 text-lg font-nunitoSansBold">
-                              {pet.petName || i18n.t("WalkDetails.pet")},{" "}
+                            <Text className="pl-1 text-lg font-nunitoSansBold w-52" numberOfLines={1} ellipsizeMode='tail'>
+                              {pet.petName || i18n.t("WalkDetails.pet")}
                             </Text>
                           </View>
                           <Text className="text-sm -mt-1 font-nunitoSansRegular">
@@ -322,12 +317,11 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
           </View>
     
           <View>
-            <ScrollView>
-              <Text className="mt-2 text-justify text-base text-gray-600 font-nunitoSansRegular">
-                {advrt.description || i18n.t("WalkDetails.description")}
-              </Text>
               <Text className="mt-2 text-justify text-base text-indigo-800 font-nunitoSansBold">
                 {i18n.t("WalkDetails.walkDetails")}
+              </Text>
+              <Text className="mt-2 text-justify text-base text-gray-600 font-nunitoSansRegular">
+                {advrt.description?.trim()}
               </Text>
               <CustomTextComponent
                 text={advrt.address}
@@ -335,12 +329,11 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                 iconSet="simpleLine"
               />
     
-              <CustomTextComponent
+              {/* <CustomTextComponent
                 text={walkDetails}
                 leftIcon="calendar-outline"
                 iconSet="ionicons"
-              />
-            </ScrollView>
+              /> */}
           </View>
         </View>
         <CustomConfirmAlert

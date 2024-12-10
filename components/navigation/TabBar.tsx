@@ -55,7 +55,7 @@ const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation })
           <TabBarButton
             key={route.name}
             onPress={onPress}
-            onLongPress={onLongPress}
+            //onLongPress={onLongPress}
             isFocused={isFocused}
             routeName={route.name}
             color={isFocused ? primaryColor : 'black'}
