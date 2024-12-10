@@ -213,6 +213,7 @@ const MapBoxMap = observer(() => {
   };
 
   const handleLongPress = (event: any) => {
+    console.log("Long press detected");
     if (
       currentPointType === MapPointType.Walk ||
       currentPointType === MapPointType.Danger ||
@@ -486,7 +487,7 @@ const MapBoxMap = observer(() => {
         <MapView
           ref={mapRef}
           style={{ flex: 1 }}
-          onLongPress={handleLongPress}
+          onPress={handleLongPress}
           styleURL={Mapbox.StyleURL.Light}
           logoEnabled={false}
           attributionEnabled={false}
@@ -698,7 +699,7 @@ const MapBoxMap = observer(() => {
       {isSheetVisible && (
         <BottomSheetComponent
           ref={sheetRef}
-          snapPoints={renderAdvrtForm ? ["85%", "100%"] : ["60%", "100%"]}
+          snapPoints={renderAdvrtForm ? ["60%", "100%"] : ["60%", "100%"]}
           renderContent={renderContent as any}
           onClose={handleSheetClose} // Обработчик для события закрытия BottomSheet
           enablePanDownToClose={true}

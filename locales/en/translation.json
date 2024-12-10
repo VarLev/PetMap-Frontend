@@ -3,7 +3,8 @@
     "welcome": "Welcome to PetMap!",
     "signUp": "Sign Up",
     "alreadyHaveAccount": "Already have an account",
-    "otherSignInMethods": "Other sign-in methods"
+    "otherSignInMethods": "Other sign-in methods",
+    "error": "There is a connection problem"
   },
   "onboarding": {
     "slide1": {

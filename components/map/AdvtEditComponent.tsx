@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, Image, Text, Alert } from "react-native";
-import { Button, Surface, Checkbox, TouchableRipple } from "react-native-paper";
+import { View, ScrollView, Text } from "react-native";
+// import { Button, Surface, Checkbox, TouchableRipple } from "react-native-paper";
 import { observer } from "mobx-react-lite";
 import userStore from "@/stores/UserStore";
-import { Ionicons } from "@expo/vector-icons";
+// import { Ionicons } from "@expo/vector-icons";
 import mapStore from "@/stores/MapStore";
 import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
 import CustomOutlineInputText from "../custom/inputs/CustomOutlineInputText";
-import { calculateDogAge } from "@/utils/utils";
-import { petUriImage } from "@/constants/Strings";
+// import { calculateDogAge } from "@/utils/utils";
+// import { petUriImage } from "@/constants/Strings";
 import { WalkAdvrtStatus } from "@/dtos/enum/WalkAdvrtStatus";
 import { AdvrtType } from "@/dtos/enum/AdvrtType";
-import DateOrTimeRangePicker from "../custom/pickers/DateOrTimeRangePicker";
-import CustomSegmentedButtonsWithProps from "../custom/buttons/CustomSegmentedButtonsWithProps";
+// import DateOrTimeRangePicker from "../custom/pickers/DateOrTimeRangePicker";
+// import CustomSegmentedButtonsWithProps from "../custom/buttons/CustomSegmentedButtonsWithProps";
 import CustomLoadingButton from "../custom/buttons/CustomLoadingButton";
 import CustomAlert from "../custom/alert/CustomAlert";
 import i18n from "@/i18n";
+
+
 
 interface AdvtEditProps {
   coordinates: [number, number];
@@ -82,16 +84,17 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
     };
 
     const handleSave = async () => {
-      if (selectedPets.length === 0) {
-        showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.selectAtLeastOnePet"));
-        return;
-      }
+      console.log("handleSave");
+      // if (selectedPets.length === 0) {
+      //   showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.selectAtLeastOnePet"));
+      //   return;
+      // }
     
-      // Проверка доступности создания прогулки в выбранном месте
-      if (!mapStore.isAvaliableToCreateWalk) {
-        showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.cannotCreateWalkHere"));
-        return;
-      }
+      // // Проверка доступности создания прогулки в выбранном месте
+      // if (!mapStore.isAvaliableToCreateWalk) {
+      //   showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.cannotCreateWalkHere"));
+      //   return;
+      // }
     
       // Проверка на заполнение адреса
       if (!address.trim()) {
@@ -99,10 +102,10 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
         return;
       }
     
-      if (duration <= 0 || duration > 180) {
-        showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.invalidDuration"));
-        return;
-      }
+      // if (duration <= 0 || duration > 180) {
+      //   showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.invalidDuration"));
+      //   return;
+      // }
     
       // Проверка на заполнение описания
       if (!description.trim()) {
@@ -111,17 +114,46 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
       }
     
       // Проверка на заполнение времени и даты
-      if (isSwitchOn) {
-        if (selectedDays.length === 0) {
-          showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.selectAtLeastOneDay"));
-          return;
-        }
-      } else {
-        if (!date) {
-          showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.provideDate"));
-          return;
-        }
-      }
+      // if (isSwitchOn) {
+      //   if (selectedDays.length === 0) {
+      //     showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.selectAtLeastOneDay"));
+      //     return;
+      //   }
+      // } else {
+      //   if (!date) {
+      //     showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.provideDate"));
+      //     return;
+      //   }
+      // }
+      const updatedUserWalk :IWalkAdvrtDto = {
+        id: undefined,
+        isEnabled: true,
+        createdAt: new Date(),
+        date: new Date(),
+        latitude: coordinates[1],
+        longitude: coordinates[0],
+        participants: [],
+        address: address,
+        userId: userStore.currentUser?.id || '',
+        description: description,
+        status: WalkAdvrtStatus.Active,
+        type: AdvrtType.Single,
+        userPhoto: userStore.currentUser?.thumbnailUrl || '',
+        userName: userStore.currentUser?.name || '',
+        userPets: userStore.currentUser?.petProfiles || [],
+        duration: duration,
+        isRegular: isSwitchOn,
+        selectedDays: selectedDays,
+        startTime: time.getHours() * 60 + time.getMinutes(),
+        city: userStore.getCurrentUserCity() || ''
+      };
+      const isGetedBonuses = await mapStore.addWalkAdvrt(updatedUserWalk)
+      if(isGetedBonuses)
+        onAdvrtAddedInvite(true);
+      else
+        onAdvrtAddedInvite(false);
+  
+
     };
 
     const togglePetSelection = (petId: string) => {
@@ -146,7 +178,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
             <Text className="text-base font-nunitoSansBold text-indigo-700">
               {i18n.t("WalkEditDetails.walkDetails")}
             </Text>
-            <View className="pt-4">
+            {/* <View className="pt-4">
               <DateOrTimeRangePicker
                 mode="time"
                 time={time}
@@ -192,7 +224,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
                   onDateChange={handleDateChange}
                 />
               )}
-            </View>
+            </View> */}
 
             <View className="mt-2">
               <CustomOutlineInputText
@@ -209,7 +241,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
               />
             </View>
 
-            {visiblePets.map((pet, index) => (
+            {/* {visiblePets.map((pet, index) => (
               <Surface
                 key={index}
                 elevation={0}
@@ -255,12 +287,12 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
                     : i18n.t("WalkEditDetails.showMore")}
                 </Text>
               </Button>
-            )}
+            )} */}
 
             <View className="h-20 mt-4 ">
               <CustomLoadingButton
                 title={i18n.t("WalkEditDetails.save")}
-                handlePress={handleSave}
+                handlePress={ async () => {await handleSave()}}
               />
             </View>
           </View>
