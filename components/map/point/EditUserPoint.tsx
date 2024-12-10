@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import CustomOutlineInputText from '../../custom/inputs/CustomOutlineInputText';
-import { Text } from 'react-native';
 import AddPhotoButton from '../../custom/buttons/AddPhotoButton';
-import { AMENITIES_TAGS, USERSPOINTTYPE_TAGS } from '@/constants/Strings';
 import CustomDropdownList from '../../custom/selectors/CustomDropdownList';
 import CustomButtonPrimary from '../../custom/buttons/CustomButtonPrimary';
 import mapStore from '@/stores/MapStore';
@@ -11,10 +9,12 @@ import { MapPointType } from '@/dtos/enum/MapPointType';
 import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
 import CustomTagsSelector from '@/components/custom/selectors/CustomTagsSelector';
 import { UserPointType } from '@/dtos/enum/UserPointType';
+import userStore from '@/stores/UserStore';
+import i18n from '@/i18n'; // Импорт i18n
 
 interface CompositeFormProps {
   mapPoint: IPointUserDTO;
-  onClose: () => void;  
+  onClose: () => void;
 }
 
 const EditUserPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
@@ -22,61 +22,103 @@ const EditUserPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
 
   const handleFieldChange = (field: keyof IPointUserDTO, value: any) => {
     setEditablePoint((prevPoint) => {
-      const updatedPoint = { ...prevPoint, [field]: value };  
+      const updatedPoint = { ...prevPoint, [field]: value };
       return updatedPoint;
     });
   };
 
-  const CheckErrors = () => {
+  const checkErrors = () => {
     if (!editablePoint.userPointType || !editablePoint.description) {
-      alert("Пожалуйста, заполните все обязательные поля: Тип, Описание.");
+      alert(i18n.t('EditUserPoint.errors.missingFields'));
       return false;
     }
     return true;
-  }
+  };
 
   const handleSave = async () => {
     try {
-      if(CheckErrors()){
-        const thumb = await mapStore.uploaPiontThumbnailImage(editablePoint, MapPointType.UsersCustomPoint);
+      if (checkErrors()) {
+        const thumb = await mapStore.uploaPiontThumbnailImage(
+          editablePoint,
+          MapPointType.UsersCustomPoint
+        );
         editablePoint.thumbnailUrl = thumb;
         editablePoint.mapPointType = editablePoint.userPointType as number;
         await mapStore.addPoint(editablePoint);
-        await mapStore.getMapPointsByType({type: editablePoint.mapPointType, userId: editablePoint.userId!});
+        await mapStore.getMapPointsByType({
+          type: editablePoint.mapPointType,
+          userId: editablePoint.userId!,
+          city: (await userStore.getCurrentUserCity()) || '',
+        });
         onClose();
-      } 
+      }
     } catch (error) {
-      console.error("Ошибка при сохранении точки:", error);
+      console.error(error);
       onClose();
     }
-  }
+  };
 
   return (
-    <View className='px-7'>
-      <Text className='text-lg font-nunitoSansBold'>{editablePoint.userPointType === UserPointType.Note ? 'Моя заметка' : 'Публичная метка'}</Text>
-      <View className='flex-col'>
+    <View className="px-7">
+      <Text className="text-lg font-nunitoSansBold">
+        {editablePoint.userPointType === UserPointType.Note
+          ? i18n.t('EditUserPoint.myNote')
+          : i18n.t('EditUserPoint.publicMark')}
+      </Text>
+      <View className="flex-col">
         {editablePoint.userPointType !== UserPointType.Note && (
           <>
-            <AddPhotoButton buttonText='Добавить фото' onImageSelected={(photo) => handleFieldChange('thumbnailUrl', photo)}/>
-            <CustomDropdownList tags={USERSPOINTTYPE_TAGS} listMode='MODAL' onChange={(tag) => handleFieldChange('userPointType', tag)} disabledInexes={[0,1,9,10,11]}/>
-            <CustomOutlineInputText label='Название' value={editablePoint.name} handleChange={(text) => handleFieldChange('name', text)}/>
-            <CustomOutlineInputText label='Адрес' value={editablePoint.address} handleChange={(text) => handleFieldChange('address', text)}/>
+            <AddPhotoButton
+              buttonText={i18n.t('EditUserPoint.addPhoto')}
+              onImageSelected={(photo) => handleFieldChange('thumbnailUrl', photo)}
+            />
+            <CustomDropdownList
+              tags={i18n.t('tags.USERSPOINTTYPE_TAGS') as string[]}
+              listMode="MODAL"
+              onChange={(tag) => handleFieldChange('userPointType', tag)}
+              disabledIndexes={[0, 1, 9, 10, 11]}
+            />
+            <CustomOutlineInputText
+              label={i18n.t('EditUserPoint.name')}
+              value={editablePoint.name}
+              handleChange={(text) => handleFieldChange('name', text)}
+            />
+            <CustomOutlineInputText
+              label={i18n.t('EditUserPoint.address')}
+              value={editablePoint.address}
+              handleChange={(text) => handleFieldChange('address', text)}
+            />
           </>
         )}
 
         {/* Компонент для текстового описания всегда рендерится */}
-        <CustomOutlineInputText label='Описание' value={editablePoint.description} handleChange={(text) => handleFieldChange('description', text)} numberOfLines={3}/>
-        
+        <CustomOutlineInputText
+          label={i18n.t('EditUserPoint.description')}
+          value={editablePoint.description}
+          handleChange={(text) => handleFieldChange('description', text)}
+          numberOfLines={3}
+        />
+
         {/* Блок удобств показывается только если это не заметка */}
         {editablePoint.userPointType !== UserPointType.Note && (
           <View>
-            <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Удобства</Text>
-            <CustomTagsSelector tags={AMENITIES_TAGS} initialSelectedTags={[]} maxSelectableTags={5} visibleTagsCount={10}/>
+            <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
+              {i18n.t('EditUserPoint.amenities')}
+            </Text>
+            <CustomTagsSelector
+              tags={i18n.t('tags.AMENITIES_TAGS') as string[]}
+              initialSelectedTags={[]}
+              maxSelectableTags={5}
+              visibleTagsCount={10}
+            />
           </View>
         )}
-        
-        <CustomButtonPrimary title='Добавить' handlePress={handleSave}/>
-        <View className="h-24"/>
+
+        <CustomButtonPrimary
+          title={i18n.t('EditUserPoint.addButton')}
+          handlePress={handleSave}
+        />
+        <View className="h-24" />
       </View>
     </View>
   );

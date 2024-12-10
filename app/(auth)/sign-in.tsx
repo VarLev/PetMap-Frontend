@@ -18,7 +18,6 @@ import i18n from "@/i18n"; // Импорт i18n для мультиязычно�
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSecure, setIsSecure] = useState(true);
   const [isValidEmail, setIsValidEmail] = useState(true);
 
   const [secureText, setSecureText] = useState(true); // состояние видимости пароля
@@ -40,13 +39,6 @@ const SignIn = () => {
     }
   };
 
-  const handleToggleSecure = () => {
-    setIsSecure(!isSecure);
-  };
-
-  const handleBack = () => {
-    router.back();
-  };
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -73,7 +65,7 @@ const SignIn = () => {
         <View className="w-full justify-between h-full px-9 my-10">
           <View>
             <ArrowHelp
-              onPressArrow={() => router.replace("/sign-up")}
+              onPressArrow={() => router.replace("/")}
               onPressHelp={tempfunc}
             />
             {/* временная ссылка для отладки */}
@@ -132,9 +124,9 @@ const SignIn = () => {
               
                 <CustomLoadingButton
                   title={i18n.t("signIn.loginButton")}
-                  handlePress={() => {
-                    Keyboard.dismiss(); // Скрытие клавиатуры при нажатии на кнопку
-                    handleLogin(); // Выполнение функции handleLogin
+                  handlePress={async () => {
+                    Keyboard.dismiss();
+                    await handleLogin();
                   }}
                   containerStyles="w-full"
                 />

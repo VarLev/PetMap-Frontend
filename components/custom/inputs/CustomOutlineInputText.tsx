@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TextInput } from 'react-native-paper';
 import { TextInputMask } from 'react-native-masked-text';
 import { View, Text } from 'react-native';
+import { BG_COLORS } from '@/constants/Colors';
 
 
 type InputTextProps = {
@@ -13,6 +14,7 @@ type InputTextProps = {
   numberOfLines?: number;
   keyboardType?: 'default' | 'number-pad' | 'decimal-pad' | 'numeric' | 'email-address' | 'phone-pad';
   mask?: string; // Опциональная маска
+  maxLength?: number;
 };
 
 const CustomOutlineInputText = ({
@@ -23,7 +25,8 @@ const CustomOutlineInputText = ({
   label,
   numberOfLines,
   keyboardType,
-  mask // Опциональная маска для поля ввода
+  mask, // Опциональная маска для поля ввода
+  maxLength
 }: InputTextProps) => {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -40,12 +43,12 @@ const CustomOutlineInputText = ({
         <View>
           {label && (
             <Text className='font-nunitoSansRegular' style={{
-              color: '#bdbcbc',
+              color: BG_COLORS.gray[700],
               fontFamily: 'NunitoSans_400Regular',
               fontSize: 12,
               position: 'absolute',
-              top: 8,
-              left: 22,
+              top:9,
+              left: 8,
               backgroundColor: '#fff',
               paddingHorizontal: 4,
               
@@ -84,6 +87,7 @@ const CustomOutlineInputText = ({
         
       ) : (
         <TextInput
+          maxLength={maxLength}
           multiline={!!numberOfLines && numberOfLines > 1}
           label={label}
           value={value !== undefined ? String(value) : ''}

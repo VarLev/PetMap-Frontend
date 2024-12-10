@@ -3,7 +3,8 @@
     "welcome": "Welcome to PetMap!",
     "signUp": "Sign Up",
     "alreadyHaveAccount": "Already have an account",
-    "otherSignInMethods": "Other sign-in methods"
+    "otherSignInMethods": "Other sign-in methods",
+    "error": "There is a connection problem"
   },
   "onboarding": {
     "slide1": {
@@ -124,21 +125,466 @@
       "Pointer", "Russian Toy", "Fox Terrier", "Greyhound", "Shetland Sheepdog", "Weimaraner"
     ],
     "interests": [
-      "Travel", "Music", "Cooking", "Sports", "Movies",
-      "Photography", "Art", "Dancing", "Animals", "Pets",
-      "Yoga", "Meditation", "Self-Development", "Psychology", "Fashion",
-      "Technology", "Cars", "Motorcycles", "Cycling", "Hiking",
-      "Fitness", "Drawing", "Theater", "Board Games", "Chess",
-      "Handicrafts", "History", "Science", "Politics", "Blogging",
-      "Fantasy", "Football", "Esports", "Business", "Startups",
-      "Healthy Lifestyle", "Swimming", "Running", "Tennis", "Rock",
-      "Classical Music", "Electronic Music", "Comedy", "Thrillers", 
-      "Science Fiction", "Adventures", "Romance", "TV Shows", "Anime"
+      "Traveling", "Music", "Cooking", "Sports", "Books",
+      "Movies", "Photography", "Art", "Dancing", "Volunteering",
+      "Nature", "Hiking", "Video Games", "Animals", "Pets",
+      "Wine", "Health", "Yoga", "Meditation", "Self-Development",
+      "Psychology", "Fashion", "Technology", "Gadgets", "Cars",
+      "Motorcycles", "Cycling", "Fishing", "Drawing", "Theater",
+      "Crosswords", "Board Games", "Chess", "Fitness", "Handicrafts",
+      "Cosmetics", "Gardening", "Crafting", "History", "Science",
+      "Politics", "Blogging", "Internet Marketing", "Fantasy", "Astronomy",
+      "Electronics", "Football", "Esports", "Business", "Startups"
+    ],
+    "languages": ["Spanish", "Russian", "English"],
+    "petGender": ["Boy", "Girl"],
+    "gender": ["Male", "Female", "N/A"],
+    "professions": [
+      "Programming", "Design", "Marketing", "Finance", "Engineering",
+      "Law", "Medicine", "Education", "Journalism", "Data Analysis",
+      "Project Management", "Recruitment", "Logistics", "Psychology", "Sales",
+      "Construction", "Cybersecurity", "Ecology", "Art", "Scientific Research",
+      "Architecture", "Pharmaceuticals", "Agriculture", "Veterinary", "Industrial Production",
+      "Energy", "Tourism", "Hospitality", "Restaurant Business", "Trade",
+      "HR (Human Resources)", "PR (Public Relations)", "Advertising", "Copywriting", "Editing",
+      "Translation", "Administrative Work", "IT Administration", "Game Development", "UX/UI Design",
+      "Graphic Design", "Web Design", "Multimedia", "Video Editing", "Sound Engineering",
+      "Photography", "Social Work", "Cosmetology", "Hairdressing", "Physiotherapy",
+      "Coaching", "Sports Analytics", "Military Service", "Political Science", "Public Administration",
+      "International Relations", "Philosophy", "History", "Sociology", "Cultural Studies",
+      "Literary Studies", "Biology", "Chemistry", "Physics", "Mathematics",
+      "Astronomy", "Geology", "Geography", "Economics", "Management",
+      "Quality Management", "Accounting", "Audit", "Tax Consulting", "Financial Analysis",
+      "Banking", "Insurance", "Investments", "Speech Therapy", "Special Education",
+      "Radio Engineering", "Aviation", "Space Technology", "Mechanical Engineering", "Automotive Industry",
+      "Chemical Industry", "Fishing", "Oceanology", "Interior Design", "Landscape Design",
+      "Crafts", "Jewelry", "Watchmaking", "Robotics", "Nanotechnology",
+      "Genetics", "Pharmacology", "Information Security", "Mobile App Development", "Computer Networks",
+      "System Administration", "General Management", "Logistics and Supply", "Procurement", "Transportation",
+      "International Trade", "Engineering Networks", "Telecommunications", "Software Development", "IT Infrastructure Management",
+      "Content Management", "SEO Optimization", "SMM (Social Media)", "Email Marketing", "Contextual Advertising",
+      "Mobile Marketing", "Cloud Computing", "Machine Learning", "Artificial Intelligence", "Cryptography",
+      "Systems Analysis", "Process Automation", "Internet of Things (IoT)", "3D Modeling", "Augmented Reality (AR)",
+      "Virtual Reality (VR)", "Image Processing", "Screenwriting", "Animation", "Directing",
+      "Producing", "Television Production", "Radio", "Acting", "Medicine (Doctor)",
+      "Dentistry", "Pediatrics", "Psychiatry", "Neurology", "Cardiology",
+      "Therapy", "Surgery", "Ophthalmology", "Pharmacy", "Obstetrics",
+      "Rehabilitation", "Psychotherapy", "Endocrinology", "Immunology", "Allergology",
+      "Gastroenterology", "Urology", "Acoustics", "Paleontology", "Zoology",
+      "Ornithology", "Botany", "Anthropology", "Archaeology", "Ethnography",
+      "Museum Studies", "Antiques", "Electrical Engineering", "Microelectronics", "Semiconductor Technologies",
+      "Materials Science", "Production Technology", "Standardization", "Quality Control", "Metallurgy",
+      "Woodworking", "Pulp and Paper Industry", "Textile Industry", "Leather Industry", "Industrial Design",
+      "Food Technology", "Waste Processing Technologies", "Environmental Management", "Renewable Energy", "Oil and Gas Industry",
+      "Heavy Machinery", "Livestock Farming", "Aquaculture", "Natural Resource Economics", "Water Resource Management",
+      "Innovation Management", "Brand Management", "Product Management", "Fundraising", "Coaching",
+      "Consulting", "Time Management"
+    ],
+    "petGames": [
+      "Fetch", "Tug of War", "Hide and Seek", "Frisbee", "Agility", 
+      "Chasing the Ball", "Dog Park", "Obstacle Course", "Running Games", 
+      "Hiding Toys", "Trick Training", "Scent Games", "Dog Puzzles", 
+      "Water Games", "Group Play", "Playtime", "Catch the Ball", 
+      "Catch and Bring", "Rope Tugging", "Active Games"
+    ],
+    "vaccines": [
+      "Rabies", "Canine Distemper", "Parvovirus", 
+      "Adenovirus", "Parainfluenza", 
+      "Leptospirosis", "Coronavirus", "Bordetella", 
+      "Lyme Disease", "Dermatophytosis", "Borreliosis"
+    ],
+    "petHealthIssues": [
+      "Allergy", "Anemia", "Arthritis", "Osteoarthritis", "Asthma", "Skin Diseases", "Liver Diseases", 
+      "Deafness", "Eye Diseases", "Diabetes", "Dilated Cardiomyopathy", "Dysplasia", "Respiratory Diseases", 
+      "Aggression", "Cryptorchidism", "MDR1 Mutation", "Oncology", "Mental Traits", "Liver Failure", 
+      "Spine Problems", "Heart Problems", "Joint Problems", "Ear Problems", "Tail Problems", 
+      "Blindness", "Noise Phobia", "Epilepsy", "Endocrine Diseases", "Enteropathy", "Encephalopathy"
+    ],
+    "DANGERTYPE_TAGS": [
+      "Other",
+      "Traffic",
+      "Aggressive Dogs",
+      "Poisoned Baits",
+      "Poor Lighting",
+      "Crime",
+      "Wild Animals",
+      "Open Areas without Fencing",
+      "Broken Glass",
+      "Stray Dogs",
+      "Construction Sites",
+      "Places with Loud Noises",
+      "Overcrowded Areas",
+      "Polluted Areas",
+      "Dangerous Plants",
+      "Broken Sidewalks",
+      "Snakes",
+      "Ticks",
+      "Garbage"
+    ],
+    "USERSPOINTTYPE_TAGS": [
+      "Other",
+      "Danger",
+      "Park",
+      "Playground",
+      "Dog Zone",
+      "Cafe",
+      "Restaurant",
+      "Veterinary Clinic",
+      "Pet Store",
+      "Note",
+      "Walk",
+      "Custom Point"
+    ],
+    "AMENITIES_TAGS": [
+      "Off-Leash Area", "Fully Enclosed", "Dog Trail", "Open Field", "Swimming Zone",
+      "Leash-Only Area", "Camping Zone", "Wildlife", "Separation for Large and Small Dogs", "Obstacles",
+      "Double Gate Entrance", "Water Fountain", "Free Entry", "Members Only", "Free Parking Nearby",
+      "Wheelchair Accessible", "Seating Area", "Shaded Area", "Waste Bags Available", "Dog Toys Allowed",
+      "Night Lighting", "Hose", "Breed-Specific Legislation", "Collar Removal Safety Kit"
     ]
   },
   "emptyProfile": {
     "welcome": "Welcome",
     "description": "To continue, please complete your profile.",
-    "button": "Tell us about yourself"
+    "button": "Tell us about yourself"  
+  },
+  "ProfileLayout": {
+    "profileTitle": "Profile",
+    "editUserTitle": "Edit Profile",
+    "petProfileTitle": "Pet Profile",
+    "editPetTitle": "Edit Pet",
+    "myJobsTitle": "Tasks and Rewards",
+    "myWalksTitle": "My Walks",
+    "settingsTitle": "Settings"
+  },
+  "EditProfileComponent": {
+    "confirmTitle": "Confirmation",
+    "confirmMessage": "Are you sure you want to log out?",
+    "cancel": "Cancel",
+    "exit": "Log Out",
+    "error": {
+      "requiredFields": "Please fill in all required fields.",
+      "invalidDate": "Invalid date of birth.",
+      "ageRestriction": "Age must be over 14 years."
+    },
+    "nameLabel": "What's your name?",
+    "birthDateLabel": "Date of Birth",
+    "birthDatePlaceholder": "Enter date in YYYY-MM-DD format",
+    "genderLabel": "Gender",
+    "descriptionLabel": "About Me",
+    "interestsTitle": "Interests",
+    "interestsSubtitle": "Select up to 5 interests",
+    "mainInfoTitle": "Main Info",
+    "locationLabel": "Location (city, area)",
+    "languagesLabel": "Language",
+    "professionLabel": "Profession",
+    "educationLabel": "Education",
+    "socialMediaTitle": "Social Media",
+    "instagramLabel": "Instagram",
+    "facebookLabel": "Facebook",
+    "saveButton": "Save",
+    "cancelButton": "Cancel"
+  },
+  "UserProfile": {
+    "edit": "Edit",
+    "logout": "Log Out",
+    "deleteAccount": "Delete Account",
+    "addPet": "Add Pet",
+    "aboutMe": "About Me",
+    "interests": "Interests",
+    "mainInfo": "Main Info",
+    "socialMedia": "Social Media"
+  },
+  "PetProfile": {
+    "edit": "Edit",
+    "delete": "Delete Pet",
+    "main": "Main",
+    "dog": "Dog",
+    "health": "Health",
+    "healthUpdate": "We are working on creating a health passport for your pet. Stay tuned for updates.",
+    "healthFeatures": "Health Features",
+    "vaccinations": "Vaccinations",
+    "indicators": "Indicators",
+    "temperament": "Temperament",
+    "friendliness": "Friendliness",
+    "activity": "Activity",
+    "playPreferences": "Play Preferences",
+    "aboutPet": "About Pet",
+    "socialMedia": "Social Media"
+  },
+  "EditPetProfile": {
+    "confirmationTitle": "Confirmation",
+    "confirmationMessage": "Are you sure you want to exit?",
+    "cancel": "Cancel",
+    "exit": "Yes",
+    "errors": {
+      "missingFields": "Please fill in all required fields: Name, Birth Date, and Breed.",
+      "invalidDate": "Invalid birth date. Please enter the date in YYYY-MM-DD format.",
+      "saveError": "Error saving pet profile",
+      "saveErrorMessage": "An error occurred while saving the pet profile. Please try again.",
+      "addError": "Error adding pet profile",
+      "addErrorMessage": "An error occurred while adding the pet profile. Please try again."
+    },
+    "main": "Main",
+    "name": "Name",
+    "birthDate": "Date of Birth",
+    "birthDatePlaceholder": "Enter date in YYYY-MM-DD format",
+    "gender": "Gender",
+    "selectGender": "Select Gender",
+    "defaultGender": "Boy",
+    "breed": "Breed",
+    "selectBreed": "Select Breed",
+    "weight": "Weight",
+    "interests": "Interests",
+    "health": "Health",
+    "healthUpdate": "We are working on creating a health passport for your pet. Stay tuned for updates.",
+    "healthFeatures": "Health Features",
+    "vaccinations": "Vaccinations",
+    "neutered": "Neutered?",
+    "indicators": "Indicators",
+    "temperament": "Temperament",
+    "friendliness": "Friendliness",
+    "activity": "Activity",
+    "additionalNotes": "Additional Notes",
+    "socialMedia": "Social Media",
+    "add": "Add",
+    "save": "Save"
+  },
+  "Sidebar": {
+    "anonymousUser": "Anonymous User",
+    "openProfile": "Open Profile",
+    "subscription": "Subscription",
+    "freeTrial": "7 Days Free",
+    "subscribe": "Subscribe",
+    "tasksAndBonuses": "Tasks and Bonuses",
+    "myWalks": "My Walks",
+    "myLocations": "My Locations",
+    "settings": "Settings",
+    "support": "Support"
+  },
+  "UserJobsList": {
+    "reward": "Reward",
+    "noJobs": "No Tasks"
+  },
+  "EditDangerPoint": {
+    "title": "Danger",
+    "addPhoto": "Add Photo",
+    "description": "Description",
+    "addButton": "Add",
+    "errors": {
+      "missingFields": "Please fill in all required fields: Type, Description.",
+      "saveError": "Error saving the point."
+    }
+  },
+  "EditUserPoint": {
+    "myNote": "My Note",
+    "publicMark": "Public Marker",
+    "addPhoto": "Add Photo",
+    "name": "Name",
+    "address": "Address",
+    "description": "Description",
+    "amenities": "Amenities",
+    "addButton": "Add",
+    "errors": {
+      "missingFields": "Please fill in all required fields: Type, Description.",
+      "saveError": "Error saving the marker."
+    }
+  },
+  "ViewDangerPoint": {
+    "title": "Danger",
+    "loadingPointInfo": "Loading full point information",
+    "dangerType": "Danger Type",
+    "description": "Description",
+    "openInGoogleMaps": "Open in Google Maps",
+    "errors": {
+      "fetchError": "Error fetching point data.",
+      "imageError": "Error loading image.",
+      "openMapErrorTitle": "Error",
+      "openMapErrorMessage": "Unable to open the map.",
+      "openMapErrorConsole": "Error trying to open the map.",
+      "fetchReviewsError": "Error loading reviews."
+    }
+  },
+  "ViewUserPoint": {
+    "loading": "Loading full point information...",
+    "name": "Name",
+    "address": "Address",
+    "description": "Description",
+    "amenities": "Amenities",
+    "openInGoogleMaps": "Open in Google Maps",
+    "errors": {
+      "fetchError": "Error fetching point data.",
+      "imageError": "Error loading image.",
+      "openMapErrorTitle": "Error",
+      "openMapErrorMessage": "Unable to open the map.",
+      "openMapErrorConsole": "Error trying to open the map.",
+      "fetchReviewsError": "Error loading reviews."
+    }
+  },
+  "WalkDetails": {
+    "owner": "Owner",
+    "deleteWalk": "Delete Walk",
+    "joinWalk": "Join Walk",
+    "participants": "Participants",
+    "noParticipants": "No one has joined your walk yet",
+    "pets": "Pets",
+    "pet": "Pet",
+    "breed": "Breed",
+    "friendliness": "Friendliness",
+    "activity": "Activity",
+    "showAllPets": "Show All",
+    "hidePets": "Hide",
+    "description": "Description",
+    "walkDetails": "Walk Details",
+    "confirmMessage": "A chat will be created between you and the pet owner, and a request to join the walk will be sent.",
+    "confirmTitle": "Send Request",
+    "confirm": "OK",
+    "cancel": "Cancel"
+  },
+  "WalkEditDetails": {
+    "addressNotFound": "Address could not be retrieved",
+    "error": "Error",
+    "selectAtLeastOnePet": "Select at least one pet to participate in the walk.",
+    "cannotCreateWalkHere": "A walk cannot be created in this location.",
+    "provideAddress": "Provide the walk address.",
+    "invalidDuration": "Provide a valid walk duration.",
+    "addDescription": "Add a description for the walk.",
+    "selectAtLeastOneDay": "Select at least one day for a regular walk.",
+    "provideDate": "Provide a date for a single walk.",
+    "walkDetails": "Walk Details",
+    "regularWalk": "Regular Walk",
+    "singleWalk": "Single Walk",
+    "monday": "MON",
+    "tuesday": "TUE",
+    "wednesday": "WED",
+    "thursday": "THU",
+    "friday": "FRI",
+    "saturday": "SAT",
+    "sunday": "SUN",
+    "address": "Address",
+    "description": "Description",
+    "hide": "Hide",
+    "showMore": "Show More",
+    "save": "Save"
+  },
+  "FabGroup": {
+    "walk": "Walk",
+    "danger": "Danger",
+    "proposeMarker": "Propose Marker",
+    "myNote": "My Note"
+  },
+  "Poi": {
+    "nearby": "You have earned 400 bonus points!",
+    "tooFar": "You are too far from the bonus!"
+  },
+  "Map": {
+    "fillProfileAndAddPet": "To create a walk, you need to complete your profile and add a pet.",
+    "walkCreatedWithBonus": "The walk was successfully created. You have earned 400 bonus points for creating your first walk."
+  },
+  "FilterSearchTags": {
+    "walk": "Walk",
+    "danger": "Danger",
+    "park": "Park",
+    "playground": "Playground",
+    "zone": "Zone",
+    "cafe": "Cafe",
+    "restaurant": "Restaurant",
+    "veterinary": "Veterinary",
+    "store": "Store",
+    "note": "Note"
+  },
+  "ReviewComment": {
+    "oneDayAgo": "1 day ago",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "deleteLog": "Review deleted"
+  },
+  "ReviewsSection": {
+    "title": "Ratings and Reviews",
+    "inputPlaceholder": "Write your review",
+    "submitButton": "Submit Review",
+    "noReviews": "No one has left a review for this place yet. Be the first and earn extra bonus points.",
+    "loadMoreButton": "Load More",
+    "alertMessage": "Please provide a rating and write a review",
+    "alertTitle": "Error"
+  },
+    "TopUsers": {
+    "title": "Most Active Users!",
+    "description": "Earn more coins and receive bonuses.",
+    "learnMore": "Learn More",
+    "rate": "Rating"
+  },
+  "AddPhoto": {
+    "title": "Add Photo",
+    "description": "Choose a source",
+    "takePhoto": "Take a Photo",
+    "chooseFromGallery": "Choose from Gallery",
+    "cancel": "Cancel"
+  },
+  "AdvrtCard": {
+    "noDate": "Date not specified",
+    "invite": "Invite",
+    "profile": "Profile"
+  },
+  "MapPointCard": {
+    "openMap": "Open on Map",
+    "details": "Details",
+    "errorOpenMap": "Unable to open the map.",
+    "openMapErrorLog": "Error while trying to open URL:",
+    "danger": "Danger"
+  },
+  "MyAdvrtCard": {
+    "delete": "Delete",
+    "noDate": "Date not specified"
+  },
+  "dateOrTimePicker": {
+    "timeLabel": "Time",
+    "durationLabel": "Duration (min)",
+    "dateLabel": "Date",
+    "minutes": "min"
+  },
+  "settings": {
+    "general": "General Settings",
+    "pushNotifications": "Push Notifications",
+    "appLanguage": "App Language",
+    "languages": {
+      "russian": "Russian",
+      "english": "English",
+      "spanish": "Spanish"
+    }
+  },
+  "filters": {
+    "general": "General",
+    "showAllOptions": "Show All Options",
+    "availableNow": "Available Now",
+    "petOwner": "Pet Owner",
+    "gender": "Gender",
+    "interests": "Interests",
+    "pet": "Pet",
+    "breed": "Breed",
+    "indicators": "Indicators",
+    "temperament": "Temperament",
+    "friendly": "Friendliness",
+    "activity": "Activity",
+    "apply": "Apply",
+    "reset": "Reset"
+  },
+  "distanceSlider": {
+    "label": "Distance",
+    "current": "Current Distance",
+    "km": "km"
+  },
+  "timeSlider": {
+    "label": "Tiempo"
+  },
+  "tagSelectors": {
+    "selectTag": "Select Tag",
+    "selectTags": "Select Tags",
+    "collapse": "Collapse",
+    "showMore": "Show More"
   }
+  
+
 }

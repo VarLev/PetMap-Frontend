@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
-import { View, Text, Image, Linking  } from 'react-native';
+import { View, Text, Image  } from 'react-native';
 import { Card } from 'react-native-paper';
 import CustomTextComponent from '../text/CustomTextComponent';
 import userStore from '@/stores/UserStore';
-import { BREEDS_TAGS, PET_IMAGE } from '@/constants/Strings';
+import { PET_IMAGE } from '@/constants/Strings';
 import {getTagsByIndex } from '@/utils/utils';
 import { router } from 'expo-router';
 import { IUserCardDto } from '@/dtos/Interfaces/user/IUserCardDto';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
+import i18n from '@/i18n';
 
 interface UserCardProps {
   user: IUserCardDto;
@@ -64,11 +65,11 @@ const UserCard: React.FC<UserCardProps> = React.memo(({ user }) => {
               numberOfLines={1} 
               ellipsizeMode="tail"
               style={{ flexShrink: 1 }}>
-                Рейтинг {user.balance}
+                {i18n.t('TopUsers.rate')} {user.balance}
             </Text>
             {user.petProfiles && user.petProfiles .length > 0 && (
               <CustomTextComponent 
-                text={`${user.petProfiles[0].petName}, ${getTagsByIndex(BREEDS_TAGS, user.petProfiles[0].breed!) }`} 
+                text={`${user.petProfiles[0].petName}, ${getTagsByIndex(i18n.t('tags.breeds') as string[], user.petProfiles[0].breed!) }`} 
                 leftIcon='paw-outline' 
                 iconSet='ionicons' 
                 maxLines={1}

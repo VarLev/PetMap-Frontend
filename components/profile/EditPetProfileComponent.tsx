@@ -9,7 +9,6 @@ import { observer } from 'mobx-react-lite';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { IPet } from '@/dtos/Interfaces/pet/IPet';
 import StarRating from 'react-native-star-rating-widget';
-import { BREEDS_TAGS, DOGGAMES_TAGS, DOGVACCINATIONS_TAGS, PETGENDERS_TAGS, PETHEALTHISSUES_TAGS } from '@/constants/Strings';
 import petStore from '@/stores/PetStore';
 import { parseDateToString, parseStringToDate } from '@/utils/utils';
 import { router } from 'expo-router';
@@ -19,6 +18,7 @@ import { BonusContex } from '@/contexts/BonusContex';
 import { useControl } from '@/hooks/useBonusControl';
 import userStore from '@/stores/UserStore';
 import CircleIcon from '../custom/icons/CircleIcon';
+import i18n from '@/i18n';
 
 
 const TASK_IDS = {
@@ -77,29 +77,33 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
   useEffect(() => {
     
     // Функция, которая срабатывает при нажатии кнопки "назад"
-    const backAction = () => {
-      Alert.alert("Подтверждение", "Вы уверены, что хотите выйти?", [
-        {
-          text: "Отмена",
-          onPress: () => null, // Ничего не делать, просто закрыть диалог
-          style: "cancel"
-        },
-        { 
-          text: "Да", 
-          onPress: () => router.back() // Выйти из приложения
-        }
-      ]);
-      return true; // Возвращаем true, чтобы предотвратить стандартное поведение (закрытие экрана)
-    };
+    // const backAction = () => {
+    //   Alert.alert(
+    //     i18n.t('EditPetProfile.confirmationTitle'),
+    //     i18n.t('EditPetProfile.confirmationMessage'),
+    //     [
+    //       {
+    //         text: i18n.t('EditPetProfile.cancel'),
+    //         onPress: () => null, // Ничего не делать, просто закрыть диалог
+    //         style: "cancel",
+    //       },
+    //       {
+    //         text: i18n.t('EditPetProfile.exit'),
+    //         onPress: () => router.back(), // Выйти из приложения
+    //       },
+    //     ]
+    //   );
+    //   return true; // Возвращаем true, чтобы предотвратить стандартное поведение (закрытие экрана)
+    // };
 
-    // Подписываемся на событие нажатия кнопки "назад"
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
+    // // Подписываемся на событие нажатия кнопки "назад"
+    // const backHandler = BackHandler.addEventListener(
+    //   "hardwareBackPress",
+    //   backAction
+    // );
 
-    // Возвращаем функцию для очистки эффекта (отписка от события)
-    return () => backHandler.remove();
+    // // Возвращаем функцию для очистки эффекта (отписка от события)
+    // return () => backHandler.remove();
   }, []);
 
   const handleFieldChange = (field: keyof Pet, value: any) => {
@@ -124,7 +128,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
   const CheckErrors = () => {
     if (!editablePet.petName || !birthDate || !editablePet.breed) {
       // Вывод ошибки, если не все обязательные поля заполнены
-      alert("Пожалуйста, заполните все обязательные поля: Имя, Дата рождения и Порода.");
+      alert(i18n.t('EditPetProfile.errors.missingFields'));
       return false;
     }
     else
@@ -132,7 +136,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
       // Проверка корректности введенной даты
       const date = parseStringToDate(birthDate);
       if (!date) {
-        alert("Некорректная дата рождения. Пожалуйста, введите дату в формате YYYY-MM-DD.");
+        alert(i18n.t('EditPetProfile.errors.invalidDate'));
         return false;
       }
     }
@@ -157,7 +161,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
       await userStore.updateUserJobs(currentUser.id, completedJobs);
     } catch (error) {
       console.error('Ошибка при создании профиля питомца:', error);
-      alert("Произошла ошибка при добавлении питомца. Пожалуйста, попробуйте снова.");
+      alert(i18n.t('EditPetProfile.errors.saveErrorMessage'));
     }
     onSave(editablePet);
   };
@@ -179,7 +183,7 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
       }
     } catch (error) {
       console.error('Ошибка при создании профиля питомца:', error);
-      alert("Произошла ошибка при добавлении питомца. Пожалуйста, попробуйте снова.");
+      alert(i18n.t('EditPetProfile.errors.addErrorMessage'));
     }
   };
 
@@ -217,20 +221,20 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
         />
       </View>
       
-      <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Основное</Text>
+      <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>{i18n.t('EditPetProfile.main')}</Text>
       
       <CustomOutlineInputText
         containerStyles="mt-2"
-        label="Имя"
+        label={i18n.t('EditPetProfile.name')}
         value={editablePet.petName}
         handleChange={(text) => handleFieldChange('petName', text)}
       />
 
       <CustomOutlineInputText
         containerStyles="mt-4"
-        placeholder='Дата рождения YYYY-MM-DD'
+        placeholder={i18n.t('EditPetProfile.birthDatePlaceholder')}
         mask="9999-99-99"
-        label="Дата рождения"
+        label={i18n.t('EditPetProfile.birthDate')}
         value={birthDate}
         handleChange={setBirthDate}
         keyboardType='number-pad'
@@ -246,18 +250,17 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
       /> */}
 
       <CustomDropdownList
-        tags={PETGENDERS_TAGS}
-        label="Пол"
-        placeholder="Выберите пол"
-        initialSelectedTag={editablePet.gender??  'Мальчик'}
-        
+        tags={ i18n.t('tags.petGender') as string[]}
+        label={i18n.t('EditPetProfile.gender')}
+        placeholder={i18n.t('EditPetProfile.selectGender')}
+        initialSelectedTag={editablePet.gender??  i18n.t('EditPetProfile.defaultGender')}
         onChange={(selectedGender) => handleFieldChange('gender', selectedGender)}
       />
 
       <CustomDropdownList
-        tags={BREEDS_TAGS}
-        label='Порода'
-        placeholder="Порода"
+        tags={i18n.t('tags.breeds') as string[]}
+        label={i18n.t('EditPetProfile.breed')}
+        placeholder={i18n.t('EditPetProfile.selectBreed')}
         initialSelectedTag={editablePet.breed || ''}
         onChange={(text) => handleFieldChange('breed', text)}
         searchable={true}
@@ -266,10 +269,12 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
 
       <View className='flex-row justify-between space-x-4 w-auto'>
         <CustomOutlineInputText
+          keyboardType='numeric'
+          maxLength={2}
           containerStyles="mt-4 w-1/3 flex-1 mr-1"
-          label="Вес"
+          label={i18n.t('EditPetProfile.weight')}
           value={editablePet.weight || ''}
-          handleChange={(text) => handleFieldChange('weight', text)}
+          handleChange={(text) => handleFieldChange('weight', text.replace(/[^0-9]/g, '') )}
         />
 
         {/* <CustomOutlineInputText
@@ -290,9 +295,9 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
 
       <Divider className="mt-6" />
       <View >
-        <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">Интересы</Text>
+        <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">{i18n.t('EditPetProfile.interests')}</Text>
         <CustomTagsSelector
-          tags={DOGGAMES_TAGS}
+          tags={i18n.t('tags.petGames') as string[]}
           initialSelectedTags={editablePet.playPreferences || []}
           onSelectedTagsChange={(selectedTags) => handleFieldChange('playPreferences', selectedTags)}
           maxSelectableTags={5}
@@ -302,19 +307,19 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
       <Divider className="mt-6" />
 
       <View>
-        <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Здоровье</Text>
-        <Text className='pt-2 font-nunitoSansRegular text-gray-400 text-center'>We are working on a health passport for your pet, stay tuned for updates.</Text>
-        <Text className='pt-4 -mb-1 text-base font-nunitoSansRegular'>Особенности здоровья</Text>
+        <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>{i18n.t('EditPetProfile.health')}</Text>
+        <Text className='pt-2 font-nunitoSansRegular text-gray-400 text-center'> {i18n.t('EditPetProfile.healthUpdate')}</Text>
+        <Text className='pt-4 -mb-1 text-base font-nunitoSansRegular'>{i18n.t('EditPetProfile.healthFeatures')}</Text>
         <CustomTagsSelector
-          tags={PETHEALTHISSUES_TAGS}
+          tags={i18n.t('tags.petHealthIssues') as string[]}
           initialSelectedTags={editablePet.petHealthIssues || []}
           onSelectedTagsChange={(selectedTags) => handleFieldChange('petHealthIssues', selectedTags)}
           maxSelectableTags={5}
           visibleTagsCount={10}
         />
-        <Text className='pt-4 -mb-1 text-base font-nunitoSansRegular'>Вакцины</Text>
+        <Text className='pt-4 -mb-1 text-base font-nunitoSansRegular'>{i18n.t('EditPetProfile.vaccinations')}</Text>
         <CustomTagsSelector
-          tags={DOGVACCINATIONS_TAGS}
+          tags={i18n.t('tags.vaccines') as string[]}
           initialSelectedTags={editablePet.vaccinations || []}
           onSelectedTagsChange={(selectedTags) => handleFieldChange('vaccinations', selectedTags)}
           maxSelectableTags={5}
@@ -326,24 +331,24 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
               status={editablePet.neutered ? 'checked' : 'unchecked'}
               onPress={() => handleFieldChange('neutered', !editablePet.neutered)}
             />
-            <Text className='text-base font-nunitoSansRegular'>Стирилизован?</Text>
+            <Text className='text-base font-nunitoSansRegular'>{i18n.t('EditPetProfile.neutered')}</Text>
           </View>
         <Divider className='mt-6' />
       </View>
 
 
       <View >
-        <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'>Показатели</Text>
-        <View className='pt-2 flex-row justify-between'>              
-          <Text className='font-nunitoSansRegular text-base'>Темперамент</Text>
+        <Text className='pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700'> {i18n.t('EditPetProfile.indicators')}</Text>
+        <View className='pl-1 pt-2 flex-row justify-between'>              
+          <Text className='font-nunitoSansRegular text-base'>{i18n.t('EditPetProfile.temperament')}</Text>
           <StarRating rating={temperament} starSize={25} color='#BFA8FF' onChange={handleTemperament} StarIconComponent={CircleIcon}/>
         </View>
-        <View className='pt-2 flex-row justify-between'>              
-          <Text className='font-nunitoSansRegular text-base'>Дружелюбность</Text>
+        <View className='pl-1 pt-2 flex-row justify-between'>              
+          <Text className='font-nunitoSansRegular text-base'>{i18n.t('EditPetProfile.friendliness')}</Text>
           <StarRating rating={friendly} starSize={25}  color='#BFA8FF' onChange={handleFriendly}  StarIconComponent={CircleIcon}/>
         </View>
-        <View className='pt-2 flex-row justify-between'>              
-          <Text className='font-nunitoSansRegular text-base'>Активность</Text>
+        <View className='pl-1 pt-2 flex-row justify-between'>              
+          <Text className='font-nunitoSansRegular text-base'>{i18n.t('EditPetProfile.activity')}</Text>
           <StarRating rating={activity} starSize={25} color='#BFA8FF' onChange={handleActivity}  StarIconComponent={CircleIcon}/>
         </View>
         <Divider className='mt-3' />
@@ -357,40 +362,49 @@ const EditPetProfileComponent = observer(({ pet, onSave, onCancel }: { pet: IPet
           maxSelectableTags={5}
         />
       </View> */}
-
-      <CustomOutlineInputText
-        containerStyles="mt-4"
-        label="Дополнительные заметки"
-        value={editablePet.additionalNotes || ''}
-        handleChange={(text) => handleFieldChange('additionalNotes', text)}
-        numberOfLines={4}
-      />
-
-      <View className="p-2">
-        <Text className="text-lg font-nunitoSansBold text-indigo-800">Социальные сети</Text>
-        <CustomOutlineInputText 
-          containerStyles='mt-4' 
-          label='Instagram' 
-          value={editablePet.instagram || ''} 
-          handleChange={(text) => handleFieldChange('instagram', text)} 
+      <View >
+        <CustomOutlineInputText
+          containerStyles="mt-4"
+          label={i18n.t('EditPetProfile.additionalNotes')}
+          value={editablePet.additionalNotes || ''}
+          handleChange={(text) => handleFieldChange('additionalNotes', text)}
+          numberOfLines={4}
         />
-        <CustomOutlineInputText 
-          containerStyles='mt-4' 
-          label='Facebook' 
-          value={editablePet.facebook || ''} 
-          handleChange={(text) => handleFieldChange('facebook', text)}/>
+     
       </View>
 
-      {isNewPet ?  (
-        <CustomLoadingButton title='Добавить' handlePress={handleAddPet} />
-        ):(
-        <CustomLoadingButton title='Сохранить' handlePress={handleSave} />
-      )} 
-      <Button mode="outlined" onPress={onCancel} className="mt-4">
-        Отмена
-      </Button>
-      <View className="h-32" />
-    </View>
+        <View >
+          <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">{i18n.t('EditPetProfile.socialMedia')}</Text>
+          <CustomOutlineInputText
+            containerStyles="mt-4"
+            label="Instagram"
+            value={editablePet.instagram || ''}
+            handleChange={(text) => handleFieldChange('instagram', text)}
+          />
+          <CustomOutlineInputText
+            containerStyles="mt-4"
+            label="Facebook"
+            value={editablePet.facebook || ''}
+            handleChange={(text) => handleFieldChange('facebook', text)}
+          />
+           <Divider className='mt-6' />
+        </View>
+
+        <View className='mt-4'>
+          {isNewPet ? (
+            <CustomLoadingButton title={i18n.t('EditPetProfile.add')} handlePress={handleAddPet} />
+          ) : (
+            <CustomLoadingButton title={i18n.t('EditPetProfile.save')} handlePress={handleSave} />
+          )}
+          <Button mode="outlined" onPress={onCancel} className="mt-4">
+            {i18n.t('EditPetProfile.cancel')}
+          </Button>
+         
+        </View>
+       
+        
+        <View className="h-32" />
+      </View>
   ), [editablePet, temperament, friendly, activity, petPhoto, birthDate]);
 
   return (

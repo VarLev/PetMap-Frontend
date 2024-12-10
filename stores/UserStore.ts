@@ -30,6 +30,7 @@ class UserStore {
   isLogged: boolean = false;
   loading: boolean = false;
   isInitialized: boolean = false;
+  isError: boolean = false;
   currentCity: string = '';
 
 
@@ -83,6 +84,13 @@ class UserStore {
 
   getUser(user: UserCredential) {
     this.fUid = user.user.uid;
+  }
+
+  async getCurrentUser(): Promise<IUser | null | false> {
+    if(this.currentUser !== null && this.currentUser !== undefined)
+      return this.currentUser;
+    else
+      return await this.getCurrentUserForProvider();
   }
 
   getCleanUser(obj: any): any  {
@@ -148,7 +156,7 @@ class UserStore {
         return this.currentUser;
 
     } catch (error) {
-      console.error('Failed to load user', error);
+      return handleAxiosError(error);
     }
     return {} as IUser;
   }
@@ -198,7 +206,7 @@ class UserStore {
       //Пытаемся загрузить пользователя из AsyncStorage
       if (!currentUser || !currentUser?.firebaseUid) {
         this.signOut();
-        //return null;
+        return null;
       }
 
       if(!currentUser?.firebaseUid) return null;

@@ -1,3 +1,4 @@
+import i18n from '@/i18n';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import DropDownPicker, { ItemType, ListModeType, RenderBadgeItemPropsInterface } from 'react-native-dropdown-picker';
@@ -15,7 +16,7 @@ type MultiTagDropdownProps = {
 const MultiTagDropdown: React.FC<MultiTagDropdownProps> = ({
   tags,
   initialSelectedTags = [],
-  placeholder = "Выберите теги",
+  placeholder = i18n.t('tagSelectors.selectTags'),
   onChange,
   label,
   searchable = false,

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image } from 'react-native';
 import { Card } from 'react-native-paper';
 import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
@@ -6,22 +6,23 @@ import CustomTextComponent from '../text/CustomTextComponent';
 import CustomButtonPrimary from '../buttons/CustomButtonPrimary';
 import CustomButtonOutlined from '../buttons/CustomButtonOutlined';
 import userStore from '@/stores/UserStore';
-import { BREEDS_TAGS, PET_IMAGE } from '@/constants/Strings';
+import { PET_IMAGE } from '@/constants/Strings';
 import { calculateDistance, convertDistance, getTagsByIndex } from '@/utils/utils';
 import ImageModalViewer from '@/components/common/ImageModalViewer';
 import mapStore from '@/stores/MapStore';
 import { router } from 'expo-router';
 import uiStore from '@/stores/UIStore';
+import i18n from '@/i18n';
 
 interface AdCardProps {
   ad: IWalkAdvrtShortDto;
 }
 
 const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
-  const [petImage, setPetImage] = React.useState<string>();
-  const [distance, setDistance] = React.useState(0);
-  const [userIsOwner, setUserIsOwner] = React.useState(false);
-  
+  const [petImage, setPetImage] = useState<string>();
+  const [distance, setDistance] = useState(0);
+  const [userIsOwner, setUserIsOwner] = useState(false);
+
   useEffect(() => {
     getPetImage().then((url) => setPetImage(url));
     const dist = calculateDistance(
@@ -31,93 +32,105 @@ const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
       mapStore.currentUserCoordinates[1]
     );
     setDistance(dist);
-  
-    // Проверка, является ли пользователь владельцем объявления
-    if (ad.userId === userStore.currentUser?.id) {
-      setUserIsOwner(true);
-    }else{
-      setUserIsOwner(false);
-    }
 
+    setUserIsOwner(ad.userId === userStore.currentUser?.id);
   }, [ad.latitude, ad.longitude]);
 
-  const getPetImage = async () : Promise<string> => {
+  const getPetImage = async (): Promise<string> => {
     const petImage = await userStore.fetchImageUrl(PET_IMAGE);
     return petImage || 'https://placehold.it/100x100';
-  }
+  };
 
   const handleUserProfileOpen = () => {
-    console.log("userIsOwner", userIsOwner);
-    console.log("ad.userId", ad.userId);
-    if (userIsOwner) {
-      console.log("userIsOwner", userIsOwner);
-      router.push("/profile");
-    } else {
-      console.log("userIsOwner", userIsOwner);
-      router.push(`/(tabs)/profile/${ad.userId}`);
-    }
+    const route = userIsOwner ? '/profile' : `/(tabs)/profile/${ad.userId}`;
+    router.push(route);
     uiStore.setIsBottomTableViewSheetOpen(false);
   };
 
   return (
-    <Card className="p-2 mx-3 mt-2 bg-white rounded-2xl" elevation={1} >
+    <Card className="p-2 mx-3 mt-2 bg-white rounded-2xl" elevation={1}>
       {/* Информация о пользователе */}
       <View className="flex-row items-start">
         <Image source={{ uri: ad.userPhoto }} className="w-20 h-20 rounded-xl" />
         {ad.userPets && ad.userPets.length > 0 && (
-          <View className="absolute top-8 left-8 rounded-full ">
-            <ImageModalViewer images={[{ uri: ad.userPets[0].thumbnailUrl || petImage || 'https://placehold.it/100x100' }]} imageHeight={60} imageWidth={60} borderRadius={4} className_='rounded-full' />
+          <View className="absolute top-8 left-8 rounded-full">
+            <ImageModalViewer
+              images={[
+                {
+                  uri:
+                    ad.userPets[0].thumbnailUrl ||
+                    petImage ||
+                    'https://placehold.it/100x100',
+                },
+              ]}
+              imageHeight={60}
+              imageWidth={60}
+              borderRadius={4}
+              className_="rounded-full"
+            />
           </View>
         )}
-       
         <View className="ml-8 w-full flex-1">
-            <Text className="-ml-4 text-lg font-nunitoSansBold" 
-              numberOfLines={1} 
-              ellipsizeMode="tail"
-              style={{ flexShrink: 1 }}>
-                {ad.userName}
-            </Text>
-            <CustomTextComponent 
-              text={ad.date  ? new Date(ad.date).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            : "Дата не указана"} 
-              leftIcon='time-outline' 
-              iconSet='ionicons' 
-              className_='p-0'
-            />
-            <CustomTextComponent 
-              text={convertDistance(distance)} 
-              leftIcon='paper-plane-outline' 
-              iconSet='ionicons' 
-              className_='p-0'
-            />
-            {ad.userPets && ad.userPets.length > 0 && (
-              <CustomTextComponent 
-                text={`${ad.userPets[0].petName}, ${getTagsByIndex(BREEDS_TAGS, ad.userPets[0].breed!) }`} 
-                leftIcon='paw-outline' 
-                iconSet='ionicons' 
-                maxLines={1}
-                className_='p-0 pt-1'
-              />)
+          <Text
+            className="-ml-4 text-lg font-nunitoSansBold"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={{ flexShrink: 1 }}
+          >
+            {ad.userName}
+          </Text>
+          <CustomTextComponent
+            text={
+              ad.date
+                ? new Date(ad.date).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })
+                : i18n.t('AdvrtCard.noDate')
             }
+            leftIcon="time-outline"
+            iconSet="ionicons"
+            className_="p-0"
+          />
+          <CustomTextComponent
+            text={convertDistance(distance)}
+            leftIcon="paper-plane-outline"
+            iconSet="ionicons"
+            className_="p-0"
+          />
+          {ad.userPets && ad.userPets.length > 0 && (
+            <CustomTextComponent
+              text={`${ad.userPets[0].petName}, ${getTagsByIndex(
+                i18n.t('tags.breeds') as string[],
+                ad.userPets[0].breed!
+              )}`}
+              leftIcon="paw-outline"
+              iconSet="ionicons"
+              maxLines={1}
+              className_="p-0 pt-1"
+            />
+          )}
         </View>
       </View>
       {/* Детали объявления */}
-      {ad.description && 
-      <Text className="mt-1 text-xs text-gray-800"
-        numberOfLines={2} 
-        ellipsizeMode="tail"
-        style={{ flexShrink: 1 }}
+      {ad.description && (
+        <Text
+          className="mt-1 text-xs text-gray-800"
+          numberOfLines={2}
+          ellipsizeMode="tail"
+          style={{ flexShrink: 1 }}
         >
           {ad.description}
-      </Text>}
-      <View className='flex-row w-full justify-between'>
-        <CustomButtonPrimary title='Пригласить' containerStyles='w-1/2'/>
-        <CustomButtonOutlined title='Профиль' containerStyles='w-1/2' handlePress={handleUserProfileOpen}/>
+        </Text>
+      )}
+      <View className="flex-row w-full justify-between">
+        <CustomButtonPrimary title={i18n.t('AdvrtCard.invite')} containerStyles="w-1/2" />
+        <CustomButtonOutlined
+          title={i18n.t('AdvrtCard.profile')}
+          containerStyles="w-1/2"
+          handlePress={handleUserProfileOpen}
+        />
       </View>
-      
     </Card>
   );
 });

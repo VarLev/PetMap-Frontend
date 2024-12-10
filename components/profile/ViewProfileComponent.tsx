@@ -5,6 +5,7 @@ import {
   Image,
   StatusBar,
   StyleSheet,
+  Platform
 } from "react-native";
 import {
   Text,
@@ -35,17 +36,15 @@ import CustomSocialLinkInput from "../custom/text/SocialLinkInputProps";
 import { router } from "expo-router";
 import petStore from "@/stores/PetStore";
 import {
-  BREEDS_TAGS,
-  INTEREST_TAGS,
-  LANGUAGE_TAGS,
-  PETGENDERS_TAGS,
-  petUriImage,
-  PROFESSIONS_TAGS,
+  petUriImage
 } from "@/constants/Strings";
 import { User } from "@/dtos/classes/user/UserDTO";
 import { IUser } from "@/dtos/Interfaces/user/IUser";
 import AddCard from "../custom/buttons/AddCard";
 import MenuItemWrapper from "../custom/menuItem/MunuItemWrapper";
+import { shortenName } from "@/utils/utils";
+import i18n from "@/i18n";
+
 
 const ViewProfileComponent = observer(
   ({
@@ -63,6 +62,11 @@ const ViewProfileComponent = observer(
     const [refreshing, setRefreshing] = useState(false);
     const [isCurrentUser, setIsCurrentUser] = useState(false);
     const [rightIcon, setRightIcon] = useState<string | null>()
+    const [isIOS, setIsIOS] = useState(false);
+
+    useEffect(() => {
+      setIsIOS(Platform.OS === "ios");
+    }, []);
 
     const loadData = async () => {
       if (user.id === userStore.currentUser?.id) {
@@ -131,10 +135,10 @@ const ViewProfileComponent = observer(
                   source={{ uri: user?.thumbnailUrl! }}
                   className="w-full h-full"
                 />
-                <View style={styles.iconContainer}>
+                <View style={styles.iconContainer} className={`${isIOS ? 'mt-7' : 'mt-0'}`}>
                   {isCurrentUser && (
                     <Menu
-                      style={{ marginTop: 25 }}
+                    style={{ marginTop: 25 }}
                       visible={menuVisible}
                       onDismiss={closeMenu}
                       contentStyle={{ backgroundColor: "white" }}
@@ -150,17 +154,17 @@ const ViewProfileComponent = observer(
                     >
                       <MenuItemWrapper
                         onPress={onEdit}
-                        title="Редактировать"
+                        title={i18n.t('UserProfile.edit')}
                         icon="pencil-outline"
                       />
                       <MenuItemWrapper
                         onPress={logOut}
-                        title="Выйти"
+                        title={i18n.t('UserProfile.logout')}
                         icon="exit-to-app"
                       />
                       <MenuItemWrapper
                         onPress={closeMenu}
-                        title="Удалить аккаунт"
+                        title={i18n.t('UserProfile.deleteAccount')}
                         icon="delete-outline"
                       />
                     </Menu>
@@ -197,20 +201,20 @@ const ViewProfileComponent = observer(
                         source={{ uri: item.thumbnailUrl || petUriImage }}
                         style={{ height: 150, borderRadius: 14 }}
                       />
-                      <Text className="block font-nunitoSansBold text-lg" numberOfLines = { 1 } ellipsizeMode = 'tail'>
-                        {item.petName}
+                      <Text className="block font-nunitoSansBold text-lg mt-1 mb-[-8px] leading-5"  numberOfLines = { 1 } ellipsizeMode = 'tail'>
+                        {shortenName(item.petName)}, {calculateDogAge(item.birthDate)}
                       </Text>
-                      <Text className="block font-nunitoSansBold text-lg mb-auto">
+                      {/* <Text className="block font-nunitoSansBold text-lg mb-auto">
                         {calculateDogAge(item.birthDate)}
-                      </Text>
+                      </Text> */}
 
                       <View style={{ marginTop: 12 }}>
                         <Text className="font-nunitoSansRegular" numberOfLines = { 2 } ellipsizeMode = 'tail' >
-                          {getTagsByIndex(BREEDS_TAGS, item.breed!)}
+                          {getTagsByIndex(i18n.t("tags.breeds") as string[], item.breed!)}
                         </Text>
                         <Text className="font-nunitoSansRegular">
-                          {getTagsByIndex(PETGENDERS_TAGS, Number(item.gender))}
-                          , {item.weight} кг
+                          {getTagsByIndex(i18n.t("tags.petGender") as string[], Number(item.gender))}
+                          , {item.weight} kg
                         </Text>
                       </View>
                     </Card>
@@ -219,7 +223,7 @@ const ViewProfileComponent = observer(
                 ListFooterComponent={() =>
                   isCurrentUser ? (
                     <AddCard
-                      buttonText="Добавить питомца"
+                      buttonText={i18n.t('UserProfile.addPet')}
                       onPress={handleAddPet}
                     />
                   ) : null
@@ -228,22 +232,24 @@ const ViewProfileComponent = observer(
 
               <View className="pr-3 pl-4">
                 <View>
+               
                   <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
-                    Обо мне
+                    {i18n.t('UserProfile.aboutMe')}
                   </Text>
                   <CustomTextComponent
                     text={user.description}
                     rightIcon={rightIcon}
                     onRightIconPress={onEdit}
+                    enableTranslation={true}
                   />
                   <Divider />
                 </View>
                 <View>
                   <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
-                    Интересы
+                    {i18n.t('UserProfile.interests')}
                   </Text>
                   <CustomTagsSelector
-                    tags={INTEREST_TAGS}
+                    tags={i18n.t("tags.interests") as string[]}
                     initialSelectedTags={user.interests!}
                     maxSelectableTags={5}
                     readonlyMode={true}
@@ -253,7 +259,7 @@ const ViewProfileComponent = observer(
                 </View>
                 <View>
                   <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
-                    Основное
+                    {i18n.t('UserProfile.mainInfo')}
                   </Text>
                   <CustomTextComponent
                     text={user.location}
@@ -263,14 +269,14 @@ const ViewProfileComponent = observer(
                     onRightIconPress={onEdit}
                   />
                   <CustomTextComponent
-                    text={getTagsByIndex(LANGUAGE_TAGS, user.userLanguages!)}
+                    text={getTagsByIndex(i18n.t("tags.languages") as string[], user.userLanguages!)}
                     leftIcon="language-outline"
                     iconSet="ionicons"
                     rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                   />
                   <CustomTextComponent
-                    text={getTagsByIndex(PROFESSIONS_TAGS, user.work!)}
+                    text={getTagsByIndex(i18n.t("tags.professions") as string[], user.work!)}
                     leftIcon="work-outline"
                     rightIcon={rightIcon}
                     onRightIconPress={onEdit}
@@ -286,7 +292,7 @@ const ViewProfileComponent = observer(
                 </View>
                 <View>
                   <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
-                    Социальные сети
+                    {i18n.t('UserProfile.socialMedia')}
                   </Text>
                   <CustomSocialLinkInput
                     text={user.instagram!}
@@ -335,6 +341,6 @@ const styles = StyleSheet.create({
     right: 8,
   },
   menuButton: {
-    backgroundColor: "white",
+    backgroundColor: "white",   
   },
 });

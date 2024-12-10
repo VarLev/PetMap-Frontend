@@ -1,46 +1,64 @@
-
-import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { View, Image, Pressable, BackHandler, ImageSourcePropType, StatusBar} from 'react-native';
-import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer, LineLayer } from '@rnmapbox/maps';
-import mapStore from '@/stores/MapStore';
-import { Provider} from 'react-native-paper';
-import BottomSheetComponent from '@/components/common/BottomSheetComponent'; // Импортируйте новый компонент
-import BottomSheet from '@gorhom/bottom-sheet';
-import AdvtComponent from './AdvtComponent';
-import userStore from '@/stores/UserStore';
-import chatStore from '@/stores/ChatStore';
-import AdvtEditComponent from './AdvtEditComponent';
-import { IWalkAdvrtDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtDto';
-import { router, useFocusEffect } from 'expo-router';
-import Svg, { Path } from 'react-native-svg';
-import { useDrawer } from '@/contexts/DrawerProvider';
-import SearchAndTags from '../custom/inputs/FilterSearchAndTagsComponent';
-import FilterComponent from '../filter/FilterComponent';
-import { IPointEntityDTO } from '@/dtos/Interfaces/map/IPointEntityDTO';
-import { MapPointType } from '@/dtos/enum/MapPointType';
-import EditDangerPoint from './point/EditDangerPoint';
-import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
-import { DangerLevel } from '@/dtos/enum/DangerLevel';
-import { DangerType } from '@/dtos/enum/DangerType';
-import { MapPointStatus } from '@/dtos/enum/MapPointStatus';
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { observer } from "mobx-react-lite";
+import {
+  View,
+  Image,
+  Pressable,
+  BackHandler,
+  ImageSourcePropType,
+} from "react-native";
+import Mapbox, {
+  MapView,
+  UserLocation,
+  Camera,
+  PointAnnotation,
+  ShapeSource,
+  SymbolLayer,
+  LineLayer,
+} from "@rnmapbox/maps";
+import mapStore from "@/stores/MapStore";
+import { Provider } from "react-native-paper";
+import BottomSheetComponent from "@/components/common/BottomSheetComponent"; // Импортируйте новый компонент
+import BottomSheet from "@gorhom/bottom-sheet";
+import AdvtComponent from "./AdvtComponent";
+import userStore from "@/stores/UserStore";
+import chatStore from "@/stores/ChatStore";
+import AdvtEditComponent from "./AdvtEditComponent";
+import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
+import { router, useFocusEffect } from "expo-router";
+import Svg, { Path } from "react-native-svg";
+import { useDrawer } from "@/contexts/DrawerProvider";
+import SearchAndTags from "../custom/inputs/FilterSearchAndTagsComponent";
+import FilterComponent from "../filter/FilterComponent";
+import { IPointEntityDTO } from "@/dtos/Interfaces/map/IPointEntityDTO";
+import { MapPointType } from "@/dtos/enum/MapPointType";
+import EditDangerPoint from "./point/EditDangerPoint";
+import { IPointDangerDTO } from "@/dtos/Interfaces/map/IPointDangerDTO";
+import { DangerLevel } from "@/dtos/enum/DangerLevel";
+import { DangerType } from "@/dtos/enum/DangerType";
+import { MapPointStatus } from "@/dtos/enum/MapPointStatus";
 import { randomUUID } from "expo-crypto";
-import IconSelectorComponent from '../custom/icons/IconSelectorComponent';
-import ViewDangerPoint from './point/ViewDangerPoint';
-import EditUserPoint from './point/EditUserPoint';
-import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
-import { Feature, FeatureCollection, Point } from 'geojson';
-import ViewUserPoint from './point/ViewUserPoint';
-import CustomAlert from '../custom/alert/CustomAlert';
-import SlidingOverlay from '../navigation/SlidingOverlay';
-import MapItemList from '../navigation/points/MapItemList';
-import MapPointIconWithAnimation from './point/MapPointIscon';
-import { UserPointType } from '@/dtos/enum/UserPointType';
-import PointsOfInterestComponent from './PointsOfInterestComponent';
-import FabGroupComponent from './FabGroupComponent';
-import { IUserChat } from '@/dtos/Interfaces/user/IUserChat';
-
-
+import IconSelectorComponent from "../custom/icons/IconSelectorComponent";
+import ViewDangerPoint from "./point/ViewDangerPoint";
+import EditUserPoint from "./point/EditUserPoint";
+import { IPointUserDTO } from "@/dtos/Interfaces/map/IPointUserDTO";
+import { Feature, FeatureCollection, Point } from "geojson";
+import ViewUserPoint from "./point/ViewUserPoint";
+import CustomAlert from "../custom/alert/CustomAlert";
+import SlidingOverlay from "../navigation/SlidingOverlay";
+import MapItemList from "../navigation/points/MapItemList";
+import MapPointIconWithAnimation from "./point/MapPointIscon";
+import { UserPointType } from "@/dtos/enum/UserPointType";
+import PointsOfInterestComponent from "./PointsOfInterestComponent";
+import FabGroupComponent from "./FabGroupComponent";
+import { IUserChat } from "@/dtos/Interfaces/user/IUserChat";
+import i18n from "@/i18n";
 
 const MapBoxMap = observer(() => {
   const [isLoading, setIsLoading] = useState(true);
@@ -49,25 +67,32 @@ const MapBoxMap = observer(() => {
   const mapRef = useRef<Mapbox.MapView>(null);
   const userLocationRef = useRef<UserLocation>(null);
   const [renderContent, setRenderContent] = useState<ReactNode>(() => null);
-  const [markerCoordinate, setMarkerCoordinate] = useState<[number, number] | null>(null);
-  const [markerPointCoordinate, setMarkerPointCoordinate] = useState<[number, number] | null>(null);
+  const [markerCoordinate, setMarkerCoordinate] = useState<
+    [number, number] | null
+  >(null);
+  const [markerPointCoordinate, setMarkerPointCoordinate] = useState<
+    [number, number] | null
+  >(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const pointAnnotationCurrentUser = useRef<PointAnnotation>(null);
   const { openDrawer, closeDrawer } = useDrawer();
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
   const [selectedTag, setSelectedTag] = useState<string>("");
-  const [userCoordinates, setUserCoordinates] = useState<[number, number] | null>(null);
+  const [userCoordinates, setUserCoordinates] = useState<
+    [number, number] | null
+  >(null);
   const currentUser = userStore.currentUser;
   const [modifiedFieldsCount, setModifiedFieldsCount] = useState(0);
   const [currentPointType, setCurrentPointType] = useState(MapPointType.Walk);
-  const [geoJSONData, setGeoJSONData] = useState<FeatureCollection<Point> | null>(null);
+  const [geoJSONData, setGeoJSONData] =
+    useState<FeatureCollection<Point> | null>(null);
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [isModalVisible, setModalVisible] = useState(false);
   const [alertType, setAlertType] = useState<"error" | "info">("info");
   const [alertText, setAlertText] = useState<string>("");
   const [isCardView, setisCardView] = useState<boolean>(false);
-  const [selectedPointId, setSelectedPointId] = useState<string>('');
-  const [selectedWalkMarker, setSelectedWalkMarker] = useState('');
+  const [selectedPointId, setSelectedPointId] = useState<string>("");
+  const [selectedWalkMarker, setSelectedWalkMarker] = useState("");
   const [alertImage, setAlertImage] = useState<ImageSourcePropType>();
 
   // ... существующие состояния и переменные
@@ -82,15 +107,18 @@ const MapBoxMap = observer(() => {
     const fetchCity = async () => {
       if (userCoordinates) {
         try {
-          if(userStore.getCurrentUserCity() === ''){
+          if (userStore.getCurrentUserCity() === "") {
             const city = await mapStore.getUserCity(userCoordinates);
             userStore.setCurrentUserCity(city);
             await mapStore.setWalkAdvrts();
           }
           mapStore.setCity(userStore.getCurrentUserCity());
-          console.log('Город успешно получен для координат:', mapStore.getCity());
+          console.log(
+            "Город успешно получен для координат:",
+            mapStore.getCity()
+          );
         } catch (error) {
-          console.error('Ошибка при получении города:', error);
+          console.error("Ошибка при получении города:", error);
         }
       }
     };
@@ -109,7 +137,6 @@ const MapBoxMap = observer(() => {
     const data = createGeoJSONFeatures();
     setGeoJSONData(data);
   }, [mapStore.walkAdvrts, mapStore.mapPoints]);
-
 
   useFocusEffect(
     useCallback(() => {
@@ -156,10 +183,8 @@ const MapBoxMap = observer(() => {
           type: "point",
         },
         geometry: {
-
-          type: 'Point',
+          type: "Point",
           coordinates: [point.longitude!, point.latitude!],
-
         },
       });
     });
@@ -176,8 +201,6 @@ const MapBoxMap = observer(() => {
       return;
     }
     setRouteData(routeFeatureCollection);
-
-    
   };
 
   const handleFilterChange = (count: number) => {
@@ -190,10 +213,13 @@ const MapBoxMap = observer(() => {
   };
 
   const handleLongPress = (event: any) => {
-    if(currentPointType === MapPointType.Walk || 
-        currentPointType === MapPointType.Danger || 
-        currentPointType === MapPointType.UsersCustomPoint || 
-        currentPointType === MapPointType.Note){ 
+    console.log("Long press detected");
+    if (
+      currentPointType === MapPointType.Walk ||
+      currentPointType === MapPointType.Danger ||
+      currentPointType === MapPointType.UsersCustomPoint ||
+      currentPointType === MapPointType.Note
+    ) {
       setScrollEnabled(false);
       console.log(currentPointType);
       const coordinates = event.geometry.coordinates;
@@ -222,13 +248,12 @@ const MapBoxMap = observer(() => {
           ));
         } else {
           setAlertText(
-            "Для создания прогулки необходимо заполнить профиль и добавить питомца"
+            i18n.t('Map.fillProfileAndAddPet') 
           );
           showAlert("info");
           return;
         }
-      }
-      else if (currentPointType === MapPointType.Danger) {
+      } else if (currentPointType === MapPointType.Danger) {
         const mapPoint: IPointDangerDTO = {
           dangerLevel: DangerLevel.Low,
           dangerType: DangerType.Other,
@@ -265,8 +290,7 @@ const MapBoxMap = observer(() => {
         setRenderContent(() => (
           <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose} />
         ));
-      }
-      else if (currentPointType === MapPointType.Note) {
+      } else if (currentPointType === MapPointType.Note) {
         const mapPoint: IPointUserDTO = {
           id: randomUUID(),
           mapPointType: MapPointType.Note,
@@ -322,10 +346,9 @@ const MapBoxMap = observer(() => {
     }
   };
 
-
   const onMapPointPress = async (mapPoint: IPointEntityDTO) => {
     setSelectedPointId(mapPoint.id);
-    console.log('Map point press:', mapPoint.id);
+    console.log("Map point press:", mapPoint.id);
 
     cameraRef.current?.setCamera({
       centerCoordinate: [mapPoint.longitude!, mapPoint.latitude!],
@@ -334,18 +357,15 @@ const MapBoxMap = observer(() => {
         paddingLeft: 0,
         paddingRight: 0,
         paddingTop: 0,
-        paddingBottom: 400
-      }
-    })
-
+        paddingBottom: 400,
+      },
+    });
 
     if (mapPoint.mapPointType === MapPointType.Danger) {
       const pointDanger = mapPoint as IPointDangerDTO;
-      console.log('Danger point:', pointDanger);
+      console.log("Danger point:", pointDanger);
       setRenderContent(<ViewDangerPoint mapPoint={pointDanger} />);
-    }
-    else {
-
+    } else {
       const pointUser = mapPoint as IPointEntityDTO;
 
       setRenderContent(() => <ViewUserPoint mapPoint={pointUser} />);
@@ -358,13 +378,12 @@ const MapBoxMap = observer(() => {
         setIsSheetVisible(true);
       }, 200);
     }
-
   };
 
   const handleChatInvite = async (otherUser: IUserChat) => {
     try {
       sheetRef.current?.close();
-      console.log('Chat invite:', otherUser);
+      console.log("Chat invite:", otherUser);
       const chatId = await chatStore.createNewChat(otherUser);
       if (chatId) {
         router.push(`/chat/${chatId}`);
@@ -377,21 +396,23 @@ const MapBoxMap = observer(() => {
   const handleAdvrtAdded = (isGetedBonuses: boolean) => {
     sheetRef.current?.close();
     if (isGetedBonuses) {
-      setAlertImage(require('@/assets/images/alert-dog-bonuses.webp'));
-      setAlertText('Прогулка успешно создана. Вам начислены 400 бонусов за создание первой прогулки.');
+      setAlertImage(require("@/assets/images/alert-dog-bonuses.webp"));
+      setAlertText(
+        i18n.t('MapAlerts.walkCreatedWithBonus')
+      );
       showAlert("info");
     }
   };
 
   const handleSheetClose = async () => {
-    setSelectedPointId('');
+    setSelectedPointId("");
     await sheetRef.current?.close();
     mapStore.setBottomSheetVisible(false);
     setMarkerCoordinate(null);
     setMarkerPointCoordinate(null);
     setIsSheetVisible(false);
     setIsSheetExpanded(false);
-    setRenderAdvrtForm(false);  // Сбрасываем форму редактирования прогулки
+    setRenderAdvrtForm(false); // Сбрасываем форму редактирования прогулки
   };
 
   // const handleSheetChange = (index: number) => {
@@ -402,24 +423,33 @@ const MapBoxMap = observer(() => {
   //   }
   // };
 
-  const handleSearchTextChange = () => { };
+  const handleSearchTextChange = () => {
+   
+  };
 
   const tagSelected = async (type: number) => {
     setCurrentPointType(type);
-    if(!isCardView){
-      if (type === MapPointType.Walk)
-        await mapStore.setWalkAdvrts();
+    if (!isCardView) {
+      if (type === MapPointType.Walk) await mapStore.setWalkAdvrts();
       else {
-        console.log('Тег загружает данные для карты');
-        await mapStore.getMapPointsByType({ type: type, userId: currentUser?.id!, city: userStore.getCurrentUserCity() || '' });
+        console.log("Тег загружает данные для карты");
+        await mapStore.getMapPointsByType({
+          type: type,
+          userId: currentUser?.id!,
+          city: await userStore.getCurrentUserCity() || "",
+        });
       }
     }
-  }
+  };
 
   const handleOpenFilter = () => {
-    openDrawer(<FilterComponent onFilterChange={handleFilterChange} onFilterApply={closeDrawer} />);
-  }
-
+    openDrawer(
+      <FilterComponent
+        onFilterChange={handleFilterChange}
+        onFilterApply={closeDrawer}
+      />
+    );
+  };
 
   const handleUserLocationUpdate = (location: Mapbox.Location) => {
     const { coords } = location;
@@ -428,17 +458,14 @@ const MapBoxMap = observer(() => {
       mapStore.currentUserCoordinates = [coords.latitude, coords.longitude];
 
       setUserCoordinates([coords.longitude, coords.latitude]);
-      console.log('User coordinates:', coords.latitude, coords.longitude);
-
+      console.log("User coordinates:", coords.latitude, coords.longitude);
     }
   };
 
   const hangleSetSelectedNumberPoint = (number: number) => {
     setCurrentPointType(number);
     tagSelected(number);
-
-  }
-
+  };
 
   const handlePressOut = () => {
     setScrollEnabled(true);
@@ -449,68 +476,71 @@ const MapBoxMap = observer(() => {
     setModalVisible(true);
   };
 
-
-
   return (
     <Provider>
-     
-        {isCardView && (
-          <SlidingOverlay visible={isCardView}>
-            <MapItemList renderType={currentPointType} />
-          </SlidingOverlay>
-        )}
-        {!isLoading && (
-          <MapView
-            ref={mapRef}
-            style={{ flex: 1 }}
-            onLongPress={handleLongPress}
-            styleURL={Mapbox.StyleURL.Light}
-            logoEnabled={false}
-            attributionEnabled={false}
-            scaleBarEnabled={false}
-            onTouchEnd={handlePressOut}
-            scrollEnabled={!isCardView}
-            pitchEnabled={!isCardView}
-            zoomEnabled={!isCardView}
-            rotateEnabled={!isCardView}
-          >
-            <UserLocation minDisplacement={50} ref={userLocationRef} onUpdate={handleUserLocationUpdate} />
-            {routeData && (
-              <ShapeSource id="routeSource" shape={routeData}>
-                <LineLayer
-                  id="routeLine"
-                  style={{ lineColor: 'blue', lineWidth: 5 }}
-                />
-              </ShapeSource>
-            )}
+      {isCardView && (
+        <SlidingOverlay visible={isCardView}>
+          <MapItemList renderType={currentPointType} />
+        </SlidingOverlay>
+      )}
+      {!isLoading && (
+        <MapView
+          ref={mapRef}
+          style={{ flex: 1 }}
+          onPress={handleLongPress}
+          styleURL={Mapbox.StyleURL.Light}
+          logoEnabled={false}
+          attributionEnabled={false}
+          scaleBarEnabled={false}
+          onTouchEnd={handlePressOut}
+          scrollEnabled={!isCardView}
+          pitchEnabled={!isCardView}
+          zoomEnabled={!isCardView}
+          rotateEnabled={!isCardView}
+        >
+          <UserLocation
+            minDisplacement={50}
+            ref={userLocationRef}
+            onUpdate={handleUserLocationUpdate}
+          />
+          {routeData && (
+            <ShapeSource id="routeSource" shape={routeData}>
+              <LineLayer
+                id="routeLine"
+                style={{ lineColor: "blue", lineWidth: 5 }}
+              />
+            </ShapeSource>
+          )}
 
-            {/* <UserLocation minDisplacement={10} ref={userLocationRef}  /> */}
-            {userCoordinates && (
-              <Camera
-                ref={cameraRef}
-                centerCoordinate={userCoordinates}
-                zoomLevel={10}
-                animationDuration={1}
-              />)}
+          {/* <UserLocation minDisplacement={10} ref={userLocationRef}  /> */}
+          {userCoordinates && (
+            <Camera
+              ref={cameraRef}
+              centerCoordinate={userCoordinates}
+              zoomLevel={10}
+              animationDuration={1}
+            />
+          )}
 
-            {/* Добавдяем цифры, когда маркеры накладываются друг на друга */}
-            {!isCardView && geoJSONData && (
-              <ShapeSource
-                id="points"
-                shape={geoJSONData}
-                cluster
-                clusterRadius={38}
-              >
-                <SymbolLayer
-                  id="clusteredPoints"
-                  filter={["has", "point_count"]}
-                  style={styles.clusterStyle}
-                />
-              </ShapeSource>
-            )}
+          {/* Добавдяем цифры, когда маркеры накладываются друг на друга */}
+          {!isCardView && geoJSONData && (
+            <ShapeSource
+              id="points"
+              shape={geoJSONData}
+              cluster
+              clusterRadius={38}
+            >
+              <SymbolLayer
+                id="clusteredPoints"
+                filter={["has", "point_count"]}
+                style={styles.clusterStyle}
+              />
+            </ShapeSource>
+          )}
 
-            {/* Маркеры прогулок */}
-            {!isCardView && mapStore.walkAdvrts.map((advrt, index) => (
+          {/* Маркеры прогулок */}
+          {!isCardView &&
+            mapStore.walkAdvrts.map((advrt, index) => (
               <Mapbox.MarkerView
                 key={`advrt-${advrt.id}`}
                 id={`advrt-${index}`}
@@ -521,150 +551,170 @@ const MapBoxMap = observer(() => {
                   setSelectedWalkMarker(advrt.id!);
                 }}
                 allowOverlap={false}
-
               >
-                <Pressable onPress={() => {
-                  onPinPress(advrt);
-                  setSelectedWalkMarker(advrt.id!);
-                }} onLongPress={() => console.log('Long press detected')}>
+                <Pressable
+                  onPress={() => {
+                    onPinPress(advrt);
+                    setSelectedWalkMarker(advrt.id!);
+                  }}
+                  onLongPress={() => console.log("Long press detected")}
+                >
                   <View>
                     <Svg width="43" height="55" viewBox="0 0 43 55" fill="none">
-                      <Path d="M21.4481 54.8119C21.4481 54.8119 42.8963 35.7469 42.8963 21.4481C42.8963 9.60265 33.2936 0 21.4481 0C9.60265 0 0 9.60265 0 21.4481C0 35.7469 21.4481 54.8119 21.4481 54.8119Z" fill={selectedWalkMarker === advrt.id ? "#4338CA" : "#BFA8FF"} />
+                      <Path
+                        d="M21.4481 54.8119C21.4481 54.8119 42.8963 35.7469 42.8963 21.4481C42.8963 9.60265 33.2936 0 21.4481 0C9.60265 0 0 9.60265 0 21.4481C0 35.7469 21.4481 54.8119 21.4481 54.8119Z"
+                        fill={
+                          selectedWalkMarker === advrt.id
+                            ? "#4338CA"
+                            : "#BFA8FF"
+                        }
+                      />
                     </Svg>
-                    <Image className='ml-[3.5px] mt-[3px] rounded-full h-9 w-9 absolute'
-                      source={{ uri: advrt?.userPhoto || 'https://via.placeholder.com/100' }}
+                    <Image
+                      className="ml-[3.5px] mt-[3px] rounded-full h-9 w-9 absolute"
+                      source={{
+                        uri:
+                          advrt?.userPhoto || "https://via.placeholder.com/100",
+                      }}
                     />
                   </View>
                 </Pressable>
               </Mapbox.MarkerView>
             ))}
 
-            {/* Маркеры поинтов */}
+          {/* Маркеры поинтов */}
 
-            {!isCardView && mapStore.mapPoints.map((point, index) => (
+          {!isCardView &&
+            mapStore.mapPoints.map((point, index) => (
               <Mapbox.MarkerView
                 key={`advrt-${point.id}`}
                 id={`advrt-${index}`}
                 anchor={{ x: 0.5, y: 1 }}
                 coordinate={[point.longitude!, point.latitude!]}
-                onTouchStart={() => { }}
+                onTouchStart={() => {}}
                 allowOverlap={false}
               >
                 <Pressable onPress={() => onMapPointPress(point)}>
-                  <MapPointIconWithAnimation mapPointType={point.mapPointType} isSelected={selectedPointId === point.id} />
+                  <MapPointIconWithAnimation
+                    mapPointType={point.mapPointType}
+                    isSelected={selectedPointId === point.id}
+                  />
                 </Pressable>
               </Mapbox.MarkerView>
             ))}
 
+          {/* Маркер редактирования прогулки */}
+          {markerCoordinate && isSheetVisible && (
+            <PointAnnotation
+              ref={pointAnnotationCurrentUser}
+              id="currentUserMarker"
+              coordinate={markerCoordinate}
+              anchor={{ x: 0.5, y: 0.5 }}
+            >
+              <View>
+                <Image
+                  className="rounded-full h-10 w-10"
+                  source={{
+                    uri:
+                      currentUser?.thumbnailUrl ||
+                      "https://via.placeholder.com/100",
+                  }}
+                  onLoad={() => pointAnnotationCurrentUser.current?.refresh()}
+                  fadeDuration={0}
+                />
+              </View>
+            </PointAnnotation>
+          )}
 
-            {/* Маркер редактирования прогулки */}
-            {markerCoordinate && isSheetVisible && (
-              <PointAnnotation
-                ref={pointAnnotationCurrentUser}
-                id="currentUserMarker"
-                coordinate={markerCoordinate}
-                anchor={{ x: 0.5, y: 0.5 }}
-              >
-                <View>
-                  <Image
-                    className="rounded-full h-10 w-10"
-                    source={{
-                      uri:
-                        currentUser?.thumbnailUrl ||
-                        "https://via.placeholder.com/100",
-                    }}
-                    onLoad={() => pointAnnotationCurrentUser.current?.refresh()}
-                    fadeDuration={0}
+          {/* Маркер редактирования поинта */}
+          {markerPointCoordinate && isSheetVisible && (
+            <PointAnnotation
+              ref={pointAnnotationCurrentUser}
+              id="currentUserMarker"
+              coordinate={markerPointCoordinate}
+              anchor={{ x: 0.5, y: 0.5 }}
+            >
+              {currentPointType === MapPointType.Danger ? (
+                // Условие если добавляется опасность
+                <View className="bg-indigo-700 rounded-full h-6 w-6">
+                  <IconSelectorComponent
+                    iconName="alert-circle-outline"
+                    iconSet="MaterialCommunityIcons"
+                    size={24}
+                    color="white"
                   />
                 </View>
-              </PointAnnotation>
-            )}
+              ) : (
+                // Условие если добавляется пользовательский поинт
+                <View className="bg-indigo-700 rounded-full h-6 w-6">
+                  <IconSelectorComponent
+                    iconName="help-circle-outline"
+                    iconSet="Ionicons"
+                    size={24}
+                    color="white"
+                  />
+                </View>
+              )}
+            </PointAnnotation>
+          )}
 
-            {/* Маркер редактирования поинта */}
-            {markerPointCoordinate && isSheetVisible && (
-              <PointAnnotation
-                ref={pointAnnotationCurrentUser}
-                id="currentUserMarker"
-                coordinate={markerPointCoordinate}
-                anchor={{ x: 0.5, y: 0.5 }}
-              >
-                {currentPointType === MapPointType.Danger ? (
-                  // Условие если добавляется опасность
-                  <View className='bg-indigo-700 rounded-full h-6 w-6'>
-                    <IconSelectorComponent
-                      iconName='alert-circle-outline'
-                      iconSet='MaterialCommunityIcons'
-                      size={24}
-                      color="white"
-                    />
-                  </View>
-                ) : (
-                  // Условие если добавляется пользовательский поинт
-                  <View className="bg-indigo-700 rounded-full h-6 w-6">
-                    <IconSelectorComponent
-                      iconName="help-circle-outline"
-                      iconSet="Ionicons"
-                      size={24}
-                      color="white"
-                    />
-                  </View>
-                )}
-              </PointAnnotation>
-            )}
+          {/* Добавляем компонент точек интереса */}
+          {userCoordinates && (
+            <PointsOfInterestComponent
+              userLocation={userCoordinates}
+              onRouteReady={handleRouteReady}
+            />
+          )}
+          {!isSheetVisible && (
+            <FabGroupComponent
+              selectedNumber={currentPointType}
+              setSelectedNumber={hangleSetSelectedNumberPoint}
+              isVisible={!isCardView}
+            />
+          )}
+        </MapView>
+      )}
 
-            {/* Добавляем компонент точек интереса */}
-            {userCoordinates && (<PointsOfInterestComponent userLocation={userCoordinates} onRouteReady={handleRouteReady} />)}
-            {!isSheetVisible &&
-              <FabGroupComponent selectedNumber={currentPointType} setSelectedNumber={hangleSetSelectedNumberPoint} isVisible={!isCardView} />
-            }
-
-          </MapView>)
-        }
-        
-        <View
-          style={{
-            position: "absolute",
-            top: 20,
-            left: 0,
-            right: 0,
-            padding: 10,
-            zIndex:10
-          }}
-        > 
-          <SearchAndTags
-            selectedTag={selectedTag}
-            setSelectedTag={setSelectedTag}
-            onSearchTextChange={handleSearchTextChange}
-            onTagSelected={tagSelected}
-            onOpenFilter={handleOpenFilter}
-            onOpenCardView={() => setisCardView(!isCardView)}
-            badgeCount={modifiedFieldsCount}
-          />
-        </View>
-        
-        {isSheetVisible && (
-          <BottomSheetComponent
-            ref={sheetRef}
-
-            snapPoints={renderAdvrtForm ? ['85%', '100%'] : ['60%', '100%']}
-            renderContent={renderContent as any}
-            onClose={handleSheetClose} // Обработчик для события закрытия BottomSheet
-            enablePanDownToClose={true}
-            initialIndex={0} // Начальная позиция - 60%
-            usePortal={true} // Используем Portal для отображения BottomSheet
-
-
-          />
-        )}
-        <CustomAlert
-          isVisible={isModalVisible}
-          onClose={() => setModalVisible(false)}
-          message={alertText}
-          type={alertType}
-          title={alertType === "error" ? "Ошибка" : ""}
-          image={alertImage}
+      <View
+        style={{
+          position: "absolute",
+          top: 20,
+          left: 0,
+          right: 0,
+          padding: 10,
+          zIndex: 10,
+        }}
+      >
+        <SearchAndTags
+          selectedTag={selectedTag}
+          setSelectedTag={setSelectedTag}
+          onSearchTextChange={handleSearchTextChange}
+          onTagSelected={tagSelected}
+          onOpenFilter={handleOpenFilter}
+          onOpenCardView={() => setisCardView(!isCardView)}
+          badgeCount={modifiedFieldsCount}
         />
-  
+      </View>
+
+      {isSheetVisible && (
+        <BottomSheetComponent
+          ref={sheetRef}
+          snapPoints={renderAdvrtForm ? ["60%", "100%"] : ["60%", "100%"]}
+          renderContent={renderContent as any}
+          onClose={handleSheetClose} // Обработчик для события закрытия BottomSheet
+          enablePanDownToClose={true}
+          initialIndex={0} // Начальная позиция - 60%
+          usePortal={true} // Используем Portal для отображения BottomSheet
+        />
+      )}
+      <CustomAlert
+        isVisible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        message={alertText}
+        type={alertType}
+        title={alertType === "error" ? "Error" : ""}
+        image={alertImage}
+      />
     </Provider>
   );
 });

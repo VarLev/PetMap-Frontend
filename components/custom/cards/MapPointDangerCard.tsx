@@ -6,8 +6,8 @@ import CustomButtonPrimary from '../buttons/CustomButtonPrimary';
 import ImageModalViewer from '@/components/common/ImageModalViewer';
 import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
 import { getTagsByIndex } from '@/utils/utils';
-import { DANGERTYPE_TAGS } from '@/constants/Strings';
 import { useAlert } from '@/contexts/AlertContext';
+import i18n from '@/i18n';
 
 interface MapPointDangerCardProps {
   mapPointDanger: IPointDangerDTO;
@@ -23,8 +23,8 @@ const MapPointDangerCard: React.FC<MapPointDangerCardProps> = ({ mapPointDanger 
     )}`;
     // Проверка, может ли устройство открыть URL
     Linking.openURL(mapUrl).catch((err) => {
-      showAlert('Не удается открыть карту.','error');
-      console.error('Ошибка при попытке открыть URL:', err);
+      showAlert( i18n.t('MapPointCard.errorOpenMap'), 'error');
+      console.error( i18n.t('MapPointCard.openMapErrorLog'), err);
     });
   };
 
@@ -39,9 +39,9 @@ const MapPointDangerCard: React.FC<MapPointDangerCardProps> = ({ mapPointDanger 
         
         {/* <Image source={{ uri: mapPointDanger.thumbnailUrl ||'https://placehold.it/100x100'}} className="w-20 h-20 " /> */}
         <View className="-mt-2  w-2/3">
-          <Text className="text-lg font-nunitoSansBold">Опасность</Text>
+          <Text className="text-lg font-nunitoSansBold"> { i18n.t('MapPointCard.danger')}</Text>
           <CustomTextComponent 
-              text={getTagsByIndex(DANGERTYPE_TAGS,mapPointDanger.dangerType) } 
+              text={getTagsByIndex(i18n.t('tags.DANGERTYPE_TAGS') as string[],mapPointDanger.dangerType) } 
               leftIcon='alert-circle-outline' 
               iconSet='ionicons' 
               className_='p-0 w-full'
@@ -52,7 +52,7 @@ const MapPointDangerCard: React.FC<MapPointDangerCardProps> = ({ mapPointDanger 
       </View>
       {/* Детали объявления */}
       <View className='w-full px-2 pb-2'>
-        <CustomButtonPrimary title='Открыть в Google Maps' containerStyles='' handlePress={handleOpenMap}/>
+        <CustomButtonPrimary title={i18n.t('MapPointCard.openMap')} containerStyles='' handlePress={handleOpenMap}/>
       </View>
       
     </Card>

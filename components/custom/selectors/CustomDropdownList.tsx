@@ -1,5 +1,6 @@
+import i18n from '@/i18n';
 import React, { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Platform} from 'react-native';
 import DropDownPicker, { ListModeType } from 'react-native-dropdown-picker';
 
 type MultiTagDropdownProps = {
@@ -10,52 +11,59 @@ type MultiTagDropdownProps = {
   searchable?: boolean; // Возможность поиска тегов
   label?: string; // Метка для выпадающего списка
   listMode?: ListModeType;
-  disabledInexes?: number[]; // Индексы тегов, которые нужно заблокировать  
-
+  disabledIndexes?: number[]; // Индексы тегов, которые нужно заблокировать
 };
 
 const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
   tags,
   initialSelectedTag = '',
-  placeholder = "Выберите теги",
+  placeholder = i18n.t('tagSelectors.selectTag'),
   onChange,
   searchable = false,
   label,
   listMode = 'FLATLIST',
-  disabledInexes = []
+  disabledIndexes = [],
 }) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<string | null>(null);
-  const [items, setItems] = useState(tags.map((tag, index) => ({ label: tag, value: index.toString(), disabled: disabledInexes.includes(index) })));
+  const [items, setItems] = useState(
+    tags.map((tag, index) => ({
+      label: tag,
+      value: index.toString(),
+      disabled: disabledIndexes.includes(index),
+    }))
+  );
 
-  // Определение типа начального тега
-  const isInitialTagNumber = typeof initialSelectedTag === 'number';
-
-  // Обновляем value при изменении initialSelectedTag
+  // Синхронизация значения `value` с `initialSelectedTag`
   useEffect(() => {
-    console.log(initialSelectedTag);
-    if (isInitialTagNumber) {
-      setValue(initialSelectedTag.toString()); // Сохраняем индекс как строку
-    } else {
-      setValue(tags.indexOf(initialSelectedTag as string) !== -1 ? tags.indexOf(initialSelectedTag as string).toString() : null);
+    if (typeof initialSelectedTag === 'number') {
+      if (initialSelectedTag >= 0 && initialSelectedTag < tags.length) {
+        setValue(initialSelectedTag.toString());
+      } else {
+        console.warn('initialSelectedTag is out of range');
+        setValue(null);
+      }
+    } else if (typeof initialSelectedTag === 'string') {
+      const index = tags.indexOf(initialSelectedTag);
+      setValue(index !== -1 ? index.toString() : null);
     }
-  }, [initialSelectedTag, tags, isInitialTagNumber]);
+  }, [initialSelectedTag, tags]);
 
   return (
-    <View style={{ paddingTop: 16 }}>
+    <View style={{ paddingTop: 16, position: 'relative', zIndex: 3000 }}>
       {label && (
-        <Text style={{
-          color: '#454545',
-          fontFamily:'NunitoSans_400Regular',
-          fontSize: 12,
-          position: 'absolute',
-          top: 8,
-          left: 8,
-          backgroundColor: '#fff',
-          paddingHorizontal: 4,
-          zIndex: 3001
-        }}
-
+        <Text
+          style={{
+            color: '#454545',
+            fontFamily: 'NunitoSans_400Regular',
+            fontSize: 12,
+            position: 'absolute',
+            top: 8,
+            left: 8,
+            backgroundColor: '#fff',
+            paddingHorizontal: 4,
+            zIndex: 3001,
+          }}
         >
           {label}
         </Text>
@@ -69,30 +77,47 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
         setValue={setValue}
         setItems={setItems}
         placeholder={placeholder}
-        placeholderStyle={{ color: '#454545', fontFamily: 'NunitoSans_400Regular', fontSize: 16 }}
+        dropDownDirection={Platform.OS === 'ios' ? 'TOP' : 'AUTO'}
+        placeholderStyle={{
+          color: '#454545',
+          fontFamily: 'NunitoSans_400Regular',
+          fontSize: 16,
+        }}
         dropDownContainerStyle={{
           backgroundColor: '#ffffff',
           borderColor: '#5e5e5e',
-          zIndex: 3005,
+          zIndex: 9999,
         }}
-        disabledItemLabelStyle={{ color: '#d5d5d5', fontFamily: 'NunitoSans_400Regular', fontSize: 16 }}
-        textStyle={{ color: '#454545', fontFamily: 'NunitoSans_400Regular', fontSize: 16 }}
-        style={{ borderColor: '#bfbfbf', backgroundColor: '#ffffff', borderRadius: 8 }}
+        disabledItemLabelStyle={{
+          color: '#d5d5d5',
+          fontFamily: 'NunitoSans_400Regular',
+          fontSize: 16,
+        }}
+        textStyle={{
+          color: '#454545',
+          fontFamily: 'NunitoSans_400Regular',
+          fontSize: 16,
+        }}
+        style={{
+          borderColor: '#bfbfbf',
+          backgroundColor: '#ffffff',
+          borderRadius: 8,
+        }}
         searchable={searchable}
         maxHeight={300}
         zIndex={3000}
-        zIndexInverse={1000}
+        zIndexInverse={1}
         onChangeValue={(selectedValue) => {
           const selectedIndex = parseInt(selectedValue || '', 10); // Преобразуем обратно в число
           if (!isNaN(selectedIndex)) {
-             // Возвращаем индекс
             if (onChange) {
-              console.log(tags[selectedIndex]);
               onChange(selectedIndex); // Возвращаем строку, если начальный тег был строкой
             }
+          } else if (onChange) {
+            onChange(null);
           }
         }}
-        modalAnimationType='slide'
+        modalAnimationType="slide"
         listMode={listMode}
       />
     </View>

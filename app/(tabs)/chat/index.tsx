@@ -14,39 +14,18 @@ import ChatStore from "@/stores/ChatStore";
 import { Divider, IconButton } from "react-native-paper";
 import ChatMenu from "@/components/chat/ChatMenu";
 import EmptyChatScreen from "@/components/chat/EmptyChatScreen";
+import { shortenName } from "@/utils/utils";
+
 
 const ChatListItem: React.FC<{
   item: (typeof ChatStore.chats)[0];
-}> = ({ item }) => {
+  lastMessage: string;
+ 
+}> = ({ item, lastMessage }) => {
+
   const router = useRouter();
-  const [lastMessage, setLastMessage] = useState<string | null>(null);
-  const [lastSeen, setLastSeen] = useState<number | null>(null);
+  
 
-  //достаем время последнего посещения всех участников чата
-  const fetchLastSeen = async () => {
-    try {
-      const userId = item.id.slice(36, 72);
-      ChatStore.lastSeen[userId] = await ChatStore.getLastSeen(userId);
-      await ChatStore.setLastSeen();
-      setLastSeen(ChatStore.lastSeen[userId]);
-    } catch (error) {
-      console.error("Error fetching last seen:", error);
-    }
-  };
-  // нужно бкдет доработать, убрать обращение к базе
-
-  const fetchLastMessage = async () => {
-    const message = await ChatStore.getLastMessage(item.id);
-    setLastMessage(message);
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await fetchLastSeen();
-      await fetchLastMessage();
-    };
-    fetchData();
-  }, [item.id]);
 
   const handleOpenChat = () => {
     router.push(`/chat/${item?.id}?otherUserId=${item.otherUserId}`);
@@ -59,14 +38,7 @@ const ChatListItem: React.FC<{
     // открытие профиля собеседника тапая по аватару
   };
 
-  const shortenName = (name: string | undefined) => {
-    if (!name) return ''
-    if (name.length > 10) {
-      return name.slice(0, 20) + '...'
-    } else {
-      return name
-    }
-  }
+ 
 
   return (
     <TouchableOpacity onPress={handleOpenChat}>
@@ -89,7 +61,7 @@ const ChatListItem: React.FC<{
               {shortenName(item.otherUserName)}
             </Text>
             <Text className="text-gray-600">
-              {lastMessage ?? "Загрузка..."}
+              {shortenName(lastMessage) ?? "Загрузка..."}
             </Text>
           </View>
         </View>
@@ -106,19 +78,11 @@ const ChatListScreen: React.FC = observer(() => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+ 
 
-  useEffect(() => {
-    if (!isLoading) {
-      ChatStore.sortChats();
-    }
-  }, [isLoading, ChatStore.chats]);
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      ChatStore.sortChats();
       await ChatStore.fetchChats();
     } catch (err) {
       setError("Failed to load chats");
@@ -127,9 +91,14 @@ const ChatListScreen: React.FC = observer(() => {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+   
+    fetchData();
+  }, []);
+  
 
   const onRefresh = async () => {
-    setIsRefreshing(true);
+    setIsRefreshing(true);   
     await fetchData();
     setIsRefreshing(false);
   };
@@ -165,7 +134,7 @@ const ChatListScreen: React.FC = observer(() => {
         </View>
         <FlatList
           data={ChatStore.sortedChats}
-          renderItem={({ item }) => <ChatListItem item={item} />}
+          renderItem={({ item }) => <ChatListItem item={item} lastMessage={ChatStore.lastMessage[item.id]} />}
           keyExtractor={(item) => item.id}
           refreshControl={
             <RefreshControl

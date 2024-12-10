@@ -14,6 +14,7 @@ interface StoreProviderProps {
 
 export const StoreProvider = ({ children }: StoreProviderProps) => {
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     const initializeUser = async () => {
@@ -27,12 +28,15 @@ export const StoreProvider = ({ children }: StoreProviderProps) => {
           userStore.setLogged(true);
           userStore.setUser(user);
           
-        } else {
+        } else if (user == null) {
           userStore.setLogged(false);
           userStore.setUser(null);
           
+        } else if (user === false){
+          userStore.setLogged(false);
+          userStore.setUser(null);
+          setIsError(true);
         }
-        userStore.setLoading(false);
       }catch(e)
       {
         userStore.setUser(null);
@@ -48,7 +52,7 @@ export const StoreProvider = ({ children }: StoreProviderProps) => {
     initializeUser();
   }, []);
 
-  const storeValue = { ...userStore, isInitialized }; // Объединяем userStore с isInitialized
+  const storeValue = { ...userStore, isInitialized, isError }; // Объединяем userStore с isInitialized
 
   return (
     <StoreContext.Provider value={storeValue}>

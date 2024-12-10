@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react-lite';
 import userStore from '@/stores/UserStore';
 import EditProfileComponent from '@/components/profile/EditProfileComponent';
@@ -17,14 +17,6 @@ const EditUserProfile = observer(() => {
     router.back();
   }
   
-  useEffect(() => {
-    // Загрузка данных пользователя, если они еще не загружены
-    if (!userStore.currentUser) { 
-
-    } else {  
-      
-    }
-  }, []);
 
   return (
     <BonusProvider>

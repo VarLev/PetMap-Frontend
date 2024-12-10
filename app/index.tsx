@@ -3,7 +3,7 @@ import { TouchableOpacity, View, Image } from "react-native";
 import { Text } from "react-native-paper";
 import OnboardingCarousel from "../components/auth/OnboardingCarousel";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView } from "react-native";
+import { Platform } from "react-native";
 import CustomButtonPrimary from "@/components/custom/buttons/CustomButtonPrimary";
 import { Redirect, router } from "expo-router";
 import { useStore } from "@/contexts/StoreProvider";
@@ -15,7 +15,8 @@ import userStore from "@/stores/UserStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import i18n from '@/i18n';
 import ScreenHolderLogo from "@/components/common/ScreenHolderLogo";
-import { Platform } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useAlert } from "@/contexts/AlertContext";
 
 GoogleSignin.configure({
   webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
@@ -24,8 +25,10 @@ GoogleSignin.configure({
 
 
 const App = () => {
-  const { loading, isLogged, isInitialized  } = useStore();
+  const { loading, isLogged, isInitialized, isError } = useStore();
+  
   const [isIos, setIsIos] = useState(false);
+  const { showAlert } = useAlert();
 
   // проверка, если платформа IOS, показываем иконку регистрации через Aple
   
@@ -40,12 +43,23 @@ const App = () => {
       }
     };
     checkAuthAndRedirect();
-  }, [loading, isLogged, isInitialized]);
+
+    if (isError) {
+      showAlert(
+        i18n.t("index.error"),
+        "OK",
+        require("../assets/images/InternetError.webp")
+      );
+    }
+  }, [loading, isLogged, isInitialized, isError]);
 
    // Отображаем загрузочный экран или ничего, пока идет проверка авторизации
-  if (loading || !isInitialized) return <ScreenHolderLogo/>;
-    else 
-  if (!loading && isLogged && isInitialized ) return <Redirect href="/map" />;   
+   if (!isError && (loading || !isInitialized)) return <ScreenHolderLogo />;
+   if (!isError && !loading && isLogged && isInitialized) return <Redirect href="/map" />;
+   if (isError && !isInitialized) {
+    return <Redirect href="/" />;
+   }
+
   // signOut();
   // console.log("User signed out");
   //console.log(loading, isLogged);
@@ -70,48 +84,48 @@ const App = () => {
   }
 
   return (
+    <GestureHandlerRootView >
     <SafeAreaView className="bg-white h-full">
-      <ScrollView>
-        <View className="w-full h-full px-4 justify-center">
-          <View className="flex-row mt-2 items-start justify-center">
-            <Text variant="titleSmall" className="ml-0 text-xl font-nunitoSansBold mt-4 mb-2">
-              {i18n.t('index.welcome')} 
-            </Text>
-          </View>
-          <View className="flex-1 pt-2 justify-center items-center">
-            <OnboardingCarousel />
-          </View>
-          <View className="pt-1">
-            <CustomButtonPrimary
-              title={i18n.t('index.signUp')} 
-              handlePress={() => router.push("/sign-up")}
-              containerStyles="w-full"
-            />
-            <CustomButtonOutlined
-              title={i18n.t('index.alreadyHaveAccount')} 
-              handlePress={() => router.push("/sign-in")}
-              containerStyles="w-full"
-            />
-          </View>
-          <View className="flex-col justify-center items-center pt-3">
-            <Text variant="titleSmall" className="text-sm font-nunitoSansRegular text-stone-400">
-              {i18n.t('index.otherSignInMethods')}  
-            </Text>
-            <View className="flex-row justify-around mt-2 gap-x-4">
-              <TouchableOpacity onPress={handleGooglePress}>
-                <Image className="w-12 h-12" source={googleLogo} />
-              </TouchableOpacity>
-             {isIos && <TouchableOpacity onPress={() => console.log("Pressed Apple")}>
-                <Image className="w-12 h-12" source={appleLogo} />
-              </TouchableOpacity>}
-              <TouchableOpacity onPress={() => console.log("Pressed Facebook")}>
-                <Image className="w-12 h-12" source={facebookLogo} />
-              </TouchableOpacity>
-            </View>
+      <View className="w-full h-full px-4 justify-center ">
+        <View className="flex-row mt-2 items-start justify-center">
+          <Text variant="titleSmall" className="ml-0 text-xl font-nunitoSansBold mt-4 mb-2">
+            {i18n.t('index.welcome')} 
+          </Text>
+        </View>
+        <View className="justify-center items-center">
+          <OnboardingCarousel />
+        </View>
+        <View className="pt-8" >
+          <CustomButtonPrimary
+            title={i18n.t('index.signUp')} 
+            handlePress={() => router.push("/sign-up")}
+            containerStyles="w-full"
+          />
+          <CustomButtonOutlined
+            title={i18n.t('index.alreadyHaveAccount')} 
+            handlePress={() => router.push("/sign-in")}
+            containerStyles="w-full"
+          />
+        </View>
+        <View className="flex-col justify-center items-center pt-3">
+          <Text variant="titleSmall" className="text-sm font-nunitoSansRegular text-stone-400">
+            {i18n.t('index.otherSignInMethods')}  
+          </Text>
+          <View className="flex-row justify-around mt-2 gap-x-4">
+            <TouchableOpacity onPress={handleGooglePress}>
+              <Image className="w-12 h-12" source={googleLogo} />
+            </TouchableOpacity>
+            {isIos && <TouchableOpacity onPress={() => console.log("Pressed Apple")}>
+              <Image className="w-12 h-12" source={appleLogo} />
+            </TouchableOpacity>}
+            <TouchableOpacity onPress={() => console.log("Pressed Facebook")}>
+              <Image className="w-12 h-12" source={facebookLogo} />
+            </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
+    </GestureHandlerRootView>
   );
 };
 

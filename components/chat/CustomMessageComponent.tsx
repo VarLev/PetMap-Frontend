@@ -16,6 +16,7 @@ import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
 import { IUser } from "@/dtos/Interfaces/user/IUser";
 import chatStore from "@/stores/ChatStore";
 import { Pet } from "@/dtos/classes/pet/Pet";
+import { shortenName } from "@/utils/utils";
 
 interface AdvtProps {
   item?: IWalkAdvrtDto[];
@@ -133,8 +134,8 @@ const handleDecline = async () => {
                   <View className="flex-col items-start">
                     <View className="justify-center items-center flex-row">
                       <Ionicons name="male" size={15} color="indigo" />
-                      <Text className="pl-1 text-lg font-nunitoSansBold">
-                        {pet.petName || "Pet"},
+                      <Text className="pl-1 text-lg font-nunitoSansBold ">
+                        {shortenName(pet.petName, 10) || "Pet"},
                       </Text>
                     </View>
                     <View className="flex-row w-full ">
