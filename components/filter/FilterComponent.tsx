@@ -3,7 +3,7 @@ import { View, Text } from 'react-native';
 import { Checkbox, Divider } from 'react-native-paper';
 import CustomDropdownList from '../custom/selectors/CustomDropdownList';
 import { observer } from 'mobx-react-lite';
-import StarRating from 'react-native-star-rating-widget';
+//import StarRating from 'react-native-star-rating-widget';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import { FlatList } from 'react-native';
 import TimeSlider from '../custom/sliders/TimeSlider';
@@ -24,7 +24,7 @@ const FilterComponent:React.FC<FilterComponentProps> = observer(({ onFilterChang
   const [temperament, setTemperament] = useState(0);
   const [friendly, setFriendly] = useState(0);
   const [activity, setActivity] = useState(0);
-  const [isAvaliableNowChecked, setIsAvaliableNowChecked] = React.useState(false);
+  //const [isAvaliableNowChecked, setIsAvaliableNowChecked] = React.useState(false);
 
   useEffect(() => {
     // Подсчет измененных полей после каждого изменения состояния
@@ -110,7 +110,7 @@ const FilterComponent:React.FC<FilterComponentProps> = observer(({ onFilterChang
             {i18n.t('filters.showAllOptions')}
           </Text>
         </View>
-        <TimeSlider
+        {/* <TimeSlider
           startTime={filter.startTime || 0}
           endTime={filter.endTime || 1440}
           onTimeChange={handleTimeChange}
@@ -125,7 +125,7 @@ const FilterComponent:React.FC<FilterComponentProps> = observer(({ onFilterChang
           <Text className="text-base font-nunitoSansRegular">
             {i18n.t('filters.availableNow')}
           </Text>
-        </View>
+        </View> */}
         <Divider className="mt-6" />
       </View>
     ),

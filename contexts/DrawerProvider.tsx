@@ -5,7 +5,6 @@ import React, {
   useState,
   ReactElement,
   useCallback,
-  useEffect,
 } from 'react';
 import { View, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
 import {
@@ -121,9 +120,7 @@ export const DrawerProvider = ({
     },
   });
 
-  // Анимируем затемнение в зависимости от положения Drawer:
-  // Когда Drawer полностью закрыт (translateX = width), затемнение = 0
-  // Когда Drawer полностью открыт (translateX = width - drawerWidth), затемнение = 0.5
+  // Анимируем затемнение
   const overlayStyle = useAnimatedStyle(() => {
     const progress = interpolate(
       translateX.value,
@@ -147,12 +144,6 @@ export const DrawerProvider = ({
       <View style={{ flex: 1 }}>
         {children}
         
-        {/* Полупрозрачный оверлей */}
-        {/*
-          pointerEvents: 
-           - когда drawer закрыт, "none", чтобы сквозь оверлей можно было взаимодействовать с контентом
-           - когда открыт, "auto", чтобы можно было тапом по оверлею закрыть Drawer
-        */}
         <TouchableWithoutFeedback onPress={closeDrawer} disabled={!drawerOpened}>
           <Animated.View 
             pointerEvents={drawerOpened ? "auto" : "none"} 
@@ -160,10 +151,22 @@ export const DrawerProvider = ({
           />
         </TouchableWithoutFeedback>
 
-        <PanGestureHandler onGestureEvent={gestureHandler}>
+        {/*
+          Настраиваем PanGestureHandler для определённого поведения жестов:
+          - activeOffsetX: пользователь должен сместить палец по горизонтали дальше 20px, чтобы жест считался горизонтальным
+          - failOffsetY: если пользователь смещается по вертикали больше, чем на 5px, горизонтальный жест "провалится"
+            и будет позволен вертикальный скролл `FlatList`.
+        */}
+        <PanGestureHandler
+          onGestureEvent={gestureHandler}
+          activeOffsetX={[-20, 20]}
+          failOffsetY={[-5, 5]}
+        >
           <Animated.View style={[styles.drawerContainer, { width: drawerWidth }, animatedDrawerStyle]}>
             <View style={styles.drawerContent}>
-              {drawerComponent}
+              {/* Здесь используется FlatList с возможностью вертикального скролла */}
+              {/* Дополнительно указываем nestedScrollEnabled для корректной работы вложенных жестов */}
+              {React.cloneElement(drawerComponent, { nestedScrollEnabled: true })}
             </View>
           </Animated.View>
         </PanGestureHandler>
@@ -176,8 +179,9 @@ const styles = StyleSheet.create({
   drawerContainer: {
     position: 'absolute',
     top: 0,
-    right: 0,
+    right: 10,
     bottom: 0,
+    left:15,
     backgroundColor: '#fff',
     elevation: 5,
     shadowColor: '#000',
