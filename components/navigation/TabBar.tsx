@@ -28,9 +28,9 @@ const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation })
 
         const isFocused = state.index === index;
 
-        const onPress = async () => {
+        const onPress = () => {
           if (route.name === 'profile') {
-            await openDrawer(<SidebarUserProfileComponent/>); // Открыть Drawer при нажатии на "Profile"
+             openDrawer(<SidebarUserProfileComponent/>); // Открыть Drawer при нажатии на "Profile"
           } else {
             const event = navigation.emit({
               type: 'tabPress',
