@@ -29,6 +29,19 @@ export interface IPost {
   decrementLikes: () => void;
 }
 
+export interface INews {
+  id: string;
+  title: string;
+  content: string;
+  postPhotos: IPostPhotos[];
+  likesCount: number;
+  hasLiked: boolean;
+  createdAt: Date;
+
+  incrementLikes: () => void;
+  decrementLikes: () => void;
+}
+
 export interface ICommentWithUser {
   id: string;
   postId: string;

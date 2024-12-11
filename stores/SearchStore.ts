@@ -2,17 +2,18 @@
 
 import { makeAutoObservable, runInAction } from "mobx";
 import apiClient from "@/hooks/axiosConfig";
-import { IPostPhotos, IPost } from "@/dtos/Interfaces/feed/IPost";
+import { IPostPhotos, IPost, INews } from "@/dtos/Interfaces/feed/IPost";
 import { Post, CommentWithUser } from "@/dtos/classes/feed/Post";
 import { handleAxiosError } from "@/utils/axiosUtils";
-import { storage } from "@/firebaseConfig";
+import { getFilesInDirectory, storage } from "@/firebaseConfig";
 import { randomUUID } from "expo-crypto";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { compressImage } from "@/utils/utils";
 import userStore from "./UserStore";
 
-class FeedStore {
+class SearchStore {
   posts: IPost[] = [];
+  news: string[] = [];
   loading: boolean = false;
   page: number = 1;
   
@@ -31,6 +32,10 @@ class FeedStore {
 
   addPosts(posts: IPost[]) {
     this.posts = [...this.posts, ...posts];
+  }
+
+  setNews(news: string[]) {
+    this.news = news;
   }
 
   incrementPage() {
@@ -210,7 +215,20 @@ class FeedStore {
     }
   }
 
+  async fetchNews() {
+    try {
+      const files = await getFilesInDirectory('news');
+      if (files.length > 0) {
+        this.setNews(files);
+        return;
+      }
+      return files;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+
 }
 
-const feedStore = new FeedStore();
-export default feedStore;
+const searchStore = new SearchStore();
+export default searchStore;

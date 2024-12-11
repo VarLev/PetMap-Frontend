@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, ScrollView, Image, TextInput } from 'react-native';
 import { IconButton, Snackbar } from 'react-native-paper';
 import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
-import feedStore from '@/stores/FeedStore';
+import searchStore from '@/stores/SearchStore';
 import CustomLoadingButton from '@/components/custom/buttons/CustomLoadingButton';
 
 interface CreatePostProps {
@@ -36,7 +36,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose }) => {
         setSnackbarVisible(true);
         return;
       }
-      await feedStore.createPost(content, images);
+      await searchStore.createPost(content, images);
       handleClear();
       onClose();
     } catch {

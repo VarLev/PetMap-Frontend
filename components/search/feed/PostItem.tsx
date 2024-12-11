@@ -6,7 +6,7 @@ import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { ICommentWithUser, IPost } from '@/dtos/Interfaces/feed/IPost';
 import { BG_COLORS } from '@/constants/Colors';
-import feedStore from '@/stores/FeedStore';
+import searchStore from '@/stores/SearchStore';
 import userStore from "@/stores/UserStore";
 
 type PostCardProps = {
@@ -25,9 +25,9 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
 
   useEffect(() => {
     (async () => {
-      const postComments = await feedStore.fetchGetComments(post.id);
-      const updatedLikesCount = await feedStore.fetchLikesCount(post.id);
-      const hasLiked = await feedStore.hasUserLiked(post.id);
+      const postComments = await searchStore.fetchGetComments(post.id);
+      const updatedLikesCount = await searchStore.fetchLikesCount(post.id);
+      const hasLiked = await searchStore.hasUserLiked(post.id);
       setHasLiked(hasLiked);
       setLikes(updatedLikesCount);
       setComments(postComments);
@@ -43,14 +43,14 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
   const addLike = async () => {
     try {
       if (hasLiked) {
-        if(await feedStore.unlikePost(post.id)){
+        if(await searchStore.unlikePost(post.id)){
           setHasLiked(false);
           runInAction(() => post.decrementLikes());
           setLikes(post.likesCount);
         }
        
       } else {
-        if(await feedStore.likePost(post.id)){
+        if(await searchStore.likePost(post.id)){
           setHasLiked(true);
           runInAction(() => post.incrementLikes());
           setLikes(post.likesCount);
@@ -68,8 +68,8 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
   const deletePost = async (postId: string) => {
     try {
       setIsLoadingDeletingPost(true);
-      await feedStore.deletePost(postId);
-      await feedStore.fetchPosts();
+      await searchStore.deletePost(postId);
+      await searchStore.fetchPosts();
     } catch (error) {
       console.error('Error deleting post:', error);
     } finally {
@@ -88,9 +88,9 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
 
   const addComment = async () => {
     if (commentText.trim()) {
-      await feedStore.addComment(post.id, commentText.trim());
+      await searchStore.addComment(post.id, commentText.trim());
       setCommentText("");
-      await feedStore.fetchPosts();
+      await searchStore.fetchPosts();
     }
   }
 

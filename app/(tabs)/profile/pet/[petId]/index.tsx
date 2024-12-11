@@ -41,7 +41,7 @@ const PetScreen = observer(() => {
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#6200ee" />
         <Text>Loading pet data...</Text>
       </View>
     );

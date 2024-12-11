@@ -3,7 +3,6 @@ import { ScrollView, ActivityIndicator, TextStyle, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import Markdown from 'react-native-markdown-display';
 import { useRoute } from '@react-navigation/native';
-import { fontConfig } from 'react-native-paper/lib/typescript/styles/fonts';
 
 const ArticleView: React.FC = () => {
   const [markdownContent, setMarkdownContent] = useState<string | null>(null);
@@ -30,7 +29,7 @@ const ArticleView: React.FC = () => {
   }, [articleUrl]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size="large" color="#6200ee" />;
   }
 
   const markdownStyles = {

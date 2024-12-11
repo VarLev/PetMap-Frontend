@@ -93,6 +93,32 @@ export const getFoldersInDirectory = async (directory: string): Promise<StorageR
   return folderList.prefixes;
 };
 
+
+export const getFilesInDirectory = async (directory: string): Promise<string[]> => {
+  try {
+    const directoryRef = ref(storage, directory);
+    const folderList = await listAll(directoryRef);
+    // Фильтруем только файлы с расширением .html
+    const htmlFiles = folderList.items.filter((itemRef) => itemRef.name.endsWith('.html'));
+
+    // Получаем содержимое каждого html файла
+    const fileContents = await Promise.all(
+      htmlFiles.map(async (itemRef) => {
+        const fileUrl = await getDownloadURL(itemRef); // Получаем ссылку для доступа к файлу
+        const response = await fetch(fileUrl); // Загружаем файл
+        if (!response.ok) {
+          throw new Error(`Ошибка загрузки файла ${itemRef.name}: ${response.statusText}`);
+        }
+        return await response.text(); // Возвращаем содержимое файла как текст
+      })
+    );
+
+    return fileContents;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getFileUrl = async (filePath: string): Promise<string> => {
   const fileRef = ref(storage, filePath);
   return await getDownloadURL(fileRef);

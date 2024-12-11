@@ -35,7 +35,7 @@ const Profile = observer(() => {
   if (!editableUser) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#6200ee"  />
         <Text>Loading...</Text>
       </View>
     );

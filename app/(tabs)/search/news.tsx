@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import NewsComponent from '@/components/search/news/NewsComponent';
 
 export default function News() {
   return (
-    <View className="p-4">
-      <Text className="text-lg font-bold">Новости</Text>
-      <Text>Здесь будет отображаться новостная лента.</Text>
+    <View className='flex-1 bg-white'>
+      <NewsComponent />
     </View>
   );
 }

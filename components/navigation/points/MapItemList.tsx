@@ -91,7 +91,7 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
 
   const renderFooter = () => {
     if (!isLoading) return <View className="h-24" />;
-    return <ActivityIndicator className="h-32" size="large" />;
+    return <ActivityIndicator className="h-32" size="large" color="#6200ee"  />;
   };
 
   const handleSheetClose = async () => {

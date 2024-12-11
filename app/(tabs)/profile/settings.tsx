@@ -30,7 +30,7 @@ const Settings = observer(() => {
   if (selectedLanguage === -1) {
     return (
       <View className="h-full items-center justify-center">
-        <ActivityIndicator size="large" color="#6200ee" />
+        <ActivityIndicator size="large" color="#6200ee"  />
       </View>
     );
   }

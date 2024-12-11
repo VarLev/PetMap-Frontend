@@ -9,7 +9,7 @@ import { BG_COLORS } from '@/constants/Colors';
 import { runInAction } from 'mobx';
 import BottomSheet, { BottomSheetFlatList, BottomSheetFooter, BottomSheetFooterProps } from '@gorhom/bottom-sheet';
 import PostComment from './PostComment';
-import feedStore from '@/stores/FeedStore';
+import searchStore from '@/stores/SearchStore';
 import PostItem from '@/components/search/feed/PostItem';
 import CreatePost from '@/components/search/feed/CreatePost';
 
@@ -22,8 +22,8 @@ const Feed: FC = observer(() => {
 
 
   useEffect(() => {
-    feedStore.resetPage();
-    feedStore.fetchPosts();
+    searchStore.resetPage();
+    searchStore.fetchPosts();
   }, []);
 
   const loadMorePosts = () => {
@@ -43,14 +43,14 @@ const Feed: FC = observer(() => {
 
   const handleRefresh = () => {
     setIsRefreshing(true);
-    feedStore.resetPage();
-    feedStore.fetchPosts().finally(() => {
+    searchStore.resetPage();
+    searchStore.fetchPosts().finally(() => {
       setIsRefreshing(false);
     });
   };
 
   const handleSheetCommentsOpen = async (postId: string) => {
-    const comments = await feedStore.fetchGetComments(postId);
+    const comments = await searchStore.fetchGetComments(postId);
     setSelectedPostId(postId);
     setPostComments(comments);
     setBottomSheetType('comments');
@@ -62,10 +62,10 @@ const Feed: FC = observer(() => {
 
     const addComment = async () => {
       if (commentText.trim()) {
-        await feedStore.addComment(selectedPostId, commentText.trim());
+        await searchStore.addComment(selectedPostId, commentText.trim());
         setCommentText("");
         runInAction( async () => {
-          const comments = await feedStore.fetchGetComments(selectedPostId);
+          const comments = await searchStore.fetchGetComments(selectedPostId);
           setPostComments(comments);
         })
       }
@@ -98,14 +98,14 @@ const Feed: FC = observer(() => {
     <View className='flex-1' >
       <FlatList
         ListHeaderComponent={
-          feedStore.posts.length === 0 ? (
+          searchStore.posts.length === 0 ? (
             <View className='items-center content-center justify-center pt-52' style={{ alignItems: 'center' }}>
               <Text>Нет постов</Text>
               <Text>Создайте первый!</Text>
             </View>
           ) : null
         }
-        data={feedStore.posts}
+        data={searchStore.posts}
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }) => {
           return <PostItem post={item} handleSheetCommentsOpenById={(postId) => handleSheetCommentsOpen(postId)}/>
@@ -114,7 +114,7 @@ const Feed: FC = observer(() => {
         onEndReachedThreshold={0.5}
         refreshing={isRefreshing}
         onRefresh={handleRefresh}
-        ListFooterComponent={feedStore.loading ? <ActivityIndicator size="large" /> : <View className='h-20' />}
+        ListFooterComponent={searchStore.loading ? <ActivityIndicator size="large" color="#6200ee" /> : <View className='h-20' />}
       />
       <FAB icon="pen" size='medium' color='white' style={styles.fab} onPress={handleCreatePost}/>
       {
