@@ -143,6 +143,7 @@ const ChatListScreen: React.FC = observer(() => {
               colors={["#6200ee"]}
             />
           }
+          contentContainerStyle={{ paddingBottom: 85 }}
         />
         {/* <Surface elevation={5} className="h-24 bg-white" children={undefined} /> */}
       </View>
