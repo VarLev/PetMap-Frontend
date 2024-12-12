@@ -12,6 +12,7 @@ import PostComment from './PostComment';
 import searchStore from '@/stores/SearchStore';
 import PostItem from '@/components/search/feed/PostItem';
 import CreatePost from '@/components/search/feed/CreatePost';
+import i18n from '@/i18n';
 
 const Feed: FC = observer(() => {
   const [bottomSheetType, setBottomSheetType ] = useState<'create-post' | 'comments' | ''>('')
@@ -77,7 +78,7 @@ const Feed: FC = observer(() => {
             <TextInput
               multiline
               style={{maxHeight: 60}}
-              placeholder="Напишите комментарий..."
+              placeholder={i18n.t("feedPosts.commentInput")}
               className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-sm"
               onChangeText={(text) => setCommentText(text)}
               value={commentText}
@@ -100,8 +101,8 @@ const Feed: FC = observer(() => {
         ListHeaderComponent={
           searchStore.posts.length === 0 ? (
             <View className='items-center content-center justify-center pt-52' style={{ alignItems: 'center' }}>
-              <Text>Нет постов</Text>
-              <Text>Создайте первый!</Text>
+              <Text>{i18n.t("feedPosts.noPosts")}</Text>
+              <Text>{i18n.t("feedPosts.createFirst")}</Text>
             </View>
           ) : null
         }

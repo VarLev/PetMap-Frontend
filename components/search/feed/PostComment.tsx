@@ -24,13 +24,13 @@ const PostComment: FC<{comment: ICommentWithUser}> = observer(({comment}) => {
 
   const timeSince = (date: Date) => {
     const periods = [
-      { time: 31536000, name: 'y' },
-      { time: 2592000, name: 'm' },
-      { time: 604800, name: 'w' },
-      { time: 86400, name: 'd' },
-      { time: 3600, name: 'h' },
-      { time: 60, name: 'min' },
-      { time: 1, name: 's' }
+      { time: 31536000, name: i18n.t("feedPosts.commentCreatedAtPeriods.years") },
+      { time: 2592000, name: i18n.t("feedPosts.commentCreatedAtPeriods.monthes") },
+      { time: 604800, name: i18n.t("feedPosts.commentCreatedAtPeriods.weeks") },
+      { time: 86400, name: i18n.t("feedPosts.commentCreatedAtPeriods.days") },
+      { time: 3600, name: i18n.t("feedPosts.commentCreatedAtPeriods.houres") },
+      { time: 60, name: i18n.t("feedPosts.commentCreatedAtPeriods.minutes") },
+      { time: 1, name: i18n.t("feedPosts.commentCreatedAtPeriods.seconds") }
     ];
 
     let elapsed = Math.floor((Date.now() - +new Date(date)) / 1000);
@@ -38,7 +38,7 @@ const PostComment: FC<{comment: ICommentWithUser}> = observer(({comment}) => {
     for (let { time, name } of periods) {
       if (elapsed >= time) {
         let count = Math.floor(elapsed / time);
-        return elapsed < 10 ? 'now' : `${count} ${name}`;
+        return elapsed < 10 ? i18n.t("feedPosts.commentCreatedAtPeriods.now") : `${count} ${name}`;
       }
     }
   }
