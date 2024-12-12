@@ -195,7 +195,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
           </View>
         </Card.Actions>
       </Card>
-  ), [post, likes, comments, commentText, menuVisible])
+  ), [post, likes, comments, commentText, menuVisible, hasLiked, isCurrentUser, isLoadingDeletingPost])
 
   return CardItem;
 });

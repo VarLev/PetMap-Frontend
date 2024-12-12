@@ -122,7 +122,7 @@ const Feed: FC = observer(() => {
         <BottomSheet
           style={{paddingHorizontal: 12}}
           ref={sheetRef}
-          snapPoints={['50%', '100%']}
+          snapPoints={['60%', '100%']}
           onClose={handleSheetClose}
           enablePanDownToClose={true}
           handleHeight={0}
