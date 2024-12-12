@@ -3,7 +3,7 @@ import { View, Pressable, Platform } from "react-native";
 import { Menu, TouchableRipple } from "react-native-paper";
 
 type MenuItemWrapperProps = {
-  icon: any;
+  icon?: any;
   title: string;
   onPress: () => void;
 };

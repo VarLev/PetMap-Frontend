@@ -1,10 +1,27 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { View } from 'react-native';
-import { Avatar, Text } from 'react-native-paper';
+import { Avatar, Menu, Text, TouchableRipple } from 'react-native-paper';
 import { ICommentWithUser } from "@/dtos/Interfaces/feed/IPost";
+import MenuItemWrapper from "@/components/custom/menuItem/MunuItemWrapper";
+import userStore from "@/stores/UserStore";
+import i18n from "@/i18n";
 
 const PostComment: FC<{comment: ICommentWithUser}> = observer(({comment}) => {
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
+
+  useEffect(() => {
+    if (comment.userId === userStore.currentUser?.id) {
+      setIsCurrentUser(true);
+    } else {
+      setIsCurrentUser(false);
+    }
+  })
+
+  const openMenu = () => setMenuVisible(true);
+  const closeMenu = () => setMenuVisible(false);
+
   const timeSince = (date: Date) => {
     const periods = [
       { time: 31536000, name: 'y' },
@@ -26,19 +43,52 @@ const PostComment: FC<{comment: ICommentWithUser}> = observer(({comment}) => {
     }
   }
 
+  const deleteComment = () => {
+    console.log("Комментарий удалён");
+    setMenuVisible(false);
+  }
+
+  const complainOnPost = () => {
+    console.log("Пожаловались на комментарий")
+  }
+
   return (
-    <View className="flex-row items-start gap-x-1 mt-2.5">
-      <Avatar.Image size={28} source={{ uri: `${comment.userAvatar}` }} />
-      <View className="flex-column">
-        <View className="flex-row gap-1">
-          <Text className="font-bold text-gray-500 text-xs">{comment.userName}</Text>
-          <Text className="text-gray-500 text-xs">
-            {timeSince(comment.createdAt)}
-          </Text>
+    <Menu
+      visible={menuVisible}
+      onDismiss={closeMenu}
+      contentStyle={{ backgroundColor: "white", paddingVertical: 0, left: 160, top: 60}}
+      anchor={
+        <View style={{overflow: "hidden", borderRadius: 12}}>
+          <TouchableRipple onLongPress={openMenu} >
+            <View className="flex-row items-start gap-x-1 my-1.5">
+              <Avatar.Image size={28} source={{ uri: `${comment.userAvatar}` }} />
+              <View className="flex-column">
+                <View className="flex-row gap-1">
+                  <Text className="font-bold text-gray-500 text-xs">{comment.userName}</Text>
+                  <Text className="text-gray-500 text-xs">
+                    {timeSince(comment.createdAt)}
+                  </Text>
+                </View>
+                <Text className="text-sm pr-1">{comment.content}</Text>
+              </View>
+            </View>
+          </TouchableRipple>
         </View>
-        <Text className="text-sm pr-1">{comment.content}</Text>
-      </View>
-    </View>
+      }
+    >{isCurrentUser ? 
+      <MenuItemWrapper
+        onPress={deleteComment}
+        title="Удалить"
+      /> :
+      <MenuItemWrapper
+        onPress={complainOnPost}
+        title="Пожаловаться"
+      />
+    }
+      
+      
+    </Menu>
+    
   )
 })
 
