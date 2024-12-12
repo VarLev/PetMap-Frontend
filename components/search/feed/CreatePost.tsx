@@ -4,6 +4,7 @@ import { IconButton, Snackbar } from 'react-native-paper';
 import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import searchStore from '@/stores/SearchStore';
 import CustomLoadingButton from '@/components/custom/buttons/CustomLoadingButton';
+import i18n from '@/i18n';
 
 interface CreatePostProps {
   onClose: () => void; // Метод для закрытия нижнего листа
@@ -32,7 +33,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose }) => {
   const handleCreatePost = async () => {
     try {
       if (!content) {
-        setSnackbarMessage('Добавьте текст поста.');
+        setSnackbarMessage(i18n.t("feedPosts.addPostText"));
         setSnackbarVisible(true);
         return;
       }
@@ -40,7 +41,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose }) => {
       handleClear();
       onClose();
     } catch {
-      setSnackbarMessage('Ошибка при создании поста.');
+      setSnackbarMessage(i18n.t("feedPosts.postCreateError"));
       setSnackbarVisible(true);
     }
   };
@@ -57,7 +58,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose }) => {
       <View className="relative mb-2">
         <TextInput
           className="border border-gray-300 rounded-lg p-3 pr-12 min-h-[150px] text-sm"
-          placeholder="Что у вас нового?"
+          placeholder={i18n.t("feedPosts.createPostInput")}
           value={content}
           onChangeText={setContent}
           multiline
@@ -82,7 +83,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose }) => {
           ))}
         </View>
       )}
-      <CustomLoadingButton handlePress={handleCreatePost} title='Создать пост'  />
+      <CustomLoadingButton handlePress={handleCreatePost} title={i18n.t("feedPosts.loadingButtonTitle")}  />
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}

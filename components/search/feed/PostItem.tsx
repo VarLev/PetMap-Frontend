@@ -8,6 +8,7 @@ import { ICommentWithUser, IPost } from '@/dtos/Interfaces/feed/IPost';
 import { BG_COLORS } from '@/constants/Colors';
 import searchStore from '@/stores/SearchStore';
 import userStore from "@/stores/UserStore";
+import i18n from '@/i18n';
 
 type PostCardProps = {
   post: IPost,
@@ -134,9 +135,9 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
                       size="small"
                       color="#6200ee"
                     /> : 
-                    "Удалить"}
+                    i18n.t("feedPosts.deletePost")}
                 /> :
-                <Menu.Item onPress={complainOnPost} title="Пожаловаться" />}
+                <Menu.Item onPress={complainOnPost} title={i18n.t("feedPosts.complainOnPost")} />}
               </Menu>
             </View>
           </View>
@@ -179,7 +180,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
               <TextInput
                 multiline
                 style={{maxHeight: 60}}
-                placeholder="Напишите комментарий..."
+                placeholder={i18n.t("feedPosts.commentInput")}
                 className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-sm"
                 onChangeText={(text) => setCommentText(text)}
                 value={commentText}

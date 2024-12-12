@@ -584,6 +584,27 @@
     "selectTags": "Seleccionar Etiquetas",
     "collapse": "Colapsar",
     "showMore": "Mostrar Más"
+  },
+  "feedPosts": {
+    "noPosts": "Sin publicaciones",
+    "createFirst": "Crea tu primera publicación!",
+    "deletePost": "Eliminar",
+    "complainOnPost": "Quejarse",
+    "commentInput": "Escribe un comentario...",
+    "addPostText": "Agregar texto de publicación",
+    "postCreateError": "Error al crear la publicación.",
+    "createPostInput": "¿Qué hay de nuevo contigo?",
+    "loadingButtonTitle": "Crear una publicación",
+    "commentCreatedAtPeriods": {
+      "seconds": "seg",
+      "minutes": "min",
+      "houres": "h",
+      "days": "d",
+      "weeks": "sem",
+      "monthes": "m",
+      "years": "a",
+      "now": "recién"
+    }
   }
 
 

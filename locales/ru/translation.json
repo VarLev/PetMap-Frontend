@@ -585,6 +585,27 @@
     "selectTags": "Выберите теги",
     "collapse": "Свернуть",
     "showMore": "Показать ещё"
+  },
+  "feedPosts": {
+    "noPosts": "Нет постов",
+    "createFirst": "Создайте первый!",
+    "deletePost": "Удалить",
+    "complainOnPost": "Пожаловаться на пост",
+    "commentInput": "Напишите комментарий...",
+    "addPostText": "Добавьте текст поста.",
+    "postCreateError": "Ошибка при создании поста.",
+    "createPostInput": "Что у вас нового?",
+    "loadingButtonTitle": "Создать пост",
+    "commentCreatedAtPeriods": {
+      "seconds": "с",
+      "minutes": "мин",
+      "houres": "ч",
+      "days": "д",
+      "weeks": "нед",
+      "monthes": "мес",
+      "years": "г",
+      "now": "только что"
+    }
   }
   
   
