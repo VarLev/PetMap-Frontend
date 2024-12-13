@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { View } from 'react-native';
 import { Avatar, Menu, Text, TouchableRipple } from 'react-native-paper';
 import { ICommentWithUser } from "@/dtos/Interfaces/feed/IPost";
+import { router } from "expo-router";
 import MenuItemWrapper from "@/components/custom/menuItem/MunuItemWrapper";
 import userStore from "@/stores/UserStore";
 import i18n from "@/i18n";
@@ -52,6 +53,10 @@ const PostComment: FC<{comment: ICommentWithUser}> = observer(({comment}) => {
     console.log("Пожаловались на комментарий")
   }
 
+  const openUserProfile = (userId: string) => {
+    router.push(`/(tabs)/profile/${userId}`);
+  }
+ 
   return (
     <Menu
       visible={menuVisible}
@@ -61,10 +66,14 @@ const PostComment: FC<{comment: ICommentWithUser}> = observer(({comment}) => {
         <View style={{overflow: "hidden", borderRadius: 12}}>
           <TouchableRipple onLongPress={openMenu} >
             <View className="flex-row items-start gap-x-1 my-1.5">
-              <Avatar.Image size={28} source={{ uri: `${comment.userAvatar}` }} />
+              <TouchableRipple onPress={() => openUserProfile(comment.userId)}>
+                <Avatar.Image size={28} source={{ uri: `${comment.userAvatar}` }} />
+              </TouchableRipple>
               <View className="flex-column">
                 <View className="flex-row gap-1">
-                  <Text className="font-bold text-gray-500 text-xs">{comment.userName}</Text>
+                  <TouchableRipple onPress={() => openUserProfile(comment.userId)}>
+                    <Text className="font-bold text-gray-500 text-xs">{comment.userName}</Text>
+                  </TouchableRipple>
                   <Text className="text-gray-500 text-xs">
                     {timeSince(comment.createdAt)}
                   </Text>
