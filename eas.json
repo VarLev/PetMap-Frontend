@@ -30,7 +30,7 @@
     },
     "testflight": {
       "ios": {
-        "distribution": "internal"
+        "distribution": "store"
       }
     }
   },
