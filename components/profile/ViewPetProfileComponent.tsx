@@ -1,7 +1,7 @@
 import { Pet } from '@/dtos/classes/pet/Pet';
 import React, { useEffect, useRef, useState } from 'react';
 import { StatusBar, View,Image, StyleSheet, Platform } from 'react-native';
-import { Text, IconButton, PaperProvider, Menu, Divider } from 'react-native-paper';
+import { Text, IconButton, Menu, Divider } from 'react-native-paper';
 import { calculateDogAge, getTagsByIndex } from '@/utils/utils';
 import BottomSheet from '@gorhom/bottom-sheet';
 import BottomSheetComponent from '../common/BottomSheetComponent';
@@ -63,7 +63,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
 
   return (
     <GestureHandlerRootView className="h-full">
-  <PaperProvider>
+
     <View style={{ alignItems: 'center' }}>
       <StatusBar backgroundColor="transparent" translucent />
       <View className="relative w-full aspect-square">
@@ -97,7 +97,7 @@ const ViewPetProfileComponent = observer(({ pet , onEdit}: { pet: Pet, onEdit: (
         </View>
       </View>
     </View>
-  </PaperProvider>
+  
   <BottomSheetComponent
     ref={sheetRef}
     enablePanDownToClose={false}

@@ -255,6 +255,8 @@ class MapStore {
         type: pointTag.type?.toString() || '',
         userId: pointTag.userId?.toString() || ''
       }).toString();
+      console.log('Query params:', queryParams);
+      
 
       const response = await apiClient.get(`filter/point/all?${queryParams}`);
       if (response.data.length === 0) {

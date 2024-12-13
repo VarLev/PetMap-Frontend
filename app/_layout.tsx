@@ -4,12 +4,21 @@ import { Stack, SplashScreen } from 'expo-router';
 import React, { useEffect } from 'react';
 import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans';
 import { AlertProvider } from '@/contexts/AlertContext';
-import { DefaultTheme, PaperProvider } from 'react-native-paper';
+import { DefaultTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { StoreProvider } from '@/contexts/StoreProvider';
 
 // Создаем кастомную тему для react-native-paper
 const customTheme = {
   ...DefaultTheme,
+  dark: false,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: '#6200ee',
+    background: '#ffffff',
+    surface: '#ffffff',
+    text: '#000000',
+    // При необходимости переопределяйте другие цвета
+  },
   fonts: {
     bodyLarge: {
       fontFamily: 'NunitoSans_400Regular',
@@ -53,6 +62,7 @@ const customTheme = {
     },
   },
 };
+
 SplashScreen.preventAutoHideAsync();
 
 const Layout = () => {

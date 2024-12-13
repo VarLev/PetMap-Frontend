@@ -44,6 +44,7 @@ import AddCard from "../custom/buttons/AddCard";
 import MenuItemWrapper from "../custom/menuItem/MunuItemWrapper";
 import { shortenName } from "@/utils/utils";
 import i18n from "@/i18n";
+import { lightBlue100 } from "react-native-paper/lib/typescript/styles/themes/v2/colors";
 
 
 const ViewProfileComponent = observer(
@@ -118,7 +119,7 @@ const ViewProfileComponent = observer(
     
     return (
       <GestureHandlerRootView className="h-full">
-        <PaperProvider>
+      
           <ScrollView
             refreshControl={
               <RefreshControl
@@ -141,7 +142,7 @@ const ViewProfileComponent = observer(
                     style={{ marginTop: 25 }}
                       visible={menuVisible}
                       onDismiss={closeMenu}
-                      contentStyle={{ backgroundColor: "white" }}
+                     
                       anchor={
                         <IconButton
                           icon="menu"
@@ -162,18 +163,13 @@ const ViewProfileComponent = observer(
                         title={i18n.t('UserProfile.logout')}
                         icon="exit-to-app"
                       />
-                      <MenuItemWrapper
-                        onPress={closeMenu}
-                        title={i18n.t('UserProfile.deleteAccount')}
-                        icon="delete-outline"
-                      />
                     </Menu>
                   )}
                 </View>
               </View>
             </View>
           </ScrollView>
-        </PaperProvider>
+     
         <BottomSheetComponent
           ref={sheetRef}
           enablePanDownToClose={false}

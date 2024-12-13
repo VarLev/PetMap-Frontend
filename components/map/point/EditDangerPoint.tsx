@@ -40,14 +40,16 @@ const EditDangerPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) =>
       if (checkErrors()) {
         const thumb = await mapStore.uploaPiontThumbnailImage(editablePoint, MapPointType.Danger);
         editablePoint.thumbnailUrl = thumb;
-
+        editablePoint.city = (await userStore.getCurrentUserCity()) || '';
         await mapStore.addPoint(editablePoint);
         const currentUser = await userStore.getCurrentUser();
-        await mapStore.getMapPointsByType({
-          type: MapPointType.Danger,
-          userId: currentUser?.id!,
-          city: (await userStore.getCurrentUserCity()) || '',
-        });
+        if (currentUser) {
+          await mapStore.getMapPointsByType({
+            type: MapPointType.Danger,
+            userId: currentUser.id,
+            city: (await userStore.getCurrentUserCity()) || '',
+          });
+        }
         onClose();
       }
     } catch (error) {

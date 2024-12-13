@@ -15,6 +15,7 @@ export interface IPointEntityDTO {
   address?: string;                 // Адрес точки
   name?: string;                    // Название точки
   amenities?: AmenitiesType[];      // Удобства точки
+  city?: string;                    // Город
 }
 
 export interface IPointEntityShortDTO {
@@ -22,4 +23,5 @@ export interface IPointEntityShortDTO {
   mapPointType: MapPointType;     // Тип точки (Danger, Park и т.д.)       
   latitude?: number;              // Широта
   longitude?: number;             // Долгота
+  city?: string;  
 }
