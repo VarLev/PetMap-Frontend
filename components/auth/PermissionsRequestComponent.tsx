@@ -3,6 +3,8 @@ import { requestForegroundPermissionsAsync } from "expo-location";
 import { requestPermissionsAsync } from "expo-notifications";
 import { requestMediaLibraryPermissionsAsync } from "expo-image-picker";
 import CustomAlert from "../custom/alert/CustomAlert";
+import uiStore from "@/stores/UIStore";
+import i18n from "@/i18n";
 
 const PermissionsRequestComponent = () => {
   const [permissionsGranted, setPermissionsGranted] = useState({
@@ -36,6 +38,11 @@ const PermissionsRequestComponent = () => {
           photos: photosGranted,
         });
 
+        uiStore.setLocationPermissionGranted(locationGranted);
+        uiStore.setNotificationPermissionGranted(notificationsGranted);
+        uiStore.setPhotosPermissionGranted(photosGranted);
+
+
         // Проверяем, все ли разрешения предоставлены
         if (!locationGranted || !notificationsGranted || !photosGranted) {
           setAlertVisible(true);
@@ -52,11 +59,12 @@ const PermissionsRequestComponent = () => {
   return (
     <CustomAlert
       isVisible={alertVisible}
-      onClose={() => {}}
+      onClose={() => setAlertVisible(false)}
       message={
-        "Не все разрешения были предоставлены, функциональность будет ограничена, предоставьте разрешения в менеджере приложений"
+        i18n.t('permissions')
       }
       type={"info"}
+      image={require("../../assets/images/alert-dog-sad-2.png")}
     />
   );
 };

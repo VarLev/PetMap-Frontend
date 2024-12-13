@@ -22,7 +22,7 @@ export default function AnimationScreenHolder() {
         imageAssetsFolder={'assets/animations/images'}
         loop = {false}
         onAnimationFinish={()=>{router.replace('/map')}}
-        speed={10}
+        speed={2}
       />
       
     </View>

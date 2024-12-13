@@ -10,6 +10,12 @@ class UIStore {
   isPointSearchFilterTagSelected : boolean = false;
   isBottomTableViewSheetOpen: boolean = false;
   currentLanguage: Language = Language.Spanish; 
+  isLocationPermissionGranted: boolean = false;
+  isNotificationPermissionGranted: boolean = false;
+  isPhotosPermissionGranted: boolean = false;
+
+
+  
 
   constructor() {
     makeAutoObservable(this);
@@ -22,6 +28,30 @@ class UIStore {
       this.currentLanguage = lang;
     });
     await this.setLanguagei18n(lang);
+  }
+
+  setLocationPermissionGranted(isGranted: boolean) {
+    this.isLocationPermissionGranted = isGranted;
+  }
+
+  getLocationPermissionGranted() {
+    return this.isLocationPermissionGranted;
+  }
+
+  setNotificationPermissionGranted(isGranted: boolean) {
+    this.isNotificationPermissionGranted = isGranted;
+  }
+
+  getNotificationPermissionGranted() {
+    return this.isNotificationPermissionGranted;
+  }
+
+  setPhotosPermissionGranted(isGranted: boolean) {
+    this.isPhotosPermissionGranted = isGranted;
+  }
+
+  getPhotosPermissionGranted() {
+    return this.isPhotosPermissionGranted;
   }
 
 

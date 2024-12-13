@@ -1,4 +1,5 @@
 {
+  "permissions": "No se otorgaron todos los permisos, la funcionalidad estará limitada. Por favor, conceda los permisos en el administrador de aplicaciones.",
   "index": {
     "welcome": "¡Bienvenido a PetMap!",
     "signUp": "Registrarse",

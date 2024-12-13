@@ -39,7 +39,7 @@ const App = () => {
 
     const checkAuthAndRedirect = async () => {
       if (isInitialized && !loading && isLogged) {
-        await router.replace("/map"); // Перенаправление на карту, если пользователь авторизован
+        await router.replace("/search/news"); // Перенаправление на карту, если пользователь авторизован
       }
     };
     checkAuthAndRedirect();
@@ -55,7 +55,7 @@ const App = () => {
 
    // Отображаем загрузочный экран или ничего, пока идет проверка авторизации
    if (!isError && (loading || !isInitialized)) return <ScreenHolderLogo />;
-   if (!isError && !loading && isLogged && isInitialized) return <Redirect href="/map" />;
+   if (!isError && !loading && isLogged && isInitialized) return <Redirect href="/search/news" />;
    if (isError && !isInitialized) {
     return <Redirect href="/" />;
    }

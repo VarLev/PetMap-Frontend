@@ -58,7 +58,10 @@ import { UserPointType } from "@/dtos/enum/UserPointType";
 import PointsOfInterestComponent from "./PointsOfInterestComponent";
 import FabGroupComponent from "./FabGroupComponent";
 import { IUserChat } from "@/dtos/Interfaces/user/IUserChat";
+
 import i18n from "@/i18n";
+import uiStore from "@/stores/UIStore";
+import PermissionsRequestComponent from "../auth/PermissionsRequestComponent";
 
 const MapBoxMap = observer(() => {
   const [isLoading, setIsLoading] = useState(true);
@@ -78,9 +81,7 @@ const MapBoxMap = observer(() => {
   const { openDrawer, closeDrawer } = useDrawer();
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
   const [selectedTag, setSelectedTag] = useState<string>("");
-  const [userCoordinates, setUserCoordinates] = useState<
-    [number, number] | null
-  >(null);
+  const [userCoordinates, setUserCoordinates] = useState<[number, number] | null>([ -58.381592, -34.603722]);
   const currentUser = userStore.currentUser;
   const [modifiedFieldsCount, setModifiedFieldsCount] = useState(0);
   const [currentPointType, setCurrentPointType] = useState(MapPointType.Walk);
@@ -94,7 +95,7 @@ const MapBoxMap = observer(() => {
   const [selectedPointId, setSelectedPointId] = useState<string>("");
   const [selectedWalkMarker, setSelectedWalkMarker] = useState("");
   const [alertImage, setAlertImage] = useState<ImageSourcePropType>();
-
+  const [hasPermission, setHasPermission] = useState<boolean>(uiStore.getLocationPermissionGranted());
   // ... существующие состояния и переменные
   const [routeData, setRouteData] = useState<any>(null);
 
@@ -120,6 +121,11 @@ const MapBoxMap = observer(() => {
         } catch (error) {
           console.error("Ошибка при получении города:", error);
         }
+      } else {
+        userStore.setCurrentUserCity('Buenos Aires');
+        mapStore.setCity('Buenos Aires');
+        await mapStore.setWalkAdvrts();
+        
       }
     };
 
@@ -136,7 +142,7 @@ const MapBoxMap = observer(() => {
   useEffect(() => {
     const data = createGeoJSONFeatures();
     setGeoJSONData(data);
-  }, [mapStore.walkAdvrts, mapStore.mapPoints]);
+  }, [mapStore.walkAdvrts, mapStore.mapPoints, hasPermission]);
 
   useFocusEffect(
     useCallback(() => {
@@ -155,6 +161,8 @@ const MapBoxMap = observer(() => {
       };
     }, [])
   );
+
+ 
 
   const createGeoJSONFeatures = (): FeatureCollection<Point> => {
     const features: Feature<Point>[] = [];
@@ -478,6 +486,7 @@ const MapBoxMap = observer(() => {
 
   return (
     <Provider>
+      <PermissionsRequestComponent />
       {isCardView && (
         <SlidingOverlay visible={isCardView}>
           <MapItemList renderType={currentPointType} />
@@ -498,11 +507,11 @@ const MapBoxMap = observer(() => {
           zoomEnabled={!isCardView}
           rotateEnabled={!isCardView}
         >
-          <UserLocation
+          {hasPermission  && (<UserLocation
             minDisplacement={50}
             ref={userLocationRef}
             onUpdate={handleUserLocationUpdate}
-          />
+          />)}
           {routeData && (
             <ShapeSource id="routeSource" shape={routeData}>
               <LineLayer

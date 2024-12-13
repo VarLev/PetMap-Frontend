@@ -1,4 +1,5 @@
 {
+  "permissions": "Not all permissions were granted, functionality will be limited. Please provide permissions in the app manager.",
   "index": {
     "welcome": "Welcome to PetMap!",
     "signUp": "Sign Up",
