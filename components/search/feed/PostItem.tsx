@@ -1,11 +1,12 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { View, Image, TextInput } from 'react-native';
-import { Text, Menu, ActivityIndicator } from 'react-native-paper';
+import { Text, Menu, ActivityIndicator, TouchableRipple } from 'react-native-paper';
 import { Card, Avatar, IconButton } from 'react-native-paper';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { ICommentWithUser, IPost } from '@/dtos/Interfaces/feed/IPost';
 import { BG_COLORS } from '@/constants/Colors';
+import { router } from "expo-router";
 import searchStore from '@/stores/SearchStore';
 import userStore from "@/stores/UserStore";
 import i18n from '@/i18n';
@@ -95,14 +96,22 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
     }
   }
 
+  const openUserProfile = (userId: string) => {
+    router.push(`/(tabs)/profile/${userId}`);
+  }
+
   const CardItem = useMemo(() => (
     <Card className="mx-2 mt-2 bg-white rounded-2xl">
         <Card.Content>
           <View className="flex-row items-center justify-between mb-1">
             <View className="flex-row items-center">
-              <Avatar.Image size={36} source={{ uri: `${post.userAvatar}` }} />
+              <TouchableRipple onPress={() => openUserProfile(post.userId)}>
+                <Avatar.Image size={36} source={{ uri: `${post.userAvatar}` }} />
+              </TouchableRipple>
               <View className="ml-2">
-                <Text className="font-bold text-sm">{post.userName}</Text>
+                <TouchableRipple onPress={() => openUserProfile(post.userId)}>
+                  <Text className="font-bold text-sm">{post.userName}</Text>
+                </TouchableRipple>
                 <Text className="text-gray-500 text-xs">
                   {new Date(post.createdAt).toLocaleDateString()}
                 </Text>
