@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Avatar, Menu, Text, TouchableRipple } from 'react-native-paper';
 import { ICommentWithUser } from "@/dtos/Interfaces/feed/IPost";
 import MenuItemWrapper from "@/components/custom/menuItem/MunuItemWrapper";
@@ -56,9 +56,9 @@ const PostComment: FC<{comment: ICommentWithUser}> = observer(({comment}) => {
     <Menu
       visible={menuVisible}
       onDismiss={closeMenu}
-      contentStyle={{ backgroundColor: "white", paddingVertical: 0, left: 160, top: 60}}
+      contentStyle={styles.menu}
       anchor={
-        <View style={{overflow: "hidden", borderRadius: 12}}>
+        <View style={styles.comment}>
           <TouchableRipple onLongPress={openMenu} >
             <View className="flex-row items-start gap-x-1 my-1.5">
               <Avatar.Image size={28} source={{ uri: `${comment.userAvatar}` }} />
@@ -75,7 +75,8 @@ const PostComment: FC<{comment: ICommentWithUser}> = observer(({comment}) => {
           </TouchableRipple>
         </View>
       }
-    >{isCurrentUser ? 
+    >
+      {isCurrentUser ? 
       <MenuItemWrapper
         onPress={deleteComment}
         title="Удалить"
@@ -83,13 +84,22 @@ const PostComment: FC<{comment: ICommentWithUser}> = observer(({comment}) => {
       <MenuItemWrapper
         onPress={complainOnPost}
         title="Пожаловаться"
-      />
-    }
-      
-      
+      />}
     </Menu>
-    
   )
 })
+
+const styles = StyleSheet.create({
+  menu: {
+    backgroundColor: "white",
+    paddingVertical: 0,
+    left: 160,
+    top: 60
+  },
+  comment: {
+    overflow: "hidden",
+    borderRadius: 12
+  }
+});
 
 export default PostComment;

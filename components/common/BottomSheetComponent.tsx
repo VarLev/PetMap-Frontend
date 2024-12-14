@@ -1,16 +1,24 @@
-import React, { forwardRef } from 'react';
-import { StyleSheet, View } from 'react-native';
-import BottomSheet, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { FC, forwardRef, ReactElement } from 'react';
+import { ListRenderItem, StyleSheet, View, ViewStyle } from 'react-native';
+import BottomSheet, { BottomSheetFlatList, BottomSheetFooterProps } from '@gorhom/bottom-sheet';
 import { Portal } from 'react-native-paper';
+import { AnimatedStyle, SharedValue } from 'react-native-reanimated';
+import { StyleProp } from 'react-native';
 
 
 interface BottomSheetComponentProps {
   snapPoints: (number | string)[];
-  renderContent: React.ReactElement | null;
+  renderContent: ReactElement | null;
   onClose?: () => void;
   enablePanDownToClose: boolean;
   initialIndex?: number;
   usePortal?: boolean; // Новый пропс для управления отображением через Portal
+  footerComponent?: FC<BottomSheetFooterProps> | undefined;
+  handleHeight?: number;
+  enableFooterMarginAdjustment?: boolean;
+  flatListData?: ArrayLike<any> | SharedValue<ArrayLike<any> | null | undefined> | null | undefined;
+  flatListRenderItem?: ListRenderItem<any> | SharedValue<ListRenderItem<any> | null | undefined> | null | undefined;
+  bottomSheetContentStyle?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>
 }
 
 const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
@@ -22,6 +30,11 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
       enablePanDownToClose,
       initialIndex = 0,
       usePortal = false, // Значение по умолчанию - false
+      footerComponent,
+      handleHeight,
+      enableFooterMarginAdjustment,
+      flatListData,
+      flatListRenderItem,
     },
     ref
   ) => {
@@ -34,11 +47,14 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
         onClose={onClose}
         backgroundStyle={styles.backgroundStyle}
         handleStyle={styles.handleStyle}
+        footerComponent={footerComponent}
+        handleHeight={handleHeight}
       >
         <BottomSheetFlatList
-          data={[]}
-          keyExtractor={() => 'key'}
-          renderItem={null}
+          enableFooterMarginAdjustment={enableFooterMarginAdjustment} // передаём true, если используем footerComponent
+          data={flatListData} // передаём, если используем flatlist
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={flatListRenderItem} // передаём, если используем flatlist
           ListHeaderComponent={renderContent}
           contentContainerStyle={styles.contentContainer}
         />
