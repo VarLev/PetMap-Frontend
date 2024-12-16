@@ -17,6 +17,7 @@ import i18n from '@/i18n';
 import ScreenHolderLogo from "@/components/common/ScreenHolderLogo";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAlert } from "@/contexts/AlertContext";
+import AppOpenAdHandler from "@/components/ads/AppOpenAdHandler"; 
 
 GoogleSignin.configure({
   webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
@@ -26,9 +27,10 @@ GoogleSignin.configure({
 
 const App = () => {
   const { loading, isLogged, isInitialized, isError } = useStore();
-  
   const [isIos, setIsIos] = useState(false);
   const { showAlert } = useAlert();
+  const [adShown, setAdShown] = useState(false);
+  const userHasSubscription = userStore.getUserHasSubscription(); // Проверка на наличие подписки у пользователя
 
   // проверка, если платформа IOS, показываем иконку регистрации через Aple
   
@@ -51,22 +53,13 @@ const App = () => {
         require("../assets/images/InternetError.webp")
       );
     }
-  }, [loading, isLogged, isInitialized, isError]);
+  }, [loading, isLogged, isInitialized, isError, adShown]);
 
-   // Отображаем загрузочный экран или ничего, пока идет проверка авторизации
-   if (!isError && (loading || !isInitialized)) return <ScreenHolderLogo />;
-   if (!isError && !loading && isLogged && isInitialized) return <Redirect href="/search/news" />;
-   if (isError && !isInitialized) {
-    return <Redirect href="/" />;
-   }
+   // Отображаем загрузочный экран до инициализации
+  if (!isError && (loading || !isInitialized)) return <ScreenHolderLogo />;
 
-  // signOut();
-  // console.log("User signed out");
-  //console.log(loading, isLogged);
-  //if (!loading && isLogged) return <Redirect href="/map" />;
-  //return <Redirect href="/onboarding" />;
-
- 
+  // Если есть ошибка и не инициализировано - редирект
+  if (isError && !isInitialized) return <Redirect href="/" />;
 
   const handleGooglePress = async () => {
     GoogleSignin.configure({
@@ -82,6 +75,16 @@ const App = () => {
     else if (signIn[0] && signIn[1])
       router.replace("/map");
   }
+
+  // Если у пользователя нет подписки и реклама еще не была показана, показываем AppOpenAdHandler
+  if (!userHasSubscription && !adShown) {
+    return <AppOpenAdHandler onAdComplete={() => setAdShown(true)} />;
+  }
+
+  // Если пользователь авторизован и всё инициализировано, редиректим на /search/news
+  if (!isError && !loading && isLogged && isInitialized && (adShown || userHasSubscription))
+    return <Redirect href="/search/news" />;
+
 
   return (
     <GestureHandlerRootView >

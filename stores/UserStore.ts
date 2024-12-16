@@ -32,6 +32,7 @@ class UserStore {
   isInitialized: boolean = false;
   isError: boolean = false;
   currentCity: string = '';
+  userHasSubscription = false;
 
 
   constructor() {
@@ -50,6 +51,14 @@ class UserStore {
       updateOnlyUserData: action,
       loadUsersOnce: action
     });
+  }
+
+  setUserHasSubscription(hasSubscription: boolean) {
+    this.userHasSubscription = hasSubscription;
+  }
+
+  getUserHasSubscription() {
+    return this.userHasSubscription;
   }
   
   setLoginedUser(user: any) {

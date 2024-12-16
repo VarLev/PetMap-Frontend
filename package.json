@@ -5,8 +5,8 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint"
@@ -65,6 +65,7 @@
     "react-native-drawer-layout": "^4.0.2",
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-gesture-handler": "~2.16.1",
+    "react-native-google-mobile-ads": "^14.7.1",
     "react-native-image-viewing": "^0.2.2",
     "react-native-markdown-display": "^7.0.2",
     "react-native-masked-text": "^1.12.5",
