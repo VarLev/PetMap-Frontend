@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { ActivityIndicator, View } from "react-native";
 import { List, Switch } from "react-native-paper";
 import CustomSegmentedButtonsWithProps from '@/components/custom/buttons/CustomSegmentedButtonsWithProps';
+import CustomConfirmAlert from '@/components/custom/alert/CustomConfirmAlert';
 import { Language } from '@/dtos/enum/Language';
 import uiStore from '@/stores/UIStore';
 import i18n from '@/i18n';
@@ -21,29 +22,47 @@ const languageToIndex = (lang: Language): number => {
 };
 
 const Settings = observer(() => {
-  // Вычисляем индекс каждый рендер на основе uiStore.currentLanguage
   const selectedLanguage = languageToIndex(uiStore.currentLanguage);
-
   const [sosEnabled, setSosEnabled] = React.useState(false);
 
-  // Если currentLanguage до сих пор не инициализирован, ждём
+  // Состояния для подтверждения смены языка
+  const [alertVisible, setAlertVisible] = React.useState(false);
+  const [pendingLanguageChange, setPendingLanguageChange] = React.useState<number | null>(null);
+
   if (selectedLanguage === -1) {
     return (
       <View className="h-full items-center justify-center">
-        <ActivityIndicator size="large" color="#6200ee"  />
+        <ActivityIndicator size="large" color="#6200ee" />
       </View>
     );
   }
 
   const handleToggleSos = () => setSosEnabled(!sosEnabled);
 
-  const handleLanguageChange = async (value: number) => {
-    let newLang = Language.Spanish;
-    if (value === 1) newLang = Language.Russian;
-    if (value === 2) newLang = Language.English;
+  const confirmLanguageChange = async () => {
+    if (pendingLanguageChange !== null) {
+      let newLang = Language.Spanish;
+      if (pendingLanguageChange === 1) newLang = Language.Russian;
+      if (pendingLanguageChange === 2) newLang = Language.English;
 
-    await uiStore.setSystemLanguage(newLang);
-    // Никаких локальных setState для языка, rely on uiStore.currentLanguage
+      await uiStore.setSystemLanguage(newLang);
+    }
+    setAlertVisible(false);
+    setPendingLanguageChange(null);
+  };
+
+  const cancelLanguageChange = () => {
+    setAlertVisible(false);
+    setPendingLanguageChange(null);
+    // Ничего не делаем - состояние языка не изменится 
+  };
+
+  const handleShowAlert = (value: number) => {
+    // Если значение такое же, ничего не делаем
+    if (value === selectedLanguage) return;
+
+    setPendingLanguageChange(value);
+    setAlertVisible(true);
   };
 
   return (
@@ -63,17 +82,26 @@ const Settings = observer(() => {
           description={() => (
             <CustomSegmentedButtonsWithProps
               values={selectedLanguage}
-              onValueChange={(value: number | number[]) => handleLanguageChange(value as number)}
+              onValueChange={(value: number | number[]) => handleShowAlert(value as number)}
               buttons={[
-                { label: i18n.t('settings.languages.spanish'), icon: 'language' },
-                { label: i18n.t('settings.languages.russian'), icon: 'language' },
-                { label: i18n.t('settings.languages.english'), icon: 'language' },
+                { label: i18n.t('settings.languages.spanish') },
+                { label: i18n.t('settings.languages.russian') },
+                { label: i18n.t('settings.languages.english') },
               ]}
             />
           )}
           titleStyle={{ fontFamily: 'NunitoSans_400Regular' }}
         />
       </List.Section>
+
+      <CustomConfirmAlert
+        isVisible={alertVisible}
+        onClose={cancelLanguageChange}
+        onConfirm={confirmLanguageChange}
+        message={i18n.t('settings.changeLanguage')} // Например: "При смене языка приложение будет перезагружено. Продолжить?"
+        confirmText={i18n.t('ok')}
+        cancelText={i18n.t('cancel')}
+      />
     </View>
   );
 });

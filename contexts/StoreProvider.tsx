@@ -20,10 +20,14 @@ export const StoreProvider = ({ children }: StoreProviderProps) => {
     const initializeUser = async () => {
       try{
         const user = await userStore.getCurrentUserForProvider();
+        const systemLanguage = await uiStore.getSystemLanguage();
         if (user) {
-          if (user.systemLanguage !== undefined && user.systemLanguage !== null) {
+          
+          if (systemLanguage !== undefined && systemLanguage !== null) 
+            await uiStore.setLanguagei18n(systemLanguage as Language);
+          else 
             await uiStore.setLanguagei18n(user.systemLanguage as Language);
-          }
+          
         
           userStore.setLogged(true);
           userStore.setUser(user);

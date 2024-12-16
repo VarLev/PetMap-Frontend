@@ -1,4 +1,3 @@
-
 import { useFonts } from 'expo-font';
 import { Stack, SplashScreen } from 'expo-router';
 import React, { useEffect } from 'react';
@@ -6,6 +5,9 @@ import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nu
 import { AlertProvider } from '@/contexts/AlertContext';
 import { DefaultTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { StoreProvider } from '@/contexts/StoreProvider';
+import { View } from 'react-native';
+import uiStore from '@/stores/UIStore';
+import { observer } from 'mobx-react-lite';
 
 // Создаем кастомную тему для react-native-paper
 const customTheme = {
@@ -17,7 +19,6 @@ const customTheme = {
     background: '#ffffff',
     surface: '#ffffff',
     text: '#000000',
-    // При необходимости переопределяйте другие цвета
   },
   fonts: {
     bodyLarge: {
@@ -65,8 +66,8 @@ const customTheme = {
 
 SplashScreen.preventAutoHideAsync();
 
-const Layout = () => {
-  const [fontsLoaded,error] = useFonts({
+const Layout = observer(() => {
+  const [fontsLoaded, error] = useFonts({
     NunitoSans_400Regular,
     NunitoSans_700Bold,
   });
@@ -75,27 +76,28 @@ const Layout = () => {
     if (error) {
       console.error(error);
     }
-    if(fontsLoaded){
+    if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded,error]);
+  }, [fontsLoaded, error]);
 
-
-  if(!fontsLoaded && !error) return null; 
+  if (!fontsLoaded && !error) return null;
 
   return (
-    <StoreProvider>
-      <AlertProvider>
-        <PaperProvider theme={customTheme}>
-          <Stack initialRouteName='index'>
-            <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-            <Stack.Screen name='(auth)' options={{ headerShown: false }} />
-            <Stack.Screen name='index' options={{ headerShown: false }} />
-          </Stack>
-        </PaperProvider>
-      </AlertProvider>
-    </StoreProvider>
+    <View key={uiStore.currentLanguage} style={{ flex: 1 }}>
+      <StoreProvider>
+        <AlertProvider>
+          <PaperProvider theme={customTheme}>
+            <Stack initialRouteName='index'>
+              <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+              <Stack.Screen name='(auth)' options={{ headerShown: false }} />
+              <Stack.Screen name='index' options={{ headerShown: false }} />
+            </Stack>
+          </PaperProvider>
+        </AlertProvider>
+      </StoreProvider>
+    </View>
   );
-};
+});
 
 export default Layout;
