@@ -25,7 +25,7 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
   disabledIndexes = [],
 }) => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState<string | null>(null);
+  
   const [items, setItems] = useState(
     tags.map((tag, index) => ({
       label: tag,
@@ -35,19 +35,22 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
   );
 
   // Синхронизация значения `value` с `initialSelectedTag`
-  useEffect(() => {
+  const initialValue = (() => {
     if (typeof initialSelectedTag === 'number') {
       if (initialSelectedTag >= 0 && initialSelectedTag < tags.length) {
-        setValue(initialSelectedTag.toString());
+        return initialSelectedTag.toString();
       } else {
         console.warn('initialSelectedTag is out of range');
-        setValue(null);
+        return null;
       }
     } else if (typeof initialSelectedTag === 'string') {
       const index = tags.indexOf(initialSelectedTag);
-      setValue(index !== -1 ? index.toString() : null);
+      return index !== -1 ? index.toString() : null;
     }
-  }, [initialSelectedTag, tags]);
+    return null;
+  })();
+  
+  const [value, setValue] = useState<string | null>(initialValue);
 
   return (
     <View style={{ paddingTop: 16, position: 'relative', zIndex: 3000 }}>
@@ -108,6 +111,7 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
         zIndex={3000}
         zIndexInverse={1}
         onChangeValue={(selectedValue) => {
+          
           const selectedIndex = parseInt(selectedValue || '', 10); // Преобразуем обратно в число
           if (!isNaN(selectedIndex)) {
             if (onChange) {

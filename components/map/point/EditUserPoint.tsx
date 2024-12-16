@@ -44,6 +44,7 @@ const EditUserPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
         );
         editablePoint.thumbnailUrl = thumb;
         editablePoint.mapPointType = editablePoint.userPointType as number;
+        editablePoint.city = (await userStore.getCurrentUserCity()) || 'Buenos Aires';
         await mapStore.addPoint(editablePoint);
         await mapStore.getMapPointsByType({
           type: editablePoint.mapPointType,
@@ -77,6 +78,7 @@ const EditUserPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
               listMode="MODAL"
               onChange={(tag) => handleFieldChange('userPointType', tag)}
               disabledIndexes={[0, 1, 9, 10, 11]}
+              initialSelectedTag={2}
             />
             <CustomOutlineInputText
               label={i18n.t('EditUserPoint.name')}

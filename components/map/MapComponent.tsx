@@ -690,7 +690,6 @@ const MapBoxMap = observer(() => {
           top: 20,
           left: 0,
           right: 0,
-          padding: 10,
           zIndex: 10,
         }}
       >

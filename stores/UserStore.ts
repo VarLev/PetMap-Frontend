@@ -459,6 +459,10 @@ class UserStore {
       await AsyncStorage.removeItem(process.env.EXPO_PUBLIC_F_TOKEN!);
       await AsyncStorage.removeItem(process.env.EXPO_PUBLIC_CURRENT_USER!);
       this.currentUser = null;
+      this.isInitialized = false;
+      this.isLogged = false;
+      this.fUid = null;
+      this.isError = false;
       signOut();
      
     } catch (error) {

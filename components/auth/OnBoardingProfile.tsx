@@ -8,6 +8,7 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { Avatar, Button, Text } from "react-native-paper";
@@ -424,7 +425,28 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
               handleChange={showUserDatepicker}
               containerStyles="w-1/2 pr-2 mb-2"
             />
-            {showUserAge && (
+          
+            {/* Modal для DateTimePicker */}
+            {showUserAge && Platform.OS === "ios" && (
+              <Modal transparent={true} animationType="slide">
+              <View className="flex-1 justify-center bg-black/50">
+                <View className="bg-white mx-5 p-5 rounded-3xl shadow-lg">
+                  <DateTimePicker
+                    value={age}
+                    mode="date"
+                    display="spinner"
+                    onChange={onAgeChange}
+                  />
+                  <Button mode="contained" onPress={() => setShowUserAge(false)}>
+                    Готово
+                  </Button>
+                </View>
+              </View>
+            </Modal>
+            )}
+
+            {/* Для Android обычный вызов DateTimePicker */}
+            {showUserAge && Platform.OS === "android" && (
               <DateTimePicker
                 value={age}
                 mode="date"
@@ -500,7 +522,26 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
               handleChange={showPetDatepicker}
               containerStyles="w-[55%]  mb-2"
             />
-            {showPetAge && (
+            {/* Modal для DateTimePicker */}
+            {showPetAge && Platform.OS === "ios" && (
+              <Modal transparent={true} animationType="slide">
+              <View className="flex-1 justify-center bg-black/50">
+                <View className="bg-white mx-5 p-5 rounded-3xl shadow-lg">
+                  <DateTimePicker
+                    value={petAge}
+                    mode="date"
+                    display="spinner"
+                    onChange={onPetAgeChange}
+                  />
+                  <Button mode="contained" onPress={() => setShowUserAge(false)}>
+                    Готово
+                  </Button>
+                </View>
+              </View>
+            </Modal>
+            )}
+
+            {showPetAge && Platform.OS === "android" &&(
               <DateTimePicker
                 value={petAge}
                 mode="date"

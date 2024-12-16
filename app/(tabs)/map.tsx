@@ -1,18 +1,42 @@
 import MapBoxMap from '@/components/map/MapComponent';
 import userStore from '@/stores/UserStore';
-import { router } from 'expo-router';
-import React from 'react';
+import {useFocusEffect, useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 
 const Map = () => {
+  const router = useRouter();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (
+        !userStore.currentUser ||
+        !userStore.currentUser.name ||
+        userStore.currentUser.name === '' ||
+        userStore.currentUser.name === null ||
+        userStore.currentUser.name === undefined
+      ) {
+        console.log('Редирект на профиль:', userStore.currentUser?.name);
+        router.push('/(tabs)/profile/');
+      }
+    }, [userStore.currentUser])
+  );
 
 
-
-  if(!userStore.currentUser || !userStore.currentUser.name || userStore.currentUser.name === '' || userStore.currentUser.name === null) {
-    router.push('/(tabs)/profile/');
-  }
-
+  useEffect(() => {
+    // Проверка состояния пользователя
+    if (
+      !userStore.currentUser ||
+      !userStore.currentUser.name ||
+      userStore.currentUser.name === '' ||
+      userStore.currentUser.name === null ||
+      userStore.currentUser.name === undefined
+    ) {
+      console.log('Редирект на профиль:', userStore.currentUser?.name);
+      router.push('/(tabs)/profile/');
+    }
+  }, [userStore.currentUser]); //
   return (
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>
