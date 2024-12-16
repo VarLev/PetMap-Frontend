@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { observer } from "mobx-react-lite";
-import { BackHandler, Text } from "react-native";
+import { BackHandler, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import ChatStore from "@/stores/ChatStore";
 import { Chat, MessageType, defaultTheme } from "@flyerhq/react-native-chat-ui";
@@ -9,6 +9,9 @@ import CustomMessageComponent from "@/components/chat/CustomMessageComponent";
 import mapStore from "@/stores/MapStore";
 import ChatHeader from "@/components/chat/ChatHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
+import i18n from "@/i18n";
+
+
 
 const ChatScreen: React.FC = observer(() => {
   const { chatId, otherUserId } = useLocalSearchParams<{
@@ -51,6 +54,7 @@ if (!userId || !otherUserId) {
     if (chatId) {
       ChatStore.fetchMessages(chatId);
     }
+    
 
     const backAction = () => {
       router.replace("/chat/");
@@ -95,14 +99,15 @@ if (!userId || !otherUserId) {
   );
 
   if (!userId) {
-    return <Text>Loading...</Text>;
+    return <Text>{i18n.t("chat.loading")}</Text>;
   }
+
 
   return (
     <SafeAreaView className="bg-white h-full">
       <ChatHeader item={chatId} />
       <Chat
-        locale="ru"
+        locale={i18n.locale as 'en' | 'es' | 'ko' | 'pl' | 'pt' | 'ru' | 'tr' | 'uk' | undefined}
         theme={{
           ...defaultTheme,
           colors: {
@@ -127,19 +132,23 @@ if (!userId || !otherUserId) {
           },
           borders: {
             ...defaultTheme.borders,
-            inputBorderRadius: 10,
+            inputBorderRadius: 20,
             messageBorderRadius: 16,
           },
           insets: {
             ...defaultTheme.insets,
-            messageInsetsVertical: 12,
+            messageInsetsVertical: 12,          
+            messageInsetsHorizontal: 16,  
+            
           },
         }}
         messages={ChatStore.messages as any[]}
         onSendPress={handleSendPress}
         user={{ id: userId }}
-        renderCustomMessage={renderMessage}
+        renderCustomMessage={renderMessage}       
+       
       />
+     
     </SafeAreaView>
      );
 });

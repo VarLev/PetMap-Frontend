@@ -440,7 +440,29 @@
     "confirmMessage": "A chat will be created between you and the pet owner, and a request to join the walk will be sent.",
     "confirmTitle": "Send Request",
     "confirm": "OK",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "everyDayAt": "Every day at ",
+    "everyDay": "Every day",
+    "timeNotSpecified": "Time not specified",
+    "monday": "MON",
+    "tuesday": "TUE",
+    "wednesday": "WED",
+    "thursday": "THU",
+    "friday": "FRI",
+    "saturday": "SAT",
+    "sunday": "SUN",
+    "dateNotSpecified": "Date not specified",
+    "in": " at ",
+   "afterSomeTime": "In",
+    "day": "day",
+    "daysTwo": "days",
+    "daysFew": "days",
+    "hour": "hour",
+    "hoursTwo": "hours",
+    "hoursFew": "hours",
+    "minuteOne": "minute",
+    "minutesTwo": "minutes",
+    "minutesFew": "minutes"
   },
   "WalkEditDetails": {
     "addressNotFound": "Address could not be retrieved",
@@ -606,7 +628,45 @@
       "years": "y",
       "now": "now"
     }
-  }
+  },
+  "chat": {
+  "loading": "Loading...",
+  "messages": "Messages",
+  "time": {
+    "lessThanAMinute": "less than a minute ago",
+    "was": "Was",
+    "d": "d",
+    "h": "h",
+    "m": "m",
+    "wasAt": "Was at",
+    "wasUnknown": "Was: Unknown",
+    "minute": "minute",
+    "minutesTwo": "minutes",
+    "minutes": "minutes",
+    "ago": "ago"
+  },
+  "block": "Block",
+  "unblock": "Unblock",
+  "deleteChat": "Delete chat",
+  "unblockUser": "Unblock user",
+  "sureBlock": "Are you sure you want to block the user?",
+  "blockUser": "Block user",
+  "ok": "OK",
+  "cancel": "Cancel",
+  "deleteChatMessage": "Are you sure you want to delete this chat?",
+  "title": "Notifications",
+  "noMessages": "You have no messages",
+  "enterInSection": "To start chatting, go to the section",
+  "allUsers": "All Users",
+  "or": "or",
+  "map": "Map",
+  "newConnections": "and make new connections!",
+  "invitation": "🐶 Walk invitation: Hi! Let's go for a walk together?",
+  "wantToJoin": "Wants to join the walk",
+  "accept": "Accept",
+  "decline": "Decline",
+  "place": "Place",
+}
   
 
 }
