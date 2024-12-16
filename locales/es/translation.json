@@ -440,7 +440,29 @@
     "confirmMessage": "Se creará un chat entre tú y el propietario de la mascota, y se enviará una solicitud para unirse al paseo.",
     "confirmTitle": "Enviar Solicitud",
     "confirm": "OK",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "everyDayAt": "Todos los días a las ",
+    "everyDay": "Todos los días",
+    "timeNotSpecified": "Hora no especificada",
+    "monday": "LUN",
+    "tuesday": "MAR",
+    "wednesday": "MIÉ",
+    "thursday": "JUE",
+    "friday": "VIE",
+    "saturday": "SÁB",
+    "sunday": "DOM",
+    "dateNotSpecified": "Fecha no especificada",
+    "in": " en ",
+    "afterSomeTime": "En",
+    "day": "día",
+    "daysTwo": "días",
+    "daysFew": "días",
+    "hour": "hora",
+    "hoursTwo": "horas",
+    "hoursFew": "horas",
+    "minuteOne": "minuto",
+    "minutesTwo": "minutos",
+    "minutesFew": "minutos"
   },
   "WalkEditDetails": {
     "addressNotFound": "No se pudo obtener la dirección",
@@ -606,7 +628,45 @@
       "years": "a",
       "now": "recién"
     }
-  }
+  },
+ "chat": {
+  "loading": "Cargando...",
+  "messages": "Mensajes",
+  "time": {
+    "lessThanAMinute": "hace menos de un minuto",
+    "was": "Hace",
+    "d": "d",
+    "h": "h",
+    "m": "m",
+    "wasAt": "Estuvo a las",
+    "wasUnknown": "Estuvo: Desconocido",
+    "minute": "minuto",
+    "minutesTwo": "minutos",
+    "minutes": "minutos",
+    "ago": ""
+  },
+  "block": "Bloquear",
+  "unblock": "Desbloquear",
+  "deleteChat": "Eliminar chat",
+  "unblockUser": "Desbloquear usuario",
+  "sureBlock": "¿Estás seguro de que deseas bloquear al usuario?",
+  "blockUser": "Bloquear usuario",
+  "ok": "OK",
+  "cancel": "Cancelar",
+  "deleteChatMessage": "¿Estás seguro de que deseas eliminar este chat?",
+  "title": "Notificaciones",
+  "noMessages": "No tienes mensajes",
+  "enterInSection": "Para empezar a chatear, ve a la sección",
+  "allUsers": "Todos los usuarios",
+  "or": "o",
+  "map": "Mapa",
+  "newConnections": "¡y haz nuevas conexiones!",
+  "invitation": "🐶 Invitación para un paseo: ¡Hola! ¿Vamos a pasear juntos?",
+  "wantToJoin": "Quiere unirse al paseo",
+  "accept": "Aceptar",
+  "decline": "Rechazar",
+  "place": "Lugar",
+}
 
 
 }

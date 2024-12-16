@@ -7,12 +7,13 @@ import { FAB } from 'react-native-paper';
 import { ICommentWithUser } from '@/dtos/Interfaces/feed/IPost';
 import { BG_COLORS } from '@/constants/Colors';
 import { runInAction } from 'mobx';
-import BottomSheet, { BottomSheetFlatList, BottomSheetFooter, BottomSheetFooterProps } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetFooter, BottomSheetFooterProps } from '@gorhom/bottom-sheet';
 import PostComment from './PostComment';
 import searchStore from '@/stores/SearchStore';
 import PostItem from '@/components/search/feed/PostItem';
 import CreatePost from '@/components/search/feed/CreatePost';
 import i18n from '@/i18n';
+import BottomSheetComponent from '@/components/common/BottomSheetComponent';
 
 const Feed: FC = observer(() => {
   const [bottomSheetType, setBottomSheetType ] = useState<'create-post' | 'comments' | ''>('')
@@ -108,43 +109,35 @@ const Feed: FC = observer(() => {
         }
         data={searchStore.posts}
         keyExtractor={(_, index) => index.toString()}
-        renderItem={({ item }) => {
-          return <PostItem post={item} handleSheetCommentsOpenById={(postId) => handleSheetCommentsOpen(postId)}/>
-        }}
         onEndReached={loadMorePosts}
         onEndReachedThreshold={0.5}
         refreshing={isRefreshing}
         onRefresh={handleRefresh}
         ListFooterComponent={searchStore.loading ? <ActivityIndicator size="large" color="#6200ee" /> : <View className='h-20' />}
+        renderItem={({ item }) => {
+          return <PostItem post={item} handleSheetCommentsOpenById={(postId) => handleSheetCommentsOpen(postId)}/>
+        }}
       />
       <FAB icon="pen" size='medium' color='white' style={styles.fab} onPress={handleCreatePost}/>
       {
         bottomSheetType && 
-        <BottomSheet
-          style={{paddingHorizontal: 12}}
+        <BottomSheetComponent
+          bottomSheetContentStyle={{paddingHorizontal: 12}}
           ref={sheetRef}
           snapPoints={['60%', '100%']}
           onClose={handleSheetClose}
-          enablePanDownToClose={true}
+          enablePanDownToClose
           handleHeight={0}
+          enableFooterMarginAdjustment
           footerComponent={bottomSheetType === "comments" ? BottomSheetCommentsFooter : undefined}
-          backgroundStyle={styles.backgroundStyle}
-          handleStyle={styles.handleStyle}
-        >
-          {bottomSheetType === "comments" ?
-          <BottomSheetFlatList
-            enableFooterMarginAdjustment
-            style={{paddingHorizontal: 12}}
-            data={postComments}
-            keyExtractor={(_, index) => index.toString()}
-            renderItem={({ item }) => {
-              return (
-                <PostComment comment={item}/>
-              )
-            }}
-          /> :
-          <CreatePost onClose={handleSheetClose}/>}
-        </BottomSheet>
+          renderContent={bottomSheetType === "create-post" ? <CreatePost onClose={handleSheetClose}/> : null}
+          flatListData={bottomSheetType === "comments" ? postComments : null}
+          flatListRenderItem={bottomSheetType === "comments" ? ({ item }) => {
+            return (
+              <PostComment comment={item}/>
+            )
+          } : null}
+        />
       }
     </View>
   );

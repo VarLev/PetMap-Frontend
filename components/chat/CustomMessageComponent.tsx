@@ -17,6 +17,7 @@ import { IUser } from "@/dtos/Interfaces/user/IUser";
 import chatStore from "@/stores/ChatStore";
 import { Pet } from "@/dtos/classes/pet/Pet";
 import { shortenName } from "@/utils/utils";
+import i18n from "@/i18n";
 
 interface AdvtProps {
   item?: IWalkAdvrtDto[];
@@ -89,7 +90,7 @@ const handleDecline = async () => {
     <>
       <View className="p-4">
         <Text className="color-[#2F00B6] font-nunitoSansBold text-[16px]">
-          🐶 Приглашение на прогулку: Привет! Давай прогуляемся вместе?
+          {i18n.t("chat.invitation")}
         </Text>
       </View>
       <View className="bg-white h-3"></View>
@@ -112,7 +113,7 @@ const handleDecline = async () => {
             </Text>
             {showButtons && (
               <Text className="text-sm font-nunitoSansRegular">
-                Хочет присоеденится к прогулке
+               {i18n.t("chat.wantToJoin")}
               </Text>
             )}
           </View>
@@ -143,7 +144,7 @@ const handleDecline = async () => {
                         {calculateDogAge(pet.birthDate)}{' '}
                         </Text>
                         <Text className="text-xs mt-1 font-nunitoSansRegular flex-1">
-                        {getTagsByIndex(BREEDS_TAGS, pet.breed!) || "Порода"}
+                        {getTagsByIndex(BREEDS_TAGS, pet.breed!) || i18n.t("WalkDetails.breed")}
                       </Text>
                     </View>
                   </View>
@@ -151,7 +152,7 @@ const handleDecline = async () => {
                   <View className="flex-col pt-1">
                     <View className="flex-row justify-between items-center ml-[-5px]">
                       <Text className="font-nunitoSansRegular text-xs">
-                        Темперамент
+                       {i18n.t("PetProfile.temperament")}
                       </Text>
                       <StarRatingDisplay
                         rating={pet.temperament ?? 0}
@@ -163,7 +164,7 @@ const handleDecline = async () => {
                     </View>
                     <View className="flex-row justify-between items-center ml-[-5px]">
                       <Text className="font-nunitoSansRegular text-xs">
-                        Дружелюбность
+                        {i18n.t("PetProfile.friendliness")}
                       </Text>
                       <StarRatingDisplay
                         rating={pet.friendliness ?? 0}
@@ -175,7 +176,7 @@ const handleDecline = async () => {
                     </View>
                     <View className=" flex-row justify-between items-center ml-[-5px]">
                       <Text className="font-nunitoSansRegular text-xs">
-                        Активность
+                        {i18n.t("PetProfile.activity")}
                       </Text>
                       <StarRatingDisplay
                         rating={pet.activityLevel ?? 0}
@@ -191,7 +192,7 @@ const handleDecline = async () => {
             </View>
           ))}
         <Text className=" p-2 color-[#2F00B6] text-[14px] font-nunitoSansBold">
-          Детали прогулки
+          {i18n.t("WalkDetails.walkDetails")}
         </Text>
         <CustomTextComponent
           text={walkDetails}
@@ -202,7 +203,7 @@ const handleDecline = async () => {
         />
 
         <CustomTextComponent
-          text={matchedItem?.address || "Место"}
+          text={matchedItem?.address || i18n.t("chat.place")}
           leftIcon="location-pin"
           iconSet="simpleLine"
           className_="p-1"
@@ -220,12 +221,12 @@ const handleDecline = async () => {
         <View>
           <View className="flex-row justify-between items-center bg-white ">
             <CustomButtonOutlined
-              title={"Принять"}
+              title={i18n.t("chat.accept")}
               handlePress={handleAccept}
               containerStyles="flex-1 bg-[#ACFFB9] my-2 mr-2"
             />
             <CustomButtonOutlined
-              title={"Отклонить"}
+              title={i18n.t("chat.decline")}
               handlePress={handleDecline}
               containerStyles="flex-1 bg-[#FA8072] my-2 ml-2"
             />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 import { View, ScrollView, Image, TextInput } from 'react-native';
 import { IconButton, Snackbar } from 'react-native-paper';
 import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
@@ -10,7 +10,7 @@ interface CreatePostProps {
   onClose: () => void; // Метод для закрытия нижнего листа
 }
 
-const CreatePost: React.FC<CreatePostProps> = ({ onClose }) => {
+const CreatePost: FC<CreatePostProps> = ({ onClose }) => {
   const [content, setContent] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -53,7 +53,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose }) => {
   }
 
   return (
-    <ScrollView className="flex-1 p-4">
+    <ScrollView className="flex-1 py-4">
       {/* Контейнер для текстового поля и иконки камеры */}
       <View className="relative mb-2">
         <TextInput

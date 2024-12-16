@@ -2,7 +2,7 @@ import { avatarsStringF, avatarsStringM } from "@/constants/Avatars";
 import { IUser } from "@/dtos/Interfaces/user/IUser";
 import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
-
+import i18n from "@/i18n";
 
 
 
@@ -217,26 +217,26 @@ export const renderWalkDetails = (advrt: IWalkAdvrtDto) => {
         const hours = Math.floor(advrt.startTime / 60);
         const minutes = advrt.startTime % 60;
         return (
-          "Каждый день в " +
+          i18n.t("WalkDetails.everyDayAt") +
           (hours < 10 ? "0" + hours : hours) +
           ":" +
           (minutes < 10 ? "0" + minutes : minutes)
         );
       }
-      return "Каждый день";
+      return i18n.t("WalkDetails.everyDay");
     } else {
       const formattedTime =
         advrt.startTime !== undefined
           ? `${String(Math.floor(advrt.startTime / 60)).padStart(2, "0")}:${String(
               advrt.startTime % 60
             ).padStart(2, "0")}`
-          : "Время не указано";
+          : i18n.t("WalkDetails.timeNotSpecified");
 
       return (
         advrt.selectedDays
-          ?.map((day) => ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"][day])
+          ?.map((day) => [i18n.t("WalkDetails.monday"), i18n.t("WalkDetails.tuesday"), i18n.t("WalkDetails.wednesday"), i18n.t("WalkDetails.thursday"), i18n.t("WalkDetails.friday"), i18n.t("WalkDetails.saturday"), i18n.t("WalkDetails.sunday")][day])
           .join(", ") +
-        " в " +
+          i18n.t("WalkDetails.in") +
         formattedTime
       );
     }
@@ -246,11 +246,11 @@ export const renderWalkDetails = (advrt: IWalkAdvrtDto) => {
         ? `${String(Math.floor(advrt.startTime / 60)).padStart(2, "0")}:${String(
             advrt.startTime % 60
           ).padStart(2, "0")}`
-        : "Время не указано";
+        : i18n.t("WalkDetails.timeNotSpecified");
 
     return advrt.date
-      ? new Date(advrt.date).toLocaleDateString() + " в " + formattedTime
-      : "Дата не указана";
+      ? new Date(advrt.date).toLocaleDateString() + i18n.t("WalkDetails.in") + formattedTime
+      : i18n.t("WalkDetails.dateNotSpecified");
   }
 };
 
@@ -305,11 +305,11 @@ export const calculateTimeUntilNextWalk = (advrt: IWalkAdvrtDto): string | undef
   const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
 
   // Форматируем вывод с правильными окончаниями
-  const daysText = days > 0 ? `${days} ${days % 10 === 1 && days % 100 !== 11 ? 'день' : days % 10 >= 2 && days % 10 <= 4 && !(days % 100 >= 12 && days % 100 <= 14) ? 'дня' : 'дней'}` : '';
-  const hoursText = hours > 0 ? `${hours} ${hours % 10 === 1 && hours % 100 !== 11 ? 'час' : hours % 10 >= 2 && hours % 10 <= 4 && !(hours % 100 >= 12 && hours % 100 <= 14) ? 'часа' : 'часов'}` : '';
-  const minutesText = minutes > 0 ? `${minutes} ${minutes % 10 === 1 && minutes % 100 !== 11 ? 'минуту' : minutes % 10 >= 2 && minutes % 10 <= 4 && !(minutes % 100 >= 12 && minutes % 100 <= 14) ? 'минуты' : 'минут'}` : '';
+  const daysText = days > 0 ? `${days} ${days % 10 === 1 && days % 100 !== 11 ? i18n.t("WalkDetails.day") : days % 10 >= 2 && days % 10 <= 4 && !(days % 100 >= 12 && days % 100 <= 14) ? i18n.t("WalkDetails.daysTwo") : i18n.t("WalkDetails.daysFew")}` : '';
+  const hoursText = hours > 0 ? `${hours} ${hours % 10 === 1 && hours % 100 !== 11 ? i18n.t("WalkDetails.hour") : hours % 10 >= 2 && hours % 10 <= 4 && !(hours % 100 >= 12 && hours % 100 <= 14) ? i18n.t("WalkDetails.hoursTwo") : i18n.t("WalkDetails.hoursFew")}` : '';
+  const minutesText = minutes > 0 ? `${minutes} ${minutes % 10 === 1 && minutes % 100 !== 11 ? i18n.t("WalkDetails.minuteOne") : minutes % 10 >= 2 && minutes % 10 <= 4 && !(minutes % 100 >= 12 && minutes % 100 <= 14) ? i18n.t("WalkDetails.minutesTwo") : i18n.t("WalkDetails.minutesFew")}` : '';
 
-  return `Через ${[daysText, hoursText, minutesText].filter(Boolean).join(" ")}`;
+  return `${i18n.t("WalkDetails.afterSomeTime")} ${[daysText, hoursText, minutesText].filter(Boolean).join(" ")}`;
 };
 
 
