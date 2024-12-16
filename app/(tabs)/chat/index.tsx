@@ -15,6 +15,7 @@ import { Divider, IconButton } from "react-native-paper";
 import ChatMenu from "@/components/chat/ChatMenu";
 import EmptyChatScreen from "@/components/chat/EmptyChatScreen";
 import { shortenName } from "@/utils/utils";
+import i18n from "@/i18n";
 
 
 const ChatListItem: React.FC<{
@@ -107,7 +108,7 @@ const ChatListScreen: React.FC = observer(() => {
     return (
       <View className="flex-1 items-center justify-center">
         <ActivityIndicator size="large" color="#6200ee" />
-        <Text>Loading chats...</Text>
+        <Text>{i18n.t("chat.loading")}</Text>
       </View>
     );
   }
@@ -130,7 +131,7 @@ const ChatListScreen: React.FC = observer(() => {
             size={24}
             onPress={() => router.push("(tabs)/map")}
           />
-          <Text className="text-lg font-nunitoSansBold pb-1">Сообщения</Text>
+          <Text className="text-lg font-nunitoSansBold pb-1">{i18n.t("chat.messages")}</Text>
         </View>
         <FlatList
           data={ChatStore.sortedChats}

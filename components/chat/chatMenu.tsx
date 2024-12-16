@@ -6,6 +6,7 @@ import ChatStore from "@/stores/ChatStore";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 import MenuItemWrapper from "@/components/custom/menuItem/MunuItemWrapper";
 import userStore from "@/stores/UserStore";
+import i18n from "@/i18n";
 
 interface IChatMenuProps {
   chatId: string;
@@ -79,82 +80,83 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
 
   return (
     <View className="mr-2">
-      <View>
-        <Menu
-          style={{ marginTop: 25 }}
-          contentStyle={{ backgroundColor: "#ffffff" }}
-          visible={visible}
-          onDismiss={closeMenu}
-          anchor={
-            <View className="overflow-hidden rounded-full">
-              <TouchableRipple onPress={openMenu} rippleColor="#E8DFFF">
-                <Button>
-                  <FontAwesome6
-                    name="bars-staggered"
-                    size={20}
-                    color="#212121"
-                  />
-                </Button>
-              </TouchableRipple>
-            </View>
-          }
-        >
-          <View className="flex-row items-center justify-between">
-            <MenuItemWrapper
-              icon="bell-outline"
-              onPress={onToggleSwitch}
-              title="Уведомления"
-            />
-            <MySwitch value={isSwitchOn} />
+    <View>
+      <Menu
+        style={{ marginTop: 25 }}
+        contentStyle={{ backgroundColor: "#ffffff" }}
+        visible={visible}
+        onDismiss={closeMenu}
+        anchor={
+          <View className="overflow-hidden rounded-full">
+            <TouchableRipple onPress={openMenu} rippleColor="#E8DFFF">
+              <Button>
+                <FontAwesome6 name="bars-staggered" size={20} color="#212121" />
+              </Button>
+            </TouchableRipple>
           </View>
-
-          <MenuItemWrapper
-            icon={isBlocked ? "lock-outline" : "lock-open-outline"}
-            onPress={() => {
-              handleBlock();
-            }}
-            title={isBlocked ? "Разблокировать" : "Заблокировать"}
-          />
-          <MenuItemWrapper
-            icon="delete-outline"
-            onPress={() => {
-              handleDelete();
-            }}
-            title="Удалить  чат"
-          />
-        </Menu>
-      </View>
-      <CustomConfirmAlert
-        isVisible={requestVisible}
-        onClose={() => {
-          setRequestVisible(false);
-        }}
-        onConfirm={() => otherUserId && blockUser(otherUserId)}
-        message={
-          isBlocked
-            ? "Разблокировать пользователя?"
-            : "Вы действительно хотите заблокировать пользователя?"
         }
-        title={
-          isBlocked
-            ? "Разблокировать пользователя"
-            : "Заблокировать пользователя"
-        }
-        confirmText="Ок"
-        cancelText="Отмена"
-      />
-      <CustomConfirmAlert
-        isVisible={requestVisibleDel}
-        onClose={() => {
-          setRequestVisibleDel(false);
-        }}
-        onConfirm={() => deleteChat(chatId)}
-        message="Вы действительно хотите удалить этот чат?"
-        title="Удалить чат"
-        confirmText="Ок"
-        cancelText="Отмена"
-      />
+      >
+        <View className="flex-row items-center justify-between">
+          <MenuItemWrapper
+            icon="bell-outline"
+            onPress={onToggleSwitch}
+            title={i18n.t("chat.title")} 
+          />
+          <MySwitch value={isSwitchOn} />
+        </View>
+  
+        <MenuItemWrapper
+          icon={isBlocked ? "lock-outline" : "lock-open-outline"}
+          onPress={() => {
+            handleBlock();
+          }}
+          title={
+            isBlocked
+              ? i18n.t("chat.unblock") 
+              : i18n.t("chat.block") 
+          }
+        />
+        <MenuItemWrapper
+          icon="delete-outline"
+          onPress={() => {
+            handleDelete();
+          }}
+          title={i18n.t("chat.deleteChat")}
+        />
+      </Menu>
     </View>
+    <CustomConfirmAlert
+      isVisible={requestVisible}
+      onClose={() => {
+        setRequestVisible(false);
+      }}
+      onConfirm={() => otherUserId && blockUser(otherUserId)}
+      message={
+        isBlocked
+          ? `${i18n.t('chat.unblockUser')}?` 
+          : i18n.t("chat.sureBlock") 
+      }
+      title={
+        isBlocked
+          ? i18n.t("chat.unblockUser") 
+          : i18n.t("chat.blockUser") 
+      }
+      confirmText={i18n.t("chat.ok")} 
+      cancelText={i18n.t("chat.cancel")} 
+    />
+    <CustomConfirmAlert
+      isVisible={requestVisibleDel}
+      onClose={() => {
+        setRequestVisibleDel(false);
+      }}
+      onConfirm={() => deleteChat(chatId)}
+      message={i18n.t("chat.deleteChatMessage")} 
+      title={i18n.t("chat.deleteChat")} 
+      confirmText={i18n.t("chat.ok")} 
+      cancelText={i18n.t("chat.cancel")} 
+    />
+  </View>
+  
   );
 };
 

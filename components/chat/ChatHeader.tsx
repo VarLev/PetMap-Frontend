@@ -4,6 +4,7 @@ import { Divider, IconButton } from "react-native-paper";
 import { router } from "expo-router";
 import ChatStore from "@/stores/ChatStore";
 import { shortenName } from "@/utils/utils";
+import i18n from "@/i18n";
 
 interface ChatHeaderProps {
   item: string;
@@ -28,25 +29,34 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ item }) => {
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-        if (minutes < 1) return "менее минуты назад";
-        if (minutes <= 10) return `Был(а) ${minutes} ${getMinuteLabel(minutes)} назад`;
+        if (minutes < 1) {
+          return i18n.t("chat.time.lessThanAMinute");
+        }
+
+        if (minutes <= 10) return `${i18n.t("chat.time.was")} ${minutes} ${getMinuteLabel(minutes)} ${i18n.t("chat.time.ago")}`;
+
         if (days > 0) {
           const lastSeenDate = new Date(lastSeen);
-          return `Был(а) ${lastSeenDate.getDate()}д ${lastSeenDate.getHours()}ч ${lastSeenDate.getMinutes()}м`;
+          return `${i18n.t("chat.time.was")} ${lastSeenDate.getDate()}${i18n.t("chat.time.d")} ${lastSeenDate.getHours()}${i18n.t("chat.time.h")} ${lastSeenDate.getMinutes()}${i18n.t("chat.time.m")} ${i18n.t("chat.time.ago")}`;
         }
+
         const lastSeenDate = new Date(lastSeen);
-        return `Был(а) в ${lastSeenDate.getHours()}:${String(lastSeenDate.getMinutes()).padStart(2, "0")}`;
+        return i18n.t("chat.time.wasAt", {
+          time: `${lastSeenDate.getHours()}:${String(lastSeenDate.getMinutes()).padStart(2, "0")}`,
+        });
       }
-      return "Был(а): Неизвестно";
+
+      return i18n.t("chat.time.wasUnknown");
     }
+
     return "";
   }, [chatData?.lastCreatedAt]);
 
   // Функция для получения правильного падежа минут
   const getMinuteLabel = (minutes: number) => {
-    if (minutes === 1) return "минуту";
-    if (minutes < 5) return "минуты";
-    return "минут";
+    if (minutes === 1) return i18n.t("chat.time.minute");
+    if (minutes < 5) return i18n.t("chat.time.minutesTwo");
+    return i18n.t("chat.time.minutes");
   };
 
   // Обработчик нажатия кнопки "Назад"
