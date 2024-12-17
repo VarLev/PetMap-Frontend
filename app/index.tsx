@@ -41,6 +41,7 @@ const App = () => {
 
     const checkAuthAndRedirect = async () => {
       if (isInitialized && !loading && isLogged) {
+        console.log("Redirecting to /search/news");
         await router.replace("/search/news"); // Перенаправление на карту, если пользователь авторизован
       }
     };

@@ -86,6 +86,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
   const [alertEscapeVisible, setAlertEscapeVisible] = useState(false);
   const [petPageBonuses, setPetPageBonuses] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [key, setKey] = useState(0);
 
   const carouselRef = useRef(null);
 
@@ -261,6 +262,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
 
   const handleLanguageSelection = (language: number) => {
     onLanguageSelect(language);
+    setKey((prevKey) => prevKey + 1);
     handleNext(); // Переключение на следующий слайд после выбора языка
   };
 
@@ -479,13 +481,13 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
     {
       id: 4,
       content: (
-        <View className="items-center w-full h-full justify-center">
+        <View className="items-center w-full  justify-s">
           {sourcePet ? (
             <Avatar.Image size={200} source={sourcePet} />
           ) : (
             <Image
               source={require("@/assets/images/onboardingProfile/4pet.webp")}
-              className="h-[40%]"
+              className="h-[35%]"
               resizeMode="contain"
             />
           )}
@@ -502,7 +504,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             handleChange={setPetName}
             containerStyles="-mb-2"
           />
-          <View className="pb-2">
+          <View key={key}  className="pb-2">
             <CustomDropdownList
               tags={i18n.t("tags.breeds") as string[]}
               label=""
@@ -533,7 +535,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                     display="spinner"
                     onChange={onPetAgeChange}
                   />
-                  <Button mode="contained" onPress={() => setShowUserAge(false)}>
+                  <Button mode="contained" onPress={() => setShowPetAge(false)}>
                     Готово
                   </Button>
                 </View>
@@ -576,7 +578,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             {i18n.t("onboardingProfile.slide5.subtitle")}
           </Text>
           <ScrollView>
-            <View>
+            <View key={key}>
               <CustomTagsSelector
                 tags={i18n.t("tags.interests") as string[]}
                 initialSelectedTags={interests || []}

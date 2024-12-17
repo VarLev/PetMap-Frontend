@@ -8,6 +8,7 @@ import { BonusProvider } from '@/contexts/BonusContex';
 import PermissionsRequestComponent from '@/components/auth/PermissionsRequestComponent';
 import uiStore from '@/stores/UIStore';
 const Onboarding = () => {
+  const [selectedLanguage, setSelectedLanguage] = React.useState<number>(0);  
 
   const handleLanguageSelect = async (selectedLanguage: number) => {
     userStore.updateUserOnbordingData({ 
@@ -15,12 +16,14 @@ const Onboarding = () => {
       systemLanguage: selectedLanguage,
     });
     await uiStore.setLanguagei18n(selectedLanguage);
-    await uiStore.setSystemLanguage(selectedLanguage);
+    setSelectedLanguage(selectedLanguage);
+    //await uiStore.setSystemLanguage(selectedLanguage);
   };
 
   const handleComplete = async (user: IUser) => {
     await userStore.updateUserOnbordingData(user);
     router.replace('/congrats');
+    await uiStore.setSystemLanguage(selectedLanguage);
   };
 
   const handleEscape = async (user: IUser) => {

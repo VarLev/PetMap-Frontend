@@ -1,3 +1,4 @@
+import i18n from '@/i18n';
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
 import Modal from 'react-native-modal';
@@ -17,8 +18,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   onClose,
   message,
   type,
-  title = 'Сообщение',
-  confirmText = 'OK',
+  title = i18n.t("cancel"),
+  confirmText = i18n.t("ok"),
   image,
 }) => {
   return (

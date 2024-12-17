@@ -214,7 +214,7 @@ class UserStore {
 
       //Пытаемся загрузить пользователя из AsyncStorage
       if (!currentUser || !currentUser?.firebaseUid) {
-        this.signOut();
+        await this.signOut();
         return null;
       }
 
@@ -467,7 +467,7 @@ class UserStore {
       
       await AsyncStorage.removeItem(process.env.EXPO_PUBLIC_F_TOKEN!);
       await AsyncStorage.removeItem(process.env.EXPO_PUBLIC_CURRENT_USER!);
-      this.currentUser = null;
+      this.setUser(null);
       this.isInitialized = false;
       this.isLogged = false;
       this.fUid = null;

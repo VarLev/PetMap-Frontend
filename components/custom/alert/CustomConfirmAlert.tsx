@@ -1,3 +1,4 @@
+import i18n from '@/i18n';
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
@@ -18,8 +19,8 @@ const CustomConfirmAlert: React.FC<CustomConfirmAlertProps> = ({
   onConfirm,
   message,
   title = '',
-  confirmText = 'OK',
-  cancelText = 'Отмена',
+  confirmText = i18n.t("ok"),
+  cancelText = i18n.t("cancel"),
 }) => {
   return (
     <Modal isVisible={isVisible} onBackdropPress={onClose} backdropOpacity={0.6}>
