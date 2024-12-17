@@ -122,7 +122,7 @@ const Feed: FC = observer(() => {
       {
         bottomSheetType && 
         <BottomSheetComponent
-          bottomSheetContentStyle={{paddingHorizontal: 12}}
+          contentStyle={{paddingHorizontal: 12}}
           ref={sheetRef}
           snapPoints={['60%', '100%']}
           onClose={handleSheetClose}
@@ -144,22 +144,6 @@ const Feed: FC = observer(() => {
 });
 
 const styles = StyleSheet.create({
-  backgroundStyle: {
-    zIndex: -10,
-    elevation: 5,
-    shadowColor: '#000', // Цвет тени
-    shadowOffset: { width:0, height: 0 }, // Смещение тени
-    shadowOpacity: 0.4, // Прозрачность тени
-    shadowRadius: 5, // Радиус размытия тени
-    backgroundColor: 'white',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30
-  },
-  handleStyle: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 80,
-    borderTopRightRadius: 80
-  },
   footer: {
     backgroundColor: 'white',
     height: 148,

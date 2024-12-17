@@ -107,7 +107,8 @@ const styles = StyleSheet.create({
   },
   comment: {
     overflow: "hidden",
-    borderRadius: 12
+    borderRadius: 12,
+    paddingHorizontal: 12
   }
 });
 
