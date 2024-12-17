@@ -18,7 +18,7 @@ interface BottomSheetComponentProps {
   enableFooterMarginAdjustment?: boolean;
   flatListData?: ArrayLike<any> | SharedValue<ArrayLike<any> | null | undefined> | null | undefined;
   flatListRenderItem?: ListRenderItem<any> | SharedValue<ListRenderItem<any> | null | undefined> | null | undefined;
-  bottomSheetContentStyle?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>
+  contentStyle?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>
 }
 
 const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
@@ -35,6 +35,7 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
       enableFooterMarginAdjustment,
       flatListData,
       flatListRenderItem,
+      contentStyle
     },
     ref
   ) => {
@@ -51,6 +52,7 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
         handleHeight={handleHeight}
       >
         <BottomSheetFlatList
+          style={contentStyle}
           enableFooterMarginAdjustment={enableFooterMarginAdjustment} // передаём true, если используем footerComponent
           data={flatListData} // передаём, если используем flatlist
           keyExtractor={(_, index) => index.toString()}
