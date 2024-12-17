@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, FlatList, Text } from "react-native";
+import { Divider } from "react-native-paper";
+import { ReviewDTO } from "@/dtos/classes/review/Review";
 import StarRating from "react-native-star-rating-widget";
 import CustomButtonPrimary from "../custom/buttons/CustomButtonPrimary";
 import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
 import CustomOutlineInputText from "../custom/inputs/CustomOutlineInputText";
-import { ReviewDTO } from "@/dtos/classes/review/Review";
 import userStore from "@/stores/UserStore";
 import CustomAlert from "../custom/alert/CustomAlert";
 import ReviewComment from "./ReviewComment";
@@ -116,27 +117,32 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
     }
   };
 
-  const renderReview = ({ item }: { item: ReviewDTO }) => (
-    <ReviewComment
-      item={item}
-      onUpdateReview={handleSubmitOrUpdateReview}
-      refreshReviews={(updatedReview: ReviewDTO) => {
-        setLocalReviews((prevReviews) =>
-          prevReviews.map((r) =>
-            r.id === updatedReview.id ? updatedReview : r
-          )
-        );
-      }}
-    />
-  );
+  const renderReview = ({ item }: { item: ReviewDTO }) => {
+    return (
+      <View>
+        <ReviewComment
+          item={item}
+          onUpdateReview={handleSubmitOrUpdateReview}
+          refreshReviews={(updatedReview: ReviewDTO) => {
+            setLocalReviews((prevReviews) =>
+              prevReviews.map((r) =>
+                r.id === updatedReview.id ? updatedReview : r
+              )
+            );
+          }}
+        />
+        {localReviews.length - 1 != localReviews.indexOf(item) && <Divider />}
+      </View>
+    );
+  } 
 
   return (
     <View className="pt-2">
-      <Text className="ml-1 text-base font-nunitoSansBold text-indigo-700">
+      <Text className="text-base font-nunitoSansBold text-indigo-700">
         {i18n.t("ReviewsSection.title")}
       </Text>
       {!existingReview && (
-        <View className="m-2">
+        <View>
           <CustomOutlineInputText
             numberOfLines={3}
             label={i18n.t("ReviewsSection.inputPlaceholder")}
@@ -161,7 +167,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
         </View>
       )}
       {localReviews.length === 0 ? (
-        <Text className="m-2 text-sm font-nunitoSansBold text-gray-400">
+        <Text className="mt-2 text-sm font-nunitoSansBold text-gray-400">
           {i18n.t("ReviewsSection.noReviews")}
         </Text>
       ) : (

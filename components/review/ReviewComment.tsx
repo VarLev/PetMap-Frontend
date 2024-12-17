@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput } from 'react-native';
-import { Divider, IconButton, Menu } from 'react-native-paper';
+import { IconButton, Menu } from 'react-native-paper';
+import { ReviewDTO } from '@/dtos/classes/review/Review';
 import StarRating from 'react-native-star-rating-widget';
 import CustomButtonPrimary from '../custom/buttons/CustomButtonPrimary';
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
-import { ReviewDTO } from '@/dtos/classes/review/Review';
 import userStore from '@/stores/UserStore';
 import StarSvgIcon from '../custom/icons/StarSvgIcon';
 import i18n from '@/i18n';
@@ -52,18 +52,18 @@ const ReviewComment: React.FC<ReviewCommentProps> = ({
   };
 
   return (
-    <View className="m-1 p-2 bg-white">
-      <Divider className="bg-slate-300" />
+    <View className="bg-white my-[20px]">
       <View className="flex-row justify-between items-start">
         <View className="flex-col">
           <Text className="text-lg font-nunitoSansBold">{item.userName}</Text>
-          <Text className="-mt-1 text-xs font-nunitoSansRegular">
+          <Text className="text-xs font-nunitoSansRegular">
             {i18n.t('ReviewComment.oneDayAgo')}
           </Text>
           <StarRating
             rating={isEditing ? editedRating : item.rating}
             starSize={20}
             onChange={isEditing ? setEditedRating : () => {}}
+            starStyle={{ marginHorizontal: 1}}
             style={{ paddingVertical: 1 }}
             StarIconComponent={StarSvgIcon}
             color="#2F00B6"
@@ -118,14 +118,16 @@ const ReviewComment: React.FC<ReviewCommentProps> = ({
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
-              marginTop: 10,
+              marginVertical: 10,
             }}
           >
             <CustomButtonPrimary
+              containerStyles='px-4'
               title={i18n.t('ReviewComment.save')}
               handlePress={handleSaveEdit}
             />
             <CustomButtonOutlined
+              containerStyles='px-4'
               title={i18n.t('ReviewComment.cancel')}
               handlePress={handleCancelEdit}
             />
