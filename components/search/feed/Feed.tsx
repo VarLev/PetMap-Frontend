@@ -22,7 +22,6 @@ const Feed: FC = observer(() => {
   const [selectedPostId, setSelectedPostId] = useState('');
   const sheetRef = useRef<BottomSheet>(null);
 
-
   useEffect(() => {
     searchStore.resetPage();
     searchStore.fetchPosts();
@@ -51,6 +50,15 @@ const Feed: FC = observer(() => {
     });
   };
 
+  const deleteComment = async (commentId: string) => {
+    await searchStore.deletePostComment(commentId);
+    runInAction(async () => {
+      const comments = await searchStore.fetchGetComments(selectedPostId);
+      setPostComments(comments);
+      console.log('refresh')
+    })
+  }
+
   const handleSheetCommentsOpen = async (postId: string) => {
     const comments = await searchStore.fetchGetComments(postId);
     setSelectedPostId(postId);
@@ -73,28 +81,28 @@ const Feed: FC = observer(() => {
       }
     }
 
-      return (
-        <BottomSheetFooter animatedFooterPosition={animatedFooterPosition}>
-          <View style={styles.footer} className="flex-row items-center flex-1">
-            <TextInput
-              multiline
-              style={{maxHeight: 60}}
-              placeholder={i18n.t("feedPosts.commentInput")}
-              className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-sm"
-              onChangeText={(text) => setCommentText(text)}
-              value={commentText}
-            /> 
-            <IconButton
-              icon="send"
-              iconColor={BG_COLORS.purple[400]}
-              onPress={addComment}
-              size={20}
-              style={{ marginLeft: 4, marginRight: -6 }}
-            />
-          </View>
-        </BottomSheetFooter>
-      )
-    }
+    return (
+      <BottomSheetFooter animatedFooterPosition={animatedFooterPosition}>
+        <View style={styles.footer} className="flex-row items-center flex-1">
+          <TextInput
+            multiline
+            style={{maxHeight: 60}}
+            placeholder={i18n.t("feedPosts.commentInput")}
+            className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-sm"
+            onChangeText={(text) => setCommentText(text)}
+            value={commentText}
+          /> 
+          <IconButton
+            icon="send"
+            iconColor={BG_COLORS.purple[400]}
+            onPress={addComment}
+            size={20}
+            style={{ marginLeft: 4, marginRight: -6 }}
+          />
+        </View>
+      </BottomSheetFooter>
+    )
+  }
 
   return (
     <View className='flex-1' >
@@ -134,7 +142,7 @@ const Feed: FC = observer(() => {
           flatListData={bottomSheetType === "comments" ? postComments : null}
           flatListRenderItem={bottomSheetType === "comments" ? ({ item }) => {
             return (
-              <PostComment comment={item}/>
+              <PostComment comment={item} handleDeleteComment={(commentId) => deleteComment(commentId)}/>
             )
           } : null}
         />

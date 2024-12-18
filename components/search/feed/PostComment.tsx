@@ -8,7 +8,12 @@ import MenuItemWrapper from "@/components/custom/menuItem/MunuItemWrapper";
 import userStore from "@/stores/UserStore";
 import i18n from "@/i18n";
 
-const PostComment: FC<{comment: ICommentWithUser}> = observer(({comment}) => {
+type PostCommentProps = {
+  comment: ICommentWithUser;
+  handleDeleteComment: (commentId: string) => void;
+}
+
+const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteComment}) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
 
@@ -18,7 +23,7 @@ const PostComment: FC<{comment: ICommentWithUser}> = observer(({comment}) => {
     } else {
       setIsCurrentUser(false);
     }
-  })
+  }, [])
 
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
@@ -45,7 +50,7 @@ const PostComment: FC<{comment: ICommentWithUser}> = observer(({comment}) => {
   }
 
   const deleteComment = () => {
-    console.log("Комментарий удалён");
+    handleDeleteComment(comment.id);
     setMenuVisible(false);
   }
 

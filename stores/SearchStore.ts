@@ -131,6 +131,16 @@ class SearchStore {
     }
   }
 
+  async deletePostComment(commentId: string) {
+    try {
+      if (commentId) {
+        await apiClient.delete(`post/comments/${commentId}`);
+      }
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+
   async createPost(content: string, images: string[]) {
     this.setLoading(true);
     try {
