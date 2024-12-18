@@ -74,7 +74,7 @@ const App = () => {
     if (!signIn[0] && signIn[1])
       router.replace("/(auth)/onboarding");
     else if (signIn[0] && signIn[1])
-      router.replace("/map");
+      router.replace("/search/news");
   }
 
   // Если у пользователя нет подписки и реклама еще не была показана, показываем AppOpenAdHandler

@@ -1038,5 +1038,12 @@
     "accept": "Accept",
     "decline": "Decline",
     "place": "Place"
+  },
+  "avatar":{
+    "female": "Female",
+    "male": "Male",
+    "selectAvatarTitle": "Choose your avatar!",
+    "selectAvatarDescription":"This image will be displayed in your profile and seen by other users.",
+    "save": "Save"
   }
 }
