@@ -1,13 +1,14 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
+import { Icon } from 'react-native-paper';
 
 const CustomHeader: React.FC<NativeStackHeaderProps> = ({ navigation, options, back }) => {
   return (
     <View style={styles.headerContainer}>
       {back ? (
         <TouchableOpacity onPress={navigation.goBack}>
-          <Text style={styles.backButton}>{options.title || 'Назад'}</Text>
+          <Icon source="arrow-left" size={24} />
         </TouchableOpacity>
       ) : null}
       <Text style={styles.title}> {options.title}</Text>
@@ -17,7 +18,7 @@ const CustomHeader: React.FC<NativeStackHeaderProps> = ({ navigation, options, b
 
 const styles = StyleSheet.create({
   headerContainer: {
-    height: 30, 
+    height: 40, 
     backgroundColor: '#fff',
     flexDirection: 'row',
     alignItems: 'center',
