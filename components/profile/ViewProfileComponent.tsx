@@ -116,6 +116,10 @@ const ViewProfileComponent = observer(
       petStore.setPetProfile(newPat);
       router.push("/profile/pet/new/edit");
     };
+
+    const openChat = () => {
+
+    }
     
     return (
       <GestureHandlerRootView className="h-full">
@@ -136,6 +140,14 @@ const ViewProfileComponent = observer(
                   source={{ uri: user?.thumbnailUrl! }}
                   className="w-full h-full"
                 />
+               {!isCurrentUser && (<View style={styles.iconContainer}>
+                  <IconButton
+                    icon="message"
+                    size={30}
+                    iconColor="black"
+                    style={styles.menuButton}
+                    onPress={openChat}/>
+                </View>)}
                 <View style={styles.iconContainer} className={`${isIOS ? 'mt-7' : 'mt-0'}`}>
                   {isCurrentUser && (
                     <Menu
