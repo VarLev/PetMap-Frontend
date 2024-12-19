@@ -1,7 +1,7 @@
 //интегрирован перевод
 
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { Modal, Platform, View } from 'react-native';
 import { Button, Text, Divider } from 'react-native-paper';
 import userStore from '@/stores/UserStore';
 import { observer } from 'mobx-react-lite';
@@ -20,6 +20,9 @@ import CustomDropdownList from '../custom/selectors/CustomDropdownList';
 import CustomLoadingButton from '../custom/buttons/CustomLoadingButton';
 import { useControl } from '@/hooks/useBonusControl';
 import { BonusContex } from '@/contexts/BonusContex';
+import DateTimePicker, {
+  DateTimePickerEvent
+} from "@react-native-community/datetimepicker";
 import i18n from '@/i18n';
 
 const TASK_IDS = {
@@ -46,7 +49,13 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
   const sheetRef = useRef<BottomSheet>(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [birthDate, setBirthDate] = useState(parseDateToString(user.birthDate || new Date()));
+  const [showUserAge, setShowUserAge] = useState(false);
+  const initialDate = editableUser.birthDate instanceof Date && !isNaN(editableUser.birthDate.getTime()) 
+    ? editableUser.birthDate 
+    : new Date();
+    const [age, setAge] = useState<Date>(initialDate);
 
+  
   const { completedJobs } = useContext(BonusContex)!;
 
   // Используем useControl для каждого поля
@@ -178,6 +187,22 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
     });
   };
 
+  const onAgeChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    if (Platform.OS === "android") {
+      if (event.type === 'set' && selectedDate) {
+        setAge(selectedDate);
+        setBirthDate(parseDateToString(selectedDate)); // Обновляем birthDate при выборе даты
+      }
+      setShowUserAge(false);
+    } else {
+      if (selectedDate) {
+        setAge(selectedDate);
+        setBirthDate(parseDateToString(selectedDate)); // Обновляем birthDate при выборе даты
+      }
+    }
+  };
+
+
   const shouldShowChooseAvatar = userPhoto && userPhoto.includes('userAvatars');
 
   return (
@@ -202,7 +227,47 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 value={editableUser.name || ''} 
                 handleChange={(text) => handleChange('name', text)}
               />
-              <CustomOutlineInputText
+
+           
+              
+              <CustomOutlineInputText 
+                label={i18n.t('EditProfileComponent.birthDateLabel')}
+                value={age.toISOString().split('T')[0]} 
+                onPress={() => setShowUserAge(true)}
+            
+              />
+              
+
+              {showUserAge && Platform.OS === "ios" && (
+                <Modal transparent={true} animationType="slide">
+                  <View className="flex-1 justify-center bg-black/50">
+                    <View className="bg-white mx-5 p-5 rounded-3xl shadow-lg">
+                      <DateTimePicker
+                        value={age}
+                        mode="date"
+                        display="spinner"
+                        onChange={onAgeChange}
+                        maximumDate={new Date()}
+                      />
+                      <Button mode="contained" onPress={() => setShowUserAge(false)}>
+                        {i18n.t('ok')}
+                      </Button>
+                    </View>
+                  </View>
+                </Modal>
+              )}
+
+              {showUserAge && Platform.OS === "android" && (
+                <DateTimePicker
+                  value={age}
+                  mode="date"
+                  display="default"
+                  onChange={onAgeChange}
+                  maximumDate={new Date()}
+                />
+              )}
+
+              {/* <CustomOutlineInputText
                 containerStyles="mt-4"
                 placeholder={i18n.t('EditProfileComponent.birthDatePlaceholder')}
                 mask="9999-99-99"
@@ -210,7 +275,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 value={birthDate}
                 handleChange={setBirthDate}
                 keyboardType='number-pad'
-              />
+              /> */}
 
               <CustomDropdownList 
                 tags={i18n.t('tags.gender') as string[]} 
