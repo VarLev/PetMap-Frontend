@@ -13,12 +13,14 @@ interface ReviewCommentProps {
   item: ReviewDTO;
   onUpdateReview: (review: ReviewDTO) => Promise<void>;
   refreshReviews: (updatedReview: ReviewDTO) => void;
+  handleDeleteReview: (commentId: string) => void;
 }
 
 const ReviewComment: React.FC<ReviewCommentProps> = ({
   item,
   onUpdateReview,
   refreshReviews,
+  handleDeleteReview
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(item.comment);
@@ -41,8 +43,9 @@ const ReviewComment: React.FC<ReviewCommentProps> = ({
     closeMenu();
   };
 
-  const onDelete = () => {
-    console.log(i18n.t('ReviewComment.deleteLog'));
+  const onDelete = async () => {
+    handleDeleteReview(item.id);
+    closeMenu();
   };
 
   const handleCancelEdit = () => {
