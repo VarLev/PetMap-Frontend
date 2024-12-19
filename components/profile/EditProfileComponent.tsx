@@ -1,7 +1,7 @@
 //интегрирован перевод
 
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Alert, BackHandler, View } from 'react-native';
+import { View } from 'react-native';
 import { Button, Text, Divider } from 'react-native-paper';
 import userStore from '@/stores/UserStore';
 import { observer } from 'mobx-react-lite';
@@ -17,7 +17,6 @@ import { GestureHandlerRootView, FlatList } from 'react-native-gesture-handler';
 import CustomOutlineInputText from '../custom/inputs/CustomOutlineInputText';
 import MultiTagDropdown from '../custom/selectors/MultiTagDropdown';
 import CustomDropdownList from '../custom/selectors/CustomDropdownList';
-import { router } from 'expo-router';
 import CustomLoadingButton from '../custom/buttons/CustomLoadingButton';
 import { useControl } from '@/hooks/useBonusControl';
 import { BonusContex } from '@/contexts/BonusContex';
@@ -70,30 +69,6 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
     };
 
     initializeAvatar();
-  //   // Функция, которая срабатывает при нажатии кнопки "назад"
-  //   const backAction = () => {
-  //     Alert.alert(i18n.t('EditProfileComponent.confirmTitle'), i18n.t('EditProfileComponent.confirmMessage'), [
-  //       {
-  //         text: i18n.t('EditProfileComponent.cancel'),
-  //         onPress: () => null,
-  //         style: 'cancel'
-  //       },
-  //       {
-  //         text: i18n.t('EditProfileComponent.exit'),
-  //         onPress: () => router.back()
-  //       }
-  //     ]);
-  //     return true;
-  //   };
-
-  //   // Подписываемся на событие нажатия кнопки "назад"
-  //   const backHandler = BackHandler.addEventListener(
-  //     "hardwareBackPress",
-  //     backAction
-  //   );
-
-  //   // Возвращаем функцию для очистки эффекта (отписка от события)
-  //   return () => backHandler.remove();
 
   }, []);
 
@@ -142,7 +117,8 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
     if (!CheckErrors()) return;
 
     // Обновляем фото пользователя
-    editableUser.thumbnailUrl = userPhoto;
+    const avatarUrl = await userStore.uploadImage(userPhoto!,`users/${editableUser?.email}/thumbnail`)
+    editableUser.thumbnailUrl = avatarUrl;
      // Парсим дату рождения
     editableUser.birthDate = parseStringToDate(birthDate);
     editableUser.jobs = completedJobs;
