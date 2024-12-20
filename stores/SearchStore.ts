@@ -225,6 +225,23 @@ class SearchStore {
     }
   }
 
+  async complainOnPost(postId: string, text: string) {
+    this.setLoading(true);
+    try {
+      const res = await apiClient.post(`/post/complaint`, {
+        userId: this.getUserId(),
+        postId,
+        text,
+        createdAt: new Date()
+      })
+      console.log(res.data)
+    } catch (error) {
+      return handleAxiosError(error);
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
   async fetchNews() {
     try {
       const files = await getFilesInDirectory('news');
