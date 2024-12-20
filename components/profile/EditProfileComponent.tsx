@@ -2,7 +2,7 @@
 
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Modal, Platform, View } from 'react-native';
-import { Button, Text, Divider } from 'react-native-paper';
+import { Button, Text, Divider, IconButton } from 'react-native-paper';
 import userStore from '@/stores/UserStore';
 import { observer } from 'mobx-react-lite';
 import { User } from '@/dtos/classes/user/UserDTO';
@@ -188,16 +188,34 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
   };
 
   const onAgeChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    
+    
     if (Platform.OS === "android") {
-      if (event.type === 'set' && selectedDate) {
-        setAge(selectedDate);
-        setBirthDate(parseDateToString(selectedDate)); // Обновляем birthDate при выборе даты
-      }
       setShowUserAge(false);
+      if (event.type === 'set' && selectedDate) {
+        if (selectedDate) {
+          const correctedDate = new Date(
+            selectedDate.getFullYear(),
+            selectedDate.getMonth(),
+            selectedDate.getDate(),
+            12, 0, 0, 0 // Полдень локального времени
+          );
+          setAge(correctedDate);
+          setBirthDate(parseDateToString(correctedDate));
+        }
+      }
+      
     } else {
+      // Логика для iOS
       if (selectedDate) {
-        setAge(selectedDate);
-        setBirthDate(parseDateToString(selectedDate)); // Обновляем birthDate при выборе даты
+        const correctedDate = new Date(
+          selectedDate.getFullYear(),
+          selectedDate.getMonth(),
+          selectedDate.getDate(),
+          12, 0, 0, 0 // Полдень локального времени
+        );
+        setAge(correctedDate);
+        setBirthDate(parseDateToString(correctedDate));
       }
     }
   };
@@ -225,17 +243,23 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 containerStyles='mt-2' 
                 label={i18n.t('EditProfileComponent.nameLabel')}
                 value={editableUser.name || ''} 
+                
                 handleChange={(text) => handleChange('name', text)}
               />
 
            
+              <View className=' flex-row w-full'>
+                <CustomOutlineInputText 
+                  label={i18n.t('EditProfileComponent.birthDateLabel')}
+                  value={age.toISOString().split('T')[0]} 
+                  onPress={() => setShowUserAge(true)}
+                  editable={false}
+                  containerStyles='mt-2 w-[85%]'
+                />
+                <IconButton icon="calendar"  size={30} className='mt-4' onPress={() => setShowUserAge(true)} />
+
+              </View>
               
-              <CustomOutlineInputText 
-                label={i18n.t('EditProfileComponent.birthDateLabel')}
-                value={age.toISOString().split('T')[0]} 
-                onPress={() => setShowUserAge(true)}
-            
-              />
               
 
               {showUserAge && Platform.OS === "ios" && (
@@ -261,7 +285,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 <DateTimePicker
                   value={age}
                   mode="date"
-                  display="default"
+                  display="spinner"
                   onChange={onAgeChange}
                   maximumDate={new Date()}
                 />
