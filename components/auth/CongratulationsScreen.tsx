@@ -3,10 +3,11 @@ import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
 import React, { useEffect, useRef, useState } from "react";
 import LottieView from "lottie-react-native";
-import { router } from "expo-router";
 import userStore from "@/stores/UserStore";
 import { JobType } from "@/dtos/enum/JobType";
 import i18n from '@/i18n';
+import uiStore from "@/stores/UIStore";
+import { Language } from "@/dtos/enum/Language";
 
 function CongratulationsScreen() {
   const [benefites, setBenefits] = useState<number>(0);
@@ -21,6 +22,19 @@ function CongratulationsScreen() {
     };
     fetchBonuses();
   }, []);
+
+  const handlePress = async () => {
+    const languageMap: { [key: string]: Language } = {
+      'ru': Language.Russian,
+      'en': Language.English,
+      'es': Language.Spanish,
+    };
+
+    const selectedLanguage = languageMap[i18n.locale];
+    if (selectedLanguage) {
+      await uiStore.setSystemLanguage(selectedLanguage);
+    }
+  };
 
   return (
     <>
@@ -84,7 +98,7 @@ function CongratulationsScreen() {
             </Text>
             <CustomButtonOutlined
               title={i18n.t('congratulations.button')} 
-              handlePress={() => router.replace("/map")}
+              handlePress={handlePress}
               containerStyles="w-full bg-[#ACFFB9] my-4"
             />
           </View>

@@ -23,7 +23,6 @@ const Onboarding = () => {
   const handleComplete = async (user: IUser) => {
     await userStore.updateUserOnbordingData(user);
     router.replace('/congrats');
-    await uiStore.setSystemLanguage(selectedLanguage);
   };
 
   const handleEscape = async (user: IUser) => {
