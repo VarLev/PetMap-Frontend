@@ -296,7 +296,6 @@ class UserStore {
      
       runInAction(() => {
         this.setCreatedUser(userCred);
-        console.log('Залогинивание');
         this.setLogged(true);
         this.setUser(registeredUser);
       });

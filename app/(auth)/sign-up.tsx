@@ -45,8 +45,7 @@ const SignUp = () => {
     try {
       await userStore.registerUser(email, password);
       Alert.alert(
-        "Success",
-        "Account created successfully! A verification email has been sent to your email address. Please check your inbox and verify your email to complete the registration."
+        i18n.t('registration')
       );
       router.replace("/onboarding");
     } catch (error: any) {

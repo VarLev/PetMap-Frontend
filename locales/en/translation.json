@@ -1,4 +1,6 @@
 {
+  "registration":"Account created successfully! A verification email has been sent to your email address. Please check your inbox and verify your email to complete the registration.",
+  "verification":"Email not verified. We have sent the verification email again.",
   "permissions": "Not all permissions were granted, functionality will be limited. Please provide permissions in the app manager.",
   "ok": "OK",
   "cancel": "Cancel",

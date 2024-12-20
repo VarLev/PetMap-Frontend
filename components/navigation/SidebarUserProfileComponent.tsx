@@ -53,7 +53,7 @@ const SidebarUserProfileComponent = () => {
         >
           <View className="flex-row justify-start items-center">
             <Image
-              source={{ uri: currentUser?.thumbnailUrl! }}
+              source={{ uri: currentUser?.thumbnailUrl?? 'https://avatar.iran.liara.run/public'}}
               className="h-20 w-20 rounded-xl"
             />
             <View className="flex-col ml-3 flex-1">

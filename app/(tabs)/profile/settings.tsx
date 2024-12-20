@@ -1,12 +1,15 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { ActivityIndicator, View } from "react-native";
-import { List, Switch } from "react-native-paper";
+import { ActivityIndicator, View, BackHandler } from "react-native";
+import { List, Switch, Button } from "react-native-paper";
 import CustomSegmentedButtonsWithProps from '@/components/custom/buttons/CustomSegmentedButtonsWithProps';
 import CustomConfirmAlert from '@/components/custom/alert/CustomConfirmAlert';
 import { Language } from '@/dtos/enum/Language';
 import uiStore from '@/stores/UIStore';
 import i18n from '@/i18n';
+import { BG_COLORS } from '@/constants/Colors';
+import { router } from 'expo-router';
+import userStore from '@/stores/UserStore';
 
 const languageToIndex = (lang: Language): number => {
   switch (lang) {
@@ -54,19 +57,22 @@ const Settings = observer(() => {
   const cancelLanguageChange = () => {
     setAlertVisible(false);
     setPendingLanguageChange(null);
-    // Ничего не делаем - состояние языка не изменится 
   };
 
   const handleShowAlert = (value: number) => {
-    // Если значение такое же, ничего не делаем
     if (value === selectedLanguage) return;
-
     setPendingLanguageChange(value);
     setAlertVisible(true);
   };
 
+  const exitApp = async () => {
+    userStore.signOut();
+    await router.replace("/(auth)/sign-in");
+    BackHandler.exitApp();
+  };
+
   return (
-    <View className="pl-4">
+    <View className="flex-1 justify-between p-4">
       <List.Section>
         <List.Subheader>{i18n.t('settings.general')}</List.Subheader>
         <List.Item
@@ -94,11 +100,24 @@ const Settings = observer(() => {
         />
       </List.Section>
 
+      {/* Кнопка выхода из приложения внизу и по центру */}
+      <View className="pb-20 items-center">
+        <Button
+          mode="outlined"
+          onPress={exitApp}
+          style={{ alignSelf: 'center' }}
+          textColor={BG_COLORS.indigo[700]}
+          className='w-full'
+        >
+          {i18n.t('UserProfile.logout')}
+        </Button>
+      </View>
+
       <CustomConfirmAlert
         isVisible={alertVisible}
         onClose={cancelLanguageChange}
         onConfirm={confirmLanguageChange}
-        message={i18n.t('settings.changeLanguage')} // Например: "При смене языка приложение будет перезагружено. Продолжить?"
+        message={i18n.t('settings.changeLanguage')}
         confirmText={i18n.t('ok')}
         cancelText={i18n.t('cancel')}
       />

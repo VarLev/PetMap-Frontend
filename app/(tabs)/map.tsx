@@ -23,20 +23,6 @@ const Map = () => {
     }, [userStore.currentUser])
   );
 
-
-  useEffect(() => {
-    // Проверка состояния пользователя
-    if (
-      !userStore.currentUser ||
-      !userStore.currentUser.name ||
-      userStore.currentUser.name === '' ||
-      userStore.currentUser.name === null ||
-      userStore.currentUser.name === undefined
-    ) {
-      console.log('Редирект на профиль:', userStore.currentUser?.name);
-      router.push('/(tabs)/profile/');
-    }
-  }, [userStore.currentUser]); //
   return (
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>

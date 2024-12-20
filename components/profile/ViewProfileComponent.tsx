@@ -164,14 +164,14 @@ const ViewProfileComponent = observer(
                       title={i18n.t("UserProfile.edit")}
                       icon="pencil-outline"
                     />
-                    <MenuItemWrapper
+                    {/* <MenuItemWrapper
                       onPress={()=>{
                         logOut();
                         closeMenu();
                       }}
                       title={i18n.t("UserProfile.logout")}
                       icon="exit-to-app"
-                    />
+                    /> */}
                   </Menu>
                 )}
               </View>

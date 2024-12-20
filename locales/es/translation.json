@@ -1,4 +1,6 @@
 {
+  "registration":"¡Cuenta creada con éxito! Se ha enviado un correo de verificación a tu dirección de correo electrónico. Por favor, revisa tu bandeja de entrada y verifica tu correo para completar el registro.",
+  "verification":"Correo electrónico no verificado. Hemos enviado el correo de verificación nuevamente.",
   "permissions": "No se otorgaron todos los permisos, la funcionalidad estará limitada. Por favor, conceda los permisos en el administrador de aplicaciones.",
   "ok": "OK",
   "cancel": "Cancelar",
