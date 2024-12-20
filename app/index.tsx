@@ -29,7 +29,7 @@ const App = () => {
   const { loading, isLogged, isInitialized, isError } = useStore();
   const [isIos, setIsIos] = useState(false);
   const { showAlert } = useAlert();
-  const [adShown, setAdShown] = useState(false);
+  const [adShown, setAdShown] = useState(true);
   const userHasSubscription = userStore.getUserHasSubscription(); // Проверка на наличие подписки у пользователя
 
   // проверка, если платформа IOS, показываем иконку регистрации через Aple
@@ -40,11 +40,13 @@ const App = () => {
     }
 
     const checkAuthAndRedirect = async () => {
-      if (isInitialized && !loading && isLogged) {
+      if (isInitialized && !loading && userStore.getLogged()) {
         console.log("Redirecting to /search/news");
         await router.replace("/search/news"); // Перенаправление на карту, если пользователь авторизован
       }
     };
+    console.log(isInitialized, loading, isLogged);
+    console.log(isInitialized, loading, userStore.getLogged());
     checkAuthAndRedirect();
 
     if (isError) {
@@ -54,7 +56,7 @@ const App = () => {
         require("../assets/images/InternetError.webp")
       );
     }
-  }, [loading, isLogged, isInitialized, isError, adShown]);
+  }, [loading, isLogged, isInitialized, isError, adShown, showAlert]);
 
    // Отображаем загрузочный экран до инициализации
   if (!isError && (loading || !isInitialized)) return <ScreenHolderLogo />;
@@ -83,7 +85,7 @@ const App = () => {
   }
 
   // Если пользователь авторизован и всё инициализировано, редиректим на /search/news
-  if (!isError && !loading && isLogged && isInitialized && (adShown || userHasSubscription))
+  if (!isError && !loading && userStore.getLogged() && isInitialized && (adShown || userHasSubscription))
     return <Redirect href="/search/news" />;
 
 
@@ -96,7 +98,7 @@ const App = () => {
             {i18n.t('index.welcome')} 
           </Text>
         </View>
-        <View className="justify-center items-center">
+        <View className="justify-center items-center ">
           <OnboardingCarousel />
         </View>
         <View className="pt-8" >
@@ -119,12 +121,12 @@ const App = () => {
             <TouchableOpacity onPress={handleGooglePress}>
               <Image className="w-12 h-12" source={googleLogo} />
             </TouchableOpacity>
-            {isIos && <TouchableOpacity onPress={() => console.log("Pressed Apple")}>
+            {/* {isIos && <TouchableOpacity onPress={() => console.log("Pressed Apple")}>
               <Image className="w-12 h-12" source={appleLogo} />
             </TouchableOpacity>}
             <TouchableOpacity onPress={() => console.log("Pressed Facebook")}>
               <Image className="w-12 h-12" source={facebookLogo} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
       </View>

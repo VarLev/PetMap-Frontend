@@ -29,24 +29,29 @@ export const StoreProvider = ({ children }: StoreProviderProps) => {
             await uiStore.setLanguagei18n(user.systemLanguage as Language);
           
         
+          console.log('userStore.setLogged(true);');
           userStore.setLogged(true);
           userStore.setUser(user);
           
         } else if (user == null) {
+          console.log('userStore.setLogged(true);2');
           userStore.setLogged(false);
           userStore.setUser(null);
           
         } else if (user === false){
+          console.log('userStore.setLogged(true);3');
           userStore.setLogged(false);
           userStore.setUser(null);
           setIsError(true);
         }
       }catch(e)
       {
+        console.log('userStore.setLogged(true);4');
         userStore.setUser(null);
         console.log(e);
       }
       finally{
+        console.log('userStore.setLogged(true);5');
         userStore.setLoading(false);
         setIsInitialized(true);
       }

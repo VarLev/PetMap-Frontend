@@ -21,7 +21,7 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
   onChange,
   searchable = false,
   label,
-  listMode = 'FLATLIST',
+  listMode = 'SCROLLVIEW',
   disabledIndexes = [],
 }) => {
   const [open, setOpen] = useState(false);
@@ -80,6 +80,7 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
         setValue={setValue}
         setItems={setItems}
         placeholder={placeholder}
+        
         dropDownDirection={Platform.OS === 'ios' ? 'TOP' : 'AUTO'}
         placeholderStyle={{
           color: '#454545',

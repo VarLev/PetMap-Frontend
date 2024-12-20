@@ -47,11 +47,11 @@ const SignIn = () => {
 
   const tempfunc = () => {
     Alert.alert(
-      "В разработке, временная ссылка на главную", // Заголовок сообщения
-      "",
+      "", // Заголовок сообщения
+      "petmap.app \ninfo@petmap.app",
       [
         {
-          text: "Переход",
+          text: "Ok",
           onPress: () => router.replace("/"),
         },
       ],

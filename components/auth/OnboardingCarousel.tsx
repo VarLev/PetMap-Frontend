@@ -59,7 +59,7 @@ const OnboardingCarousel: React.FC = () => {
         ref={ref}
         pagingEnabled={true}
         enabled={true}
-        height={height * 0.55} // 480
+        height={height * 0.56} // 480
         autoPlay={true}
         data={data}
         onProgressChange={progress}
@@ -69,7 +69,6 @@ const OnboardingCarousel: React.FC = () => {
           <View className="items-center h-full flex-col">
             <Image source={item.image} style={styles.image} />
             <Text
-              variant="titleSmall"
               className="pt-3 px-3 text-base text-center font-nunitoSansRegular"
             >
               {i18n.t(item.titleKey)}
@@ -88,7 +87,7 @@ const OnboardingCarousel: React.FC = () => {
           borderRadius: 50,
           backgroundColor: "rgba(55, 48, 163, 1)",
         }}
-        containerStyle={{ gap: 10 }}
+        containerStyle={{ gap: 10, top: 10 }}
         onPress={onPressPagination}
       />
     </View>

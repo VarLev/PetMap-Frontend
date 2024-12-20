@@ -76,7 +76,13 @@ class UserStore {
   }
 
   setLogged(isLogged: boolean) {
+    console.log('Установка Залогинивание', isLogged);
     this.isLogged = isLogged;
+  }
+
+  getLogged() {
+    console.log('Взятие Залогинивание');
+    return this.isLogged;
   }
 
   setCreatedUser(user: UserCredential) {
@@ -256,6 +262,7 @@ class UserStore {
       
       runInAction(() => {this.setLoginedUser(userCred);});
       await this.loadUserAfterSignIn();
+      console.log('Залогинивание');
       runInAction(() => {this.setLogged(true);});
       
     } catch (error) 
@@ -289,6 +296,7 @@ class UserStore {
      
       runInAction(() => {
         this.setCreatedUser(userCred);
+        console.log('Залогинивание');
         this.setLogged(true);
         this.setUser(registeredUser);
       });
@@ -338,7 +346,7 @@ class UserStore {
 
       }
       isSuccessful = true;
-      
+      console.log('Залогинивание');
       runInAction(() => {this.setLogged(true);});
     } 
     catch (error) 
@@ -467,11 +475,16 @@ class UserStore {
       
       await AsyncStorage.removeItem(process.env.EXPO_PUBLIC_F_TOKEN!);
       await AsyncStorage.removeItem(process.env.EXPO_PUBLIC_CURRENT_USER!);
-      this.setUser(null);
-      this.isInitialized = false;
-      this.isLogged = false;
-      this.fUid = null;
-      this.isError = false;
+      
+      runInAction(() => {
+        this.setUser(null);
+        this.isInitialized = false;
+        this.setLogged(false);
+        this.fUid = null;
+        this.isError = false;
+      });
+      
+      
       signOut();
      
     } catch (error) {

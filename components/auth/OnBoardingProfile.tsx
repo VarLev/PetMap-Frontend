@@ -654,7 +654,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
                 ? i18n.t("onboardingProfile.next")
                 : i18n.t("onboardingProfile.finish")
             }
-            containerStyles="-mt-1 w-1/3 bg-white"
+            containerStyles="-mt-0 w-1/3 bg-white"
             textStyles="text-black text-sm font-nunitoSansBold"
             handlePress={handleNext}
             isLoading={isLoading}

@@ -8,6 +8,7 @@ import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton
 import ArrowHelp from "@/components/auth/arrowHelp";
 import PasswordPrompt from "@/components/auth/passwordPrompt";
 import i18n from "@/i18n"; // Импорт i18n для мультиязычности
+import { BG_COLORS } from "@/constants/Colors";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -154,13 +155,14 @@ const SignUp = () => {
                 </Text>
               )}
               <View className="flex-row items-center justify-start gap-2 py-4 px-0">
-                <Checkbox
+                <Checkbox.Android
+                  color={BG_COLORS.indigo[700]}
+                  uncheckedColor="gray"
                   status={isChecked ? "checked" : "unchecked"}
                   onPress={() => {
                     setIsChecked(!isChecked);
                     setCheckBoxAlert(true);
                   }}
-                  color="#3730a3"
                 />
                 <TouchableOpacity onPress={() => Linking.openURL('https://www.privacypolicies.com/live/503edef7-c248-4fad-9387-7f7a0a91f751')}>
                   <Text
