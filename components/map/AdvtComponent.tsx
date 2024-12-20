@@ -16,7 +16,6 @@ import {
 import { router } from "expo-router";
 import mapStore from "@/stores/MapStore";
 import { BREEDS_TAGS, petUriImage } from "@/constants/Strings";
-import { IUserAdvrt } from "@/dtos/Interfaces/user/IUserAdvrt";
 import { IUserChat } from "@/dtos/Interfaces/user/IUserChat";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 import CircleIcon from "../custom/icons/CircleIcon";
@@ -26,12 +25,13 @@ import i18n from "@/i18n";
 
 interface AdvtProps {
   advrt: IWalkAdvrtDto;
+  isShort?: boolean;
   onInvite: (uid: IUserChat) => void;
   onClose: () => void;
 }
 
 const AdvtComponent: React.FC<AdvtProps> = React.memo(
-  ({ advrt, onInvite, onClose }) => {
+  ({ advrt, onInvite, onClose, isShort=false}) => {
     const pets = advrt.userPets; // Берем первого питомца из списка
     //const [participants, setParticipants] = React.useState<IUserAdvrt[]>([]);
     const [requestVisible, setRequestVisible] = React.useState(false);
@@ -72,10 +72,10 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
         name: advrt.userName!,
         thumbnailUrl: advrt.userPhoto ?? "https://via.placeholder.com/100",
       };
-      chatStore.setSelectedAdvrtId(advrt.id!);
-      if (userStore.currentUser?.id) {
-        await mapStore.requestJoinWalk(advrt.id!, userStore.currentUser.id);
-      }
+      //chatStore.setSelectedAdvrtId(advrt.id!);
+      // if (userStore.currentUser?.id) {
+      //   await mapStore.requestJoinWalk(advrt.id!, userStore.currentUser.id);
+      // }
       onInvite(user);
  
     };
@@ -125,17 +125,15 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
               className="rounded-2xl"
               onPress={() => handleUserProfileOpen(advrt.userId!)}
             >
-              <Image
-                source={{
-                  uri: advrt?.userPhoto || "https://via.placeholder.com/100",
-                }}
-                className="w-24 h-24 rounded-2xl"
-              />
+              {!isShort && (
+                <Image source={{uri: advrt?.userPhoto || "https://via.placeholder.com/100"}} 
+                className="w-24 h-24 rounded-2xl"/>
+              )}
             </TouchableOpacity>
             <View className="flex-1 ml-2 justify-between">
               <View className="flex-1 justify-center">
                 <Text className="w-full text-xl font-nunitoSansBold max-h-14">
-                  {advrt.userName || i18n.t("WalkDetails.owner")}
+                  {advrt.userName || i18n.t("FabGroup.walk")}
                 </Text>
               </View>
               {/* <View className="flex-1 justify-center">
@@ -155,7 +153,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                 />
               </View>
               <View className="flex-1 justify-center">
-                {userIsOwner 
+                {!isShort && (userIsOwner 
                  ? (
                   <Button
                     mode="contained"
@@ -176,7 +174,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                       {i18n.t("WalkDetails.joinWalk")}
                     </Text>
                   </Button>
-                )}
+                ))}
               </View>
             </View>
           </View>

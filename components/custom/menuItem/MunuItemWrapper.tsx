@@ -20,7 +20,7 @@ const MenuItemWrapper: React.FC<MenuItemWrapperProps> = ({
   }, [])
     
   return (
-    <View className="overflow-hidden rounded-full">
+    <View className="overflow-hidden rounded-full bg-white">
       {!isIOS ? (
         <TouchableRipple onPress={onPress} rippleColor="#E8DFFF">
           <Menu.Item
