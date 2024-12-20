@@ -7,6 +7,7 @@ import { router } from "expo-router";
 import MenuItemWrapper from "@/components/custom/menuItem/MunuItemWrapper";
 import userStore from "@/stores/UserStore";
 import i18n from "@/i18n";
+import ComplaintModal from "@/components/custom/complaint/ComplaintModal";
 
 type PostCommentProps = {
   comment: ICommentWithUser;
@@ -16,6 +17,9 @@ type PostCommentProps = {
 const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteComment}) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [isComplaintModal, setIsComplaintModal] = useState<boolean>(false);
+  const [isComplaintDone, setIsComplaintDone] = useState(false);
+  const [isComplaintSuccess, setIsComplaintSuccess] = useState(false);
 
   useEffect(() => {
     if (comment.userId === userStore.currentUser?.id) {
@@ -54,13 +58,30 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
     setMenuVisible(false);
   }
 
-  const complainOnPost = () => {
-    console.log("Пожаловались на комментарий")
+  const handleComplain = () => {
+    setMenuVisible(false);
+    setIsComplaintModal(true);
   }
 
   const openUserProfile = (userId: string) => {
     router.push(`/(tabs)/profile/${userId}`);
   }
+
+  const closeComplaintModal = () => {
+    setIsComplaintModal(false);
+  }
+
+  const onComplain = async (text: string) => {
+    // await searchStore.complainOnPost(post.id, text)
+    //   .then(() => {
+    //     setIsComplaintDone(true);
+    //     setIsComplaintSuccess(true);
+    //   })
+    //   .catch(() => {
+    //     setIsComplaintDone(true);
+    //     setIsComplaintSuccess(false);
+    //   })
+  } 
  
   return (
     <Menu
@@ -87,6 +108,13 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
               </View>
             </View>
           </TouchableRipple>
+          <ComplaintModal
+            isVisible={isComplaintModal}
+            handleCloseModal={closeComplaintModal}
+            handleComplain={(text) => onComplain(text)}
+            isComplaintDone={isComplaintDone}
+            isComplaintSuccess={isComplaintSuccess}
+          />
         </View>
       }
     >
@@ -96,7 +124,7 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
         title="Удалить"
       /> :
       <MenuItemWrapper
-        onPress={complainOnPost}
+        onPress={handleComplain}
         title="Пожаловаться"
       />}
     </Menu>
@@ -114,6 +142,15 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderRadius: 12,
     paddingHorizontal: 12
+  },
+  complaint: {
+    backgroundColor: 'white',
+    padding: 20,
+    marginHorizontal: 24,
+    borderRadius: 12,
+    display: "flex",
+    flexDirection: "column",
+    gap: 12
   }
 });
 
