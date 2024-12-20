@@ -3,9 +3,9 @@ import { Stack } from "expo-router";
 
 
 
+
 const ChatLayout = () => {
   return (
-    <>
       <Stack initialRouteName="index">
         <Stack.Screen
           name="index"
@@ -16,8 +16,6 @@ const ChatLayout = () => {
           options={{ headerShown: false, title: "Chat" }}
         />
       </Stack>
-      
-    </>
   );
 };
 

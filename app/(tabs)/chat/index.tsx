@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-  ActivityIndicator,
   RefreshControl,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -16,40 +15,34 @@ import ChatMenu from "@/components/chat/ChatMenu";
 import EmptyChatScreen from "@/components/chat/EmptyChatScreen";
 import { shortenName } from "@/utils/utils";
 import i18n from "@/i18n";
+import { encode as btoa } from "base-64";
 
 
 const ChatListItem: React.FC<{
   item: (typeof ChatStore.chats)[0];
   lastMessage: string;
- 
 }> = ({ item, lastMessage }) => {
-
   const router = useRouter();
-  
-
 
   const handleOpenChat = () => {
-    router.push(`/chat/${item?.id}?otherUserId=${item.otherUserId}`);
+    const encodedAvatarUrl = item.thumbnailUrl ? btoa(item.thumbnailUrl) : "";
+    router.push({
+      pathname: "/chat/[chatId]",
+      params: {
+        chatId: item.id,
+        otherUserId: item.otherUserId,
+        otherUserName: item.otherUserName,
+        avatarUrl: encodedAvatarUrl,
+      },
+    });
     console.log("open chat: ", item.id);
   };
 
-  const handleOpenProfile = () => {
-    console.log(`open user profile: ${item.otherUserName}`);
-    router.push(`/(tabs)/profile/${item.otherUserId}`);
-    // открытие профиля собеседника тапая по аватару
-  };
-
- 
-
   return (
     <TouchableOpacity onPress={handleOpenChat}>
-      <View className="flex-row justify-between p-1 ml-4 items-center h-17 bg-gray-100 rounded-l-xl ">
+      <View className="flex-row justify-between p-1 ml-4 items-center h-17 bg-gray-100 rounded-l-xl">
         <View className="flex-row items-center">
-          <TouchableOpacity
-            onPress={() => {
-              handleOpenProfile();
-            }}
-          >
+          <TouchableOpacity onPress={handleOpenChat}>
             <Image
               source={{
                 uri: item?.thumbnailUrl ?? "https://i.pravatar.cc/200",
@@ -104,14 +97,6 @@ const ChatListScreen: React.FC = observer(() => {
     setIsRefreshing(false);
   };
 
-  if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#6200ee" />
-        <Text>{i18n.t("chat.loading")}</Text>
-      </View>
-    );
-  }
 
   if (error) {
     return (

@@ -1037,7 +1037,8 @@
     "wantToJoin": "Quiere unirse al paseo",
     "accept": "Aceptar",
     "decline": "Rechazar",
-    "place": "Lugar"
+    "place": "Lugar",
+    "check": "Ver"
   },
   "avatar":{
     "female": "Femenino",

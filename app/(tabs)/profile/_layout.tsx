@@ -4,7 +4,6 @@ import i18n from '@/i18n';
 
 export default function ProfileLayout() {
   return (
-    <>
     <Stack >
       <Stack.Screen 
         name="index" 
@@ -21,6 +20,7 @@ export default function ProfileLayout() {
         options={{ 
           headerShown: false,
         }} 
+   
       />
       <Stack.Screen 
         name="editUser" 
@@ -33,11 +33,12 @@ export default function ProfileLayout() {
       <Stack.Screen 
         name="pet/[petId]/index" 
         options={{ 
-          title: i18n.t('ProfileLayout.petProfileTitle'),
-          headerStyle: {
-            backgroundColor: 'transparent', // Прозрачный заголовок
-          },
-          headerShown: false,
+          title: '',
+          headerBackTitle: i18n.t('onboardingProfile.back'),
+          headerTitleStyle: {fontFamily: 'NunitoSans_400Regular', fontSize: 20 },
+          headerTintColor: '#000',
+          headerTransparent: true,
+          //headerShown: false,
         }} 
       />
       <Stack.Screen 
@@ -69,7 +70,5 @@ export default function ProfileLayout() {
         }} 
       />
     </Stack>
-   
-   </>
   );
 }

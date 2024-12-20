@@ -96,14 +96,14 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
           </View>
         }
       >
-        <View className="flex-row items-center justify-between">
+        {/* <View className="flex-row items-center justify-between">
           <MenuItemWrapper
             icon="bell-outline"
             onPress={onToggleSwitch}
             title={i18n.t("chat.title")} 
           />
           <MySwitch value={isSwitchOn} />
-        </View>
+        </View> */}
   
         <MenuItemWrapper
           icon={isBlocked ? "lock-outline" : "lock-open-outline"}

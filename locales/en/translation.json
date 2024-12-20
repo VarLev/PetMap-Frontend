@@ -1037,7 +1037,8 @@
     "wantToJoin": "Wants to join the walk",
     "accept": "Accept",
     "decline": "Decline",
-    "place": "Place"
+    "place": "Place",
+    "check": "Check"
   },
   "avatar":{
     "female": "Female",

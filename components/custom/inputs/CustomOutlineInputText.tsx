@@ -15,6 +15,8 @@ type InputTextProps = {
   keyboardType?: 'default' | 'number-pad' | 'decimal-pad' | 'numeric' | 'email-address' | 'phone-pad';
   mask?: string; // Опциональная маска
   maxLength?: number;
+  onPress?: () => void;
+  editable?: boolean;
 };
 
 const CustomOutlineInputText = ({
@@ -26,7 +28,9 @@ const CustomOutlineInputText = ({
   numberOfLines,
   keyboardType,
   mask, // Опциональная маска для поля ввода
-  maxLength
+  maxLength,
+  onPress,
+  editable = true,
 }: InputTextProps) => {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -100,18 +104,21 @@ const CustomOutlineInputText = ({
           mode="outlined"
           className={`mt-1 text-base font-nunitoSansBold bg-white ${containerStyles}`}
           contentStyle={{ fontFamily: 'NunitoSans_400Regular', fontSize: 16, color: '#363636' }}
-          style={{ fontFamily: 'NunitoSans_400Regular', fontSize: 16}}
+          style={{ fontFamily: 'NunitoSans_400Regular', fontSize: 16, height: 50}}
           numberOfLines={numberOfLines || 1}
           outlineStyle={{
             borderColor: isFocused ? '#7038c9' : '#bababa', // Цвет границы в зависимости от фокуса
           }}
           keyboardType={keyboardType || 'default'}
+          onPress={onPress}
+          editable={editable}
           theme={{ 
             fonts: {      
               bodyLarge: { fontFamily: 'NunitoSans_400Regular'  }, 
             },
             roundness: 8, 
           }
+          
         }
         />
       )}

@@ -351,6 +351,7 @@ const MapBoxMap = observer(() => {
       mapStore.setBottomSheetVisible(true);
       setIsSheetVisible(true);
       mapStore.currentWalkId = advrt.id;
+      
     }
   };
 
@@ -393,8 +394,20 @@ const MapBoxMap = observer(() => {
       sheetRef.current?.close();
       console.log("Chat invite:", otherUser);
       const chatId = await chatStore.createNewChat(otherUser);
+      await chatStore.sendInviteMessage(chatId!, otherUser);
+      console.log("Chat created:", chatId);
       if (chatId) {
-        router.push(`/chat/${chatId}`);
+        const encodedAvatarUrl = otherUser.thumbnailUrl ? btoa(otherUser.thumbnailUrl) : "";
+            router.push({
+              pathname: "/chat/[chatId]",
+              params: {
+                chatId: chatId,
+                otherUserId: otherUser.id,
+                otherUserName: otherUser.name,
+                avatarUrl: encodedAvatarUrl,
+              },
+            });
+        //router.push(`/chat/${chatId}`);
       }
     } catch (error) {
       console.error("Ошибка при создании чата:", error);

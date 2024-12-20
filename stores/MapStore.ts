@@ -129,6 +129,16 @@ class MapStore {
     }
   }
 
+  async getWalkAdvrtById(walkId: string): Promise<IWalkAdvrtDto> {
+    try {
+      const response = await apiClient.get(`walkadvrt/walk/${walkId}`);
+      console.log('Get walk advrt by id', response.data);
+      return response.data as IWalkAdvrtDto;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+
   async addWalkAdvrt(walk : IWalkAdvrtDto):Promise<boolean | undefined> {
     try {
       const response = await apiClient.post('map/walk', walk);

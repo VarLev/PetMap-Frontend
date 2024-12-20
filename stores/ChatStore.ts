@@ -18,6 +18,7 @@ import { getPushTokenFromServer, sendPushNotification } from "@/hooks/notificati
 import { IUserChat } from "@/dtos/Interfaces/user/IUserChat";
 import apiClient from "@/hooks/axiosConfig";
 import { handleAxiosError } from "@/utils/axiosUtils";
+import mapStore from "./MapStore";
 
 interface Chat {
   id: string;
@@ -102,95 +103,71 @@ class ChatStore {
   }
   
 
-   async createNewChat(
-    otherUser: IUserChat,
-    initalMessage?: string
-  ): Promise<string | undefined> {
+  async createNewChat(otherUser: IUserChat): Promise<string | undefined> {
     const userId = userStore.currentUser?.id;
     if (!userId) return;
-
-    const chatId = userId + otherUser.id;
-
-    if (!chatId) {
-      throw new Error("Unable to generate chat ID");
-    }
-    // проверяем существует ли чат в базе
-    // Формируем два возможных chatId для проверки
+  
     const chatId1 = userId + otherUser.id;
     const chatId2 = otherUser.id + userId;
-
-    // Проверяем, существует ли чат в базе для обоих вариантов chatId
     let chatIdToUse: string | undefined;
-    for (const chatId of [chatId1, chatId2]) {
-      const chatRef = ref(database, `chats/${chatId}`);
+  
+    // Проверяем существует ли уже чат
+    for (const cId of [chatId1, chatId2]) {
+      const chatRef = ref(database, `chats/${cId}`);
       const snapshot = await get(chatRef);
       if (snapshot.exists()) {
-        chatIdToUse = chatId;
+        chatIdToUse = cId;
         break;
       }
     }
-
-    const userId1 = userStore.currentUser?.id;
-    const userId2 = otherUser?.id;
-    if (otherUser) {
-      console.log("userId2:", userId2);
-      const userId2fmcToken = await getPushTokenFromServer(userId2);
-      if (userId2fmcToken) {
-        otherUser.fmcToken = userId2fmcToken;
-      }
-      console.log("fmcTokenOtherUser:", userId2fmcToken);
-    }
-    console.log("fmcTokenCurrentUser:", userStore.currentUser?.fmcToken);
-
-    // Если чат уже существует, отправляем сообщение и возвращаем chatId
+  
     if (chatIdToUse) {
-      console.log("Chat already exists");
-      await this.sendInviteMessage(chatIdToUse, otherUser);
+      // Чат уже есть, просто возвращаем его
       return chatIdToUse;
     }
-
+  
+    // Чата нет, создаём новый при первом сообщении
     const newChatData = {
-      lastMessage: "Чат начат",
+      lastMessage: "", // Пока нет сообщений
       lastCreatedAt: Date.now(),
       participants: {
         [userId]: true,
         [otherUser.id]: true,
       },
     };
-
+  
     const newUserData1 = {
       name: userStore.currentUser?.name,
       avatar: userStore.currentUser?.thumbnailUrl,
       lastSeen: Date.now(),
     };
     const newUserData2 = {
-      name: otherUser?.name,
-      avatar: otherUser?.thumbnailUrl,
+      name: otherUser.name,
+      avatar: otherUser.thumbnailUrl,
     };
-
+  
     const updates: { [key: string]: any } = {};
+    const chatId = chatId1; // или другой логике выбора chatId, если нужно
     updates[`/chats/${chatId}`] = newChatData;
-
-    updates[`/users/${userId1}`] = newUserData1;
-
-    updates[`/users/${userId2}`] = newUserData2;
-
+    updates[`/users/${userId}`] = newUserData1;
+    updates[`/users/${otherUser.id}`] = newUserData2;
+  
     try {
       await update(ref(database), updates);
-
+  
       runInAction(() => {
         this.chats.push({
           id: chatId,
           lastMessage: newChatData.lastMessage,
           lastCreatedAt: newChatData.lastCreatedAt,
           participants: newChatData.participants,
-          otherUserName: otherUser?.name!,
-          thumbnailUrl: otherUser?.thumbnailUrl!,
+          otherUserName: otherUser.name!,
+          otherUserId: otherUser.id,
+          thumbnailUrl: otherUser.thumbnailUrl!,
         });
+        this.sortChats();
       });
-
-      await this.sendInviteMessage(chatId, otherUser);
-
+  
       return chatId;
     } catch (error) {
       console.error("Ошибка создания чата:", error);
@@ -200,9 +177,9 @@ class ChatStore {
 
   async sendInviteMessage(chatId: string, otherUser: IUserChat) {
     const userId = userStore.currentUser?.id;
-    const recipientExpoPushToken = userStore.users.find(
-      (user) => user.id === otherUser.id
-    )?.fmcToken;
+    // const recipientExpoPushToken = userStore.users.find(
+    //   (user) => user.id === otherUser.id
+    // )?.fmcToken;
     if (!userId) return;
 
     const initialMessage: MessageType.Custom = {
@@ -216,10 +193,11 @@ class ChatStore {
         userId: userStore.currentUser?.id,
         userName: userStore.currentUser?.name,
         userAvatar: userStore.currentUser?.thumbnailUrl,
-        advrtId: this.advrtId,
+        advrtId: mapStore.currentWalkId,
         visibleToUserId: otherUser.id, // ID пользователя, которому нужно показать кнопки
       },
     };
+    console.log("initialMessage:", mapStore.currentWalkId); 
 
     try {
       await push(ref(database, `messages/${chatId}`), initialMessage);
@@ -252,57 +230,65 @@ class ChatStore {
     otherUserId: string | undefined
   ) {
     const userId = userStore.currentUser?.id;
-    const recipientExpoPushToken = userStore.users.find(
-      (user) => user.id === otherUserId
-    )?.fmcToken;
-
     if (!userId) {
       console.error("User is not defined");
       return;
     }
-
+  
+    // Проверяем, есть ли чат в сторе
+    let chatExists = this.chats.some((chat) => chat.id === chatId);
+  
+    // Если чат не существует, попробуем создать его
+    if (!chatExists && otherUserId) {
+      const otherUser = await userStore.getUserById(otherUserId);
+      if (!otherUser) {
+        console.error("Пользователь не найден");
+        return;
+      }
+      const newChatId = await this.createNewChat(otherUser);
+      if (!newChatId) {
+        console.error("Не удалось создать чат");
+        return;
+      }
+      chatId = newChatId;
+      chatExists = true;
+    }
+  
     const textMessage: Message = {
       author: { id: userId },
       createdAt: Date.now(),
       text,
       type: "text",
     };
-
+  
     try {
-      // Отправляем сообщение
       await push(ref(database, `messages/${chatId}`), textMessage);
       console.log("Message sent:", textMessage);
-
+  
       // Обновляем последнее сообщение в чате
       await update(ref(database, `chats/${chatId}`), {
         lastMessage: text,
         lastCreatedAt: Date.now(),
       });
-      // обновляем время посещения
+  
       await update(ref(database, `users/${userId}`), {
         lastSeen: Date.now(),
       });
-
-      // Отправляем push-уведомление, если есть токен получателя
+  
+      // Отправляем пуш, если есть fcmToken
+      const recipientExpoPushToken = userStore.users.find((user) => user.id === otherUserId)?.fmcToken;
       if (recipientExpoPushToken) {
-        await sendPushNotification(
-          recipientExpoPushToken,
-          "Новое сообщение",
-          text,
-          { chatId }
-        );
+        await sendPushNotification(recipientExpoPushToken, "Новое сообщение", text, { chatId });
       }
-
-      // Обновляем локальное состояние lastMessage и lastSeen в chatStore
+  
       runInAction(() => {
-        chatStore.updateChat(chatId, {
+        this.updateChat(chatId, {
           lastMessage: text,
           lastCreatedAt: Date.now(),
-        })
-        chatStore.lastSeen[userId] = Date.now()   
-        chatStore.lastMessage[chatId] = text
+        });
+        this.lastSeen[userId] = Date.now();
+        this.lastMessage[chatId] = text;
       });
-
     } catch (error) {
       console.error("Error during sendMessage:", error);
     }
