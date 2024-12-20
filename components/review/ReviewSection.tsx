@@ -117,12 +117,24 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
     }
   };
 
+  const deleteReview = async (reviewId: string) => {
+    await mapStore.deleteReview(reviewId)
+      .then(() => {
+        setLocalReviews([]);
+        setExistingReview(null);
+        setReviewText("");
+        setRating(0);
+      })
+      .then(() => loadReviews(1))
+  }
+  
   const renderReview = ({ item }: { item: ReviewDTO }) => {
     return (
       <View>
         <ReviewComment
           item={item}
           onUpdateReview={handleSubmitOrUpdateReview}
+          handleDeleteReview={(reviewId) => deleteReview(reviewId)}
           refreshReviews={(updatedReview: ReviewDTO) => {
             setLocalReviews((prevReviews) =>
               prevReviews.map((r) =>

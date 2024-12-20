@@ -131,6 +131,16 @@ class SearchStore {
     }
   }
 
+  async deletePostComment(commentId: string) {
+    try {
+      if (commentId) {
+        await apiClient.delete(`post/comments/${commentId}`);
+      }
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+
   async createPost(content: string, images: string[]) {
     this.setLoading(true);
     try {
@@ -212,6 +222,23 @@ class SearchStore {
       }
     } catch (error) {
       return handleAxiosError(error);
+    }
+  }
+
+  async complainOnPost(postId: string, text: string) {
+    this.setLoading(true);
+    try {
+      const res = await apiClient.post(`/post/complaint`, {
+        userId: this.getUserId(),
+        postId,
+        text,
+        createdAt: new Date()
+      })
+      console.log(res.data)
+    } catch (error) {
+      return handleAxiosError(error);
+    } finally {
+      this.setLoading(false);
     }
   }
 

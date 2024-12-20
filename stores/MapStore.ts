@@ -454,6 +454,16 @@ class MapStore {
       return handleAxiosError(error);
     }
   }
+
+  async deleteReview(reviewId: string) {
+    try {
+      if (reviewId) {
+        await apiClient.delete(`/review/delete-point-review/${reviewId}`);
+      }
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
 }
 
 const mapStore = new MapStore();

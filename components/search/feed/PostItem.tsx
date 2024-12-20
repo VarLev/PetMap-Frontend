@@ -10,6 +10,7 @@ import { router } from "expo-router";
 import searchStore from '@/stores/SearchStore';
 import userStore from "@/stores/UserStore";
 import i18n from '@/i18n';
+import ComplaintModal from '@/components/custom/complaint/ComplaintModal';
 
 type PostCardProps = {
   post: IPost,
@@ -24,6 +25,9 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
   const [isLoadingDeletingPost, setIsLoadingDeletingPost] = useState(false);
   const [likes, setLikes] = useState<number>(post.likesCount);
   const [comments, setComments] = useState<ICommentWithUser[]>(post.comments);
+  const [isComplaintModal, setIsComplaintModal] = useState<boolean>(false);
+  const [isComplaintDone, setIsComplaintDone] = useState(false);
+  const [isComplaintSuccess, setIsComplaintSuccess] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -64,7 +68,6 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
   };
 
   const openMenu = () => setMenuVisible(true);
-
   const closeMenu = () => setMenuVisible(false);
 
   const deletePost = async (postId: string) => {
@@ -80,8 +83,13 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
     }
   }
 
-  const complainOnPost = () => {
-    console.log('Пожаловались на пост')
+  const closeComplaintModal = () => {
+    setIsComplaintModal(false);
+  }
+
+  const handleComplain = () => {
+    setMenuVisible(false);
+    setIsComplaintModal(true);
   }
 
   const handleSheetCommentsOpen = (postId: string) => {
@@ -99,6 +107,18 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
   const openUserProfile = (userId: string) => {
     router.push(`/(tabs)/profile/${userId}`);
   }
+
+  const onComplain = async (text: string) => {
+    await searchStore.complainOnPost(post.id, text)
+      .then(() => {
+        setIsComplaintDone(true);
+        setIsComplaintSuccess(true);
+      })
+      .catch(() => {
+        setIsComplaintDone(true);
+        setIsComplaintSuccess(false);
+      })
+  } 
 
   const CardItem = useMemo(() => (
     <Card className="mx-2 mt-2 bg-white rounded-2xl">
@@ -146,9 +166,16 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
                     /> : 
                     i18n.t("feedPosts.deletePost")}
                 /> :
-                <Menu.Item onPress={complainOnPost} title={i18n.t("feedPosts.complainOnPost")} />}
+                <Menu.Item onPress={handleComplain} title={i18n.t("feedPosts.complainOnPost")} />}
               </Menu>
             </View>
+            <ComplaintModal
+              isVisible={isComplaintModal}
+              handleCloseModal={closeComplaintModal}
+              handleComplain={(text) => onComplain(text)}
+              isComplaintDone={isComplaintDone}
+              isComplaintSuccess={isComplaintSuccess}
+            />
           </View>
           <Text className="my-1 text-sm">{post.content}</Text>
           {post.postPhotos.length > 0 && (
@@ -205,7 +232,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
           </View>
         </Card.Actions>
       </Card>
-  ), [post, likes, comments, commentText, menuVisible, hasLiked, isCurrentUser, isLoadingDeletingPost])
+  ), [post, likes, comments, commentText, menuVisible, hasLiked, isCurrentUser, isLoadingDeletingPost, isComplaintModal, isComplaintDone, isComplaintSuccess])
 
   return CardItem;
 });
