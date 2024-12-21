@@ -28,14 +28,24 @@ const TopUsers = () => {
   );
 
   const fetchTopUsers = useCallback(async () => {
-    const users = await usersStore.getAllTopUsers();
-    setTopUsers(users);
-    setIsLoading(false); // Данные загружены, снимаем состояние загрузки
+    const fetchedUsers = await usersStore.getAllTopUsers();
+
+    // 2. Фильтруем список:
+    //    берем только тех, у кого есть и имя (name), и аватар (thumbnailUrl)
+    const validUsers = fetchedUsers.filter(
+      (user) => user.name && user.thumbnailUrl
+    );
+
+    setTopUsers(validUsers);
+    if(validUsers.length > 4)
+      setIsLoading(false); // Данные загружены, снимаем состояние загрузки
   }, []);
 
   useEffect(() => {
     fetchTopUsers();
+    
     translateY.value = withTiming(0, { duration: 500 });
+    
   }, [fetchTopUsers]);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -59,7 +69,7 @@ const TopUsers = () => {
 
   const renderTopThreeUsers = useCallback(() => {
     // Если данных ещё нет или их меньше 3-х, не отрисовываем блок топ-3
-    if (topUsers.length < 3) return null;
+   
 
     return (
       <Animated.View className="rounded-b-3xl"

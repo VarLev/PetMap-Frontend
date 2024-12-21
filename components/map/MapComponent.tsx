@@ -419,7 +419,7 @@ const MapBoxMap = observer(() => {
     if (isGetedBonuses) {
       setAlertImage(require("@/assets/images/alert-dog-bonuses.webp"));
       setAlertText(
-        i18n.t('MapAlerts.walkCreatedWithBonus')
+        i18n.t('Map.walkCreatedWithBonus')
       );
       showAlert("info");
     }
@@ -681,7 +681,7 @@ const MapBoxMap = observer(() => {
           )}
 
           {/* Добавляем компонент точек интереса */}
-          {userCoordinates && (
+          {userCoordinates && uiStore.getLocationPermissionGranted() &&  (
             <PointsOfInterestComponent
               userLocation={userCoordinates}
               onRouteReady={handleRouteReady}

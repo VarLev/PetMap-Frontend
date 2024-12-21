@@ -385,6 +385,7 @@ const EditPetProfileComponent = observer(
                 onChange={(selectedGender) =>
                   handleFieldChange("gender", selectedGender)
                 }
+                listMode="MODAL"
               />
 
               <CustomDropdownList
@@ -394,6 +395,7 @@ const EditPetProfileComponent = observer(
                 initialSelectedTag={editablePet.breed || ""}
                 onChange={(text) => handleFieldChange("breed", text)}
                 searchable={true}
+                
                 listMode="MODAL"
               />
 

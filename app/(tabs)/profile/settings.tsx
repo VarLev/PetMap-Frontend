@@ -74,14 +74,14 @@ const Settings = observer(() => {
   return (
     <View className="flex-1 justify-between p-4">
       <List.Section>
-        <List.Subheader>{i18n.t('settings.general')}</List.Subheader>
+        {/* <List.Subheader>{i18n.t('settings.general')}</List.Subheader>
         <List.Item
           title={i18n.t('settings.pushNotifications')}
           right={() => (
             <Switch value={sosEnabled} onValueChange={handleToggleSos} />
           )}
           titleStyle={{ fontFamily: "NunitoSans_400Regular" }}
-        />
+        /> */}
 
         <List.Item
           title={i18n.t('settings.appLanguage')}

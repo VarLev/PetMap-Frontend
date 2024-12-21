@@ -36,9 +36,9 @@ function EmptyChatScreen() {
             />
             </View>
           <Text className="text-center text-xl mt-4 font-nunitoSansBold py-2">{i18n.t("chat.noMessages")}</Text>
-          <Text className="text-[16px] font-nunitoSansRegular text-center p-2">
+          {/* <Text className="text-[16px] font-nunitoSansRegular text-center p-2">
             {i18n.t("chat.enterInSection")}<Text onPress={handleAllUsers} className="color-[#2F00B6] font-bold">{i18n.t("chat.allUsers")} </Text> {i18n.t("chat.or")} <Text onPress={handleBack} className="color-[#2F00B6] font-bold">{i18n.t("chat.map")} </Text> {i18n.t("chat.newConnections")}
-          </Text>
+          </Text> */}
           </View>
         </View>
       </View>

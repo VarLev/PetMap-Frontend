@@ -104,7 +104,7 @@ const CustomOutlineInputText = ({
           mode="outlined"
           className={`mt-1 text-base font-nunitoSansBold bg-white ${containerStyles}`}
           contentStyle={{ fontFamily: 'NunitoSans_400Regular', fontSize: 16, color: '#363636' }}
-          style={{ fontFamily: 'NunitoSans_400Regular', fontSize: 16, height: 50}}
+          style={{ fontFamily: 'NunitoSans_400Regular', fontSize: 16}}
           numberOfLines={numberOfLines || 1}
           outlineStyle={{
             borderColor: isFocused ? '#7038c9' : '#bababa', // Цвет границы в зависимости от фокуса
