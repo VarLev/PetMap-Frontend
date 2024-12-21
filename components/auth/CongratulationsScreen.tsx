@@ -8,6 +8,7 @@ import { JobType } from "@/dtos/enum/JobType";
 import i18n from '@/i18n';
 import uiStore from "@/stores/UIStore";
 import { Language } from "@/dtos/enum/Language";
+import { router } from "expo-router";
 
 function CongratulationsScreen() {
   const [benefites, setBenefits] = useState<number>(0);
@@ -34,6 +35,8 @@ function CongratulationsScreen() {
     if (selectedLanguage) {
       await uiStore.setSystemLanguage(selectedLanguage);
     }
+    await router.replace("/search/news");
+
   };
 
   return (
