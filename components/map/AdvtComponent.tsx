@@ -261,7 +261,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                           </View>
                           <Text className="text-sm -mt-1 font-nunitoSansRegular">
                             {calculateDogAge(pet.birthDate)}{" "}
-                            {getTagsByIndex(BREEDS_TAGS, pet.breed!) ||
+                            {getTagsByIndex(i18n.t("tags.breeds") as string[], pet.breed!) ||
                               i18n.t("WalkDetails.breed")}
                           </Text>
                         </View>

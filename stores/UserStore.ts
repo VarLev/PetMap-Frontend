@@ -76,12 +76,12 @@ class UserStore {
   }
 
   setLogged(isLogged: boolean) {
-    console.log('Установка Залогинивание', isLogged);
+
     this.isLogged = isLogged;
   }
 
   getLogged() {
-    console.log('Взятие Залогинивание');
+   
     return this.isLogged;
   }
 
@@ -321,9 +321,10 @@ class UserStore {
       const token = await userCred.user.getIdToken();
       await AsyncStorage.setItem(process.env.EXPO_PUBLIC_F_TOKEN!, token);
       runInAction(() => {this.setCreatedUser(userCred);});
-      console.log('existingUserResponse:');
+      //console.log('existingUserResponse:');
       const existingUserResponse = await apiClient.get(`/users/exists/${userCred.user.uid}`);
-      console.log('existingUserResponse:', existingUserResponse);
+      //console.log('existingUserResponse:', existingUserResponse);
+      console.log('existingUserResponse:', existingUserResponse.status);
       if(existingUserResponse.status === 200){
 
         isUserAlreadyRegistrated = true;
@@ -331,6 +332,8 @@ class UserStore {
         console.log('User already registrated', isUserAlreadyRegistrated);
 
       }else{
+
+        console.log('User not registrated');
         const userRegisterDTO : IUserRegister  = {
           email: userCred.user.email!,
           firebaseUid: userCred.user.uid,
