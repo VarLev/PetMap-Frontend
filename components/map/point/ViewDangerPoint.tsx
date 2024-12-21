@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Linking, View, Text } from 'react-native';
-import { DANGERTYPE_TAGS } from '@/constants/Strings';
 import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
 import { getTagsByIndex } from '@/utils/utils';
 import CustomButtonPrimary from '@/components/custom/buttons/CustomButtonPrimary';
@@ -108,7 +107,7 @@ const ViewDangerPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
               {i18n.t('ViewDangerPoint.dangerType')}
             </Text>
             <Text className="text-base font-nunitoSansRegular">
-              {getTagsByIndex(DANGERTYPE_TAGS, mapPoint.dangerType)}
+              {getTagsByIndex(i18n.t('tags.DANGERTYPE_TAGS') as string[], mapPoint.dangerType)}
             </Text>
             <Divider className="mt-2 bg-slate-400" />
             <Text className="mt-2 text-lg font-nunitoSansBold text-indigo-700">

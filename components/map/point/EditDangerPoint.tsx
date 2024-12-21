@@ -3,7 +3,6 @@ import { View } from 'react-native';
 import CustomOutlineInputText from '../../custom/inputs/CustomOutlineInputText';
 import { Text } from 'react-native';
 import AddPhotoButton from '../../custom/buttons/AddPhotoButton';
-import { DANGERTYPE_TAGS } from '@/constants/Strings';
 import CustomDropdownList from '../../custom/selectors/CustomDropdownList';
 import CustomButtonPrimary from '../../custom/buttons/CustomButtonPrimary';
 import mapStore from '@/stores/MapStore';
@@ -69,7 +68,7 @@ const EditDangerPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) =>
           onImageSelected={(photo) => handleFieldChange('thumbnailUrl', photo)}
         />
         <CustomDropdownList
-          tags={DANGERTYPE_TAGS}
+          tags={i18n.t('tags.DANGERTYPE_TAGS') as string[]}
           listMode="MODAL"
           onChange={(tag) => handleFieldChange('dangerType', tag)}
         />

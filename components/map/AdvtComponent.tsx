@@ -15,11 +15,10 @@ import {
 } from "@/utils/utils";
 import { router } from "expo-router";
 import mapStore from "@/stores/MapStore";
-import { BREEDS_TAGS, petUriImage } from "@/constants/Strings";
+import {petUriImage } from "@/constants/Strings";
 import { IUserChat } from "@/dtos/Interfaces/user/IUserChat";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 import CircleIcon from "../custom/icons/CircleIcon";
-import chatStore from "@/stores/ChatStore";
 //import  { renderWalkDetails } from "@/utils/utils";
 import i18n from "@/i18n";
 

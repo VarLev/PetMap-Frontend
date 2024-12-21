@@ -1,57 +1,57 @@
 {
-  "registration":"¡Cuenta creada con éxito! Se ha enviado un correo de verificación a tu dirección de correo electrónico. Por favor, revisa tu bandeja de entrada y verifica tu correo para completar el registro.",
-  "verification":"Correo electrónico no verificado. Hemos enviado el correo de verificación nuevamente.",
-  "permissions": "No se otorgaron todos los permisos, la funcionalidad estará limitada. Por favor, conceda los permisos en el administrador de aplicaciones.",
+  "registration": "¡Cuenta creada con éxito! Te enviamos un correo de verificación a tu dirección de email. Por favor, revisá tu bandeja de entrada y verificá tu correo para completar el registro.",
+  "verification": "Correo electrónico no verificado. Te reenviamos el correo de verificación.",
+  "permissions": "No se otorgaron todos los permisos, la funcionalidad estará limitada. Por favor, brindá los permisos en el administrador de la aplicación.",
   "ok": "OK",
   "cancel": "Cancelar",
-  "search":{
+  "search": {
     "news": "Noticias",
     "activitis": "Actividades"
   },
   "index": {
     "welcome": "¡Bienvenido a PetMap!",
-    "signUp": "Registrarse",
-    "alreadyHaveAccount": "Ya tienes una cuenta",
+    "signUp": "Registrarte",
+    "alreadyHaveAccount": "¿Ya tenés una cuenta?",
     "otherSignInMethods": "Otros métodos de inicio de sesión",
     "error": "Hay un problema de conexión"
   },
   "onboarding": {
     "slide1": {
-      "title": "Haz nuevos amigos con dueños de mascotas. Sal a caminar juntos."
+      "title": "Hacé nuevos amigos con dueños de mascotas. Salgan a pasear juntos."
     },
     "slide2": {
-      "title": "Todas las ubicaciones útiles en una aplicación: clínicas veterinarias, parques y mucho más."
+      "title": "Todas las ubicaciones útiles en una sola app: clínicas veterinarias, parques y mucho más."
     },
     "slide3": {
-      "title": "Elige profesionales de confianza para varios servicios: peluquería, adiestradores de perros, etc."
+      "title": "Elegí profesionales de confianza para distintos servicios: peluquería, entrenadores caninos, etc."
     },
     "slide4": {
-      "title": "Mantente al tanto de todos los eventos para mascotas."
+      "title": "Mantenete al tanto de todos los eventos para mascotas."
     }
   },
   "onboardingProfile": {
     "slide1": {
       "title": "¡Bienvenido a PetMap!",
-      "subtitle": "Elija el idioma de la aplicación para que podamos entendernos mejor.",
+      "subtitle": "Elegí el idioma de la aplicación para que podamos entendernos mejor.",
       "englishButton": "Inglés",
       "spanishButton": "Español",
       "russianButton": "Ruso"
     },
     "slide2": {
-      "title": "Comienza a configurar tu perfil ahora mismo",
-      "subtitle": "Y recibe tus primeros bonos después del registro para intercambiarlos por regalos."
+      "title": "Empezá a configurar tu perfil ahora mismo",
+      "subtitle": "Y recibí tus primeros bonos después de registrarte para canjearlos por regalos."
     },
     "slide3": {
-      "title": "Cuéntanos un poco sobre ti",
-      "subtitle": "Tu perfil será visible para otros propietarios de mascotas.",
-      "nameLabel": "¿Cómo te llamas?",
+      "title": "Contanos un poco sobre vos",
+      "subtitle": "Tu perfil será visible para otros dueños de mascotas.",
+      "nameLabel": "¿Cómo te llamás?",
       "birthDateLabel": "Fecha de nacimiento",
       "uploadPhotoButton": "Subir foto",
       "chooseAvatarButton": "Elegir avatar"
     },
     "slide4": {
-      "title": "Configura el perfil de tu mascota",
-      "subtitle": "El perfil de tu mascota será visible para otros al responder a una caminata.",
+      "title": "Configurá el perfil de tu mascota",
+      "subtitle": "El perfil de tu mascota será visible para otros cuando respondan a una caminata.",
       "petNameLabel": "Nombre",
       "breedLabel": "Raza",
       "birthDateLabel": "Fecha de nacimiento",
@@ -65,58 +65,58 @@
     "next": "Siguiente",
     "finish": "Finalizar",
     "back": "Atrás",
-    "alertMessage": "Si omites la introducción, no recibirás bonificaciones y no podrás usar el mapa hasta que completes tu perfil."
+    "alertMessage": "Si omitís la introducción, no recibirás bonos y no podrás usar el mapa hasta completar tu perfil."
   },
   "congratulations": {
-    "title": "¡Has completado el registro inicial!",
-    "subtitle": "¡Bien hecho! Tu perfil está activado. Recibe tus primeros bonos",
+    "title": "¡Completaste el registro inicial!",
+    "subtitle": "¡Bien hecho! Tu perfil está activado. Recibí tus primeros bonos",
     "button": "Reclamar bonos",
     "petBonuses": "PetBonuses"
   },
   "signIn": {
     "welcomeBack": "¡Bienvenido de nuevo!",
-    "enterCredentials": "Ingresa tus datos de inicio de sesión para acceder a tu cuenta.",
-    "email": "Correo electrónico",
+    "enterCredentials": "Ingresá tus datos de inicio de sesión para acceder a tu cuenta.",
+    "email": "Email",
     "password": "Contraseña",
     "loginButton": "Iniciar sesión",
     "forgotPassword": "¿Olvidaste tu contraseña?",
-    "noAccount": "¿No tienes cuenta?",
-    "register": "¡Regístrate!",
-    "invalidEmail": "Por favor, ingresa un correo electrónico válido"
+    "noAccount": "¿No tenés una cuenta?",
+    "register": "¡Registrate!",
+    "invalidEmail": "Por favor, ingresá un email válido"
   },
   "signUpMailValidation": {
-    "forgotPassword": "Ups... olvidaste tu contraseña",
-    "enterEmail": "Para restablecer tu contraseña, ingresa el correo electrónico asociado a tu cuenta.",
-    "emailLabel": "Correo electrónico",
-    "invalidEmail": "Por favor, ingresa un correo válido",
+    "forgotPassword": "Uy... te olvidaste tu contraseña",
+    "enterEmail": "Para restablecer tu contraseña, ingresá el email asociado a tu cuenta.",
+    "emailLabel": "Email",
+    "invalidEmail": "Por favor, ingresá un email válido",
     "submitButton": "Confirmar",
-    "passwordResetLink": "Enlace a la pantalla de restablecimiento de contraseña (temporal) para simular presionar el botón Confirmar",
-    "noAccount": "¿No tienes una cuenta?",
-    "register": "Regístrate"
+    "passwordResetLink": "Enlace a la pantalla de restablecer contraseña (temporal) para simular presionar el botón Confirmar",
+    "noAccount": "¿No tenés cuenta?",
+    "register": "Registrate"
   },
   "signUpPasswordReset": {
     "title": "Restablecer Contraseña",
-    "description": "Ingresa una nueva contraseña para completar el restablecimiento de la contraseña y acceder a tu cuenta.",
+    "description": "Ingresá una nueva contraseña para finalizar el restablecimiento y acceder a tu cuenta.",
     "password": "Contraseña",
     "confirmPassword": "Confirmar Contraseña",
     "saveButton": "Guardar",
     "passwordMismatch": "Las contraseñas no coinciden",
-    "noAccount": "¿No tienes una cuenta?",
-    "register": "Regístrate"
+    "noAccount": "¿No tenés una cuenta?",
+    "register": "Registrate"
   },
   "signUp": {
-    "title": "¡Únete a PetMap!",
-    "description": "Introduce tus datos para crear una cuenta.",
-    "email": "Correo electrónico",
+    "title": "¡Sumate a PetMap!",
+    "description": "Ingresá tus datos para crear una cuenta.",
+    "email": "Email",
     "password": "Contraseña",
     "confirmPassword": "Confirmar Contraseña",
     "passwordMismatch": "Las contraseñas no coinciden",
     "dataPolicy": "Estoy de acuerdo con la política de procesamiento de datos del servicio",
-    "policyAlert": "Por favor, acepta la política de procesamiento de datos",
-    "registerButton": "Registrarse",
-    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
-    "login": "¡Inicia sesión!",
-    "invalidEmail": "Por favor, ingresa un correo electrónico válido"
+    "policyAlert": "Por favor, aceptá la política de procesamiento de datos",
+    "registerButton": "Registrarte",
+    "alreadyHaveAccount": "¿Ya tenés una cuenta?",
+    "login": "¡Iniciá sesión!",
+    "invalidEmail": "Por favor, ingresá un email válido"
   },
   "arrowHelp": {
     "help": "Ayuda"
@@ -199,7 +199,7 @@
       "Moda",
       "Tecnología",
       "Gadgets",
-      "Coches",
+      "Autos",
       "Motos",
       "Ciclismo",
       "Pesca",
@@ -262,14 +262,14 @@
       "Arte",
       "Investigación Científica",
       "Arquitectura",
-      "Farmacia",
+      "Farmacéutica",
       "Agricultura",
       "Veterinaria",
       "Producción Industrial",
       "Energía",
       "Turismo",
       "Hotelería",
-      "Gastronomía",
+      "Restaurantes",
       "Comercio",
       "Recursos Humanos (RRHH)",
       "Relaciones Públicas (PR)",
@@ -291,7 +291,7 @@
       "Cosmetología",
       "Peluquería",
       "Fisioterapia",
-      "Entrenamiento Deportivo",
+      "Coaching",
       "Análisis Deportivo",
       "Servicio Militar",
       "Ciencias Políticas",
@@ -435,8 +435,8 @@
       "Gestión del Tiempo"
     ],
     "petGames": [
-      "Recoger",
-      "Tira y Afloja",
+      "Recibir",
+      "Tirar y Aflojar",
       "Escondidas",
       "Frisbee",
       "Agilidad",
@@ -487,7 +487,7 @@
       "Criptorquidia",
       "Mutación MDR1",
       "Oncología",
-      "Trastornos Mentales",
+      "Rasgos Mentales",
       "Insuficiencia Hepática",
       "Problemas de la Columna Vertebral",
       "Problemas del Corazón",
@@ -565,37 +565,37 @@
   },
   "emptyProfile": {
     "welcome": "Bienvenido",
-    "description": "Para continuar, por favor completa tu perfil.",
-    "button": "Cuéntanos sobre ti"
+    "description": "Para continuar, por favor completá tu perfil.",
+    "button": "Contanos sobre vos"
   },
   "ProfileLayout": {
     "profileTitle": "Perfil",
     "editUserTitle": "Editar Perfil",
     "petProfileTitle": "Perfil de Mascota",
     "editPetTitle": "Editar Mascota",
-    "myJobsTitle": "Tareas y Bonos",
+    "myJobsTitle": "Tareas y Recompensas",
     "myWalksTitle": "Mis Paseos",
     "settingsTitle": "Configuraciones"
   },
   "EditProfileComponent": {
     "confirmTitle": "Confirmación",
-    "confirmMessage": "¿Estás seguro de que quieres salir?",
+    "confirmMessage": "¿Estás seguro de que querés cerrar sesión?",
     "cancel": "Cancelar",
-    "exit": "Salir",
+    "exit": "Cerrar Sesión",
     "error": {
-      "requiredFields": "Por favor, completa todos los campos obligatorios.",
+      "requiredFields": "Por favor, completá todos los campos obligatorios.",
       "invalidDate": "Fecha de nacimiento inválida.",
-      "ageRestriction": "La edad debe ser mayor a 14 años."
+      "ageRestriction": "La edad debe ser mayor de 14 años."
     },
-    "nameLabel": "¿Cómo te llamas?",
+    "nameLabel": "¿Cómo te llamás?",
     "birthDateLabel": "Fecha de Nacimiento",
-    "birthDatePlaceholder": "Introduce la fecha en formato YYYY-MM-DD",
+    "birthDatePlaceholder": "Ingresá la fecha en formato YYYY-MM-DD",
     "genderLabel": "Género",
     "descriptionLabel": "Sobre Mí",
     "interestsTitle": "Intereses",
-    "interestsSubtitle": "Selecciona hasta 5 intereses",
+    "interestsSubtitle": "Seleccioná hasta 5 intereses",
     "mainInfoTitle": "Información Principal",
-    "locationLabel": "Ubicación (ciudad, barrio)",
+    "locationLabel": "Ubicación (ciudad, zona)",
     "languagesLabel": "Idioma",
     "professionLabel": "Profesión",
     "educationLabel": "Educación",
@@ -607,8 +607,8 @@
   },
   "UserProfile": {
     "edit": "Editar",
-    "logout": "Cerrar sesión",
-    "deleteAccount": "Eliminar cuenta",
+    "logout": "Cerrar Sesión",
+    "deleteAccount": "Eliminar Cuenta",
     "addPet": "Agregar Mascota",
     "aboutMe": "Sobre Mí",
     "interests": "Intereses",
@@ -621,7 +621,7 @@
     "main": "Principal",
     "dog": "Perro",
     "health": "Salud",
-    "healthUpdate": "Estamos trabajando en crear un pasaporte de salud para tu mascota. Mantente al tanto de las actualizaciones.",
+    "healthUpdate": "Estamos trabajando en crear un pasaporte de salud para tu mascota. Mantenete al tanto de las novedades.",
     "healthFeatures": "Características de Salud",
     "vaccinations": "Vacunas",
     "indicators": "Indicadores",
@@ -634,33 +634,33 @@
   },
   "EditPetProfile": {
     "confirmationTitle": "Confirmación",
-    "confirmationMessage": "¿Estás seguro de que quieres salir?",
+    "confirmationMessage": "¿Estás seguro de que querés salir?",
     "cancel": "Cancelar",
     "exit": "Sí",
     "errors": {
-      "missingFields": "Por favor, completa todos los campos obligatorios: Nombre, Fecha de Nacimiento y Raza.",
-      "invalidDate": "Fecha de nacimiento inválida. Por favor, ingresa la fecha en formato YYYY-MM-DD.",
+      "missingFields": "Por favor, completá todos los campos obligatorios: Nombre, Fecha de Nacimiento y Raza.",
+      "invalidDate": "Fecha de nacimiento inválida. Ingresá la fecha en formato YYYY-MM-DD.",
       "saveError": "Error al guardar el perfil de la mascota",
-      "saveErrorMessage": "Ocurrió un error al guardar el perfil de la mascota. Por favor, intenta de nuevo.",
+      "saveErrorMessage": "Ocurrió un error al guardar el perfil de la mascota. Por favor, intentá de nuevo.",
       "addError": "Error al agregar el perfil de la mascota",
-      "addErrorMessage": "Ocurrió un error al agregar el perfil de la mascota. Por favor, intenta de nuevo."
+      "addErrorMessage": "Ocurrió un error al agregar el perfil de la mascota. Por favor, intentá de nuevo."
     },
     "main": "Principal",
     "name": "Nombre",
     "birthDate": "Fecha de Nacimiento",
-    "birthDatePlaceholder": "Introduce la fecha en formato YYYY-MM-DD",
+    "birthDatePlaceholder": "Ingresá la fecha en formato YYYY-MM-DD",
     "gender": "Género",
-    "selectGender": "Selecciona Género",
+    "selectGender": "Seleccioná Género",
     "defaultGender": "Macho",
     "breed": "Raza",
-    "selectBreed": "Selecciona Raza",
+    "selectBreed": "Seleccioná Raza",
     "weight": "Peso",
     "interests": "Intereses",
     "health": "Salud",
-    "healthUpdate": "Estamos trabajando en crear un pasaporte de salud para tu mascota. Mantente al tanto de las actualizaciones.",
+    "healthUpdate": "Estamos trabajando en crear un pasaporte de salud para tu mascota. Mantenete al tanto de las novedades.",
     "healthFeatures": "Características de Salud",
     "vaccinations": "Vacunas",
-    "neutered": "¿Esterilizado?",
+    "neutered": "¿Castrado?",
     "indicators": "Indicadores",
     "temperament": "Temperamento",
     "friendliness": "Amistad",
@@ -692,7 +692,7 @@
     "description": "Descripción",
     "addButton": "Agregar",
     "errors": {
-      "missingFields": "Por favor, completa todos los campos obligatorios: Tipo, Descripción.",
+      "missingFields": "Por favor, completá todos los campos obligatorios: Tipo, Descripción.",
       "saveError": "Error al guardar el punto."
     }
   },
@@ -706,13 +706,13 @@
     "amenities": "Comodidades",
     "addButton": "Agregar",
     "errors": {
-      "missingFields": "Por favor, completa todos los campos obligatorios: Tipo, Descripción.",
+      "missingFields": "Por favor, completá todos los campos obligatorios: Tipo, Descripción.",
       "saveError": "Error al guardar el marcador."
     }
   },
   "ViewDangerPoint": {
     "title": "Peligro",
-    "loadingPointInfo": "Cargando información completa del punto",
+    "loadingPointInfo": "Cargando la información completa del punto",
     "dangerType": "Tipo de Peligro",
     "description": "Descripción",
     "openInGoogleMaps": "Abrir en Google Maps",
@@ -726,7 +726,7 @@
     }
   },
   "ViewUserPoint": {
-    "loading": "Cargando información completa del punto...",
+    "loading": "Cargando la información completa del punto...",
     "name": "Nombre",
     "address": "Dirección",
     "description": "Descripción",
@@ -746,7 +746,7 @@
     "deleteWalk": "Eliminar Paseo",
     "joinWalk": "Unirse al Paseo",
     "participants": "Participantes",
-    "noParticipants": "Nadie se ha unido a tu paseo todavía",
+    "noParticipants": "Nadie se unió a tu paseo todavía",
     "pets": "Mascotas",
     "pet": "Mascota",
     "breed": "Raza",
@@ -756,7 +756,7 @@
     "hidePets": "Ocultar",
     "description": "Descripción",
     "walkDetails": "Detalles del Paseo",
-    "confirmMessage": "Se creará un chat entre tú y el propietario de la mascota, y se enviará una solicitud para unirse al paseo.",
+    "confirmMessage": "Se creará un chat entre vos y el dueño de la mascota, y se enviará una solicitud para unirte al paseo.",
     "confirmTitle": "Enviar Solicitud",
     "confirm": "OK",
     "cancel": "Cancelar",
@@ -786,13 +786,13 @@
   "WalkEditDetails": {
     "addressNotFound": "No se pudo obtener la dirección",
     "error": "Error",
-    "selectAtLeastOnePet": "Selecciona al menos una mascota para participar en el paseo.",
+    "selectAtLeastOnePet": "Seleccioná al menos una mascota para participar en el paseo.",
     "cannotCreateWalkHere": "No se puede crear un paseo en este lugar.",
-    "provideAddress": "Proporciona la dirección del paseo.",
-    "invalidDuration": "Proporciona una duración válida para el paseo.",
-    "addDescription": "Agrega una descripción para el paseo.",
-    "selectAtLeastOneDay": "Selecciona al menos un día para un paseo regular.",
-    "provideDate": "Proporciona una fecha para un paseo único.",
+    "provideAddress": "Proporcioná la dirección del paseo.",
+    "invalidDuration": "Proporcioná una duración válida para el paseo.",
+    "addDescription": "Agregá una descripción para el paseo.",
+    "selectAtLeastOneDay": "Seleccioná al menos un día para un paseo regular.",
+    "provideDate": "Proporcioná una fecha para un paseo único.",
     "walkDetails": "Detalles del Paseo",
     "regularWalk": "Paseo Regular",
     "singleWalk": "Paseo Único",
@@ -816,12 +816,12 @@
     "myNote": "Mi Nota"
   },
   "Poi": {
-    "nearby": "¡Has ganado 400 puntos de bonificación!",
+    "nearby": "¡Ganaste 400 puntos de bonificación!",
     "tooFar": "¡Estás demasiado lejos del bono!"
   },
   "Map": {
-    "fillProfileAndAddPet": "Para crear un paseo, necesitas completar tu perfil y agregar una mascota.",
-    "walkCreatedWithBonus": "El paseo se creó con éxito. Has ganado 400 puntos de bonificación por crear tu primer paseo."
+    "fillProfileAndAddPet": "Para crear un paseo, necesitás completar tu perfil y agregar una mascota.",
+    "walkCreatedWithBonus": "El paseo se creó con éxito. Sumaste 400 puntos de bonificación por crear tu primer paseo."
   },
   "FilterSearchTags": {
     "walk": "Paseo",
@@ -845,22 +845,22 @@
   },
   "ReviewsSection": {
     "title": "Calificaciones y Reseñas",
-    "inputPlaceholder": "Escribe tu reseña",
+    "inputPlaceholder": "Escribí tu reseña",
     "submitButton": "Enviar Reseña",
-    "noReviews": "Nadie ha dejado una reseña para este lugar todavía. Sé el primero y gana puntos de bonificación adicionales.",
+    "noReviews": "Nadie dejó una reseña para este lugar aún. Sé el primero y ganá puntos de bonificación extra.",
     "loadMoreButton": "Cargar Más",
-    "alertMessage": "Por favor, califica y escribe una reseña",
+    "alertMessage": "Por favor, dejá una calificación y escribí una reseña",
     "alertTitle": "Error"
   },
   "TopUsers": {
     "title": "¡Usuarios Más Activos!",
-    "description": "Gana más monedas y obtén bonificaciones.",
+    "description": "Sumá más monedas y obtené bonificaciones.",
     "learnMore": "Más Información",
     "rate": "Clasificación"
   },
   "AddPhoto": {
     "title": "Agregar Foto",
-    "description": "Elige una fuente",
+    "description": "Elegí una fuente",
     "takePhoto": "Tomar una Foto",
     "chooseFromGallery": "Elegir de la Galería",
     "cancel": "Cancelar"
@@ -890,13 +890,13 @@
   "settings": {
     "general": "Configuraciones Generales",
     "pushNotifications": "Notificaciones Push",
-    "appLanguage": "Idioma de la Aplicación",
+    "appLanguage": "Idioma de la App",
     "languages": {
       "russian": "Ruso",
       "english": "Inglés",
       "spanish": "Español"
     },
-    "changeLanguage":"Al cambiar el idioma, la aplicación se reiniciará."
+    "changeLanguage": "Al cambiar el idioma, se reiniciará la aplicación."
   },
   "filters": {
     "general": "General",
@@ -920,7 +920,7 @@
     "km": "km"
   },
   "timeSlider": {
-    "label": "Time"
+    "label": "Tiempo"
   },
   "tagSelectors": {
     "selectTag": "Seleccionar Etiqueta",
@@ -929,24 +929,24 @@
     "showMore": "Mostrar Más"
   },
   "feedPosts": {
-    "noPosts": "Sin publicaciones",
-    "createFirst": "Crea tu primera publicación!",
+    "noPosts": "No hay publicaciones",
+    "createFirst": "¡Creá la primera!",
     "deletePost": "Eliminar",
-    "complainOnPost": "Quejarse",
-    "commentInput": "Escribe un comentario...",
-    "addPostText": "Agregar texto de publicación",
+    "complainOnPost": "Reportar",
+    "commentInput": "Escribí un comentario...",
+    "addPostText": "Agregar texto de la publicación",
     "postCreateError": "Error al crear la publicación.",
-    "createPostInput": "¿Qué hay de nuevo contigo?",
-    "loadingButtonTitle": "Crear una publicación",
+    "createPostInput": "¿Qué hay de nuevo?",
+    "loadingButtonTitle": "Crear publicación",
     "commentCreatedAtPeriods": {
-      "seconds": "seg",
+      "seconds": "s",
       "minutes": "min",
       "houres": "h",
       "days": "d",
       "weeks": "sem",
       "monthes": "m",
       "years": "a",
-      "now": "recién"
+      "now": "ahora"
     }
   },
   "chat": {
@@ -954,12 +954,12 @@
     "messages": "Mensajes",
     "time": {
       "lessThanAMinute": "hace menos de un minuto",
-      "was": "Hace",
+      "was": "Fue",
       "d": "d",
       "h": "h",
       "m": "m",
-      "wasAt": "Estuvo a las",
-      "wasUnknown": "Estuvo: Desconocido",
+      "wasAt": "Fue a las",
+      "wasUnknown": "Fue: Desconocido",
       "minute": "minuto",
       "minutesTwo": "minutos",
       "minutes": "minutos",
@@ -969,29 +969,29 @@
     "unblock": "Desbloquear",
     "deleteChat": "Eliminar chat",
     "unblockUser": "Desbloquear usuario",
-    "sureBlock": "¿Estás seguro de que deseas bloquear al usuario?",
+    "sureBlock": "¿Estás seguro de que querés bloquear a esta persona?",
     "blockUser": "Bloquear usuario",
     "ok": "OK",
     "cancel": "Cancelar",
-    "deleteChatMessage": "¿Estás seguro de que deseas eliminar este chat?",
+    "deleteChatMessage": "¿Estás seguro de que querés eliminar este chat?",
     "title": "Notificaciones",
-    "noMessages": "No tienes mensajes",
-    "enterInSection": "Para empezar a chatear, ve a la sección",
-    "allUsers": "Todos los usuarios",
+    "noMessages": "No tenés mensajes",
+    "enterInSection": "Para empezar a chatear, andá a la sección",
+    "allUsers": "Todos los Usuarios",
     "or": "o",
     "map": "Mapa",
-    "newConnections": "¡y haz nuevas conexiones!",
-    "invitation": "🐶 Invitación para un paseo: ¡Hola! ¿Vamos a pasear juntos?",
+    "newConnections": "¡y hacé nuevas conexiones!",
+    "invitation": "🐶 Invitación para un paseo: ¡Hola! ¿Salimos a pasear juntos?",
     "wantToJoin": "Quiere unirse al paseo",
     "accept": "Aceptar",
     "decline": "Rechazar",
     "place": "Lugar",
     "check": "Ver"
   },
-  "avatar":{
+  "avatar": {
     "female": "Femenino",
     "male": "Masculino",
-    "selectAvatarTitle": "¡Elige tu avatar!",
+    "selectAvatarTitle": "¡Elegí tu avatar!",
     "selectAvatarDescription": "Esta imagen se mostrará en tu perfil y será visible para otros usuarios.",
     "save": "Guardar"
   }
