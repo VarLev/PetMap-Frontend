@@ -9,6 +9,8 @@ type MultiTagDropdownProps = {
   placeholder?: string; // Плейсхолдер для выпадающего списка
   onChange?: (selectedTag: string | number | null) => void; // Обработчик изменения выбранного тега
   searchable?: boolean; // Возможность поиска тегов
+  searchPlaceholder?: string; // Плейсхолдер для поисковой строки
+  nothingToShow?: string; // Сообщение, о том, что теги не найдены
   label?: string; // Метка для выпадающего списка
   listMode?: ListModeType;
   disabledIndexes?: number[]; // Индексы тегов, которые нужно заблокировать
@@ -20,6 +22,8 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
   placeholder = i18n.t('tagSelectors.selectTag'),
   onChange,
   searchable = false,
+  searchPlaceholder = i18n.t('tagSelectors.searchPlaceholder'),
+  nothingToShow = i18n.t('tagSelectors.nothingToShow'),
   label,
   listMode = 'SCROLLVIEW',
   disabledIndexes = [],
@@ -124,6 +128,10 @@ const CustomDropdownList: React.FC<MultiTagDropdownProps> = ({
         }}
         modalAnimationType="slide"
         listMode={listMode}
+        translation={{
+          NOTHING_TO_SHOW: nothingToShow,
+          SEARCH_PLACEHOLDER: searchPlaceholder
+        }}
       />
     </View>
   );

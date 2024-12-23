@@ -927,7 +927,9 @@
     "selectTag": "Seleccionar Etiqueta",
     "selectTags": "Seleccionar Etiquetas",
     "collapse": "Colapsar",
-    "showMore": "Mostrar Más"
+    "showMore": "Mostrar Más",
+    "nothingToShow": "No hay coincidencias!",
+    "searchPlaceholder": "Escribe algo..."
   },
   "feedPosts": {
     "noPosts": "No hay publicaciones",

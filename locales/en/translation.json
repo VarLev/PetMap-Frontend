@@ -927,7 +927,9 @@
     "selectTag": "Select Tag",
     "selectTags": "Select Tags",
     "collapse": "Collapse",
-    "showMore": "Show More"
+    "showMore": "Show More",
+    "nothingToShow": "There's nothing to show!",
+    "searchPlaceholder": "Type something..."
   },
   "feedPosts": {
     "noPosts": "No posts",
