@@ -477,7 +477,7 @@ const EditPetProfileComponent = observer(
                   visibleTagsCount={10}
                 />
                 <View className="pt-4  flex-row items-center">
-                  <Checkbox
+                  <Checkbox.Android
                     color="#3F00FF"
                     status={editablePet.neutered ? "checked" : "unchecked"}
                     onPress={() =>
