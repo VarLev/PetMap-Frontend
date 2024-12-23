@@ -42,7 +42,7 @@ import PermissionsRequestComponent from '../auth/PermissionsRequestComponent';
 import WalkMarker from './markers/WalkMarker';
 import PointMarker from './markers/PointMarker';
 import { createGeoJSONFeatures } from '@/utils/mapUtils';
-import { MapProvider } from '@/contexts/MapContext';
+
 
 const MapBoxMap = observer(() => {
   const [isLoading, setIsLoading] = useState(true);
@@ -71,7 +71,7 @@ const MapBoxMap = observer(() => {
   const [selectedPointId, setSelectedPointId] = useState<string>('');
   const [selectedWalkMarker, setSelectedWalkMarker] = useState('');
   const [alertImage, setAlertImage] = useState<ImageSourcePropType>();
-  const [hasPermission, setHasPermission] = useState<boolean>(uiStore.getLocationPermissionGranted());
+  const [hasPermission, setHasPermission] = useState<boolean>();
   // ... существующие состояния и переменные
   const [routeData, setRouteData] = useState<any>(null);
 
@@ -80,49 +80,73 @@ const MapBoxMap = observer(() => {
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
   useEffect(() => {
-    setIsLoading(true);
-    const fetchCity = async () => {
-      if (userCoordinates) {
-        try {
-          if (userStore.getCurrentUserCity() === '') {
-            const city = await mapStore.getUserCity(userCoordinates);
-            userStore.setCurrentUserCity(city);
+      const loadData = async () => {
+        setIsLoading(true);
+        setHasPermission(uiStore.getLocationPermissionGranted());
+        const fetchCity = async () => {
+          if (userCoordinates) {
+            try {
+              if (userStore.getCurrentUserCity() === '') {
+                const city = await mapStore.getUserCity(userCoordinates);
+                userStore.setCurrentUserCity(city);
+                await mapStore.setWalkAdvrts();
+              }
+              mapStore.setCity(userStore.getCurrentUserCity());
+              console.log('Город успешно получен для координат:', mapStore.getCity());
+            } catch (error) {
+              console.error('Ошибка при получении города:', error);
+            }
+          } else {
+            userStore.setCurrentUserCity('Buenos Aires');
+            mapStore.setCity('Buenos Aires');
             await mapStore.setWalkAdvrts();
           }
-          mapStore.setCity(userStore.getCurrentUserCity());
-          console.log('Город успешно получен для координат:', mapStore.getCity());
-        } catch (error) {
-          console.error('Ошибка при получении города:', error);
+        };
+  
+        const fetchData = async () => {
+          const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
+          setGeoJSONData(data);
+        };
+        
+        await fetchCity();
+        await fetchData();
+        
+        setIsLoading(false);
+      };
+  
+      loadData();
+    }, []);
+
+  // --- Периодический опрос при фокусе экрана ---
+  useFocusEffect(
+    useCallback(() => {
+      // При фокусе экрана запускаем интервал 
+      const intervalId = setInterval(async () => {
+      
+        console.log('[MapBoxMap] Polling data from server...');
+        try {
+          await mapStore.setWalkAdvrts(); 
+          const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
+          setGeoJSONData(data);
+        } catch (err) {
+          console.error(err);
         }
-      } else {
-        userStore.setCurrentUserCity('Buenos Aires');
-        mapStore.setCity('Buenos Aires');
-        await mapStore.setWalkAdvrts();
-      }
-    };
+      }, 180_000); 
 
-    const fetchData = async () => {
-      const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
-      setGeoJSONData(data);
-    };
+      // Возвращаем колбэк очистки
+      return () => {
+        console.log('[MapBoxMap] Clearing polling interval...');
+        clearInterval(intervalId);
+      };
+    }, [])
+  );
 
-    fetchCity();
-    fetchData();
-    setIsLoading(false);
-  }, [userCoordinates]);
-
-  useEffect(() => {
-    const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
-    setGeoJSONData(data);
-  }, [mapStore.walkAdvrts, mapStore.mapPoints, hasPermission]);
 
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
         // Если пользователь авторизован и нажимает "Назад", блокируем переход на экран авторизации
         handleSheetClose();
-        //mapStore.setBottomSheetVisible(false);
-        //setIsSheetVisible(false);
         return true;
       };
 
@@ -389,7 +413,7 @@ const MapBoxMap = observer(() => {
   return (
     <Provider>
       <PermissionsRequestComponent />
-        <MapProvider>
+      
         {isCardView && (
           <SlidingOverlay visible={isCardView}>
             <MapItemList renderType={currentPointType} />
@@ -501,7 +525,7 @@ const MapBoxMap = observer(() => {
           title={alertType === 'error' ? 'Error' : ''}
           image={alertImage}
         />
-      </MapProvider>
+
     </Provider>
   );
 });
