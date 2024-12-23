@@ -15,18 +15,15 @@ import i18n from "@/i18n";
 
 interface ReviewSectionProps {
   mapPointId: string;
-  fetchReviews: (page: number) => Promise<ReviewDTO[]>;
-  totalPages: number;
+  fetchReviews: () => Promise<ReviewDTO[]>;
 }
 
 const ReviewSection: React.FC<ReviewSectionProps> = ({
   mapPointId,
-  fetchReviews,
-  totalPages,
+  fetchReviews
 }) => {
   const [reviewText, setReviewText] = useState("");
   const [rating, setRating] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
   const [localReviews, setLocalReviews] = useState<ReviewDTO[]>(
     new Array<ReviewDTO>()
   );
@@ -37,18 +34,16 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   const hasLoadedInitialReviews = useRef(false); // Use ref to track if initial load has occurred
 
   useEffect(() => {
-    console.log("Загрузка отзывов");
     if (!hasLoadedInitialReviews.current) {
-      loadReviews(1); // Load first page on initial mount
+      loadReviews();
       hasLoadedInitialReviews.current = true;
     }
-  }, []);
+  }, [existingReview]);
 
-  const loadReviews = async (page: number) => {
-    if (isLoading || page > totalPages) return;
+  const loadReviews = async () => {
     setIsLoading(true);
     try {
-      const newReviews = await fetchReviews(page);
+      const newReviews = await fetchReviews();
       setLocalReviews((prevReviews) => [...prevReviews, ...newReviews]);
 
       // Check if the current user has already left a review for this point
@@ -68,7 +63,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
     }
   };
 
-  const handleSubmitOrUpdateReview = async () => {
+  const handleSubmitReview = async () => {
     if (!reviewText || rating === 0) {
       setModalVisible(true);
       return;
@@ -90,10 +85,9 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
         new Date(),
         userStore.currentUser.id,
         userStore.currentUser.name ?? "User",
-        mapPointId // Include pointId in the constructor
+        mapPointId
       );
 
-      console.log("Отправка отзыва:", reviewText, rating);
       await mapStore.addReview(review);
       setLocalReviews((prevReviews) => {
         if (existingReview) {
@@ -106,14 +100,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
       setRating(0);
       setExistingReview(null);
     } catch (error) {
-      console.error("Ошибка при отправке/обновлении отзыва:", error);
-    }
-  };
-
-  const handleLoadMore = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-      loadReviews(currentPage + 1); // Load the next page
+      console.error("Ошибка при отправке отзыва:", error);
     }
   };
 
@@ -125,7 +112,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
         setReviewText("");
         setRating(0);
       })
-      .then(() => loadReviews(1))
+      .then(() => loadReviews())
   }
   
   const renderReview = ({ item }: { item: ReviewDTO }) => {
@@ -133,7 +120,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
       <View>
         <ReviewComment
           item={item}
-          onUpdateReview={handleSubmitOrUpdateReview}
+          // onUpdateReview={handleUpdateReview}
           handleDeleteReview={(reviewId) => deleteReview(reviewId)}
           refreshReviews={(updatedReview: ReviewDTO) => {
             setLocalReviews((prevReviews) =>
@@ -174,7 +161,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
           />
           <CustomButtonPrimary
             title={i18n.t("ReviewsSection.submitButton")}
-            handlePress={handleSubmitOrUpdateReview}
+            handlePress={handleSubmitReview}
           />
         </View>
       )}
@@ -187,16 +174,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
           data={localReviews}
           renderItem={renderReview}
           keyExtractor={(item) => item.id}
-          onEndReached={handleLoadMore}
           onEndReachedThreshold={0.9}
-          ListFooterComponent={() =>
-            currentPage < totalPages ? (
-              <CustomButtonOutlined
-                title={i18n.t("ReviewsSection.loadMoreButton")}
-                handlePress={handleLoadMore}
-              />
-            ) : null
-          }
         />
       )}
       <CustomAlert

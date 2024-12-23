@@ -11,14 +11,14 @@ import i18n from '@/i18n';
 
 interface ReviewCommentProps {
   item: ReviewDTO;
-  onUpdateReview: (review: ReviewDTO) => Promise<void>;
+  // onUpdateReview: (review: ReviewDTO) => Promise<void>;
   refreshReviews: (updatedReview: ReviewDTO) => void;
   handleDeleteReview: (commentId: string) => void;
 }
 
 const ReviewComment: React.FC<ReviewCommentProps> = ({
   item,
-  onUpdateReview,
+  // onUpdateReview,
   refreshReviews,
   handleDeleteReview
 }) => {
@@ -31,28 +31,28 @@ const ReviewComment: React.FC<ReviewCommentProps> = ({
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
 
-  const handleSaveEdit = async () => {
-    item.comment = editedText;
-    item.rating = editedRating;
-    await onUpdateReview(item);
-    setIsEditing(false);
-  };
+  // const handleSaveEdit = async () => {
+  //   item.comment = editedText;
+  //   item.rating = editedRating;
+  //   await onUpdateReview(item);
+  //   setIsEditing(false);
+  // };
 
-  const onEdit = () => {
-    setIsEditing(true);
-    closeMenu();
-  };
+  // const onEdit = () => {
+  //   setIsEditing(true);
+  //   closeMenu();
+  // };
 
   const onDelete = async () => {
     handleDeleteReview(item.id);
     closeMenu();
   };
 
-  const handleCancelEdit = () => {
-    setEditedText(item.comment);
-    setEditedRating(item.rating);
-    setIsEditing(false);
-  };
+  // const handleCancelEdit = () => {
+  //   setEditedText(item.comment);
+  //   setEditedRating(item.rating);
+  //   setIsEditing(false);
+  // };
 
   return (
     <View className="bg-white my-[20px]">
@@ -88,13 +88,13 @@ const ReviewComment: React.FC<ReviewCommentProps> = ({
               />
             }
           >
-            <Menu.Item
+            {/* <Menu.Item
               onPress={onEdit}
               title={i18n.t('ReviewComment.edit')}
               rippleColor="black"
               titleStyle={{ color: 'black' }}
               leadingIcon="pencil-outline"
-            />
+            /> */}
             <Menu.Item
               onPress={onDelete}
               title={i18n.t('ReviewComment.delete')}
@@ -104,7 +104,7 @@ const ReviewComment: React.FC<ReviewCommentProps> = ({
           </Menu>
         )}
       </View>
-      {isEditing ? (
+      {/* {isEditing ? (
         <>
           <TextInput
             value={editedText}
@@ -140,7 +140,10 @@ const ReviewComment: React.FC<ReviewCommentProps> = ({
         <Text className="pt-2 text-base font-nunitoSansRegular">
           {item.comment}
         </Text>
-      )}
+      )} */}
+      <Text className="pt-2 text-base font-nunitoSansRegular">
+          {item.comment}
+        </Text>
     </View>
   );
 };
