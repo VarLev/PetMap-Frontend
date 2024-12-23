@@ -926,7 +926,9 @@
     "selectTag": "Выберите тег",
     "selectTags": "Выберите теги",
     "collapse": "Свернуть",
-    "showMore": "Показать ещё"
+    "showMore": "Показать ещё",
+    "nothingToShow": "Совпадений не найдено!",
+    "searchPlaceholder": "Введите текст..."
   },
   "feedPosts": {
     "noPosts": "Нет постов",

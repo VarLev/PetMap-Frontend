@@ -119,6 +119,10 @@ const MultiTagDropdown: React.FC<MultiTagDropdownProps> = ({
         renderBadgeItem={renderCustomBadgeItem}
         modalAnimationType='slide'
         listMode={listMode}
+        translation={{
+          NOTHING_TO_SHOW: i18n.t('tagSelectors.nothingToShow'),
+          SEARCH_PLACEHOLDER: i18n.t('tagSelectors.searchPlaceholder')
+        }}
       />
     </View>
   );
