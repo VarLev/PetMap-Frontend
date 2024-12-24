@@ -138,7 +138,14 @@ const Feed: FC = observer(() => {
           handleHeight={0}
           enableFooterMarginAdjustment
           footerComponent={bottomSheetType === "comments" ? BottomSheetCommentsFooter : undefined}
-          renderContent={bottomSheetType === "create-post" ? <CreatePost onClose={handleSheetClose}/> : null}
+          renderContent={bottomSheetType === "create-post"
+            ? <CreatePost onClose={handleSheetClose} />
+            : bottomSheetType === "comments" && postComments?.length === 0 ? (
+              <View style={styles.noCommentsContainer}>
+                <Text>{i18n.t("feedPosts.noCommentsText")}</Text>
+              </View>
+            ) : null
+          }
           flatListData={bottomSheetType === "comments" ? postComments : null}
           flatListRenderItem={bottomSheetType === "comments" ? ({ item }) => {
             return (
@@ -170,6 +177,12 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: '#2F00B6'
   },
+  noCommentsContainer: {
+    display: 'flex',
+    justifyContent: 'center', 
+    alignItems: 'center',
+    paddingTop: 12
+  }
 })
 
 export default Feed;

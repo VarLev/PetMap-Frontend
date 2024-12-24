@@ -941,6 +941,7 @@
     "deletePost": "Delete",
     "complainOnPost": "Complain",
     "commentInput": "Write comment...",
+    "noCommentsText": "No comments yet, be the first to leave one!",
     "addPostText": "Add post text",
     "postCreateError": "Creating post error.",
     "createPostInput": "What's new?",
