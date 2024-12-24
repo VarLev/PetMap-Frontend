@@ -102,7 +102,7 @@ const SidebarUserProfileComponent = () => {
         </TouchableRipple>
 
         {/* Подписка */}
-        <View className="flex-row mt-4 content-center items-center">
+        {/* <View className="flex-row mt-4 content-center items-center">
           <Button
             icon={() => (
               <FontAwesome
@@ -120,7 +120,7 @@ const SidebarUserProfileComponent = () => {
               {i18n.t("Sidebar.subscription")}
             </Text>
           </Button>
-          {/* <Button
+          <Button
             mode="elevated"
             className="bg-purple-100 text-xs rounded-3xl text-indigo-800"
             onPress={() => console.log(i18n.t("Sidebar.freeTrial"))}
@@ -132,8 +132,8 @@ const SidebarUserProfileComponent = () => {
             >
               {i18n.t("Sidebar.subscribe")}
             </Text>
-          </Button> */}
-        </View>
+          </Button>
+        </View> */}
 
         {/* Меню */}
         <List.Section>
