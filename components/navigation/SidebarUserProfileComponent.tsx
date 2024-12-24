@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Platform } from "react-native";
 import { Button, List, TouchableRipple } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/Images";
@@ -48,7 +48,7 @@ const SidebarUserProfileComponent = () => {
 
         <TouchableRipple
           className="w-full mt-6"
-          rippleColor="#E8DFFF"
+          rippleColor={Platform.OS === "ios" ? "rgba(0,0,0,0.1)" : "#E8DFFF"}
           onPress={handleProfilePress}
         >
           <View className="flex-row justify-start items-center">

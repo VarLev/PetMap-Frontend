@@ -128,9 +128,9 @@ const ViewProfileComponent = observer(
             <View className="relative w-full aspect-square">
               <Image source={{ uri: user?.thumbnailUrl! }} className="w-full h-full"/>
               
-              <View style={styles.iconContainer} className={`${isIOS ? "mt-7" : "mt-0"}`}>
+              <View style={styles.iconContainer} className={`${isIOS ? "mt-8" : "mt-0"}`}>
                 {!isCurrentUser && (
-                  <View style={styles.iconContainer} className={`${isIOS ? "mt-0" : "-mt-8"}`}>
+                  <View style={styles.iconContainer} className={`${isIOS ? "-mt-2" : "-mt-8"} -mr-2`}>
                     <IconButton
                       icon="message-processing-outline"
                       size={30}
@@ -392,5 +392,6 @@ const styles = StyleSheet.create({
   },
   menuButton: {
     backgroundColor: "white",
+    opacity: 0.7
   },
 });

@@ -22,6 +22,7 @@ import i18n from "@/i18n";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
 
 const TASK_IDS = {
   petEdit: {
@@ -586,9 +587,7 @@ const EditPetProfileComponent = observer(
                     handlePress={handleSave}
                   />
                 )}
-                <Button mode="outlined" onPress={onCancel} className="mt-4">
-                  {i18n.t("EditPetProfile.cancel")}
-                </Button>
+                <CustomButtonOutlined title={i18n.t("EditPetProfile.cancel")} handlePress={onCancel} />
               </View>
 
               <View className="h-32" />

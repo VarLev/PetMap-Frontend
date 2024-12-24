@@ -120,24 +120,24 @@ const MapBoxMap = observer(() => {
   // --- Периодический опрос при фокусе экрана ---
   useFocusEffect(
     useCallback(() => {
-      // При фокусе экрана запускаем интервал 
-      const intervalId = setInterval(async () => {
-      
-        console.log('[MapBoxMap] Polling data from server...');
-        try {
-          await mapStore.setWalkAdvrts(); 
-          const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
-          setGeoJSONData(data);
-        } catch (err) {
-          console.error(err);
-        }
-      }, 180_000); 
-
-      // Возвращаем колбэк очистки
-      return () => {
-        console.log('[MapBoxMap] Clearing polling interval...');
-        clearInterval(intervalId);
-      };
+      if(currentPointType === MapPointType.Walk) {
+        const intervalId = setInterval(async () => {
+          try {
+            await mapStore.setWalkAdvrts(); 
+            const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
+            setGeoJSONData(data);
+          } catch (err) {
+            console.error(err);
+          }
+        }, 180_000); 
+  
+        // Возвращаем колбэк очистки
+        return () => {
+          
+          clearInterval(intervalId);
+        };
+      }
+     
     }, [])
   );
 
