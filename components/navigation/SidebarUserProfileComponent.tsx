@@ -157,7 +157,7 @@ const SidebarUserProfileComponent = () => {
             )}
             onPress={handleWalksPress}
           />
-          <CustomListItemWrapper
+          {/* <CustomListItemWrapper
             onPress={() => console.log(i18n.t("Sidebar.myLocations"))}
             title={i18n.t("Sidebar.myLocations")}
             leftIcon={() => (
@@ -167,7 +167,7 @@ const SidebarUserProfileComponent = () => {
                 )}
               />
             )}
-          />
+          /> */}
           <CustomListItemWrapper
             title={i18n.t("Sidebar.settings")}
             leftIcon={() => (
@@ -179,7 +179,7 @@ const SidebarUserProfileComponent = () => {
             )}
             onPress={handleSettingsPress}
           />
-          <CustomListItemWrapper
+          {/* <CustomListItemWrapper
             title={i18n.t("Sidebar.support")}
             leftIcon={() => (
               <List.Icon
@@ -189,7 +189,7 @@ const SidebarUserProfileComponent = () => {
               />
             )}
             onPress={() => console.log(i18n.t("Sidebar.support"))}
-          />
+          /> */}
         </List.Section>
       </View>
     </SafeAreaView>
