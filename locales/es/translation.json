@@ -937,6 +937,7 @@
     "deletePost": "Eliminar",
     "complainOnPost": "Reportar",
     "commentInput": "Escribí un comentario...",
+    "noCommentsText": "¡Aún no hay comentarios, sé el primero en dejar uno!",
     "addPostText": "Agregar texto de la publicación",
     "postCreateError": "Error al crear la publicación.",
     "createPostInput": "¿Qué hay de nuevo?",

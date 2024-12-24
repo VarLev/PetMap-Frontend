@@ -937,6 +937,7 @@
     "deletePost": "Удалить",
     "complainOnPost": "Пожаловаться на пост",
     "commentInput": "Напишите комментарий...",
+    "noCommentsText": "Комментариев ещё нет, оставьте первый!",
     "addPostText": "Добавьте текст поста.",
     "postCreateError": "Ошибка при создании поста.",
     "createPostInput": "Что у вас нового?",
