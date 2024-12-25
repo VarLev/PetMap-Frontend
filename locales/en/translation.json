@@ -635,7 +635,11 @@
     "activity": "Activity",
     "playPreferences": "Play Preferences",
     "aboutPet": "About Pet",
-    "socialMedia": "Social Media"
+    "socialMedia": "Social Media",
+    "ageUnits": {
+      "month": { "one": "month", "few": "months", "many": "months" },
+      "year": { "one": "year", "few": "years", "many": "years" }
+    }
   },
   "EditPetProfile": {
     "confirmationTitle": "Confirmation",
