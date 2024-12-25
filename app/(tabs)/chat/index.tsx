@@ -16,6 +16,7 @@ import EmptyChatScreen from "@/components/chat/EmptyChatScreen";
 import { shortenName } from "@/utils/utils";
 import i18n from "@/i18n";
 import { encode as btoa } from "base-64";
+import SkeletonCard from "@/components/custom/cards/SkeletonCard";
 
 
 const ChatListItem: React.FC<{
@@ -40,7 +41,7 @@ const ChatListItem: React.FC<{
 
   return (
     <TouchableOpacity onPress={handleOpenChat}>
-      <View className="flex-row justify-between p-1 ml-4 items-center h-17 bg-gray-100 rounded-l-xl">
+      <View className="flex-row justify-between p-1 pl-3 items-center h-17 bg-white rounded-l-xl">
         <View className="flex-row items-center">
           <TouchableOpacity onPress={handleOpenChat}>
             <Image
@@ -70,6 +71,7 @@ const ChatListScreen: React.FC = observer(() => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
   const router = useRouter();
 
  
@@ -85,10 +87,12 @@ const ChatListScreen: React.FC = observer(() => {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-   
-    fetchData();
-  }, []);
+ 
+
+useEffect(() => {
+  fetchData();
+  setIsEmpty(ChatStore.chats.length === 0);
+},[ChatStore.chats.length])
   
 
   const onRefresh = async () => {
@@ -106,21 +110,42 @@ const ChatListScreen: React.FC = observer(() => {
     );
   }
 
+  const renderSkeletons = () => (
+    <FlatList
+      data={[...Array(5).keys()]} // Создаем 5 элементов для отображения скелетонов
+      keyExtractor={(item) => item.toString()}
+      renderItem={() => (
+        <View className="items-center bg-white">
+          <SkeletonCard />
+        </View>
+      )}
+    />
+  );
+
+  if (error) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <Text>{error}</Text>
+      </View>
+    );
+  }
+
   return (
     <>
-      {ChatStore.chats.length === 0 && <EmptyChatScreen />}
       <View className="h-full">
-        <View className="flex-row items-center justify-start gap-2 p-2 mt-4">
-          <IconButton
-            icon="arrow-left"
-            size={24}
-            onPress={() => router.push("(tabs)/map")}
-          />
-          <Text className="text-lg font-nunitoSansBold pb-1">{i18n.t("chat.messages")}</Text>
-        </View>
+      {isLoading ? (
+        renderSkeletons() // Показываем скелетоны, если идет загрузка
+      ) : isEmpty ? (
+        <EmptyChatScreen /> // Пустое состояние
+      ) : (
         <FlatList
           data={ChatStore.sortedChats}
-          renderItem={({ item }) => <ChatListItem item={item} lastMessage={ChatStore.lastMessage[item.id]} />}
+          renderItem={({ item }) => (
+            <ChatListItem
+              item={item}
+              lastMessage={ChatStore.lastMessage[item.id]}
+            />
+          )}
           keyExtractor={(item) => item.id}
           refreshControl={
             <RefreshControl
@@ -131,8 +156,8 @@ const ChatListScreen: React.FC = observer(() => {
           }
           contentContainerStyle={{ paddingBottom: 85 }}
         />
-        {/* <Surface elevation={5} className="h-24 bg-white" children={undefined} /> */}
-      </View>
+      )}
+    </View>
     </>
   );
 });

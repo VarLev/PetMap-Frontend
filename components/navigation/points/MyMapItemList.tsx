@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { FlatList, ActivityIndicator, View } from "react-native";
+import { FlatList, ActivityIndicator, View, Image, Dimensions, Text, ScrollView,
+  RefreshControl, } from "react-native";
 import MapPointDangerCard from "@/components/custom/cards/MapPointDangerCard";
 import { MapPointType } from "@/dtos/enum/MapPointType";
 import { IWalkAdvrtShortDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtShortDto";
@@ -8,6 +9,8 @@ import SkeletonCard from "@/components/custom/cards/SkeletonCard";
 import userStore from "@/stores/UserStore";
 import MyAdvrtCard from "@/components/custom/cards/MyAdvrtCard";
 import mapStore from "@/stores/MapStore";
+import CustomPlug from "@/components/custom/plug/CustomPlug";
+import i18n from "@/i18n";
 
 interface AdvrtsListProps {
   renderType: MapPointType;
@@ -32,9 +35,10 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
       setIsLoading(false);
     }
   };
-
+  
   // Обновление данных при изменении типа или страницы
   useEffect(() => {
+    
     loadAds(); // Загружаем данные с первой страницы
   }, [renderType]);
 
@@ -104,10 +108,26 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
     />
   );
 
+
+
+
   return (
     <View>
       {isLoading ? (
         renderSkeletons()
+      ) : points.length === 0 ? (
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              colors={["#6200ee"]}
+            />
+          }
+        >
+          <CustomPlug text={i18n.t("myWalks.noWalks")} />
+        </ScrollView>
       ) : (
         <FlatList
           data={points}
@@ -117,6 +137,7 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
           onRefresh={handleRefresh}
           ListFooterComponent={renderFooter}
         />
+    
       )}
     </View>
   );

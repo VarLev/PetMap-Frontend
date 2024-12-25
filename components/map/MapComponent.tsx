@@ -23,7 +23,7 @@ import Mapbox, {
   LineLayer,
 } from "@rnmapbox/maps";
 import mapStore from "@/stores/MapStore";
-import { Provider } from "react-native-paper";
+import { Provider, Snackbar } from "react-native-paper";
 import BottomSheetComponent from "@/components/common/BottomSheetComponent"; // Импортируйте новый компонент
 import BottomSheet from "@gorhom/bottom-sheet";
 import AdvtComponent from "./AdvtComponent";
@@ -58,10 +58,10 @@ import { UserPointType } from "@/dtos/enum/UserPointType";
 import PointsOfInterestComponent from "./PointsOfInterestComponent";
 import FabGroupComponent from "./FabGroupComponent";
 import { IUserChat } from "@/dtos/Interfaces/user/IUserChat";
-
 import i18n from "@/i18n";
 import uiStore from "@/stores/UIStore";
 import PermissionsRequestComponent from "../auth/PermissionsRequestComponent";
+import CustomSnackBar from "../custom/alert/CustomSnackBar";
 
 const MapBoxMap = observer(() => {
   const [isLoading, setIsLoading] = useState(true);
@@ -100,6 +100,7 @@ const MapBoxMap = observer(() => {
   const [routeData, setRouteData] = useState<any>(null);
 
   const [renderAdvrtForm, setRenderAdvrtForm] = useState(false);
+   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
@@ -458,7 +459,9 @@ const MapBoxMap = observer(() => {
           type: type,
           userId: currentUser?.id!,
           city: await userStore.getCurrentUserCity() || "",
-        });
+        });       
+        setSnackbarVisible(mapStore.mapPoints.length === 0 ? true : false);
+        console.log("Данные карты:", mapStore.mapPoints);
       }
     }
   };
@@ -505,9 +508,12 @@ const MapBoxMap = observer(() => {
           <MapItemList renderType={currentPointType} />
         </SlidingOverlay>
       )}
+
+
+
       {!isLoading && (
         <MapView
-          ref={mapRef}
+        ref={mapRef}
           style={{ flex: 1 }}
           onPress={handleLongPress}
           styleURL={Mapbox.StyleURL.Light}
@@ -714,6 +720,8 @@ const MapBoxMap = observer(() => {
           onOpenFilter={handleOpenFilter}
           onOpenCardView={() => setisCardView(!isCardView)}
           badgeCount={modifiedFieldsCount}
+          setSnackbarVisible={setSnackbarVisible}   
+          snackbarVisible={snackbarVisible}    
         />
       </View>
 

@@ -269,7 +269,7 @@ class MapStore {
       
 
       const response = await apiClient.get(`filter/point/all?${queryParams}`);
-      if (response.data.length === 0) {
+       if (response.data.length === 0) {
         console.log('No map points found');
         runInAction(() => {
           this.mapPoints = response.data as IPointEntityDTO[];

@@ -17,13 +17,8 @@ function EmptyChatScreen() {
   const { width, height } = Dimensions.get("window");
 
   return (
-    <SafeAreaView className="bg-white h-full">
-      <View className="flex-row items-center justify-start  py-2 mt-8">
-        <View className="flex-row items-center">
-        <IconButton icon="arrow-left" size={24} onPress={handleBack} />
-        <Text className="text-lg font-nunitoSansBold">{i18n.t("chat.messages")}</Text>
-        </View>
-      </View>
+    <SafeAreaView className="">
+     
       <View className="justify-start ">
         <View className="justify-between items-center  ">
           <View className="items-center  justify-center  ">
