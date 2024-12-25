@@ -9,7 +9,7 @@ import { getTagsByIndex } from '@/utils/utils';
 import SkeletonCard from '@/components/custom/cards/SkeletonCard';
 import ReviewSection from '@/components/review/ReviewSection';
 import { MapPointType } from '@/dtos/enum/MapPointType';
-import i18n from '@/i18n'; // Импорт i18n
+import i18n from '@/i18n';
 
 interface CompositeFormProps {
   mapPoint: IPointEntityDTO;
@@ -67,18 +67,15 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
     });
   };
 
-  const handleFetchReviews = useCallback(
-    async () => {
-      try {
-        const reviews = await mapStore.getReviewsByPointId(mapPoint.id);
-        return reviews;
-      } catch (error) {
-        console.error(i18n.t('ViewUserPoint.errors.fetchReviewsError'), error);
-        return [];
-      }
-    },
-    [mapPoint.id]
-  );
+  const handleFetchReviews = useCallback(async () => {
+    try {
+      const reviews = await mapStore.getReviewsByPointId(mapPoint.id);
+      return reviews;
+    } catch (error) {
+      console.error(i18n.t('ViewUserPoint.errors.fetchReviewsError'), error);
+      return [];
+    }
+  }, [mapPoint.id]);
 
   return (
     <View className="px-4">
@@ -91,7 +88,7 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
         <>
           {pointData.mapPointType === MapPointType.Note ? (
             <>
-              <Text className="pt-2 text-lg font-nunitoSansBold text-indigo-700">
+              <Text className="pt-2 text-base font-nunitoSansBold text-indigo-700">
                 {i18n.t('ViewUserPoint.description')}
               </Text>
               <Text className="text-base font-nunitoSansRegular">
@@ -100,8 +97,11 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
             </>
           ) : (
             <>
-              <Text className="px-2 text-2xl font-nunitoSansBold">
-                {getTagsByIndex(i18n.t('tags.USERSPOINTTYPE_TAGS') as string[], mapPoint.mapPointType)}
+              <Text className="px-0 text-xl font-nunitoSansBold">
+                {getTagsByIndex(
+                  i18n.t('tags.USERSPOINTTYPE_TAGS') as string[],
+                  mapPoint.mapPointType
+                )}
               </Text>
               <View className="-mt-2 h-36 overflow-hidden flex-row">
                 <ImageModalViewer
@@ -115,19 +115,25 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
                   imageHeight={120}
                   imageWidth={120}
                 />
-                <View className="pt-2 flex-col w-56">
-                  <Text className="text-lg font-nunitoSansBold text-indigo-700">
+                <View className="pt-2 pl-2 flex-col w-56">
+                  <Text className="text-base font-nunitoSansBold text-indigo-700">
                     {i18n.t('ViewUserPoint.name')}
                   </Text>
-                  <Text className="text-sm font-nunitoSansRegular">
+                  <Text className="text-base font-nunitoSansBold">
                     {pointData.name}
                   </Text>
-                  <Text className=" text-lg font-nunitoSansBold text-indigo-700">
-                    {i18n.t('ViewUserPoint.address')}
-                  </Text>
-                  <Text className="text-sm font-nunitoSansRegular">
-                    {pointData.address}
-                  </Text>
+
+                  {/* Адрес — выводим только при наличии данных */}
+                  {!!pointData.address && (
+                    <>
+                      <Text className="text-base font-nunitoSansBold text-indigo-700">
+                        {i18n.t('ViewUserPoint.address')}
+                      </Text>
+                      <Text className="text-base font-nunitoSansRegular">
+                        {pointData.address}
+                      </Text>
+                    </>
+                  )}
                 </View>
               </View>
               <View className="flex-col">
@@ -135,23 +141,26 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
                   title={i18n.t('ViewUserPoint.openInGoogleMaps')}
                   handlePress={handleOpenMap}
                 />
-                <Text className="pt-2 text-lg font-nunitoSansBold text-indigo-700">
+                <Text className="pt-2 text-base font-nunitoSansBold text-indigo-700">
                   {i18n.t('ViewUserPoint.description')}
                 </Text>
                 <Text className="text-base font-nunitoSansRegular">
                   {pointData.description}
                 </Text>
-                <View>
-                  <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
-                    {i18n.t('ViewUserPoint.amenities')}
-                  </Text>
-                  <CustomTagsSelector
-                    tags={i18n.t('tags.AMENITIES_TAGS') as string[]}
-                    initialSelectedTags={pointData.amenities!}
-                    readonlyMode
-                    visibleTagsCount={10}
-                  />
-                </View>
+                {/* Удобства — выводим только при наличии и непустом массиве */}
+                {pointData.amenities && pointData.amenities.length > 0 && (
+                  <View>
+                    <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
+                      {i18n.t('ViewUserPoint.amenities')}
+                    </Text>
+                    <CustomTagsSelector
+                      tags={i18n.t('tags.AMENITIES_TAGS') as string[]}
+                      initialSelectedTags={pointData.amenities}
+                      readonlyMode
+                      visibleTagsCount={10}
+                    />
+                  </View>
+                )}
               </View>
             </>
           )}
