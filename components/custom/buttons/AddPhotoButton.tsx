@@ -81,7 +81,7 @@ const AddPhotoButton: React.FC<AddPhotoButtonProps> = ({
 
   return (
     <Card
-      className="h-40 border-3 border-dashed bg-white rounded-2xl shadow-lg items-center justify-center"
+      className="h-40 border-3 border-dashed bg-white rounded-2xl items-center justify-center"
       style={{ borderWidth: 1, borderColor: '#bababa' }}
     >
       {selectedImage ? (

@@ -10,6 +10,8 @@ type MultiTagDropdownProps = {
   onChange?: (selectedTags: number[]) => void; // Обработчик изменения выбранных тегов
   label?: string; // Метка для выпадающего списка
   searchable?: boolean; // Возможность поиска тегов
+  searchPlaceholder?: string; // Плейсхолдер для поисковой строки
+  nothingToShow?: string; // Сообщение, о том, что теги не найдены
   listMode?: ListModeType; // Режим отображения списка
 };
 
@@ -20,6 +22,8 @@ const MultiTagDropdown: React.FC<MultiTagDropdownProps> = ({
   onChange,
   label,
   searchable = false,
+  searchPlaceholder = i18n.t('tagSelectors.searchPlaceholder'),
+  nothingToShow = i18n.t('tagSelectors.nothingToShow'),
   listMode = 'FLATLIST'
 }) => {
   const [open, setOpen] = useState(false);
@@ -119,6 +123,10 @@ const MultiTagDropdown: React.FC<MultiTagDropdownProps> = ({
         renderBadgeItem={renderCustomBadgeItem}
         modalAnimationType='slide'
         listMode={listMode}
+        translation={{
+          NOTHING_TO_SHOW: nothingToShow,
+          SEARCH_PLACEHOLDER: searchPlaceholder
+        }}
       />
     </View>
   );

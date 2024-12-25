@@ -433,7 +433,11 @@
       "Fundraising",
       "Coaching",
       "Consulting",
-      "Time Management"
+      "Time Management",
+      "Veterinary Medicine",
+      "Animal Care",
+      "Cynology / Felinology",
+      "Animal Protection Activities"
     ],
     "petGames": [
       "Fetch",
@@ -927,7 +931,9 @@
     "selectTag": "Select Tag",
     "selectTags": "Select Tags",
     "collapse": "Collapse",
-    "showMore": "Show More"
+    "showMore": "Show More",
+    "nothingToShow": "There's nothing to show!",
+    "searchPlaceholder": "Type something..."
   },
   "feedPosts": {
     "noPosts": "No posts",
@@ -935,6 +941,7 @@
     "deletePost": "Delete",
     "complainOnPost": "Complain",
     "commentInput": "Write comment...",
+    "noCommentsText": "No comments yet, be the first to leave one!",
     "addPostText": "Add post text",
     "postCreateError": "Creating post error.",
     "createPostInput": "What's new?",

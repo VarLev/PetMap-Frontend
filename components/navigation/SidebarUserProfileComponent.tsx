@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Platform } from "react-native";
 import { Button, List, TouchableRipple } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/Images";
@@ -48,7 +48,7 @@ const SidebarUserProfileComponent = () => {
 
         <TouchableRipple
           className="w-full mt-6"
-          rippleColor="#E8DFFF"
+          rippleColor={Platform.OS === "ios" ? "rgba(0,0,0,0.1)" : "#E8DFFF"}
           onPress={handleProfilePress}
         >
           <View className="flex-row justify-start items-center">
@@ -102,7 +102,7 @@ const SidebarUserProfileComponent = () => {
         </TouchableRipple>
 
         {/* Подписка */}
-        <View className="flex-row mt-4 content-center items-center">
+        {/* <View className="flex-row mt-4 content-center items-center">
           <Button
             icon={() => (
               <FontAwesome
@@ -133,7 +133,7 @@ const SidebarUserProfileComponent = () => {
               {i18n.t("Sidebar.subscribe")}
             </Text>
           </Button>
-        </View>
+        </View> */}
 
         {/* Меню */}
         <List.Section>
@@ -157,7 +157,7 @@ const SidebarUserProfileComponent = () => {
             )}
             onPress={handleWalksPress}
           />
-          <CustomListItemWrapper
+          {/* <CustomListItemWrapper
             onPress={() => console.log(i18n.t("Sidebar.myLocations"))}
             title={i18n.t("Sidebar.myLocations")}
             leftIcon={() => (
@@ -167,7 +167,7 @@ const SidebarUserProfileComponent = () => {
                 )}
               />
             )}
-          />
+          /> */}
           <CustomListItemWrapper
             title={i18n.t("Sidebar.settings")}
             leftIcon={() => (
@@ -179,7 +179,7 @@ const SidebarUserProfileComponent = () => {
             )}
             onPress={handleSettingsPress}
           />
-          <CustomListItemWrapper
+          {/* <CustomListItemWrapper
             title={i18n.t("Sidebar.support")}
             leftIcon={() => (
               <List.Icon
@@ -189,7 +189,7 @@ const SidebarUserProfileComponent = () => {
               />
             )}
             onPress={() => console.log(i18n.t("Sidebar.support"))}
-          />
+          /> */}
         </List.Section>
       </View>
     </SafeAreaView>
