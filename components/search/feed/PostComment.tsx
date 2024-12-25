@@ -21,6 +21,7 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
   const [isComplaintModal, setIsComplaintModal] = useState<boolean>(false);
   const [isComplaintDone, setIsComplaintDone] = useState(false);
   const [isComplaintSuccess, setIsComplaintSuccess] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     if (comment.userId === userStore.currentUser?.id) {
@@ -28,7 +29,14 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
     } else {
       setIsCurrentUser(false);
     }
-  }, [])
+
+    if (userStore.currentUser?.isPremium === true) {
+      setIsPremium(true);
+    } else {
+      setIsPremium(false);
+    }
+    
+  }, [isPremium])
 
   // const isPremium = userStore.currentUser?.isPremium;
 
