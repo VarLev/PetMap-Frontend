@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { View } from 'react-native';
-import NewsComponent from '@/components/search/news/NewsComponent';
 import PermissionsRequestComponent from '@/components/auth/PermissionsRequestComponent';
+import NewsWebView from '@/components/search/news/NewsWebView';
 
-export default function News() {
+// Тип пропов для NewsScreen
+interface NewsScreenProps {
+  setSwipeEnabled: (enabled: boolean) => void;
+}
+
+const NewsScreen: FC<NewsScreenProps> = ({ setSwipeEnabled }) => {
   return (
-    <View className='flex-1 bg-white'>
-      <PermissionsRequestComponent/>
-      <NewsComponent />
+    <View className="flex-1 bg-white">
+      <PermissionsRequestComponent />
+      {/* 
+        Передаём setSwipeEnabled дальше в NewsWebView,
+        где будем блокировать/разблокировать свайп табов.
+      */}
+      <NewsWebView setSwipeEnabled={setSwipeEnabled} />
     </View>
   );
-}
+};
+
+export default NewsScreen;

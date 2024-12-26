@@ -81,7 +81,8 @@
     "react-native-star-rating-widget": "^1.8.0",
     "react-native-svg": "^15.2.0",
     "react-native-tags": "^2.2.1",
-    "react-native-vector-icons": "^10.2.0"
+    "react-native-vector-icons": "^10.2.0",
+    "react-native-webview": "^13.12.5"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
