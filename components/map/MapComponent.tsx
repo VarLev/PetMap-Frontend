@@ -127,6 +127,8 @@ const MapBoxMap = observer(() => {
             await mapStore.setWalkAdvrts(); 
             const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
             setGeoJSONData(data);
+            console.log('Walk advrts updated');
+            console.log(currentPointType);
           } catch (err) {
             console.error(err);
           }
@@ -139,7 +141,7 @@ const MapBoxMap = observer(() => {
         };
       }
      
-    }, [])
+    }, [currentPointType])
   );
 
 
@@ -403,7 +405,6 @@ const MapBoxMap = observer(() => {
   };
 
   const hangleSetSelectedNumberPoint = (number: number) => {
-    setCurrentPointType(number);
     tagSelected(number);
   };
 
