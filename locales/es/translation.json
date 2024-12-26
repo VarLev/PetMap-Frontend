@@ -1005,7 +1005,10 @@
     "male": "Masculino",
     "selectAvatarTitle": "¡Elegí tu avatar!",
     "selectAvatarDescription": "Esta imagen se mostrará en tu perfil y será visible para otros usuarios.",
-    "save": "Guardar"    
+    "save": "Guardar"
+  },
+  "myWalks": {
+    "noWalks": "No tienes paseos"
   },
   "Snackbar": {
     "noResults": "No hay resultados"
