@@ -1,7 +1,5 @@
 import React from "react";
 import { Stack } from "expo-router";
-import { IconButton } from "react-native-paper";
-import { router } from "expo-router";
 import i18n from "@/i18n";
 
 
@@ -13,14 +11,8 @@ const ChatLayout = () => {
           name="index"
           options={{ headerShown: true, title: i18n.t("chat.messages"), 
             headerStyle: { backgroundColor: "white" },
-            headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' },
-            headerLeft: () => (
-              <IconButton
-              icon="arrow-left"
-              size={24}
-              onPress={() => router.push("(tabs)/map")}
-            />
-            ),
+            headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' },       
+            headerBackVisible: false,
            }}
         />
          <Stack.Screen

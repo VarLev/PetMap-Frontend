@@ -56,7 +56,7 @@ const ChatScreen: React.FC = observer(() => {
     }
 
     const handleBackPress = () => {
-      router.replace("/chat/");
+      router.push("/chat/");
       mapStore.setBottomSheetVisible(false);
       return true;
     };
