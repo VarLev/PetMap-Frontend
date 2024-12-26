@@ -206,6 +206,7 @@ const TopUsers = () => {
         contentContainerStyle={{ padding: 16 }}
         onScroll={handleScroll}
         scrollEventThrottle={16}
+        ListFooterComponent={<View style={{ height: 100 }} />}
       />
     </GestureHandlerRootView>
   );
