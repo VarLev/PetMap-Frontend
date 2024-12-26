@@ -1007,7 +1007,11 @@
     "selectAvatarDescription":"This image will be displayed in your profile and seen by other users.",
     "save": "Save"
   },
+  "myWalks": {
+    "noWalks": "You have no walks"
+},
   "Snackbar": {
     "noResults": "No results"
 }
+
 }
