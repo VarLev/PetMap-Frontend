@@ -76,6 +76,7 @@ const MapBoxMap = observer(() => {
   const [routeData, setRouteData] = useState<any>(null);
 
   const [renderAdvrtForm, setRenderAdvrtForm] = useState(false);
+  const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
@@ -126,6 +127,8 @@ const MapBoxMap = observer(() => {
             await mapStore.setWalkAdvrts(); 
             const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
             setGeoJSONData(data);
+            console.log('Walk advrts updated');
+            console.log(currentPointType);
           } catch (err) {
             console.error(err);
           }
@@ -138,7 +141,7 @@ const MapBoxMap = observer(() => {
         };
       }
      
-    }, [])
+    }, [currentPointType])
   );
 
 
@@ -381,6 +384,7 @@ const MapBoxMap = observer(() => {
           userId: currentUser?.id!,
           city: (await userStore.getCurrentUserCity()) || '',
         });
+        setSnackbarVisible(mapStore.mapPoints.length === 0 ? true : false);
       }
     }
   };
@@ -401,7 +405,6 @@ const MapBoxMap = observer(() => {
   };
 
   const hangleSetSelectedNumberPoint = (number: number) => {
-    setCurrentPointType(number);
     tagSelected(number);
   };
 
@@ -503,6 +506,8 @@ const MapBoxMap = observer(() => {
             onOpenFilter={handleOpenFilter}
             onOpenCardView={() => setisCardView(!isCardView)}
             badgeCount={modifiedFieldsCount}
+            setSnackbarVisible={setSnackbarVisible}   
+            snackbarVisible={snackbarVisible}   
           />
         </View>
 

@@ -200,12 +200,13 @@ const TopUsers = () => {
       {renderTopThreeUsers()}
 
       <FlatList
-        data={isLoading ? Array.from({ length: skeletonCount }, (_, i) => i) : topUsers.slice(3)}
+        data={isLoading ? Array.from({ length: skeletonCount }, (_, i) => i) : topUsers.slice(0)}
         keyExtractor={(item, index) => isLoading ? index.toString() : (item as IUserCardDto).id.toString()}
         renderItem={renderItem}
         contentContainerStyle={{ padding: 16 }}
         onScroll={handleScroll}
         scrollEventThrottle={16}
+        ListFooterComponent={<View style={{ height: 100 }} />}
       />
     </GestureHandlerRootView>
   );
