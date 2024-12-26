@@ -1009,6 +1009,9 @@
   },
   "myWalks": {
     "noWalks": "You have no walks"
+},
+  "Snackbar": {
+    "noResults": "No results"
 }
 
 }

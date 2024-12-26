@@ -8,6 +8,7 @@ import IconSelectorComponent from '../icons/IconSelectorComponent';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import uiStore from '@/stores/UIStore';
 import i18n from '@/i18n';
+import CustomSnackBar from '../alert/CustomSnackBar';
 
 
 interface SearchAndTagsProps {
@@ -18,6 +19,8 @@ interface SearchAndTagsProps {
   onOpenFilter: () => void;
   onOpenCardView: () => void;
   badgeCount: number;
+  setSnackbarVisible: (visible: boolean) => void;
+  snackbarVisible: boolean
 }
 
 const SearchAndTags: React.FC<SearchAndTagsProps> = ({
@@ -28,6 +31,8 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
   onOpenFilter,
   onOpenCardView,
   badgeCount,
+  setSnackbarVisible,
+  snackbarVisible
 }) => {
   const [isTagSelected, setIsTagSelected] = useState(false);
   const [isCardView, setIsCardView] = useState(false);
@@ -38,6 +43,7 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
     setIsTagSelected(true);
     onTagSelected(type);
     uiStore.setIsPointSearchFilterTagSelected(true);
+    setSnackbarVisible(false)
   };
 
   const handleClearTag = () => {
@@ -94,7 +100,7 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
         </TouchableOpacity>
       </View>
 
-      {!isTagSelected && (
+      {!isTagSelected ? (
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           <View className="flex-row space-x-2 px-1">
             <CustomButtonWithIcon
@@ -169,7 +175,7 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
             />
           </View>
         </ScrollView>
-      )}
+      ): <CustomSnackBar visible={snackbarVisible} setVisible={setSnackbarVisible}/>}
     </View>
   );
 };
