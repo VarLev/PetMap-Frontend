@@ -200,7 +200,7 @@ const TopUsers = () => {
       {renderTopThreeUsers()}
 
       <FlatList
-        data={isLoading ? Array.from({ length: skeletonCount }, (_, i) => i) : topUsers.slice(3)}
+        data={isLoading ? Array.from({ length: skeletonCount }, (_, i) => i) : topUsers.slice(0)}
         keyExtractor={(item, index) => isLoading ? index.toString() : (item as IUserCardDto).id.toString()}
         renderItem={renderItem}
         contentContainerStyle={{ padding: 16 }}
