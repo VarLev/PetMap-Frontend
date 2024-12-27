@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, StyleSheet, Pressable, Platform } from "react-native";
+import { View, Pressable, Platform } from "react-native";
 import { Snackbar, Text } from "react-native-paper";
 import i18n from "@/i18n";
 
@@ -17,23 +17,15 @@ function CustomSnackBar({ visible, setVisible }: CustomSnackBarProps) {
   }, []);
 
   return (
-    <View style={isIOS ? styles.containerIOS : styles.container}>
+    <View className={`z-10 items-center justify-center ${isIOS ? "pt-24" : "pt-10"}`}>
       <Snackbar
         visible={visible}
         onDismiss={onDismissSnackBar}
         duration={5000}
-        style={{ backgroundColor: "white", borderRadius: 30, height: 30 }}
+        className="bg-white rounded-3xl"
       >
         <Pressable onPress={onDismissSnackBar}>
-          <Text
-            style={{
-              color: "black",
-              fontFamily: "NunitoSans_400Regular",
-              fontSize: 16,
-              textAlign: "center",
-              marginBottom: -5,
-              }}
-          >
+          <Text className="text-black font-regular text-base font-nunitoSansRegular text-center -mb-1">
             {i18n.t("Snackbar.noResults")}
           </Text>
         </Pressable>
@@ -41,22 +33,5 @@ function CustomSnackBar({ visible, setVisible }: CustomSnackBarProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 10,    
-    textAlignVertical: "center",
-    paddingTop: 42,   //65
-  },
-  containerIOS: {
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 10,   
-    textAlignVertical: "center",
-    paddingTop: 72,
-  },
-});
 
 export default CustomSnackBar;
