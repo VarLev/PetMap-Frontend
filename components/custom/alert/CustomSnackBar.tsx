@@ -22,16 +22,17 @@ function CustomSnackBar({ visible, setVisible }: CustomSnackBarProps) {
         visible={visible}
         onDismiss={onDismissSnackBar}
         duration={5000}
-        style={{ backgroundColor: "white", borderRadius: 30 }}
+        style={{ backgroundColor: "white", borderRadius: 30, height: 30 }}
       >
         <Pressable onPress={onDismissSnackBar}>
           <Text
             style={{
               color: "black",
-              fontFamily: "font-nunitoSansRegular",
+              fontFamily: "NunitoSans_400Regular",
               fontSize: 16,
               textAlign: "center",
-            }}
+              marginBottom: -5,
+              }}
           >
             {i18n.t("Snackbar.noResults")}
           </Text>
@@ -45,22 +46,16 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
-    zIndex: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
-    opacity: 0.85,
+    zIndex: 10,    
     textAlignVertical: "center",
-    paddingTop: 65,
+    paddingTop: 42,   //65
   },
   containerIOS: {
     alignItems: "center",
     justifyContent: "center",
-    zIndex: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
-    opacity: 0.85,
+    zIndex: 10,   
     textAlignVertical: "center",
-    paddingTop: 95,
+    paddingTop: 72,
   },
 });
 
