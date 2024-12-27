@@ -2,7 +2,6 @@ import { FC, useEffect, useMemo, useState } from 'react';
 import { View, Image, TextInput } from 'react-native';
 import { Text, Menu, ActivityIndicator, TouchableRipple } from 'react-native-paper';
 import { Card, Avatar, IconButton } from 'react-native-paper';
-import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { ICommentWithUser, IPost } from '@/dtos/Interfaces/feed/IPost';
 import { BG_COLORS } from '@/constants/Colors';
@@ -32,10 +31,9 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
   useEffect(() => {
     (async () => {
       const postComments = await searchStore.fetchGetComments(post.id);
-      const updatedLikesCount = await searchStore.fetchLikesCount(post.id);
       const hasLiked = await searchStore.hasUserLiked(post.id);
+      updateLikes();
       setHasLiked(hasLiked);
-      setLikes(updatedLikesCount);
       setComments(postComments);
 
       if (post.userId === userStore.currentUser?.id) {
@@ -44,23 +42,23 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
         setIsCurrentUser(false);
       }
     })();
-  }, [post]);
+  }, []);
 
-  const addLike = async () => {
+  const updateLikes = async () => {
+    const updatedLikesCount = await searchStore.fetchLikesCount(post.id);
+    setLikes(updatedLikesCount);
+  }
+
+  const toggleLike = async () => {
     try {
-      if (hasLiked) {
-        if(await searchStore.unlikePost(post.id)){
-          setHasLiked(false);
-          runInAction(() => post.decrementLikes());
-          setLikes(post.likesCount);
-        }
-       
+      if (!hasLiked) {
+        await searchStore.likePost(post.id);
+        setHasLiked(true);
+        updateLikes();
       } else {
-        if(await searchStore.likePost(post.id)){
-          setHasLiked(true);
-          runInAction(() => post.incrementLikes());
-          setLikes(post.likesCount);
-        }
+        await searchStore.unlikePost(post.id);
+        setHasLiked(false);
+        updateLikes();
       }
     } catch (error) {
       console.error('Error updating like:', error);
@@ -198,7 +196,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
               <IconButton
                 icon={hasLiked ? "heart" : "heart-outline"}
                 iconColor={hasLiked ? BG_COLORS.purple[400] : "gray"}
-                onPress={addLike}
+                onPress={toggleLike}
                 size={20}
               />
               <Text className="-ml-2 text-sm text-gray-500 font-medium">{likes}</Text>

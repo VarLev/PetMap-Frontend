@@ -25,8 +25,8 @@ export interface IPost {
   userAvatar?: string;
   userName?: string;
 
-  incrementLikes: () => void;
-  decrementLikes: () => void;
+  // incrementLikes: () => void;
+  // decrementLikes: () => void;
 }
 
 export interface INews {

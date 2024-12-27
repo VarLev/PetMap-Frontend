@@ -35,21 +35,21 @@ export class Post implements IPost {
       userAvatar: observable,
       userName: observable,
       comments: observable,
-      incrementLikes: action,
-      decrementLikes: action,
+      // incrementLikes: action,
+      // decrementLikes: action,
     });
   }
 
   // Действия для изменения состояния
-  incrementLikes() {
-    this.likesCount++;
-    this.hasLiked = true;
-  }
+  // incrementLikes() {
+  //   this.likesCount++;
+  //   this.hasLiked = true;
+  // }
 
-  decrementLikes() {
-    this.likesCount--;
-    this.hasLiked = false;
-  }
+  // decrementLikes() {
+  //   this.likesCount--;
+  //   this.hasLiked = false;
+  // }
 }
 
 export class Comment implements IComment {
