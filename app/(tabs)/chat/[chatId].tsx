@@ -121,7 +121,7 @@ const ChatScreen: React.FC = observer(() => {
     <>
       <SafeAreaView className="bg-white h-full">
         <ChatHeader
-          userName={otherUserName ?? i18n.t("chat.unknown_user")}
+          userName={otherUserName??''}
           avatarUrl={avatarUrl}
           onPressAvatar={handleOpenProfile}
         />

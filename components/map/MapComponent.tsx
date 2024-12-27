@@ -81,42 +81,42 @@ const MapBoxMap = observer(() => {
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
   useEffect(() => {
-      const loadData = async () => {
-        setIsLoading(true);
-        setHasPermission(uiStore.getLocationPermissionGranted());
-        const fetchCity = async () => {
-          if (userCoordinates) {
-            try {
-              if (userStore.getCurrentUserCity() === '') {
-                const city = await mapStore.getUserCity(userCoordinates);
-                userStore.setCurrentUserCity(city);
-                await mapStore.setWalkAdvrts();
-              }
-              mapStore.setCity(userStore.getCurrentUserCity());
-              console.log('Город успешно получен для координат:', mapStore.getCity());
-            } catch (error) {
-              console.error('Ошибка при получении города:', error);
+    const loadData = async () => {
+      setIsLoading(true);
+      setHasPermission(uiStore.getLocationPermissionGranted());
+      const fetchCity = async () => {
+        if (userCoordinates) {
+          try {
+            if (userStore.getCurrentUserCity() === '') {
+              const city = await mapStore.getUserCity(userCoordinates);
+              userStore.setCurrentUserCity(city);
+              await mapStore.setWalkAdvrts();
             }
-          } else {
-            userStore.setCurrentUserCity('Buenos Aires');
-            mapStore.setCity('Buenos Aires');
-            await mapStore.setWalkAdvrts();
+            mapStore.setCity(userStore.getCurrentUserCity());
+            console.log('Город успешно получен для координат:', mapStore.getCity());
+          } catch (error) {
+            console.error('Ошибка при получении города:', error);
           }
-        };
-  
-        const fetchData = async () => {
-          const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
-          setGeoJSONData(data);
-        };
-        
-        await fetchCity();
-        await fetchData();
-        
-        setIsLoading(false);
+        } else {
+          userStore.setCurrentUserCity('Buenos Aires');
+          mapStore.setCity('Buenos Aires');
+          await mapStore.setWalkAdvrts();
+        }
       };
-  
-      loadData();
-    }, []);
+
+      const fetchData = async () => {
+        const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
+        setGeoJSONData(data);
+      };
+      
+      await fetchCity();
+      await fetchData();
+      
+      setIsLoading(false);
+    };
+
+    loadData();
+  }, []);
 
   // --- Периодический опрос при фокусе экрана ---
   useFocusEffect(
@@ -143,7 +143,6 @@ const MapBoxMap = observer(() => {
      
     }, [currentPointType])
   );
-
 
   useFocusEffect(
     useCallback(() => {

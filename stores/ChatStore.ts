@@ -211,7 +211,9 @@ class ChatStore {
         chatStore.lastCreatedAt[chatId] = Date.now();
       });
 
+      console.log("otherUser:", otherUser);
       if (otherUser.fmcToken) {
+        
         await sendPushNotification(
           otherUser.fmcToken,
           "Приглашение на прогулку",
