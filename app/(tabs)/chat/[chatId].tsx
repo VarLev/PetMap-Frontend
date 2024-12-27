@@ -26,30 +26,38 @@ const ChatScreen: React.FC = observer(() => {
   const userId = UserStore.currentUser?.id;
 
   const [isBlocked, setIsBlocked] = useState(false);
+
   const sheetRef = useRef<BottomSheet>(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
+  const [selectedWalk, setSelectedWalk] = useState<IWalkAdvrtDto | null>(null);
 
-  // Загрузка черного списка
+  // Загружаем чёрный список, FMC-токен и проверяем блокировку
   useEffect(() => {
-    const loadBlacklist = async () => {
+    if (!otherUserId) return;
+
+    const loadData = async () => {
       try {
         await ChatStore.loadBlacklist();
-        console.log("Blacklist successfully loaded.");
+        if (__DEV__) {
+          console.log("Blacklist successfully loaded.");
+        }
+
+        console.log("Other user ID:", otherUserId);
+        const otherUserFmcToken = await ChatStore.getOtherUserFmcTokenByUserId(otherUserId);
+        console.log("Other user FMC token:", otherUserFmcToken);
+        ChatStore.setOtherUserFmcToken(otherUserFmcToken);
+
+        if (userId) {
+          setIsBlocked(ChatStore.checkIfIBlocked(otherUserId));
+        }
       } catch (error) {
         console.error("Failed to load blacklist:", error);
       }
     };
-    loadBlacklist();
-  }, []);
+    loadData();
+  }, [otherUserId, userId]);
 
-  // Проверка, заблокирован ли пользователь
-  useEffect(() => {
-    if (userId && otherUserId) {
-      setIsBlocked(ChatStore.checkIfIBlocked(otherUserId));
-    }
-  }, [userId, otherUserId, ChatStore.blacklist]);
-
-  // Загрузка сообщений и обработка кнопки "Назад"
+  // Загружаем сообщения + обработчик кнопки "Назад"
   useEffect(() => {
     if (chatId) {
       ChatStore.fetchMessages(chatId);
@@ -78,50 +86,36 @@ const ChatScreen: React.FC = observer(() => {
     [isBlocked, chatId, otherUserId]
   );
 
-  const renderMessage = useCallback(
-    (message: MessageType.Custom) => {
-      return (
-        <CustomMessageComponent
-          message={message}
-          openWalkDitails={handleOpenWalkDetails}
-          
-   
-        />
-      );
-    },
-    [chatId, otherUserId]
-  );
+  const handleOpenWalkDetails = useCallback((walk: IWalkAdvrtDto) => {
+    setSelectedWalk(walk);
+    setIsSheetVisible(true);
+    sheetRef.current?.expand();
+  }, []);
 
-  const handleOpenProfile = () => {
-    router.push(`/(tabs)/profile/${otherUserId}`);
-  };
+  const renderMessage = useCallback((message: MessageType.Custom) => {
+    return (
+      <CustomMessageComponent
+        message={message}
+        openWalkDitails={handleOpenWalkDetails}
+      />
+    );
+  }, [handleOpenWalkDetails]);
+
+  const handleOpenProfile = useCallback(() => {
+    if (otherUserId) {
+      router.push(`/(tabs)/profile/${otherUserId}`);
+    }
+  }, [otherUserId, router]);
 
   if (!userId) {
     return <Text>{i18n.t("chat.loading")}</Text>;
   }
 
-  const [renderContent, setRenderContent] = useState<() => JSX.Element | null>(() => null);
-
-  const handleOpenWalkDetails = (walk: IWalkAdvrtDto) => {
-
-  
-    console.log("walk", walk);
-    setRenderContent(() => (
-      <AdvtComponent
-        advrt={walk}
-        onInvite={()=>{}}
-        onClose={()=>{}}
-        isShort={true}
-      />
-    ));
-    setIsSheetVisible(true);
-    sheetRef.current?.expand();
-  }
   return (
     <>
       <SafeAreaView className="bg-white h-full">
         <ChatHeader
-          userName={otherUserName??''}
+          userName={otherUserName ?? ""}
           avatarUrl={avatarUrl}
           onPressAvatar={handleOpenProfile}
         />
@@ -165,17 +159,26 @@ const ChatScreen: React.FC = observer(() => {
           user={{ id: userId }}
           renderCustomMessage={renderMessage}
         />
-        
       </SafeAreaView>
+
       {isSheetVisible && (
         <BottomSheetComponent
           ref={sheetRef}
           snapPoints={["40%"]}
-          renderContent={renderContent as any}
-          onClose={()=>{}} // Обработчик для события закрытия BottomSheet
-          enablePanDownToClose={true}
-          initialIndex={0} // Начальная позиция - 60%
-        
+          renderContent={selectedWalk ? (
+            <AdvtComponent
+              advrt={selectedWalk}
+              onInvite={() => {}}
+              onClose={() => {}}
+              isShort
+            />
+          ) : null}
+          onClose={() => {
+            setIsSheetVisible(false);
+            setSelectedWalk(null);
+          }}
+          enablePanDownToClose
+          initialIndex={0}
         />
       )}
     </>
