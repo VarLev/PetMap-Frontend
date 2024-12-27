@@ -22,10 +22,10 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ userName, avatarUrl, onPressAva
         setDecodedAvatarUrl(decoded);
       } catch (error) {
         console.error("Error decoding avatar URL:", error);
-        setDecodedAvatarUrl("https://i.pravatar.cc/200");
+        setDecodedAvatarUrl("https://avatar.iran.liara.run/public");
       }
     } else {
-      setDecodedAvatarUrl("https://i.pravatar.cc/200");
+      setDecodedAvatarUrl("https://avatar.iran.liara.run/public");
     }
   }, [avatarUrl]);
 
@@ -38,7 +38,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ userName, avatarUrl, onPressAva
         <IconButton icon="arrow-left" size={24} onPress={handleBack} />
         <TouchableOpacity onPress={onPressAvatar}>
           <Image
-            source={{ uri: decodedAvatarUrl }}
+            source={{ uri: decodedAvatarUrl?? 'https://avatar.iran.liara.run/public'}}
             className="rounded-xl h-16 w-16"
           />
         </TouchableOpacity>

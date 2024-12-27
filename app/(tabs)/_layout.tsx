@@ -13,8 +13,7 @@ const Tabslayout = () => {
   const hideTabBar = pathname.includes('/chat/');
   const [isVisible, setIsVisible] = useState(true);
   useEffect(() => {
-    // Загрузка пользователей при первом монтировании компонента
-    UserStore.loadUsersOnce();
+  
     // Регистрация устройства для пуш-уведомлений
     console.log('Регистрация устройства для пуш-уведомлений');
     if(isDevice){

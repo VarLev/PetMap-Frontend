@@ -32,13 +32,48 @@ export function calculateDogAge(birthDate?: Date | null | undefined): string {
     }
 
     if (ageYears === 0) {
-      return `${ageMonths} m.`;
+      return `${ageMonths} ${getAgeUnit(ageMonths, 'month')}`;
     } else {
-      return `${ageYears} y.`;
+      return `${ageYears} ${getAgeUnit(ageYears, 'year')}`;
     }
   } else {
     return 'Unknown';
   }
+}
+
+/**
+* Возвращает склонение единицы измерения возраста в зависимости от возраста.
+* @param age Возраст.
+* @param unit Единица измерения возраста.
+* @returns Локализованная единица измерения возраста в правильном склонении
+*/
+function getAgeUnit(age: number, unit: "month" | "year"): string {
+  // Для русского языка
+  if (i18n.locale === 'ru') {
+    const lastTwoDigits = age % 100;
+    // От 5 до 20: "месяцев"/"лет"
+    if (lastTwoDigits >= 5 && lastTwoDigits <= 20) {
+      return i18n.t(`PetProfile.ageUnits.${unit}.many`);
+    } else {
+      const lastDigit = lastTwoDigits % 10;
+      // Все значения, заканчивающиеся на 1, кроме 11: "месяц"/"год"
+      if (lastDigit === 1) {
+        return i18n.t(`PetProfile.ageUnits.${unit}.one`)
+      } 
+      // Все значения, заканчивающиеся на 2-4: "месяца"/"года"
+      else if (lastDigit >= 2 && lastDigit <= 4) {
+        return i18n.t(`PetProfile.ageUnits.${unit}.few`);
+      } 
+      // Для всех остальных значений: "месяцев"/"лет"
+      else {
+        return i18n.t(`PetProfile.ageUnits.${unit}.many`);
+      }
+    }
+  }
+  // Для остальных языков
+  return age === 1
+    ? i18n.t(`PetProfile.ageUnits.${unit}.one`)  //Английский: "month"/"year", Испанский: "mes"/"año"
+    : i18n.t(`PetProfile.ageUnits.${unit}.many`); //Английский: "months"/"years", Испанский: "meses"/"años"
 }
 
 export function calculateHumanAge(birthDate?: Date | null): string {
@@ -62,9 +97,9 @@ export function calculateHumanAge(birthDate?: Date | null): string {
   }
 
   if (ageYears === 0) {
-    return `${ageMonths} m.`;
+    return `${ageMonths}`;
   } else if (ageMonths > 0) {
-    return `${ageYears} y.`;
+    return `${ageYears}`;
   } else {
     return ageYears.toString();
   }

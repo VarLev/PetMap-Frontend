@@ -64,7 +64,7 @@ const ViewDangerPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
   };
 
   const handleFetchReviews = useCallback(
-    async (page: number) => {
+    async () => {
       try {
         const reviews = await mapStore.getReviewsByPointId(mapPoint.id);
         return reviews;
@@ -128,7 +128,6 @@ const ViewDangerPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
         key={mapPoint.id}
         mapPointId={mapPoint.id}
         fetchReviews={handleFetchReviews}
-        totalPages={1}
       />
 
       <View className="h-24" />

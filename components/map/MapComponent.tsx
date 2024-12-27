@@ -76,71 +76,73 @@ const MapBoxMap = observer(() => {
   const [routeData, setRouteData] = useState<any>(null);
 
   const [renderAdvrtForm, setRenderAdvrtForm] = useState(false);
+  const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
   useEffect(() => {
-      const loadData = async () => {
-        setIsLoading(true);
-        setHasPermission(uiStore.getLocationPermissionGranted());
-        const fetchCity = async () => {
-          if (userCoordinates) {
-            try {
-              if (userStore.getCurrentUserCity() === '') {
-                const city = await mapStore.getUserCity(userCoordinates);
-                userStore.setCurrentUserCity(city);
-                await mapStore.setWalkAdvrts();
-              }
-              mapStore.setCity(userStore.getCurrentUserCity());
-              console.log('Город успешно получен для координат:', mapStore.getCity());
-            } catch (error) {
-              console.error('Ошибка при получении города:', error);
+    const loadData = async () => {
+      setIsLoading(true);
+      setHasPermission(uiStore.getLocationPermissionGranted());
+      const fetchCity = async () => {
+        if (userCoordinates) {
+          try {
+            if (userStore.getCurrentUserCity() === '') {
+              const city = await mapStore.getUserCity(userCoordinates);
+              userStore.setCurrentUserCity(city);
+              await mapStore.setWalkAdvrts();
             }
-          } else {
-            userStore.setCurrentUserCity('Buenos Aires');
-            mapStore.setCity('Buenos Aires');
-            await mapStore.setWalkAdvrts();
+            mapStore.setCity(userStore.getCurrentUserCity());
+            console.log('Город успешно получен для координат:', mapStore.getCity());
+          } catch (error) {
+            console.error('Ошибка при получении города:', error);
           }
-        };
-  
-        const fetchData = async () => {
-          const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
-          setGeoJSONData(data);
-        };
-        
-        await fetchCity();
-        await fetchData();
-        
-        setIsLoading(false);
+        } else {
+          userStore.setCurrentUserCity('Buenos Aires');
+          mapStore.setCity('Buenos Aires');
+          await mapStore.setWalkAdvrts();
+        }
       };
-  
-      loadData();
-    }, []);
+
+      const fetchData = async () => {
+        const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
+        setGeoJSONData(data);
+      };
+      
+      await fetchCity();
+      await fetchData();
+      
+      setIsLoading(false);
+    };
+
+    loadData();
+  }, []);
 
   // --- Периодический опрос при фокусе экрана ---
   useFocusEffect(
     useCallback(() => {
-      // При фокусе экрана запускаем интервал 
-      const intervalId = setInterval(async () => {
-      
-        console.log('[MapBoxMap] Polling data from server...');
-        try {
-          await mapStore.setWalkAdvrts(); 
-          const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
-          setGeoJSONData(data);
-        } catch (err) {
-          console.error(err);
-        }
-      }, 180_000); 
-
-      // Возвращаем колбэк очистки
-      return () => {
-        console.log('[MapBoxMap] Clearing polling interval...');
-        clearInterval(intervalId);
-      };
-    }, [])
+      if(currentPointType === MapPointType.Walk) {
+        const intervalId = setInterval(async () => {
+          try {
+            await mapStore.setWalkAdvrts(); 
+            const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
+            setGeoJSONData(data);
+            console.log('Walk advrts updated');
+            console.log(currentPointType);
+          } catch (err) {
+            console.error(err);
+          }
+        }, 180_000); 
+  
+        // Возвращаем колбэк очистки
+        return () => {
+          
+          clearInterval(intervalId);
+        };
+      }
+     
+    }, [currentPointType])
   );
-
 
   useFocusEffect(
     useCallback(() => {
@@ -381,6 +383,7 @@ const MapBoxMap = observer(() => {
           userId: currentUser?.id!,
           city: (await userStore.getCurrentUserCity()) || '',
         });
+        setSnackbarVisible(mapStore.mapPoints.length === 0 ? true : false);
       }
     }
   };
@@ -401,7 +404,6 @@ const MapBoxMap = observer(() => {
   };
 
   const hangleSetSelectedNumberPoint = (number: number) => {
-    setCurrentPointType(number);
     tagSelected(number);
   };
 
@@ -503,6 +505,8 @@ const MapBoxMap = observer(() => {
             onOpenFilter={handleOpenFilter}
             onOpenCardView={() => setisCardView(!isCardView)}
             badgeCount={modifiedFieldsCount}
+            setSnackbarVisible={setSnackbarVisible}   
+            snackbarVisible={snackbarVisible}   
           />
         </View>
 

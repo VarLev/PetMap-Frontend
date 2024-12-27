@@ -21,6 +21,7 @@ import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 import CircleIcon from "../custom/icons/CircleIcon";
 //import  { renderWalkDetails } from "@/utils/utils";
 import i18n from "@/i18n";
+import { getPushTokenFromServer } from "@/hooks/notifications";
 
 interface AdvtProps {
   advrt: IWalkAdvrtDto;
@@ -39,15 +40,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
     const [showAllPets, setShowAllPets] = useState(false);
 
     useEffect(() => {
-      const fetchParticipants = async () => {
-        if (advrt.id) {
-          //const users = await mapStore.getAllWalkParticipants(advrt.id);
-          //setParticipants(users);
-          //advrt.participants = users;
-          setUserIsOwner(true);
-          mapStore.currentWalkDate = advrt.date;  // Сохраняем дату прогулки
-        }
-      };
+      
       const dist = calculateDistance(
         advrt.latitude!,
         advrt.longitude!,
@@ -55,26 +48,31 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
         mapStore.currentUserCoordinates[1]
       );
       setDistance(dist);
-      if (advrt.userId === userStore.currentUser?.id) fetchParticipants();
+      if (advrt.userId === userStore.currentUser?.id) 
+        setUserIsOwner(true);
       else {
         setUserIsOwner(false);
       }
-    }, [advrt,userIsOwner]);
+    }, [advrt]);
 
     const handleInvite = async () => {
       setRequestVisible(true);
     };
 
     const handleConfirmInvite = async () => {
+      const fmcToken = await getPushTokenFromServer(advrt.userId!);
+      console.log("fmc",fmcToken);
       const user: IUserChat = {
         id: advrt.userId!,
         name: advrt.userName!,
-        thumbnailUrl: advrt.userPhoto ?? "https://via.placeholder.com/100",
+        thumbnailUrl: advrt.userPhoto ?? 'https://avatar.iran.liara.run/public',
+        fmcToken: fmcToken,
       };
       //chatStore.setSelectedAdvrtId(advrt.id!);
       // if (userStore.currentUser?.id) {
       //   await mapStore.requestJoinWalk(advrt.id!, userStore.currentUser.id);
       // }
+      
       onInvite(user);
  
     };
@@ -125,7 +123,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
               onPress={() => handleUserProfileOpen(advrt.userId!)}
             >
               {!isShort && (
-                <Image source={{uri: advrt?.userPhoto || "https://via.placeholder.com/100"}} 
+                <Image source={{uri: advrt?.userPhoto || "https://avatar.iran.liara.run/public"}} 
                 className="w-24 h-24 rounded-2xl"/>
               )}
             </TouchableOpacity>

@@ -28,6 +28,7 @@ const EditUserPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
   };
 
   const checkErrors = () => {
+    console.log(editablePoint.userPointType);
     if (!editablePoint.userPointType || !editablePoint.description) {
       alert(i18n.t('EditUserPoint.errors.missingFields'));
       return false;
@@ -78,7 +79,7 @@ const EditUserPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
               listMode="MODAL"
               onChange={(tag) => handleFieldChange('userPointType', tag)}
               disabledIndexes={[0, 1, 9, 10, 11]}
-              initialSelectedTag={2}
+             
             />
             <CustomOutlineInputText
               label={i18n.t('EditUserPoint.name')}

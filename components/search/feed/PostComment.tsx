@@ -8,6 +8,7 @@ import MenuItemWrapper from "@/components/custom/menuItem/MunuItemWrapper";
 import userStore from "@/stores/UserStore";
 import i18n from "@/i18n";
 import ComplaintModal from "@/components/custom/complaint/ComplaintModal";
+// import TranslatableText from "@/components/custom/text/CustomTranslatableText";
 
 type PostCommentProps = {
   comment: ICommentWithUser;
@@ -20,6 +21,7 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
   const [isComplaintModal, setIsComplaintModal] = useState<boolean>(false);
   const [isComplaintDone, setIsComplaintDone] = useState(false);
   const [isComplaintSuccess, setIsComplaintSuccess] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     if (comment.userId === userStore.currentUser?.id) {
@@ -27,7 +29,16 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
     } else {
       setIsCurrentUser(false);
     }
-  }, [])
+
+    if (userStore.currentUser?.isPremium === true) {
+      setIsPremium(true);
+    } else {
+      setIsPremium(false);
+    }
+    
+  }, [isPremium])
+
+  // const isPremium = userStore.currentUser?.isPremium;
 
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
@@ -105,6 +116,16 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
                   </Text>
                 </View>
                 <Text className="text-sm pr-1">{comment.content}</Text>
+                {/* {!isPremium ? (
+                  <Text className="text-sm pr-1">{comment.content}</Text>
+                ) : (
+                  <TranslatableText
+                    text={comment.content}
+                    _className="flex-row justify-between items-center content-center w-[94%]"
+                    textClassName="text-sm pr-1"
+                    iconSize={16}
+                  />
+                )} */}
               </View>
             </View>
           </TouchableRipple>

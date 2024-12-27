@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
-import IconSelectorComponent from '../icons/IconSelectorComponent';
 import { BG_COLORS } from '@/constants/Colors';
+import IconSelectorComponent from '../icons/IconSelectorComponent';
 import CustomAlert from '../alert/CustomAlert';
 import uiStore from '@/stores/UIStore';
 
 interface TranslatableTextProps {
   text: string;
-  className?: string;
+  textClassName?: string;
+  _className?: string;
+  iconSize?: number;
 }
 
-const TranslatableText: React.FC<TranslatableTextProps> = ({
+const TranslatableText: FC<TranslatableTextProps> = ({
   text,
-  className = '', // Указываем пустую строку как значение по умолчанию
+  _className = '', // Указываем пустую строку как значение по умолчанию
+  textClassName,
+  iconSize = 24
 }) => {
   const [translatedText, setTranslatedText] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -37,8 +41,8 @@ const TranslatableText: React.FC<TranslatableTextProps> = ({
   };
 
   return (
-    <View className={className}>
-      <Text className="text-base font-nunitoSansRegular">
+    <View className={_className}>
+      <Text className={`text-base font-nunitoSansRegular ${textClassName}`}>
         {translatedText || text}
       </Text>
       {!translatedText ? (
@@ -51,7 +55,7 @@ const TranslatableText: React.FC<TranslatableTextProps> = ({
             <IconSelectorComponent
               iconSet="MaterialIcons"
               iconName={'g-translate'}
-              size={24}
+              size={iconSize}
               color={BG_COLORS.violet[300]}
             />
           ) : (
@@ -66,7 +70,7 @@ const TranslatableText: React.FC<TranslatableTextProps> = ({
           <IconSelectorComponent
             iconSet="Ionicons"
             iconName={'close-circle-outline'}
-            size={24}
+            size={iconSize}
             color={BG_COLORS.violet[300]}
           />
         </TouchableOpacity>

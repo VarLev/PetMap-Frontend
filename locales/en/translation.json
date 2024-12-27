@@ -805,7 +805,11 @@
     "activity": "Activity",
     "playPreferences": "Play Preferences",
     "aboutPet": "About Pet",
-    "socialMedia": "Social Media"
+    "socialMedia": "Social Media",
+    "ageUnits": {
+      "month": { "one": "month", "few": "months", "many": "months" },
+      "year": { "one": "year", "few": "years", "many": "years" }
+    }
   },
   "EditPetProfile": {
     "confirmationTitle": "Confirmation",
@@ -1111,6 +1115,7 @@
     "deletePost": "Delete",
     "complainOnPost": "Complain",
     "commentInput": "Write comment...",
+    "noCommentsText": "No comments yet, be the first to leave one!",
     "addPostText": "Add post text",
     "postCreateError": "Creating post error.",
     "createPostInput": "What's new?",
@@ -1171,5 +1176,12 @@
     "selectAvatarTitle": "Choose your avatar!",
     "selectAvatarDescription":"This image will be displayed in your profile and seen by other users.",
     "save": "Save"
-  }
+  },
+  "myWalks": {
+    "noWalks": "You have no walks"
+},
+  "Snackbar": {
+    "noResults": "No results"
+}
+
 }

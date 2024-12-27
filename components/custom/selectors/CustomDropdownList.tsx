@@ -1,5 +1,5 @@
 import i18n from '@/i18n';
-import React, { useEffect, useState } from 'react';
+import React, {useState } from 'react';
 import { View, Text, Platform} from 'react-native';
 import DropDownPicker, { ListModeType } from 'react-native-dropdown-picker';
 

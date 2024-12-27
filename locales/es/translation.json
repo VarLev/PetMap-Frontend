@@ -604,7 +604,11 @@
       "Recaudación de Fondos",
       "Coaching",
       "Consultoría",
-      "Gestión del Tiempo"
+      "Gestión del Tiempo",
+      "Medicina Veterinaria",
+      "Cuidado de Animales",
+      "Cinología / Felinología",
+      "Actividades de Protección Animal"
     ],
     "petGames": [
       "Recibir",
@@ -802,7 +806,11 @@
     "activity": "Actividad",
     "playPreferences": "Preferencias de Juego",
     "aboutPet": "Sobre la Mascota",
-    "socialMedia": "Redes Sociales"
+    "socialMedia": "Redes Sociales",
+    "ageUnits": {
+      "month": { "one": "mes", "few": "meses", "many": "meses" },
+      "year": { "one": "año", "few": "años", "many": "años" }
+    }
   },
   "EditPetProfile": {
     "confirmationTitle": "Confirmación",
@@ -1108,6 +1116,7 @@
     "deletePost": "Eliminar",
     "complainOnPost": "Reportar",
     "commentInput": "Escribí un comentario...",
+    "noCommentsText": "¡Aún no hay comentarios, sé el primero en dejar uno!",
     "addPostText": "Agregar texto de la publicación",
     "postCreateError": "Error al crear la publicación.",
     "createPostInput": "¿Qué hay de nuevo?",
@@ -1168,5 +1177,11 @@
     "selectAvatarTitle": "¡Elegí tu avatar!",
     "selectAvatarDescription": "Esta imagen se mostrará en tu perfil y será visible para otros usuarios.",
     "save": "Guardar"
-  }
+  },
+  "myWalks": {
+    "noWalks": "No tienes paseos"
+  },
+  "Snackbar": {
+    "noResults": "No hay resultados"
+}
 }
