@@ -9,30 +9,12 @@ import { IUserChat } from '@/dtos/Interfaces/user/IUserChat';
 import apiClient from '@/hooks/axiosConfig';
 import { handleAxiosError } from '@/utils/axiosUtils';
 import mapStore from './MapStore';
+import { ChatType } from '@/dtos/enum/ChatType';
 
-interface Chat {
-  id: string;
-  thumbnailUrl?: string;
-  otherUserName?: string;
-  otherUserId?: string;
-  lastMessage: string;
-  lastCreatedAt: number;
-  participants: { [key: string]: boolean };
-  lastSeen?: number;
-  userId1?: string;
-  userId2?: string;
-}
-
-interface Message {
-  author: { id: string };
-  createdAt: number;
-  text: string;
-  type: string;
-}
 
 class ChatStore {
-  chats: Chat[] = [];
-  sortedChats: Chat[] = [];
+  chats: IChat[] = [];
+  sortedChats: IChat[] = [];
   messages: MessageType.Any[] = [];
   lastMessage: { [key: string]: string } = {};
   lastSeen: { [key: string]: number } = {};
@@ -63,120 +45,196 @@ class ChatStore {
     const chatsRef = ref(database, 'chats');
     const snapshot = await get(chatsRef);
 
-    if (snapshot.exists()) {
-      const data = snapshot.val();
-      const chatsList: Chat[] = [];
-
-      for (const chatId in data) {
-        const chatData = data[chatId];
-        const participantIds = Object.keys(chatData.participants);
-        const otherUserId = participantIds.find((id) => id !== userId);
-        const currentUserId = participantIds.find((id) => id === userId);
-
-        if (currentUserId && otherUserId) {
-          const userSnapshot = await get(ref(database, `users/${otherUserId}`));
-          const otherUserName = userSnapshot.val().name;
-          const thumbnailUrl = userSnapshot.val().avatar;
-
-          chatsList.push({
-            id: chatId,
-            lastMessage: chatData.lastMessage,
-            lastSeen: userSnapshot.val().lastSeen || null,
-            participants: chatData.participants,
-            otherUserName: otherUserName,
-            otherUserId: otherUserId,
-            thumbnailUrl,
-            lastCreatedAt: chatData.lastCreatedAt,
-          });
-
-          // Обновляем MobX lastMessage
-          runInAction(() => {
-            chatStore.lastMessage[chatId] = chatData.lastMessage || 'Нет сообщений';
-          });
-        }
-      }
-
+    if (!snapshot.exists()) {
       runInAction(() => {
-        this.chats = chatsList;
-        this.sortChats();
+        this.chats = [];
+      });
+      return;
+    }
+
+    const data = snapshot.val(); // Объект, где ключ — chatId
+    const chatsList: IChat[] = [];
+
+    // 1. Собираем все otherUserId, чтобы одним запросом загрузить инфо о пользователях
+    const userIdsNeeded = new Set<string>();
+
+    for (const chatId in data) {
+      const chatData = data[chatId];
+      if (!chatData?.participants) continue;
+
+      const participantIds = Object.keys(chatData.participants);
+      const otherUserId = participantIds.find((id) => id !== userId);
+      const currentUserId = participantIds.find((id) => id === userId);
+
+      // Если действительно чат для текущего пользователя
+      // (вместо этого можно сделать условие participantIds.includes(userId))
+      if (currentUserId && otherUserId) {
+        userIdsNeeded.add(otherUserId);
+      }
+    }
+
+    // 2. ОДИН запрос ко всем юзерам
+    const usersRef = ref(database, 'users');
+    const usersSnap = await get(usersRef);
+    const usersData = usersSnap.exists() ? usersSnap.val() : {};
+
+    // 3. Формируем массив чатов (IChat), собирая данные о каждом участнике
+    for (const chatId in data) {
+      const chatData = data[chatId] as IChat;
+      const participantsObj = chatData?.participants;
+      if (!participantsObj) continue;
+
+      // Переводим объект участников в массив { key, value: IChatUser }
+      const participantsArray: IChat['participants'] = Object.entries(participantsObj).map(
+        ([participantId, rawParticipant]) => {
+          const userFromUsersData = usersData[participantId] || {};
+          const chatUser: IChatUser = {
+            id: participantId,
+            firstName: userFromUsersData.firstName,
+            imageUrl: userFromUsersData.imageUrl,
+            isOnline: userFromUsersData.isOnline || false,
+            lastSeen: userFromUsersData.lastSeen || 0,
+            lastMessage: userFromUsersData.lastMessage || '',
+          };
+          return {
+            key: participantId,
+            value: chatUser,
+          };
+        }
+      );
+      // Собираем сам чат
+      const chatObj: IChat = {
+        id: chatId,
+        lastMessage: chatData.lastMessage || '',
+        lastCreatedAt: chatData.lastCreatedAt || 0,
+        participants: participantsArray,
+        lastSeen: chatData.lastSeen || 0,
+      };
+      chatsList.push(chatObj);
+      // Если у вас в chatStore есть какое-то поле lastMessage, обновляем
+      runInAction(() => {
+        chatStore.lastMessage[chatId] = chatData.lastMessage || 'Нет сообщений';
       });
     }
+
+
+    // 4. Обновляем стейт в одном runInAction (чтобы MobX среагировал разом)
+    runInAction(() => {
+      this.chats = chatsList;
+    });
   }
 
   async createNewChat(otherUser: IUserChat): Promise<string | undefined> {
     const userId = userStore.currentUser?.id;
-    if (!userId) return;
-
-    const chatId1 = userId + otherUser.id;
-    const chatId2 = otherUser.id + userId;
-    let chatIdToUse: string | undefined;
-
-    // Проверяем существует ли уже чат
-    for (const cId of [chatId1, chatId2]) {
-      const chatRef = ref(database, `chats/${cId}`);
-      const snapshot = await get(chatRef);
-      if (snapshot.exists()) {
-        chatIdToUse = cId;
-        break;
-      }
+    if (!userId) {
+      console.error('Текущий пользователь не найден');
+      return;
     }
-
-    if (chatIdToUse) {
+  
+    // 1. Сортируем массив [userId, otherUser.id] (например, по алфавиту),
+    // чтобы получить единый chatId для пары пользователей.
+    const sortedIds = [userId, otherUser.id].sort();
+    const chatId = sortedIds.join('_'); 
+    // Пример: если userId='abc', otherUser.id='xyz', то chatId='abc_xyz'.
+  
+    // 2. Проверяем, существует ли уже такой чат
+    const chatRef = ref(database, `chats/${chatId}`);
+    const snapshot = await get(chatRef);
+    if (snapshot.exists()) {
       // Чат уже есть, просто возвращаем его
-      return chatIdToUse;
+      console.log(`Чат ${chatId} уже существует`);
+      return chatId;
     }
+  
+    // 3. Чата нет, создаём новую запись
+    const now = Date.now();
+    
+    // Заполняем данные о каждом участнике
+    // Предположим, вы храните IChatUser в /chats/.../participants/{userId}
+    const currentUserData = {
+      id: userId,
+      firstName: userStore.currentUser?.name ?? 'NoName',
+      imageUrl: userStore.currentUser?.thumbnailUrl ?? '',
+      isOnline: true,  // или другая логика
+      lastSeen: now,
+      lastMessage: '',
+      fmcToken: userStore.currentUser?.fmcToken ?? null,
+    };
+    console.log('currentUserData:', currentUserData);
+  
+    const otherUserData = {
+      id: otherUser.id,
+      firstName: otherUser.name ?? 'NoName',
+      imageUrl: otherUser.thumbnailUrl ?? '',
+      isOnline: false, // пока не знаем, он не в сети
+      lastSeen: 0,
+      lastMessage: '',
+      fmcToken: otherUser.fmcToken ?? null,
+    };
 
-    // Чата нет, создаём новый при первом сообщении
+    console.log('otherUserData:', otherUserData);
+  
     const newChatData = {
-      lastMessage: '', // Пока нет сообщений
-      lastCreatedAt: Date.now(),
+      lastMessage: '',
+      lastCreatedAt: now,
       participants: {
-        [userId]: true,
-        [otherUser.id]: true,
+        [userId]: currentUserData,
+        [otherUser.id]: otherUserData,
       },
     };
-
-    const newUserData1 = {
-      name: userStore.currentUser?.name,
-      avatar: userStore.currentUser?.thumbnailUrl,
-      lastSeen: Date.now(),
-      fmcToken: userStore.currentUser?.fmcToken,
-    };
-    const newUserData2 = {
-      name: otherUser.name,
-      avatar: otherUser.thumbnailUrl,
-      lastSeen: Date.now(),
-      fmcToken: otherUser.fmcToken,
-    };
-
-    this.setOtherUserFmcToken(otherUser.fmcToken);
-
-    const updates: { [key: string]: any } = {};
-    const chatId = chatId1; // или другой логике выбора chatId, если нужно
-    updates[`/chats/${chatId}`] = newChatData;
-    updates[`/users/${userId}`] = newUserData1;
-    updates[`/users/${otherUser.id}`] = newUserData2;
-
+  
+    // Формируем объект для пакетного обновления
+    const updates: Record<string, unknown> = {};
+    updates[`chats/${chatId}`] = newChatData;
+  
     try {
+      // 4. Сохраняем новый чат в Firebase
       await update(ref(database), updates);
-
-      runInAction(() => {
-        this.chats.push({
-          id: chatId,
-          lastMessage: newChatData.lastMessage,
-          lastCreatedAt: newChatData.lastCreatedAt,
-          participants: newChatData.participants,
-          otherUserName: otherUser.name!,
-          otherUserId: otherUser.id,
-          thumbnailUrl: otherUser.thumbnailUrl!,
-        });
-        this.sortChats();
-      });
-
-      return chatId;
+      console.log(`Создан новый чат: ${chatId}`);
     } catch (error) {
-      console.error('Ошибка создания чата:', error);
+      console.error('Ошибка при создании чата:', error);
       throw error;
+    }
+  
+    // При желании, сразу же обновляем локальный стор
+    runInAction(() => {
+      // Если вам нужно добавить созданный чат в this.chats
+      // (зависит от того, как устроен ваш ChatStore)
+      // Пример:
+      // chatStore.chats.push({
+      //   id: chatId,
+      //   lastMessage: '',
+      //   lastCreatedAt: now,
+      //   participants: [
+      //     { key: userId, value: currentUserData },
+      //     { key: otherUser.id, value: otherUserData },
+      //   ],
+      //   lastSeen: 0,
+      // });
+  
+      // Или если нужно сохранить fmcToken другого пользователя в сторе
+      // chatStore.setOtherUserFmcToken(otherUser.fmcToken);
+    });
+  
+    // 5. Возвращаем chatId
+    return chatId;
+  }
+
+  async getChatById(chatId: string): Promise<IChat | null> {
+    try {
+      const chatRef = ref(database, `chats/${chatId}`);
+      const snapshot = await get(chatRef);
+      
+      if (!snapshot.exists()) {
+        console.log(`Чат с id "${chatId}" не найден`);
+        return null;
+      }
+  
+      // Просто возвращаем «как есть» данные из Firebase
+      return snapshot.val();
+    } catch (error) {
+      console.error('Ошибка при получении чата:', error);
+      return null;
     }
   }
 
@@ -227,79 +285,112 @@ class ChatStore {
     }
   }
 
-  async sendMessage(chatId: string, text: string, otherUserId: string | undefined) {
-    const userId = userStore.currentUser?.id;
+  async sendMessage(chat: IChat, text: string): Promise<{chatType :ChatType, thisChatId:string} | undefined> {
+    // 1. Проверяем, авторизован ли текущий пользователь
+    const userId = userStore.getCurrentUserId();
     if (!userId) {
       console.error('User is not defined');
       return;
     }
-
-    // Проверяем, есть ли чат в сторе
-    let chatExists = this.chats.some((chat) => chat.id === chatId);
-
-    // Если чат не существует, попробуем создать его
-    if (!chatExists && otherUserId) {
-      const otherUser = await userStore.getUserById(otherUserId);
-      if (!otherUser) {
-        console.error('Пользователь не найден');
+  
+    // 2. Проверяем, есть ли чат в локальном сторе
+    let existingChat = this.chats.find((c) => c.id === chat?.id);
+    let chatId = chat?.id??'';
+    let chatType = ChatType.ChatExists;
+    // 3. Если чата нет — создаём новый (только если participants заполнены)
+    if (!existingChat) {
+      // Убедимся, что у chat есть участники (а не пустой объект/массив)
+      if (!chat.participants || chat.participants.length < 2) {
+        console.error('Невозможно создать чат: отсутствуют участники');
         return;
       }
-      const newChatId = await this.createNewChat(otherUser);
+      const user = await userStore.getUserById(chat.participants.find((p) => p.key!==userId)?.value?.id!);
+
+      if (!user) {
+        console.error('Не удалось найти другого участника');
+        return;
+      }
+
+      const otherUdserChat: IUserChat = {
+        id: user.id,
+        name: user.name,
+        thumbnailUrl: user.thumbnailUrl,
+        fmcToken: user.fmcToken,
+      }
+
+      const newChatId = await this.createNewChat(otherUdserChat);
       if (!newChatId) {
         console.error('Не удалось создать чат');
         return;
       }
       chatId = newChatId;
-      chatExists = true;
+      // Обновим локально
+      runInAction(() => {
+        this.chats.push({
+          ...chat,
+          id: newChatId,
+        });
+        existingChat = this.chats[this.chats.length - 1];
+      });
+      chatType = ChatType.NewChat;
     }
-
-    const newMessageKey = push(ref(database, `messages/${chatId}`)).key;
-    if (!newMessageKey) {
-      console.log('Ошибка в отправке сообщения');
+  
+    // 4. Находим «другого» участника (кроме текущего пользователя)
+    const otherParticipant = (existingChat || chat).participants.find(
+      (p) => p.key !== userId
+    );
+    if (!otherParticipant) {
+      console.error('Не удалось найти другого участника');
       return;
     }
-
-    const textMessage: Message = {
-      author: { id: userId },
-      createdAt: Date.now(),
-      text,
-      type: 'text',
-    };
-
+    const otherUser = otherParticipant.value;
+  
+    // Генерируем ключ для сообщения
+    const newMessageKey = push(ref(database, `messages/${chatId}`)).key;
+    if (!newMessageKey) {
+      console.error('Ошибка при генерации ключа для сообщения');
+      return;
+    }
+  
+    // 5. Формируем само сообщение
     const now = Date.now();
+    const textMessage: MessageType.Text = {
+      id: newMessageKey,
+      type: 'text',
+      text,
+      createdAt: now,
+      author: {
+        id: userId,
+        firstName: userStore.currentUser?.name ?? 'Anonymous',
+        imageUrl: userStore.currentUser?.thumbnailUrl ?? '',
+      },
+    };
+  
+    // 6. Пакетное обновление Firebase
     const updates: Record<string, unknown> = {};
     updates[`messages/${chatId}/${newMessageKey}`] = textMessage;
     updates[`chats/${chatId}/lastMessage`] = text;
     updates[`chats/${chatId}/lastCreatedAt`] = now;
-    updates[`users/${userId}/lastSeen`] = now;
-
+    updates[`users/${userId}/lastSeen`] = now; // если нужно
+  
     try {
-      // Пакетное обновление Firebase
       await update(ref(database), updates);
     } catch (error) {
       console.error('Ошибка при пакетном обновлении:', error);
-      return;
+      return ;
     }
-
-    // Отправляем пуш, если есть fcmToken
-    console.log('otherUserId:', otherUserId);
-    if (otherUserId) {
-      const fmcToken = this.getOtherUserFmcToken();
-      console.log('fmcToken:', fmcToken);
-      if (fmcToken) {
-        try {
-          await sendPushNotification(
-            fmcToken,
-            "Новое сообщение",
-            text,
-            { chatId }
-          );
-        } catch (err) {
-          console.error("Ошибка при отправке пуш-уведомления:", err);
-        }
+  
+    // 7. Отправляем пуш, если у другого пользователя есть токен
+    const fcmToken = this.getOtherUserFmcTokenByUserId(otherUser.id!);
+    if (fcmToken) {
+      try {
+        sendPushNotification(fcmToken, 'Новое сообщение', text, { chatId });
+      } catch (err) {
+        console.error('Ошибка при отправке пуш-уведомления:', err);
       }
     }
-
+  
+    // 8. Обновляем локальный стор (MobX)
     runInAction(() => {
       this.updateChat(chatId, {
         lastMessage: text,
@@ -308,9 +399,11 @@ class ChatStore {
       this.lastSeen[userId] = now;
       this.lastMessage[chatId] = text;
     });
+
+    return {chatType, thisChatId: chatId};
   }
 
-  updateChat(chatId: string, updatedFields: Partial<Chat>) {
+  updateChat(chatId: string, updatedFields: Partial<IChat>) {
     runInAction(() => {
       const chatIndex = this.chats.findIndex((chat) => chat.id === chatId);
       if (chatIndex !== -1) {
@@ -318,7 +411,7 @@ class ChatStore {
           ...this.chats[chatIndex],
           ...updatedFields,
         };
-        this.sortChats(); // Сортируем чаты после обновления
+        //this.sortChats(); // Сортируем чаты после обновления
       }
     });
   }
@@ -351,25 +444,8 @@ class ChatStore {
     });
   }
 
-  async acceptUserJoinWalk(walkId: string, userId: string, chatId: string) {
-    try {
-      const userId2fmcToken = await getPushTokenFromServer(userId);
-      if (userId2fmcToken) {
-        await sendPushNotification(
-          userId2fmcToken,
-          'Ваш запрос на присоединение к прогулке принят',
-          userStore?.currentUser?.name ?? 'Пользователь',
-          { chatId }
-        );
-      }
-      const response = await apiClient.patch(`walkadvrt/accept/${walkId}`, {
-        userId: userId, // Передаем как объект
-      });
-      return response.data;
-    } catch (error) {
-      return handleAxiosError(error);
-    }
-  }
+
+
 
   async getOtherUserFmcTokenByUserId(otherUserId: string): Promise<string | null> {
     const userRef = ref(database, `users/${otherUserId}`);
@@ -382,17 +458,7 @@ class ChatStore {
     }
   }
 
-  async declineUserJoinWalk(walkId: string, userId: string) {
-    try {
-      const response = await apiClient.patch(`walkadvrt/decline/${walkId}`, {
-        userId: userId,
-      });
-      return response.data;
-    } catch (error) {
-      return handleAxiosError(error);
-    }
-  }
-
+ 
   getLastMessageFromStore(chatId: string) {
     const message = this.lastMessage[chatId];
     return message;
@@ -597,13 +663,15 @@ class ChatStore {
     });
   }
 
-  sortChats() {
+  getSortChats() {
     // Сортируем чаты по lastCreatedAt, чтобы самые последние чаты были в начале
     const sortedChats = chatStore.chats.slice().sort((a, b) => b.lastCreatedAt - a.lastCreatedAt);
     // Обновляем ChatStore.sortedChats с использованием runInAction
     runInAction(() => {
       this.sortedChats = sortedChats;
     });
+
+    return sortedChats;
   }
 
   clearMessages() {
@@ -615,3 +683,36 @@ class ChatStore {
 
 const chatStore = new ChatStore();
 export default chatStore;
+
+
+// async declineUserJoinWalk(walkId: string, userId: string) {
+//   try {
+//     const response = await apiClient.patch(`walkadvrt/decline/${walkId}`, {
+//       userId: userId,
+//     });
+//     return response.data;
+//   } catch (error) {
+//     return handleAxiosError(error);
+//   }
+// }
+
+// async acceptUserJoinWalk(walkId: string, userId: string, chatId: string) {
+//   try {
+//     const userId2fmcToken = await getPushTokenFromServer(userId);
+//     if (userId2fmcToken) {
+//       await sendPushNotification(
+//         userId2fmcToken,
+//         'Ваш запрос на присоединение к прогулке принят',
+//         userStore?.currentUser?.name ?? 'Пользователь',
+//         { chatId }
+//       );
+//     }
+//     const response = await apiClient.patch(`walkadvrt/accept/${walkId}`, {
+//       userId: userId, // Передаем как объект
+//     });
+//     return response.data;
+//   } catch (error) {
+//     return handleAxiosError(error);
+//   }
+// }
+

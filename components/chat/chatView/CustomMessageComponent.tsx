@@ -3,8 +3,9 @@ import { View, Text } from "react-native";
 import { MessageType } from "@flyerhq/react-native-chat-ui";
 import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
 import mapStore from "@/stores/MapStore";
-import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
+
 import i18n from "@/i18n";
+import CustomButtonOutlined from "@/components/custom/buttons/CustomButtonOutlined";
 
 interface AdvtProps {
   message: MessageType.Custom;

@@ -8,54 +8,94 @@ import i18n from "@/i18n";
 import ChatStore from "@/stores/ChatStore";
 import UserStore from "@/stores/UserStore";
 import mapStore from "@/stores/MapStore";
-import CustomMessageComponent from "@/components/chat/CustomMessageComponent";
-import ChatHeader from "@/components/chat/ChatHeader";
+import ChatHeader from "@/components/chat/chatView/ChatHeader";
 import BottomSheetComponent from "@/components/common/BottomSheetComponent";
 import AdvtComponent from "@/components/map/AdvtComponent";
 import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
 import BottomSheet from "@gorhom/bottom-sheet";
+import CustomMessageComponent from "@/components/chat/chatView/CustomMessageComponent";
+import { set } from "firebase/database";
+import { ChatType } from "@/dtos/enum/ChatType";
 
 const ChatScreen: React.FC = observer(() => {
-  const { chatId, otherUserId, otherUserName, avatarUrl } = useLocalSearchParams<{
-    chatId: string;
-    otherUserId?: string;
-    otherUserName?: string;
-    avatarUrl?: string;
-  }>();
+  const { chatId, otherUserId } = useLocalSearchParams<{chatId: string, otherUserId:string }>();
+  const [chat, setChat] = useState<IChat | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string >(UserStore.getCurrentUserId()!);
   const router = useRouter();
-  const userId = UserStore.currentUser?.id;
-
+  
   const [isBlocked, setIsBlocked] = useState(false);
-
   const sheetRef = useRef<BottomSheet>(null);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [selectedWalk, setSelectedWalk] = useState<IWalkAdvrtDto | null>(null);
+  const [otherUser, setOtherUser] = useState<IChatUser | null>(null);
 
   // Загружаем чёрный список, FMC-токен и проверяем блокировку
   useEffect(() => {
-    if (!otherUserId) return;
-
     const loadData = async () => {
-      try {
-        await ChatStore.loadBlacklist();
-        if (__DEV__) {
-          console.log("Blacklist successfully loaded.");
+      try { 
+        const loadedChat = await ChatStore.getChatById(chatId);
+        if(loadedChat){
+          // Чат уже существует в базе
+          const otherUser = loadedChat.participants.find((p) => p.key !== currentUserId)?.value
+          if(otherUser){
+            setOtherUser(otherUser)
+          }
+          setChat(loadedChat);
         }
-
-        console.log("Other user ID:", otherUserId);
-        const otherUserFmcToken = await ChatStore.getOtherUserFmcTokenByUserId(otherUserId);
-        console.log("Other user FMC token:", otherUserFmcToken);
-        ChatStore.setOtherUserFmcToken(otherUserFmcToken);
-
-        if (userId) {
-          setIsBlocked(ChatStore.checkIfIBlocked(otherUserId));
+        else {
+          // Чат не существует в базе
+          const otherUser = await UserStore.getUserById(otherUserId)
+          if(otherUser){
+            const chatUser: IChatUser = {
+              id: otherUser.id,
+              firstName: otherUser.name || '',
+              imageUrl: otherUser.thumbnailUrl || '',
+              isOnline: false
+            }
+            setOtherUser(chatUser)
+          }
+          const newChat: IChat = {
+            id: chatId,
+            participants: [
+              {
+                key: currentUserId,
+                value: {
+                  id: currentUserId,
+                  firstName: UserStore.currentUser?.name ?? '',
+                  imageUrl: UserStore.currentUser?.thumbnailUrl ?? '',
+                  isOnline: false
+                }
+              },
+              {
+                key: otherUserId,
+                value: {
+                  id: otherUserId,
+                  firstName: otherUser?.name ?? '',
+                  imageUrl: otherUser?.thumbnailUrl ?? '',
+                  isOnline: false
+                }
+              }
+            ],
+            lastMessage: '',
+            lastCreatedAt: Date.now(),
+          };
+          setChat(newChat);
+          console.log("Chat created", newChat);
         }
+        console.log("Chat loaded", loadedChat);
+        //await ChatStore.loadBlacklist();
+        //const otherUserFmcToken = await ChatStore.getOtherUserFmcTokenByUserId(otherUserId);
+        //ChatStore.setOtherUserFmcToken(otherUserFmcToken);
+
+        // if (userId) {
+        //   setIsBlocked(ChatStore.checkIfIBlocked(otherUserId));
+        // }
       } catch (error) {
         console.error("Failed to load blacklist:", error);
       }
     };
     loadData();
-  }, [otherUserId, userId]);
+  }, [chatId, otherUserId]);
 
   // Загружаем сообщения + обработчик кнопки "Назад"
   useEffect(() => {
@@ -64,7 +104,7 @@ const ChatScreen: React.FC = observer(() => {
     }
 
     const handleBackPress = () => {
-      router.replace("/chat/");
+      router.back();
       mapStore.setBottomSheetVisible(false);
       return true;
     };
@@ -74,16 +114,17 @@ const ChatScreen: React.FC = observer(() => {
   }, [chatId, router]);
 
   const handleSendPress = useCallback(
-    (message: MessageType.PartialText) => {
-      if (isBlocked) {
-        console.log("User is blocked.");
-        return;
-      }
+    async (message: MessageType.PartialText) => {
       if (chatId && UserStore.currentUser) {
-        ChatStore.sendMessage(chatId, message.text, otherUserId);
+        console.log(chat);
+        const chatData = await ChatStore.sendMessage(chat!, message.text);
+        if(chatData?.chatType === ChatType.NewChat){
+          console.log("New chat created", chatData.thisChatId);
+          router.replace(`/chat/${chatData.thisChatId}`);
+        }
       }
     },
-    [isBlocked, chatId, otherUserId]
+    [chat, chatId, router]
   );
 
   const handleOpenWalkDetails = useCallback((walk: IWalkAdvrtDto) => {
@@ -102,12 +143,12 @@ const ChatScreen: React.FC = observer(() => {
   }, [handleOpenWalkDetails]);
 
   const handleOpenProfile = useCallback(() => {
-    if (otherUserId) {
-      router.push(`/(tabs)/profile/${otherUserId}`);
+    if (otherUser) {
+      router.push(`/(tabs)/profile/${otherUser.id}`);
     }
-  }, [otherUserId, router]);
+  }, [otherUser, router]);
 
-  if (!userId) {
+  if (!currentUserId) {
     return <Text>{i18n.t("chat.loading")}</Text>;
   }
 
@@ -115,8 +156,8 @@ const ChatScreen: React.FC = observer(() => {
     <>
       <SafeAreaView className="bg-white h-full">
         <ChatHeader
-          userName={otherUserName ?? ""}
-          avatarUrl={avatarUrl}
+          userName={otherUser?.firstName ?? "..."}
+          avatarUrl={otherUser?.imageUrl}
           onPressAvatar={handleOpenProfile}
         />
         <Chat
@@ -156,8 +197,12 @@ const ChatScreen: React.FC = observer(() => {
           }}
           messages={ChatStore.messages}
           onSendPress={handleSendPress}
-          user={{ id: userId }}
+          user={{ id: currentUserId }}
           renderCustomMessage={renderMessage}
+          emptyState={() => <Text></Text>}
+          enableAnimation
+          showUserAvatars
+          showUserNames
         />
       </SafeAreaView>
 

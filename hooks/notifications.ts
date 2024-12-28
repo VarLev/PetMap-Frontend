@@ -75,7 +75,7 @@ export function setupNotificationListeners(
 
 // Отправка уведомлений через Expo сервера (пример)
 export async function sendPushNotification(
-  expoPushToken: string,
+  expoPushToken: any,
   title: string,
   body: string,
   data: any = {}

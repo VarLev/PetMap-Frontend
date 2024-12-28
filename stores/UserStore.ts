@@ -97,6 +97,10 @@ class UserStore {
     return this.currentCity;
   }
 
+  getCurrentUserId() {
+    return this.currentUser?.id;
+  }
+
   getUser(user: UserCredential) {
     this.fUid = user.user.uid;
   }

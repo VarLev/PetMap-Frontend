@@ -33,7 +33,6 @@ import { IUser } from "@/dtos/Interfaces/user/IUser";
 import AddCard from "../custom/buttons/AddCard";
 import MenuItemWrapper from "../custom/menuItem/MunuItemWrapper";
 import i18n from "@/i18n";
-import { encode as btoa } from "base-64";
 
 const ViewProfileComponent = observer(
   ({
@@ -107,15 +106,11 @@ const ViewProfileComponent = observer(
       if (!userId || !loadedUser.id) return;
 
       const chatId = userId + loadedUser.id;
-      const originalUrl = loadedUser.thumbnailUrl;
-      const base64Url = btoa(originalUrl!);
-
+      
       router.push({
         pathname: `/chat/${chatId}`,
         params: {
           otherUserId: loadedUser.id,
-          otherUserName: loadedUser.name,
-          avatarUrl: base64Url,
         },
       });
     };
