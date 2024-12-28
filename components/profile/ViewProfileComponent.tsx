@@ -223,7 +223,7 @@ const ViewProfileComponent = observer(
                         <Text className="font-nunitoSansRegular">
                           {getTagsByIndex(
                             i18n.t("tags.petGender") as string[],
-                            Number(item.gender)
+                            item.gender!
                           )}
                           , {item.weight} kg
                         </Text>
