@@ -291,6 +291,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 value={editableUser.description || ''}
                 handleChange={(text) => handleChange('description', text)}
                 numberOfLines={7}
+                maxLength={500}
               />
             </View>
             <View className="p-2 ">
