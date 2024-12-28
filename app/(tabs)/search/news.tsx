@@ -12,10 +12,6 @@ const NewsScreen: FC<NewsScreenProps> = ({ setSwipeEnabled }) => {
   return (
     <View className="flex-1 bg-white">
       <PermissionsRequestComponent />
-      {/* 
-        Передаём setSwipeEnabled дальше в NewsWebView,
-        где будем блокировать/разблокировать свайп табов.
-      */}
       <NewsWebView setSwipeEnabled={setSwipeEnabled} />
     </View>
   );

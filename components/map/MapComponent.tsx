@@ -1,6 +1,6 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, BackHandler, ImageSourcePropType } from 'react-native';
+import { View, BackHandler, ImageSourcePropType, Animated, ActivityIndicator } from 'react-native';
 import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer, LineLayer } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
 import { Provider } from 'react-native-paper';
@@ -42,6 +42,7 @@ import WalkMarker from './markers/WalkMarker';
 import PointMarker from './markers/PointMarker';
 import { createGeoJSONFeatures } from '@/utils/mapUtils';
 import { generateChatData, generateChatIdForTwoUsers } from '@/utils/chatUtils';
+import { Easing } from 'react-native-reanimated';
 
 
 const MapBoxMap = observer(() => {
@@ -77,8 +78,22 @@ const MapBoxMap = observer(() => {
 
   const [renderAdvrtForm, setRenderAdvrtForm] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
+  // Анимированное значение для плавного появления карты
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
+
+  // Когда isLoading меняется на false, запускаем анимацию плавного появления
+  useEffect(() => {
+    if (!isLoading) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1000,        // Длительность анимации (миллисекунды)
+        easing: Easing.ease,  // Можно использовать разные типы Easing
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [isLoading, fadeAnim]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -415,14 +430,27 @@ const MapBoxMap = observer(() => {
 
   return (
     <Provider>
+      {/* Компонент, проверяющий и запрашивающий разрешения */}
       <PermissionsRequestComponent />
-      
-        {isCardView && (
-          <SlidingOverlay visible={isCardView}>
-            <MapItemList renderType={currentPointType} />
-          </SlidingOverlay>
-        )}
-        {!isLoading && (
+
+      {/* Пока идёт загрузка, карту не отображаем. Можно вставить лоадер, если нужно. */}
+      {isLoading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large"  color="#6200ee" />
+        </View>
+
+      ) : (
+        // После окончания загрузки используем анимированный контейнер, чтобы карта появилась плавно
+        <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+          {/* Если у нас есть режим карточного вида, отображаем SlidingOverlay */}
+          {isCardView && (
+            <SlidingOverlay visible={isCardView}>
+              <MapItemList renderType={currentPointType} />
+            </SlidingOverlay>
+          )}
+
+
+          {/* Собственно карта */}
           <MapView
             ref={mapRef}
             style={{ flex: 1 }}
@@ -436,24 +464,38 @@ const MapBoxMap = observer(() => {
             zoomEnabled={!isCardView}
             rotateEnabled={!isCardView}
           >
-            {hasPermission && <UserLocation minDisplacement={50} ref={userLocationRef} onUpdate={handleUserLocationUpdate} />}
+            {hasPermission && (
+              <UserLocation
+                minDisplacement={50}
+                ref={userLocationRef}
+                onUpdate={handleUserLocationUpdate}
+              />
+            )}
+
             {routeData && (
               <ShapeSource id="routeSource" shape={routeData}>
                 <LineLayer id="routeLine" style={{ lineColor: 'blue', lineWidth: 5 }} />
               </ShapeSource>
             )}
 
-            {/* <UserLocation minDisplacement={10} ref={userLocationRef}  /> */}
-            {userCoordinates && <Camera ref={cameraRef} centerCoordinate={userCoordinates} zoomLevel={10} animationDuration={1} />}
+            {/* Начальная позиция камеры (если есть координаты пользователя) */}
+            {userCoordinates && (
+              <Camera
+                ref={cameraRef}
+                centerCoordinate={userCoordinates}
+                zoomLevel={10}
+                animationDuration={1}
+              />
+            )}
 
-            {/* Добавдяем цифры, когда маркеры накладываются друг на друга */}
+            {/* Кластеризация меток (если используем ShapeSource / SymbolLayer) */}
             {!isCardView && geoJSONData && (
               <ShapeSource id="points" shape={geoJSONData} cluster clusterRadius={38}>
                 <SymbolLayer id="clusteredPoints" filter={['has', 'point_count']} style={styles.clusterStyle} />
               </ShapeSource>
             )}
 
-            {/* *** Маркер прогулок *** */}
+            {/* Маркеры объявлений о прогулках */}
             <WalkMarker
               isCardView={isCardView}
               walkAdvrts={mapStore.walkAdvrts}
@@ -466,8 +508,7 @@ const MapBoxMap = observer(() => {
               pointAnnotationCurrentUser={pointAnnotationCurrentUser}
             />
 
-
-            {/* Маркеры поинтов */}
+            {/* Маркеры пользовательских точек (Danger, Custom, Note и т.п.) */}
             <PointMarker
               isCardView={isCardView}
               mapPoints={mapStore.mapPoints}
@@ -479,61 +520,75 @@ const MapBoxMap = observer(() => {
               pointAnnotationCurrentUser={pointAnnotationCurrentUser}
             />
 
-            {/* Добавляем компонент точек интереса */}
+            {/* Точки интереса (POI) и построение маршрута до них */}
             {userCoordinates && uiStore.getLocationPermissionGranted() && (
-              <PointsOfInterestComponent userLocation={userCoordinates} onRouteReady={handleRouteReady} />
+              <PointsOfInterestComponent
+                userLocation={userCoordinates}
+                onRouteReady={handleRouteReady}
+              />
             )}
+
+            {/* Кнопка FAB (добавление меток и т.п.), если шторка BottomSheet не открыта */}
             {!isSheetVisible && (
-              <FabGroupComponent selectedNumber={currentPointType} setSelectedNumber={hangleSetSelectedNumberPoint} isVisible={!isCardView} />
+              <FabGroupComponent
+                selectedNumber={currentPointType}
+                setSelectedNumber={hangleSetSelectedNumberPoint}
+                isVisible={!isCardView}
+              />
             )}
           </MapView>
-        )}
 
-        <View
-          style={{
-            position: 'absolute',
-            top: 20,
-            left: 0,
-            right: 0,
-            zIndex: 10,
-          }}
-        >
-          <SearchAndTags
-            selectedTag={selectedTag}
-            setSelectedTag={setSelectedTag}
-            onSearchTextChange={handleSearchTextChange}
-            onTagSelected={tagSelected}
-            onOpenFilter={handleOpenFilter}
-            onOpenCardView={() => setisCardView(!isCardView)}
-            badgeCount={modifiedFieldsCount}
-            setSnackbarVisible={setSnackbarVisible}   
-            snackbarVisible={snackbarVisible}   
+          {/* Блок с поиском, фильтрами и переключателем карточного вида */}
+          <View
+            style={{
+              position: 'absolute',
+              top: 20,
+              left: 0,
+              right: 0,
+              zIndex: 10,
+            }}
+          >
+            <SearchAndTags
+              selectedTag={selectedTag}
+              setSelectedTag={setSelectedTag}
+              onSearchTextChange={handleSearchTextChange}
+              onTagSelected={tagSelected}
+              onOpenFilter={handleOpenFilter}
+              onOpenCardView={() => setisCardView(!isCardView)}
+              badgeCount={modifiedFieldsCount}
+              setSnackbarVisible={setSnackbarVisible}
+              snackbarVisible={snackbarVisible}
+            />
+          </View>
+
+          {/* BottomSheet для отображения деталей выбранной точки/объявления */}
+          {isSheetVisible && (
+            <BottomSheetComponent
+              ref={sheetRef}
+              snapPoints={renderAdvrtForm ? ['60%', '100%'] : ['60%', '100%']}
+              renderContent={renderContent as any}
+              onClose={handleSheetClose}
+              enablePanDownToClose={true}
+              initialIndex={0}
+              usePortal={true}
+            />
+          )}
+
+          {/* Кастомный Alert */}
+          <CustomAlert
+            isVisible={isModalVisible}
+            onClose={() => setModalVisible(false)}
+            message={alertText}
+            type={alertType}
+            title={alertType === 'error' ? 'Error' : ''}
+            image={alertImage}
           />
-        </View>
-
-        {isSheetVisible && (
-          <BottomSheetComponent
-            ref={sheetRef}
-            snapPoints={renderAdvrtForm ? ['60%', '100%'] : ['60%', '100%']}
-            renderContent={renderContent as any}
-            onClose={handleSheetClose} // Обработчик для события закрытия BottomSheet
-            enablePanDownToClose={true}
-            initialIndex={0} // Начальная позиция - 60%
-            usePortal={true} // Используем Portal для отображения BottomSheet
-          />
-        )}
-        <CustomAlert
-          isVisible={isModalVisible}
-          onClose={() => setModalVisible(false)}
-          message={alertText}
-          type={alertType}
-          title={alertType === 'error' ? 'Error' : ''}
-          image={alertImage}
-        />
-
+        </Animated.View>
+      )}
     </Provider>
   );
 });
+
 
 const styles = {
   clusterStyle: {

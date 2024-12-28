@@ -1,8 +1,7 @@
 import MapBoxMap from '@/components/map/MapComponent';
 import userStore from '@/stores/UserStore';
 import {useFocusEffect, useRouter } from 'expo-router';
-import React, { useEffect } from 'react';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import React from 'react';
 
 
 const Map = () => {
@@ -24,11 +23,7 @@ const Map = () => {
   );
 
   return (
-    <>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <MapBoxMap />
-      </GestureHandlerRootView>
-    </>
+    <MapBoxMap />
   )
 }
 
