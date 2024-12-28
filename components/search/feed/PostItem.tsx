@@ -72,15 +72,17 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
     try {
       if (!hasLiked) {
         await searchStore.likePost(post.id);
+        setLikes(likes + 1);
         setHasLiked(true);
-        updateLikes();
       } else {
         await searchStore.unlikePost(post.id);
+        setLikes(likes - 1);
         setHasLiked(false);
-        updateLikes();
       }
     } catch (error) {
       console.error('Error updating like:', error);
+    } finally {
+      updateLikes();
     }
   };
 
