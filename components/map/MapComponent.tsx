@@ -42,6 +42,7 @@ import PermissionsRequestComponent from '../auth/PermissionsRequestComponent';
 import WalkMarker from './markers/WalkMarker';
 import PointMarker from './markers/PointMarker';
 import { createGeoJSONFeatures } from '@/utils/mapUtils';
+import { generateChatData, generateChatIdForTwoUsers } from '@/utils/chatUtils';
 
 
 const MapBoxMap = observer(() => {
@@ -329,21 +330,22 @@ const MapBoxMap = observer(() => {
   const handleChatInvite = async (otherUser: IUserChat) => {
     try {
       sheetRef.current?.close();
-      console.log('Chat invite:', otherUser);
-      const chatId = await chatStore.createNewChat(otherUser);
-      await chatStore.sendInviteMessage(chatId!, otherUser);
-      console.log('Chat created:', chatId);
+      const chatId = generateChatIdForTwoUsers(currentUser!.id!, otherUser.id);
+      let chat = await chatStore.getChatById(chatId);
+      if (!chat) {
+        chat = generateChatData(chatId, currentUser!.id!, otherUser.id, otherUser,'request for a walk');
+      }
+      await chatStore.sendMessageUniversal(chat, '', { 
+        isInvite: true,
+        inviteMetadata: {
+          advrtId: mapStore.currentWalkId
+        },
+      });
+      //await chatStore.sendInviteMessage(chatId!, otherUser);
+      
       if (chatId) {
-        const encodedAvatarUrl = otherUser.thumbnailUrl ? btoa(otherUser.thumbnailUrl) : '';
-        router.push({
-          pathname: '/chat/[chatId]',
-          params: {
-            chatId: chatId,
-            otherUserId: otherUser.id,
-            otherUserName: otherUser.name,
-            avatarUrl: encodedAvatarUrl,
-          },
-        });
+        
+        router.push(`/chat/${chatId}`);
         //router.push(`/chat/${chatId}`);
       }
     } catch (error) {

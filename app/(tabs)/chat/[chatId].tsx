@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { observer } from "mobx-react-lite";
-import { BackHandler, Text } from "react-native";
+import { BackHandler, Platform, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Chat, MessageType, defaultTheme } from "@flyerhq/react-native-chat-ui";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,8 +14,8 @@ import AdvtComponent from "@/components/map/AdvtComponent";
 import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
 import BottomSheet from "@gorhom/bottom-sheet";
 import CustomMessageComponent from "@/components/chat/chatView/CustomMessageComponent";
-import { set } from "firebase/database";
 import { ChatType } from "@/dtos/enum/ChatType";
+import { generateChatData } from "@/utils/chatUtils";
 
 const ChatScreen: React.FC = observer(() => {
   const { chatId, otherUserId } = useLocalSearchParams<{chatId: string, otherUserId:string }>();
@@ -36,7 +36,7 @@ const ChatScreen: React.FC = observer(() => {
         const loadedChat = await ChatStore.getChatById(chatId);
         if(loadedChat){
           // Чат уже существует в базе
-          const otherUser = loadedChat.participants.find((p) => p.key !== currentUserId)?.value
+          const otherUser = loadedChat?.participants?.find((p) => p.key !== currentUserId)?.value
           if(otherUser){
             setOtherUser(otherUser)
           }
@@ -54,31 +54,7 @@ const ChatScreen: React.FC = observer(() => {
             }
             setOtherUser(chatUser)
           }
-          const newChat: IChat = {
-            id: chatId,
-            participants: [
-              {
-                key: currentUserId,
-                value: {
-                  id: currentUserId,
-                  firstName: UserStore.currentUser?.name ?? '',
-                  imageUrl: UserStore.currentUser?.thumbnailUrl ?? '',
-                  isOnline: false
-                }
-              },
-              {
-                key: otherUserId,
-                value: {
-                  id: otherUserId,
-                  firstName: otherUser?.name ?? '',
-                  imageUrl: otherUser?.thumbnailUrl ?? '',
-                  isOnline: false
-                }
-              }
-            ],
-            lastMessage: '',
-            lastCreatedAt: Date.now(),
-          };
+          const newChat: IChat = generateChatData(chatId, currentUserId, otherUserId, otherUser);
           setChat(newChat);
           console.log("Chat created", newChat);
         }
@@ -160,8 +136,11 @@ const ChatScreen: React.FC = observer(() => {
           avatarUrl={otherUser?.imageUrl}
           onPressAvatar={handleOpenProfile}
         />
+       
         <Chat
           locale={i18n.locale as "en" | "es" | "ru" | undefined}
+          sendButtonVisibilityMode="always"
+          
           theme={{
             ...defaultTheme,
             colors: {
@@ -175,24 +154,25 @@ const ChatScreen: React.FC = observer(() => {
               sentMessageBodyTextStyle: {
                 color: "black",
                 fontSize: 16,
-                fontWeight: "400",
-                lineHeight: 24,
+                lineHeight: 18,
+                fontFamily: "NunitoSans-Regular",
               },
               receivedMessageBodyTextStyle: {
                 fontSize: 16,
-                fontWeight: "400",
-                lineHeight: 24,
+                lineHeight: 18,
+                fontFamily: "NunitoSans-Regular",
               },
             },
             borders: {
               ...defaultTheme.borders,
-              inputBorderRadius: 20,
+              inputBorderRadius: 10,
               messageBorderRadius: 16,
+              
             },
             insets: {
               ...defaultTheme.insets,
-              messageInsetsVertical: 12,
-              messageInsetsHorizontal: 16,
+              messageInsetsVertical: 10,
+              messageInsetsHorizontal: 10,
             },
           }}
           messages={ChatStore.messages}
@@ -200,10 +180,12 @@ const ChatScreen: React.FC = observer(() => {
           user={{ id: currentUserId }}
           renderCustomMessage={renderMessage}
           emptyState={() => <Text></Text>}
-          enableAnimation
+          {...(Platform.OS === "ios" && { enableAnimation: true })}
           showUserAvatars
-          showUserNames
+          //showUserNames
+          timeFormat="HH:mm DD MMM"
         />
+
       </SafeAreaView>
 
       {isSheetVisible && (
@@ -231,3 +213,4 @@ const ChatScreen: React.FC = observer(() => {
 });
 
 export default ChatScreen;
+

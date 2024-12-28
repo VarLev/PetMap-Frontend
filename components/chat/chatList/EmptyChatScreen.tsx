@@ -18,12 +18,6 @@ function EmptyChatScreen() {
 
   return (
     <SafeAreaView className="bg-white h-full">
-      <View className="flex-row items-center justify-start  py-2 mt-8">
-        <View className="flex-row items-center">
-        <IconButton icon="arrow-left" size={24} onPress={handleBack} />
-        <Text className="text-lg font-nunitoSansBold">{i18n.t("chat.messages")}</Text>
-        </View>
-      </View>
       <View className="justify-start ">
         <View className="justify-between items-center  ">
           <View className="items-center  justify-center  ">

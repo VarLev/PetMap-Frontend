@@ -33,6 +33,7 @@ import { IUser } from "@/dtos/Interfaces/user/IUser";
 import AddCard from "../custom/buttons/AddCard";
 import MenuItemWrapper from "../custom/menuItem/MunuItemWrapper";
 import i18n from "@/i18n";
+import { generateChatIdForTwoUsers } from "@/utils/chatUtils";
 
 const ViewProfileComponent = observer(
   ({
@@ -105,7 +106,8 @@ const ViewProfileComponent = observer(
       const userId = userStore.currentUser?.id;
       if (!userId || !loadedUser.id) return;
 
-      const chatId = userId + loadedUser.id;
+      
+      const chatId = generateChatIdForTwoUsers(userId, loadedUser.id);
       
       router.push({
         pathname: `/chat/${chatId}`,
