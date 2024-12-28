@@ -6,20 +6,18 @@ import UserStore from '@/stores/UserStore';
 import EmptyChatScreen from '@/components/chat/chatList/EmptyChatScreen';
 import ChatListItem from '@/components/chat/chatList/ChatListItem';
 
-
 const ChatListView: React.FC = observer(() => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string >(UserStore.getCurrentUserId()!);
-  const [chats, setChats] = useState<IChat[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string>(UserStore.getCurrentUserId()!);
+  //const [chats, setChats] = useState<IChat[]>([]);
 
   const fetchData = async () => {
     try {
       setIsLoading(true);
       await ChatStore.fetchChats();
-      setChats(ChatStore.chats);
-    
+      //setChats(ChatStore.chats);
     } catch (err) {
       setError('');
       console.error(err);
@@ -30,6 +28,14 @@ const ChatListView: React.FC = observer(() => {
 
   useEffect(() => {
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    // Подписываемся на изменения в чатах
+    const unsubscribe = ChatStore.subscribeToChats();
+  
+    // Возвращаем функцию, которая "отпишется" при размонтиовании
+    return () => unsubscribe && unsubscribe();
   }, []);
 
   const onRefresh = async () => {
@@ -58,33 +64,21 @@ const ChatListView: React.FC = observer(() => {
     );
   }
 
-  // 3. Если чатов нет —
-  //    показываем экран пустого состояния (и шапку).
-  if (ChatStore.chats.length === 0) {
-    return (
-      <View className="h-full">
-        <EmptyChatScreen />
-      </View>
-    );
-  }
-
   // 4. Если нет ошибки, нет загрузки и есть чаты —
   //    показываем шапку и список.
   return (
-    <View className="h-full">
+    <View className="h-full bg-white">
       <FlatList
-        data={chats}
-        renderItem={({ item }) => (
+        data={ChatStore.chats}
+        ListEmptyComponent={
+        <View className="h-full">
+          <EmptyChatScreen />
+        </View>}
+        renderItem={({ item }) =>
           <ChatListItem item={item} currentUserId={currentUserId} />
-        )}
-        keyExtractor={(item) => item.id}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={onRefresh}
-            colors={['#6200ee']}
-          />
         }
+        keyExtractor={(item) => item.id}
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} colors={['#6200ee']} />}
         contentContainerStyle={{ paddingBottom: 85 }}
       />
     </View>

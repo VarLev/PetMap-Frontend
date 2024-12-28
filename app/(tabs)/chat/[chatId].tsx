@@ -93,7 +93,7 @@ const ChatScreen: React.FC = observer(() => {
     async (message: MessageType.PartialText) => {
       if (chatId && UserStore.currentUser) {
         console.log(chat);
-        const chatData = await ChatStore.sendMessage(chat!, message.text);
+        const chatData = await ChatStore.sendMessageUniversal(chat!, message.text);
         if(chatData?.chatType === ChatType.NewChat){
           console.log("New chat created", chatData.thisChatId);
           router.replace(`/chat/${chatData.thisChatId}`);

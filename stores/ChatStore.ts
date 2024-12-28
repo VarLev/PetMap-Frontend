@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { database } from '@/firebaseConfig';
-import { ref, get, push, update, query, orderByChild, onValue, remove, set } from 'firebase/database';
+import { ref, get, push, update, query, orderByChild, onValue, remove, set, off } from 'firebase/database';
 import userStore from '@/stores/UserStore';
 import { MessageType } from '@flyerhq/react-native-chat-ui';
 import { randomUUID } from 'expo-crypto';
@@ -38,6 +38,66 @@ class ChatStore {
   getOtherUserFmcToken() {
     return this.currentChatOtherUserFmcToken;
   }
+
+  subscribeToChats() {
+    const chatsRef = ref(database, 'chats');
+
+    // Подписка onValue слушает все изменения под 'chats'
+    const unsubscribe = onValue(chatsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        // Логика трансформации (как в fetchChats) — превратить data в массив IChat
+        const updatedChats = this.transformChats(data);
+        
+        runInAction(() => {
+          this.chats = updatedChats;
+        });
+      } else {
+        // Если нет данных
+        runInAction(() => {
+          this.chats = [];
+        });
+      }
+    });
+
+    // Возвращаем функцию «отписки»
+    return () => {
+      off(chatsRef, 'value', unsubscribe);
+    };
+  }
+
+  transformChats(data: any): IChat[] {
+    const result: IChat[] = [];
+    for (const chatId in data) {
+      const chatData = data[chatId];
+      // ... Собираем IChat
+      // например:
+      result.push({
+        id: chatId,
+        lastMessage: chatData.lastMessage || '',
+        lastCreatedAt: chatData.lastCreatedAt || 0,
+        participants: this.transformParticipants(chatData.participants), 
+        lastSeen: chatData.lastSeen,
+      });
+    }
+    return result;
+  }
+
+  // Аналогичный метод для участников
+  transformParticipants(participantsObj: any): { key: string; value: IChatUser }[] {
+    if (!participantsObj) return [];
+    return Object.keys(participantsObj).map((userId) => {
+      // participantsObj[userId] == true  (если вы храните только ID)
+      return {
+        key: userId,
+        value: {
+          id: userId,
+          firstName: '', // потом, если нужно, подтягиваете из /users и т.д.
+        } as IChatUser,
+      };
+    });
+  }
+
 
   async fetchChats() {
     const userId = userStore.currentUser?.id;
@@ -295,53 +355,6 @@ class ChatStore {
     }
   }
 
-  async sendInviteMessage(chatId: string, otherUser: IUserChat) {
-    const userId = userStore.currentUser?.id;
-    // const recipientExpoPushToken = userStore.users.find(
-    //   (user) => user.id === otherUser.id
-    // )?.fmcToken;
-    if (!userId) return;
-
-    const initialMessage: MessageType.Custom = {
-      id: randomUUID(), // используем уникальный идентификатор для сообщения
-      author: {
-        id: userId,
-      },
-      createdAt: Date.now(),
-      type: 'custom',
-      metadata: {
-        userId: userStore.currentUser?.id,
-        userName: userStore.currentUser?.name,
-        userAvatar: userStore.currentUser?.thumbnailUrl,
-        advrtId: mapStore.currentWalkId,
-        visibleToUserId: otherUser.id, // ID пользователя, которому нужно показать кнопки
-      },
-    };
-    console.log('initialMessage:', mapStore.currentWalkId);
-
-    try {
-      await push(ref(database, `messages/${chatId}`), initialMessage);
-      console.log('Initial message sent');
-      await update(ref(database, `chats/${chatId}`), {
-        lastCreatedAt: initialMessage.createdAt,
-      });
-      await this.setLastSeen();
-      console.log('Last seen updated');
-      runInAction(() => {
-        chatStore.lastCreatedAt[chatId] = Date.now();
-      });
-
-      console.log('otherUser:', otherUser);
-      if (otherUser.fmcToken) {
-        await sendPushNotification(otherUser.fmcToken, 'Приглашение на прогулку', userStore?.currentUser?.name ?? 'Пользователь', {
-          chatId,
-        });
-      }
-    } catch (error) {
-      console.error('Error sending initial message:', error);
-    }
-  }
-
   async sendMessageUniversal(
     chat: IChat | null,
     textOrPayload: string,           // Если isInvite=false, это текст
@@ -528,123 +541,6 @@ class ChatStore {
     return { chatType, thisChatId: chatId };
   }
 
-  async sendMessage(chat: IChat, text: string): Promise<{chatType :ChatType, thisChatId:string} | undefined> {
-    // 1. Проверяем, авторизован ли текущий пользователь
-    const userId = userStore.getCurrentUserId();
-    if (!userId) {
-      console.error('User is not defined');
-      return;
-    }
-  
-    // 2. Проверяем, есть ли чат в локальном сторе
-    let existingChat = this.chats.find((c) => c.id === chat?.id);
-    let chatId = chat?.id??'';
-    let chatType = ChatType.ChatExists;
-    // 3. Если чата нет — создаём новый (только если participants заполнены)
-    if (!existingChat) {
-      // Убедимся, что у chat есть участники (а не пустой объект/массив)
-      if (!chat.participants || chat.participants.length < 2) {
-        console.error('Невозможно создать чат: отсутствуют участники');
-        return;
-      }
-      const user = await userStore.getUserById(chat.participants.find((p) => p.key!==userId)?.value?.id!);
-
-      if (!user) {
-        console.error('Не удалось найти другого участника');
-        return;
-      }
-
-      const otherUdserChat: IUserChat = {
-        id: user.id,
-        name: user.name,
-        thumbnailUrl: user.thumbnailUrl,
-        fmcToken: user.fmcToken,
-      }
-
-      const newChatId = await this.createNewChat(otherUdserChat);
-      if (!newChatId) {
-        console.error('Не удалось создать чат');
-        return;
-      }
-      chatId = newChatId;
-      // Обновим локально
-      runInAction(() => {
-        this.chats.push({
-          ...chat,
-          id: newChatId,
-        });
-        existingChat = this.chats[this.chats.length - 1];
-      });
-      chatType = ChatType.NewChat;
-    }
-  
-    // 4. Находим «другого» участника (кроме текущего пользователя)
-    const otherParticipant = (existingChat || chat).participants.find(
-      (p) => p.key !== userId
-    );
-    if (!otherParticipant) {
-      console.error('Не удалось найти другого участника');
-      return;
-    }
-    const otherUser = otherParticipant.value;
-  
-    // Генерируем ключ для сообщения
-    const newMessageKey = push(ref(database, `messages/${chatId}`)).key;
-    if (!newMessageKey) {
-      console.error('Ошибка при генерации ключа для сообщения');
-      return;
-    }
-  
-    // 5. Формируем само сообщение
-    const now = Date.now();
-    const textMessage: MessageType.Text = {
-      id: newMessageKey,
-      type: 'text',
-      text,
-      createdAt: now,
-      author: {
-        id: userId,
-        firstName: userStore.currentUser?.name ?? 'Anonymous',
-        imageUrl: userStore.currentUser?.thumbnailUrl ?? '',
-      },
-    };
-  
-    // 6. Пакетное обновление Firebase
-    const updates: Record<string, unknown> = {};
-    updates[`messages/${chatId}/${newMessageKey}`] = textMessage;
-    updates[`chats/${chatId}/lastMessage`] = text;
-    updates[`chats/${chatId}/lastCreatedAt`] = now;
-    updates[`users/${userId}/lastSeen`] = now; // если нужно
-  
-    try {
-      await update(ref(database), updates);
-    } catch (error) {
-      console.error('Ошибка при пакетном обновлении:', error);
-      return ;
-    }
-  
-    // 7. Отправляем пуш, если у другого пользователя есть токен
-    const fcmToken = this.getOtherUserFmcTokenByUserId(otherUser.id!);
-    if (fcmToken) {
-      try {
-        sendPushNotification(fcmToken, 'Новое сообщение', text, { chatId });
-      } catch (err) {
-        console.error('Ошибка при отправке пуш-уведомления:', err);
-      }
-    }
-  
-    // 8. Обновляем локальный стор (MobX)
-    runInAction(() => {
-      this.updateChat(chatId, {
-        lastMessage: text,
-        lastCreatedAt: now,
-      });
-      this.lastSeen[userId] = now;
-      this.lastMessage[chatId] = text;
-    });
-
-    return {chatType, thisChatId: chatId};
-  }
 
   updateChat(chatId: string, updatedFields: Partial<IChat>) {
     runInAction(() => {
