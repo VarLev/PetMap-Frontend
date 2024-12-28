@@ -45,12 +45,12 @@ const ChatListItem: React.FC<ChatListItemProps> = ({ item, currentUserId}) => {
       <View className="flex-row justify-between p-1 ml-4 items-center h-17 bg-gray-100 rounded-l-xl">
         <View className="flex-row items-center">
           {/* Аватарка + индикатор статуса */}
-          <AvatarWithStatus onPress={()=>{}} imageUrl={recipient.imageUrl}  isOnline={recipient.isOnline}/>
+          <AvatarWithStatus onPress={()=>{}} imageUrl={recipient.thumbnailUrl}  isOnline={recipient.isOnline}/>
 
           {/* Имя пользователя и последнее сообщение */}
           <View className="flex-col pl-4">
             <Text className="text-black text-[16px] font-nunitoSansBold">
-              {shortenName(recipient?.firstName?? 'PetOwner')}
+              {shortenName(recipient?.name?? 'PetOwner')}
             </Text>
             <Text className="text-gray-600">
               {shortenName(item.lastMessage) || '...'}

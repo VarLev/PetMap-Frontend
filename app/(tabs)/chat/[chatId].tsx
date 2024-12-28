@@ -44,21 +44,22 @@ const ChatScreen: React.FC = observer(() => {
         }
         else {
           // Чат не существует в базе
-          const otherUser = await UserStore.getUserById(otherUserId)
-          if(otherUser){
+          const otherDbUser = await UserStore.getUserById(otherUserId)
+          const otherUserOnlineStatus = await ChatStore.fetchUserStatus(otherDbUser.id);
+          console.log("Other user online status", otherUserOnlineStatus);
+          if(otherDbUser){
             const chatUser: IChatUser = {
-              id: otherUser.id,
-              firstName: otherUser.name || '',
-              imageUrl: otherUser.thumbnailUrl || '',
-              isOnline: false
+              id: otherDbUser.id,
+              name: otherDbUser.name || '',
+              thumbnailUrl: otherDbUser.thumbnailUrl || '',
+              isOnline: otherUserOnlineStatus
             }
             setOtherUser(chatUser)
+            const newChat: IChat = generateChatData(chatId, currentUserId, otherUserId, chatUser);
+            setChat(newChat);
           }
-          const newChat: IChat = generateChatData(chatId, currentUserId, otherUserId, otherUser);
-          setChat(newChat);
-          console.log("Chat created", newChat);
+          
         }
-        console.log("Chat loaded", loadedChat);
         //await ChatStore.loadBlacklist();
         //const otherUserFmcToken = await ChatStore.getOtherUserFmcTokenByUserId(otherUserId);
         //ChatStore.setOtherUserFmcToken(otherUserFmcToken);
@@ -95,7 +96,6 @@ const ChatScreen: React.FC = observer(() => {
         console.log(chat);
         const chatData = await ChatStore.sendMessageUniversal(chat!, message.text);
         if(chatData?.chatType === ChatType.NewChat){
-          console.log("New chat created", chatData.thisChatId);
           router.replace(`/chat/${chatData.thisChatId}`);
         }
       }
@@ -132,9 +132,10 @@ const ChatScreen: React.FC = observer(() => {
     <>
       <SafeAreaView className="bg-white h-full">
         <ChatHeader
-          userName={otherUser?.firstName ?? "..."}
-          avatarUrl={otherUser?.imageUrl}
+          userName={otherUser?.name ?? "..."}
+          avatarUrl={otherUser?.thumbnailUrl}
           onPressAvatar={handleOpenProfile}
+          isOnline={otherUser?.isOnline}
         />
        
         <Chat

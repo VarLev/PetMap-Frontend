@@ -3,12 +3,8 @@ import { database } from '@/firebaseConfig';
 import { ref, get, push, update, query, orderByChild, onValue, remove, set, off } from 'firebase/database';
 import userStore from '@/stores/UserStore';
 import { MessageType } from '@flyerhq/react-native-chat-ui';
-import { randomUUID } from 'expo-crypto';
 import { getPushTokenFromServer, sendPushNotification } from '@/hooks/notifications';
-import { IUserChat } from '@/dtos/Interfaces/user/IUserChat';
-import apiClient from '@/hooks/axiosConfig';
-import { handleAxiosError } from '@/utils/axiosUtils';
-import mapStore from './MapStore';
+
 import { ChatType, SendMessageOptions } from '@/dtos/enum/ChatType';
 import { generateChatIdForTwoUsers } from '@/utils/chatUtils';
 
@@ -92,7 +88,7 @@ class ChatStore {
         key: userId,
         value: {
           id: userId,
-          firstName: '', // потом, если нужно, подтягиваете из /users и т.д.
+          name: '', // потом, если нужно, подтягиваете из /users и т.д.
         } as IChatUser,
       };
     });
@@ -133,7 +129,7 @@ class ChatStore {
     // Шаг 2. Делаем один запрос ко всем пользователям
     const usersRef = ref(database, 'users');
     const usersSnap = await get(usersRef);
-    const usersData = usersSnap.exists() ? usersSnap.val() : {};
+    const usersData = (usersSnap.exists() ? usersSnap.val() : {});
   
     // Шаг 3. Формируем массив чатов, собирая данные о каждом участнике
     for (const chatId in data) {
@@ -148,8 +144,8 @@ class ChatStore {
   
           const chatUser: IChatUser = {
             id: participantId,
-            firstName: rawUserData.name ?? 'NoName', // или rawUserData.firstName
-            imageUrl: rawUserData.avatar ?? '',
+            name: rawUserData.name ?? '...', // или rawUserData.firstName
+            thumbnailUrl: rawUserData.avatar ?? '',
             isOnline: rawUserData.isOnline ?? false,
             lastSeen: rawUserData.lastSeen ?? 0,
             lastMessage: rawUserData.lastMessage ?? '',
@@ -186,7 +182,7 @@ class ChatStore {
     });
   }
 
-  async createNewChat(otherUser: IUserChat): Promise<string | undefined> {
+  async createNewChat(otherUser: IChatUser): Promise<string | undefined> {
     const userId = userStore.currentUser?.id;
     if (!userId) {
       console.error('Текущий пользователь не найден');
@@ -322,7 +318,8 @@ class ChatStore {
             key: userId,
             value: {
               id: userId,
-              firstName: 'NoName',
+              name: '...',
+              thumbnailUrl: '',
             },
           };
         }
@@ -330,8 +327,8 @@ class ChatStore {
         // Сопоставляем с вашим интерфейсом IChatUser
         const chatUser: IChatUser = {
           id: userId,
-          firstName: userData.name || 'NoName', 
-          imageUrl: userData.avatar || '',     
+          name: userData.name || 'NoName', 
+          thumbnailUrl: userData.avatar || '',     
           isOnline: userData.isOnline || false, 
           lastSeen: userData.lastSeen || 0,
           lastMessage: userData.lastMessage || '',
@@ -392,10 +389,10 @@ class ChatStore {
         console.error('Не удалось найти данные другого участника');
         return;
       }
-      const otherUserChat: IUserChat = {
+      const otherUserChat: IChatUser = {
         id: otherUserData.id,
-        name: otherUserData.name,
-        thumbnailUrl: otherUserData.thumbnailUrl,
+        name: otherUserData.name?? '...',
+        thumbnailUrl: otherUserData.thumbnailUrl?? 'https://avatar.iran.liara.run/public',
         fmcToken: otherUserData.fmcToken,
       };
   
@@ -539,6 +536,27 @@ class ChatStore {
     });
   
     return { chatType, thisChatId: chatId };
+  }
+
+  /**
+   * Загрузить (однократно) из Firebase статус пользователя по userId.
+   * Сохранить в usersStatus (MobX будет реактивно обновлять UI).
+   */
+  async fetchUserStatus(userId: string): Promise<boolean  | undefined> {
+    try {
+      const userRef = ref(database, `users/${userId}/isOnline`);
+      const snapshot = await get(userRef);
+      let status: boolean = false;
+
+      if (snapshot.exists()) {
+        const val = snapshot.val();
+        status = val === true;
+      }
+
+      return status;
+    } catch (error) {
+      console.error('Ошибка при получении статуса пользователя:', error);
+    }
   }
 
 

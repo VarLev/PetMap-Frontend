@@ -34,7 +34,6 @@ import MapItemList from '../navigation/points/MapItemList';
 import { UserPointType } from '@/dtos/enum/UserPointType';
 import PointsOfInterestComponent from './PointsOfInterestComponent';
 import FabGroupComponent from './FabGroupComponent';
-import { IUserChat } from '@/dtos/Interfaces/user/IUserChat';
 
 import i18n from '@/i18n';
 import uiStore from '@/stores/UIStore';
@@ -327,7 +326,7 @@ const MapBoxMap = observer(() => {
     }
   };
 
-  const handleChatInvite = async (otherUser: IUserChat) => {
+  const handleChatInvite = async (otherUser: IChatUser) => {
     try {
       sheetRef.current?.close();
       const chatId = generateChatIdForTwoUsers(currentUser!.id!, otherUser.id);

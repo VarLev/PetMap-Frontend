@@ -3,7 +3,6 @@ import { TouchableOpacity, View, Image } from "react-native";
 import { Text } from "react-native-paper";
 import OnboardingCarousel from "../components/auth/OnboardingCarousel";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Platform } from "react-native";
 import CustomButtonPrimary from "@/components/custom/buttons/CustomButtonPrimary";
 import { Redirect, router } from "expo-router";
 import { useStore } from "@/contexts/StoreProvider";
@@ -23,30 +22,21 @@ GoogleSignin.configure({
   webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
 });
 
-
-
 const App = () => {
   const { loading, isLogged, isInitialized, isError } = useStore();
-  const [isIos, setIsIos] = useState(false);
   const { showAlert } = useAlert();
   const [adShown, setAdShown] = useState(true);
   const userHasSubscription = userStore.getUserHasSubscription(); // Проверка на наличие подписки у пользователя
 
   // проверка, если платформа IOS, показываем иконку регистрации через Aple
-  
-  useEffect(() => {
-    if (Platform.OS === 'ios') {
-      setIsIos(true);
-    }
 
+  useEffect(() => {
     const checkAuthAndRedirect = async () => {
       if (isInitialized && !loading && userStore.getLogged()) {
-        console.log("Redirecting to /search/news");
         await router.replace("/search/news"); // Перенаправление на карту, если пользователь авторизован
       }
     };
-    console.log(isInitialized, loading, isLogged);
-    console.log(isInitialized, loading, userStore.getLogged());
+   
     checkAuthAndRedirect();
 
     if (isError) {

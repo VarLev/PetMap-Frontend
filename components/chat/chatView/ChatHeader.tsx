@@ -10,18 +10,19 @@ interface ChatHeaderProps {
   userName: string;
   avatarUrl?: string;
   onPressAvatar?: () => void; // Новый проп
+  isOnline?: boolean;
 }
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ userName, avatarUrl, onPressAvatar }) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({ userName, avatarUrl, onPressAvatar , isOnline}) => {
   
   // Обработчик нажатия кнопки "Назад"
-  const handleBack = () => router.back();
+  const handleBack = () => router.replace("/chat");
 
   return (
     <>
       <View className="flex-row items-center justify-start gap-2 py-2 shadow-md">
         <IconButton icon="arrow-left" size={24} onPress={handleBack} />
-        <AvatarWithStatus onPress={onPressAvatar || (() => {})} imageUrl={avatarUrl} isOnline={true}  />
+        <AvatarWithStatus onPress={onPressAvatar || (() => {})} imageUrl={avatarUrl} isOnline={isOnline}  />
         <View>
           <Text className="text-lg font-nunitoSansBold">{shortenName(userName)}</Text>
         </View>

@@ -9,9 +9,12 @@ interface IChat {
 
 interface IChatUser {
   id: string;
-  firstName: string;
-  imageUrl?: string;
+  name: string;
+  thumbnailUrl?: string;
   isOnline?: boolean;
   lastSeen?: number;
   lastMessage?: string;
+  fmcToken?: string | null;
 }
+
+

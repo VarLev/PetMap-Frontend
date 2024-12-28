@@ -23,7 +23,7 @@ const AvatarWithStatus: React.FC<AvatarWithStatusProps> = ({
       {/* Цветной кружочек в правом нижнем углу */}
       <View
         className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${
-          isOnline ? 'bg-green-500' : 'bg-gray-400'
+          isOnline ? 'bg-emerald-400' : 'bg-gray-400'
         }`}
       />
     </TouchableOpacity>

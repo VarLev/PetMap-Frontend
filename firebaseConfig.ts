@@ -3,13 +3,11 @@ import { getStorage, ref, listAll, getDownloadURL, StorageReference} from 'fireb
 import { signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, sendEmailVerification  } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getAuth, initializeAuth, getReactNativePersistence, onAuthStateChanged } from "firebase/auth";
-import {getDatabase} from 'firebase/database';
+import {getDatabase, onDisconnect, serverTimestamp, set, ref as refDb, update} from 'firebase/database';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
 import i18n from './i18n';
-
-
-
 
 // Вставьте сюда ваши настройки Firebase
 const firebaseConfig = {
@@ -139,6 +137,41 @@ export const getFilesInDirectory = async (directory: string): Promise<string[]> 
 export const getFileUrl = async (filePath: string): Promise<string> => {
   const fileRef = ref(storage, filePath);
   return await getDownloadURL(fileRef);
+};
+
+/**
+ * Установить статус пользователя (online/offline) и прописать время последнего изменения.
+ */
+export const setUserStatus = async (userId: string, status: boolean) => {
+  try {
+    const userStatusRef = refDb(database, `users/${userId}`);
+    await update(userStatusRef, {
+      isOnline: status,
+      lastSeen: serverTimestamp(),
+    });
+  } catch (error) {
+    // Обрабатываем ошибку при установке статуса
+    console.error('Ошибка при установке статуса пользователя:', error);
+    throw error;
+  }
+};
+
+/**
+ * Инициализировать onDisconnect для пользователя – 
+ * если соединение с Firebase прервётся (пользователь убил приложение, потерял интернет),
+ * то статус автоматически станет "offline".
+ */
+export const initOnDisconnect = async (userId: string) => {
+  try {
+    const userStatusRef = refDb(database, `users/${userId}`);
+    await onDisconnect(userStatusRef).update({
+      isOnline: false,
+      lastSeen: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error('Ошибка при инициализации onDisconnect:', error);
+    throw error;
+  }
 };
 
 export const getCurrentAuth = () => {
