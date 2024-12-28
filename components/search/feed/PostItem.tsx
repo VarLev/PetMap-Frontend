@@ -12,18 +12,20 @@ import i18n from '@/i18n';
 import ComplaintModal from '@/components/custom/complaint/ComplaintModal';
 
 type PostCardProps = {
-  post: IPost,
-  handleSheetCommentsOpenById: (postId: string) => void
+  post: IPost;
+  handleSheetCommentsOpenById: (postId: string) => void;
+  refresh: boolean;
 }
 
-const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenById }) => {
+const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenById, refresh }) => {
   const [hasLiked, setHasLiked] = useState<boolean>(post.hasLiked);
   const [commentText, setCommentText] = useState<string>('');
   const [menuVisible, setMenuVisible] = useState(false);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [isLoadingDeletingPost, setIsLoadingDeletingPost] = useState(false);
-  const [likes, setLikes] = useState<number>(post.likesCount);
+  const [likesCounter, setLikesCounter] = useState<number>(post.likesCount);
   const [comments, setComments] = useState<ICommentWithUser[]>(post.comments);
+  const [commentsCounter, setCommentsCounter] = useState(post.comments.length);
   const [isComplaintModal, setIsComplaintModal] = useState<boolean>(false);
   const [isComplaintDone, setIsComplaintDone] = useState(false);
   const [isComplaintSuccess, setIsComplaintSuccess] = useState(false);
@@ -35,6 +37,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
       updateLikes();
       setHasLiked(hasLiked);
       setComments(postComments);
+      setCommentsCounter(postComments.length);
 
       if (post.userId === userStore.currentUser?.id) {
         setIsCurrentUser(true);
@@ -42,11 +45,27 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
         setIsCurrentUser(false);
       }
     })();
-  }, []);
+
+  }, [refresh]);
+
+  const memoDepends = [
+    post,
+    likesCounter,
+    comments,
+    commentText,
+    menuVisible,
+    hasLiked,
+    isCurrentUser,
+    isLoadingDeletingPost,
+    isComplaintModal,
+    isComplaintDone,
+    isComplaintSuccess,
+    commentsCounter
+  ]
 
   const updateLikes = async () => {
     const updatedLikesCount = await searchStore.fetchLikesCount(post.id);
-    setLikes(updatedLikesCount);
+    setLikesCounter(updatedLikesCount);
   }
 
   const toggleLike = async () => {
@@ -97,8 +116,9 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
   const addComment = async () => {
     if (commentText.trim()) {
       await searchStore.addComment(post.id, commentText.trim());
+      setCommentsCounter(commentsCounter + 1);
       setCommentText("");
-      await searchStore.fetchPosts();
+      // await searchStore.fetchPosts();
     }
   }
 
@@ -199,14 +219,14 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
                 onPress={toggleLike}
                 size={20}
               />
-              <Text className="-ml-2 text-sm text-gray-500 font-medium">{likes}</Text>
+              <Text className="-ml-2 text-sm text-gray-500 font-medium">{likesCounter}</Text>
               <IconButton
                 icon="comment-outline"
                 className='-ml-0'
                 iconColor="gray"
                 size={20}
                 onPress={() => handleSheetCommentsOpen(post.id)}/>
-              <Text className="-ml-2 text-sm text-gray-500 font-medium">{comments.length}</Text>
+              <Text className="-ml-2 text-sm text-gray-500 font-medium">{commentsCounter}</Text>
             </View>
   
             {/* Поле ввода текста и кнопка отправки (справа) */}
@@ -230,7 +250,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
           </View>
         </Card.Actions>
       </Card>
-  ), [post, likes, comments, commentText, menuVisible, hasLiked, isCurrentUser, isLoadingDeletingPost, isComplaintModal, isComplaintDone, isComplaintSuccess])
+  ), [...memoDepends])
 
   return CardItem;
 });
