@@ -255,7 +255,8 @@ const ViewProfileComponent = observer(
                       rightIcon={rightIcon}
                       onRightIconPress={onEdit}
                       enableTranslation={true}
-                    />
+                      maxLines={20}
+                     />
                     <Divider />
                   </View>
                 )}
