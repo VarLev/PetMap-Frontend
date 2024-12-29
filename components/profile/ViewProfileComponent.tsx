@@ -8,7 +8,7 @@ import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomTextComponent from '../custom/text/CustomTextComponent';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
-import { calculateDogAge, calculateHumanAge, getTagsByIndex, shortenName } from '@/utils/utils';
+import { calculateDogAge, calculateHumanAge, calculateShortDogAge, getTagsByIndex, shortenName } from '@/utils/utils';
 import CustomSocialLinkInput from '../custom/text/SocialLinkInputProps';
 import { router } from 'expo-router';
 import petStore from '@/stores/PetStore';
@@ -139,7 +139,7 @@ const ViewProfileComponent = observer(
         <BottomSheetComponent
           ref={sheetRef}
           enablePanDownToClose={false}
-          snapPoints={['54%', '100%']}
+          snapPoints={['56%', '100%']}
           renderContent={
             <View className="bg-white h-full">
               <View className='flex-row items-center pl-4'>
@@ -158,17 +158,18 @@ const ViewProfileComponent = observer(
                 contentContainerStyle={{ paddingHorizontal: 10 }}
                 renderItem={({ item }) => (
                   <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => onPetOpen(item.id)}>
-                    <Card className="w-[180px] h-[260px] p-2 m-2 rounded-2xl shadow bg-purple-100">
+                    <Card className="w-[180px] h-[235px] p-2 m-2 rounded-2xl shadow bg-purple-100">
                       <Card.Cover source={{ uri: item.thumbnailUrl || petUriImage }} style={{ height: 150, borderRadius: 14 }} />
                       <Text className="block font-nunitoSansBold text-lg mt-1 mb-[-8px] leading-5" numberOfLines={1} ellipsizeMode="tail">
-                        {shortenName(item.petName)}, {calculateDogAge(item.birthDate)}
+                        {shortenName(item.petName)}, {calculateShortDogAge(item.birthDate)}
                       </Text>
                       <View style={{ marginTop: 12 }}>
-                        <Text className="font-nunitoSansRegular" numberOfLines={2} ellipsizeMode="tail">
+                        <Text className="font-nunitoSansRegular" numberOfLines={1} ellipsizeMode="tail">
                           {getTagsByIndex(i18n.t('tags.breeds') as string[], item.breed!)}
                         </Text>
                         <Text className="font-nunitoSansRegular">
-                          {getTagsByIndex(i18n.t('tags.petGender') as string[], item.gender! ? item.gender! : 0)}, {item.weight} kg
+                          {getTagsByIndex(i18n.t('tags.petGender') as string[], item.gender! ? item.gender! : 0)}
+                          {item.weight ? `, ${item.weight} kg` : ''}
                         </Text>
                       </View>
                     </Card>

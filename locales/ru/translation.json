@@ -637,8 +637,10 @@
     "aboutPet": "О питомце",
     "socialMedia": "Социальные сети",
     "ageUnits": {
-      "month": { "one": "месяц", "few": "месяца", "many": "месяцев" },
-      "year": { "one": "год", "few": "года", "many": "лет" }
+      "month": { "one": "месяц", "few": "месяца", "many": "месяцев"  },
+      "year": { "one": "год", "few": "года", "many": "лет" },
+      "shortMonth": "мес.",
+      "shortYear": "г."
     }
   },
   "EditPetProfile": {

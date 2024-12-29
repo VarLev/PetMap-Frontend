@@ -76,6 +76,41 @@ function getAgeUnit(age: number, unit: "month" | "year"): string {
     : i18n.t(`PetProfile.ageUnits.${unit}.many`); //Английский: "months"/"years", Испанский: "meses"/"años"
 }
 
+
+/**
+ * Вычисляет возраст собаки в годах или месяцах в зависимости от даты рождения.
+ * @param birthDate Дата рождения собаки.
+ * @returns Возраст собаки в строковом формате.
+ */
+export function calculateShortDogAge(birthDate?: Date | null | undefined): string {
+  if (!birthDate) return 'Unknown';
+
+  // Если birthDate является строкой, пaреобразуем её в объект Date
+  if (typeof birthDate === 'string') {
+    birthDate = new Date(birthDate);
+  }
+
+  // Проверка, что birthDate это объект Date и он валиден
+  if (birthDate instanceof Date && !isNaN(birthDate.getTime())) {
+    const today = new Date();
+    let ageYears = today.getFullYear() - birthDate.getFullYear();
+    let ageMonths = today.getMonth() - birthDate.getMonth();
+
+    if (ageMonths < 0) {
+      ageYears--;
+      ageMonths += 12;
+    }
+
+    if (ageYears === 0) {
+      return `${ageMonths} ${i18n.t('PetProfile.ageUnits.shortMonth')}`;
+    } else {
+      return `${ageYears} ${i18n.t('PetProfile.ageUnits.shortYear')}`;
+    }
+  } else {
+    return 'Unknown';
+  }
+}
+
 export function calculateHumanAge(birthDate?: Date | null): string {
   const today = new Date();
   if (!birthDate || !(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
