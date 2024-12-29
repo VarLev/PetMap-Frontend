@@ -227,20 +227,9 @@
       "Negocios",
       "Startups"
     ],
-    "languages": [
-      "Español",
-      "Ruso",
-      "Inglés"
-    ],
-    "petGender": [
-      "Macho",
-      "Hembra"
-    ],
-    "gender": [
-      "Masculino",
-      "Femenino",
-      "N/A"
-    ],
+    "languages": ["Español", "Ruso", "Inglés"],
+    "petGender": ["Macho", "Hembra"],
+    "gender": ["Masculino", "Femenino", "N/A"],
     "professions": [
       "Programación",
       "Diseño",
@@ -1014,5 +1003,6 @@
   },
   "Snackbar": {
     "noResults": "No hay resultados"
-}
+  },
+  "searchWord":"Ingrese el nombre en inglés"
 }

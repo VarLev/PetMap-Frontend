@@ -24,6 +24,7 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import i18n from '@/i18n';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
+import CustomDropDownCityList from '../custom/selectors/CustomDropDownCityList';
 
 const TASK_IDS = {
   userEdit: {
@@ -285,6 +286,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 onChange={(text) => handleChange('gender', text)}
                 listMode="MODAL"
               />
+             
               <CustomOutlineInputText
                 containerStyles="mt-4"
                 label={i18n.t('EditProfileComponent.descriptionLabel')}
@@ -308,12 +310,17 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
             <Divider className="mt-4" />
             <View className="p-2">
               <Text className="text-lg font-nunitoSansBold text-indigo-800">{i18n.t('EditProfileComponent.mainInfoTitle')}</Text>
-              <CustomOutlineInputText
+              <CustomDropDownCityList 
+                initialSelectedTag={editableUser.location || ''} 
+                label={i18n.t('EditProfileComponent.locationLabel')}
+                onChange={(text) => handleChange('location', text)}
+              />
+              {/* <CustomOutlineInputText
                 containerStyles="mt-4"
                 label={i18n.t('EditProfileComponent.locationLabel')}
                 value={editableUser.location || ''}
                 handleChange={(text) => handleChange('location', text)}
-              />
+              /> */}
               <MultiTagDropdown
                 tags={i18n.t('tags.languages') as string[]}
                 initialSelectedTags={editableUser.userLanguages}

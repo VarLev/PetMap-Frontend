@@ -1,10 +1,10 @@
 {
-  "registration":"Account created successfully! A verification email has been sent to your email address. Please check your inbox and verify your email to complete the registration.",
-  "verification":"Email not verified. We have sent the verification email again.",
+  "registration": "Account created successfully! A verification email has been sent to your email address. Please check your inbox and verify your email to complete the registration.",
+  "verification": "Email not verified. We have sent the verification email again.",
   "permissions": "Not all permissions were granted, functionality will be limited. Please provide permissions in the app manager.",
   "ok": "OK",
   "cancel": "Cancel",
-  "search":{
+  "search": {
     "news": "News",
     "activitis": "Activities"
   },
@@ -227,20 +227,9 @@
       "Business",
       "Startups"
     ],
-    "languages": [
-      "Spanish",
-      "Russian",
-      "English"
-    ],
-    "petGender": [
-      "Boy",
-      "Girl"
-    ],
-    "gender": [
-      "Male",
-      "Female",
-      "N/A"
-    ],
+    "languages": ["Spanish", "Russian", "English"],
+    "petGender": ["Boy", "Girl"],
+    "gender": ["Male", "Female", "N/A"],
     "professions": [
       "Programming",
       "Design",
@@ -1002,18 +991,18 @@
     "place": "Place",
     "check": "Check"
   },
-  "avatar":{
+  "avatar": {
     "female": "Female",
     "male": "Male",
     "selectAvatarTitle": "Choose your avatar!",
-    "selectAvatarDescription":"This image will be displayed in your profile and seen by other users.",
+    "selectAvatarDescription": "This image will be displayed in your profile and seen by other users.",
     "save": "Save"
   },
   "myWalks": {
     "noWalks": "You have no walks"
-},
+  },
   "Snackbar": {
     "noResults": "No results"
-}
-
+  },
+  "searchWord": "Enter the name in English"
 }
