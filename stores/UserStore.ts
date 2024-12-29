@@ -34,6 +34,7 @@ class UserStore {
   isError: boolean = false;
   currentCity: string = '';
   userHasSubscription = false;
+  isUserJustRegistrated = false;
 
 
   constructor() {
@@ -50,7 +51,8 @@ class UserStore {
       registerUser: action,
       updateUserOnbordingData: action,
       updateOnlyUserData: action,
-      loadUsersOnce: action
+      loadUsersOnce: action,
+      setIsUserJustRegistrated: action,
     });
   }
 
@@ -104,6 +106,14 @@ class UserStore {
 
   getUser(user: UserCredential) {
     this.fUid = user.user.uid;
+  }
+
+  getIsUserJustRegistrated() {
+    return this.isUserJustRegistrated;
+  }
+
+  setIsUserJustRegistrated(isJustRegistrated: boolean) {
+    this.isUserJustRegistrated = isJustRegistrated;
   }
 
   async getCurrentUser(): Promise<IUser | null | false> {
@@ -303,6 +313,7 @@ class UserStore {
         this.setCreatedUser(userCred);
         this.setLogged(true);
         this.setUser(registeredUser);
+        this.setIsUserJustRegistrated(true);
       });
 
       return userCred;

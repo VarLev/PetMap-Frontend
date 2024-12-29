@@ -92,7 +92,8 @@
     "submitButton": "Confirmar",
     "passwordResetLink": "Enlace a la pantalla de restablecer contraseña (temporal) para simular presionar el botón Confirmar",
     "noAccount": "¿No tenés cuenta?",
-    "register": "Registrate"
+    "register": "Registrate",
+    "domain": "Este dominio no existe"
   },
   "signUpPasswordReset": {
     "title": "Restablecer Contraseña",

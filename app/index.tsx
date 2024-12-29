@@ -23,7 +23,7 @@ GoogleSignin.configure({
 });
 
 const App = () => {
-  const { loading, isLogged, isInitialized, isError } = useStore();
+  const { loading, isLogged, isInitialized, isError, isUserJustRegistrated} = useStore();
   const { showAlert } = useAlert();
   const [adShown, setAdShown] = useState(true);
   const userHasSubscription = userStore.getUserHasSubscription(); // Проверка на наличие подписки у пользователя
@@ -32,7 +32,7 @@ const App = () => {
 
   useEffect(() => {
     const checkAuthAndRedirect = async () => {
-      if (isInitialized && !loading && userStore.getLogged()) {
+      if (isInitialized && !loading && userStore.getLogged() && !isUserJustRegistrated) {
         await router.replace("/search/news"); // Перенаправление на карту, если пользователь авторизован
       }
     };
@@ -46,7 +46,7 @@ const App = () => {
         require("../assets/images/InternetError.webp")
       );
     }
-  }, [loading, isLogged, isInitialized, isError, adShown, showAlert]);
+  }, [loading, isLogged, isInitialized, isError, adShown, showAlert, isUserJustRegistrated]);
 
    // Отображаем загрузочный экран до инициализации
   if (!isError && (loading || !isInitialized)) return <ScreenHolderLogo />;

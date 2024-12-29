@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { BG_COLORS } from '@/constants/Colors';
 
 interface Button {  
   label: string;
@@ -76,7 +77,7 @@ const CustomSegmentedButtonsWithProps: React.FC<CustomSegmentedButtonsProps> = (
               padding: 10,
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: isSelected(index) ? '#4f46e5' : '#fff',
+              backgroundColor: isSelected(index) ? BG_COLORS.indigo[800] : '#fff',
               borderRightWidth: index !== buttons.length - 1 ? 1 : 0,
               borderColor: '#ccc',
             },

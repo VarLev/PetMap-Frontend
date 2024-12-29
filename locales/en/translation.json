@@ -92,7 +92,8 @@
     "submitButton": "Submit",
     "passwordResetLink": "Password reset screen link (temporary) to simulate pressing Confirm button",
     "noAccount": "Don't have an account?",
-    "register": "Sign up"
+    "register": "Sign up",
+    "domain": "This domain does not exist"
   },
   "signUpPasswordReset": {
     "title": "Reset Password",
