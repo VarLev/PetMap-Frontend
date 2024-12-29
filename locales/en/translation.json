@@ -638,7 +638,9 @@
     "socialMedia": "Social Media",
     "ageUnits": {
       "month": { "one": "month", "few": "months", "many": "months" },
-      "year": { "one": "year", "few": "years", "many": "years" }
+      "year": { "one": "year", "few": "years", "many": "years" },
+      "shortMonth": "mo.",
+      "shortYear": "yr."
     }
   },
   "EditPetProfile": {
