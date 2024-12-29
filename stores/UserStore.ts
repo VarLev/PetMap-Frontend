@@ -21,6 +21,7 @@ import { JobType } from '@/dtos/enum/JobType';
 import { Job } from '@/dtos/classes/job/Job';
 import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
 import { IUserCardDto } from '@/dtos/Interfaces/user/IUserCardDto';
+import { getUserStatus } from '@/utils/userUtils';
 
 //fghjkl
 class UserStore {
@@ -587,6 +588,10 @@ class UserStore {
     } catch (error) {
       return handleAxiosError(error);
     }
+  }
+
+  async getUserStatus(userId: string): Promise<boolean | undefined> {
+    return getUserStatus(userId);
   }
 
 }

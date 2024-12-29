@@ -7,6 +7,7 @@ import { getPushTokenFromServer, sendPushNotification } from '@/hooks/notificati
 
 import { ChatType, SendMessageOptions } from '@/dtos/enum/ChatType';
 import { generateChatIdForTwoUsers } from '@/utils/chatUtils';
+import { getUserStatus } from '@/utils/userUtils';
 
 
 class ChatStore {
@@ -542,21 +543,8 @@ class ChatStore {
    * Загрузить (однократно) из Firebase статус пользователя по userId.
    * Сохранить в usersStatus (MobX будет реактивно обновлять UI).
    */
-  async fetchUserStatus(userId: string): Promise<boolean  | undefined> {
-    try {
-      const userRef = ref(database, `users/${userId}/isOnline`);
-      const snapshot = await get(userRef);
-      let status: boolean = false;
-
-      if (snapshot.exists()) {
-        const val = snapshot.val();
-        status = val === true;
-      }
-
-      return status;
-    } catch (error) {
-      console.error('Ошибка при получении статуса пользователя:', error);
-    }
+  async getUserStatus(userId: string): Promise<boolean  | undefined> {
+    return getUserStatus(userId);
   }
 
 

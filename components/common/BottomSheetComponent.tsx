@@ -1,5 +1,5 @@
 import { FC, forwardRef, ReactElement } from 'react';
-import { ListRenderItem, StyleSheet, View, ViewStyle } from 'react-native';
+import { ListRenderItem, RefreshControlProps, StyleSheet, View, ViewStyle } from 'react-native';
 import BottomSheet, { BottomSheetFlatList, BottomSheetFooterProps } from '@gorhom/bottom-sheet';
 import { Portal } from 'react-native-paper';
 import { AnimatedStyle, SharedValue } from 'react-native-reanimated';
@@ -19,6 +19,7 @@ interface BottomSheetComponentProps {
   flatListData?: ArrayLike<any> | SharedValue<ArrayLike<any> | null | undefined> | null | undefined;
   flatListRenderItem?: ListRenderItem<any> | SharedValue<ListRenderItem<any> | null | undefined> | null | undefined;
   contentStyle?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>
+  refreshControl?: ReactElement<RefreshControlProps>;
 }
 
 const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
@@ -35,7 +36,8 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
       enableFooterMarginAdjustment,
       flatListData,
       flatListRenderItem,
-      contentStyle
+      contentStyle,
+      refreshControl 
     },
     ref
   ) => {
@@ -50,6 +52,7 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
         handleStyle={styles.handleStyle}
         footerComponent={footerComponent}
         handleHeight={handleHeight}
+        
       >
         <BottomSheetFlatList
           style={contentStyle}
@@ -59,6 +62,7 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
           renderItem={flatListRenderItem} // передаём, если используем flatlist
           ListHeaderComponent={renderContent}
           contentContainerStyle={styles.contentContainer}
+          refreshControl={refreshControl}
         />
         <View className='' />
       </BottomSheet>

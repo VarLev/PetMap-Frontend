@@ -45,7 +45,7 @@ const ChatScreen: React.FC = observer(() => {
         else {
           // Чат не существует в базе
           const otherDbUser = await UserStore.getUserById(otherUserId)
-          const otherUserOnlineStatus = await ChatStore.fetchUserStatus(otherDbUser.id);
+          const otherUserOnlineStatus = await ChatStore.getUserStatus(otherDbUser.id);
           console.log("Other user online status", otherUserOnlineStatus);
           if(otherDbUser){
             const chatUser: IChatUser = {
