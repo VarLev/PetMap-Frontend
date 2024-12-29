@@ -1,69 +1,85 @@
 import React, { useEffect, useState } from "react";
-import { requestForegroundPermissionsAsync } from "expo-location";
-import { requestPermissionsAsync } from "expo-notifications";
-import { requestMediaLibraryPermissionsAsync } from "expo-image-picker";
+import { 
+  requestForegroundPermissionsAsync 
+} from "expo-location";
+import { 
+  requestPermissionsAsync 
+} from "expo-notifications";
+import { 
+  requestMediaLibraryPermissionsAsync 
+} from "expo-image-picker";
 import CustomAlert from "../custom/alert/CustomAlert";
 import uiStore from "@/stores/UIStore";
 import i18n from "@/i18n";
 
 const PermissionsRequestComponent = () => {
   const [permissionsGranted, setPermissionsGranted] = useState({
-    location: false,
-    notifications: false,
-    photos: false,
+    location: uiStore.getLocationPermissionGranted(),
+    notifications: uiStore.getNotificationPermissionGranted(),
+    photos: uiStore.getPhotosPermissionGranted(),
   });
   const [alertVisible, setAlertVisible] = useState(false);
 
   useEffect(() => {
     const requestPermissions = async () => {
       try {
-        // Запрос на разрешение локации
-        const { status: locationStatus } =
-          await requestForegroundPermissionsAsync();
+        console.log("Запрашиваем все разрешения...");
+
+        const [
+          { status: locationStatus },
+          { status: notificationsStatus },
+          { status: photosStatus }
+        ] = await Promise.all([
+          requestForegroundPermissionsAsync(),
+          requestPermissionsAsync(),
+          requestMediaLibraryPermissionsAsync(),
+        ]);
+
         const locationGranted = locationStatus === "granted";
-
-        // Запрос на разрешение уведомлений
-        const { status: notificationsStatus } = await requestPermissionsAsync();
         const notificationsGranted = notificationsStatus === "granted";
-
-        // Запрос на разрешение доступа к фото
-        const { status: photosStatus } =
-          await requestMediaLibraryPermissionsAsync();
         const photosGranted = photosStatus === "granted";
 
-        // Обновляем состояние всех разрешений
+        // Сохраняем в локальном стейте
         setPermissionsGranted({
           location: locationGranted,
           notifications: notificationsGranted,
           photos: photosGranted,
         });
 
+        // Сохраняем во внешнем хранилище (UIStore)
         uiStore.setLocationPermissionGranted(locationGranted);
         uiStore.setNotificationPermissionGranted(notificationsGranted);
         uiStore.setPhotosPermissionGranted(photosGranted);
 
-
-        // Проверяем, все ли разрешения предоставлены
+        // Если хотя бы одно разрешение не выдано, показываем Alert
         if (!locationGranted || !notificationsGranted || !photosGranted) {
           setAlertVisible(true);
         }
+
+        console.log("Результат разрешений:", {
+          location: locationGranted,
+          notifications: notificationsGranted,
+          photos: photosGranted,
+        });
       } catch (error) {
-        console.error(error);
+        console.error("Ошибка при запросе разрешений:", error);
       }
     };
 
-    // Запускаем запрос разрешений при монтировании компонента
     requestPermissions();
+
+    return () => {
+      // Код выполняется при размонтировании
+      console.log('Компонент размонтирован');
+    };
   }, []);
 
   return (
     <CustomAlert
       isVisible={alertVisible}
       onClose={() => setAlertVisible(false)}
-      message={
-        i18n.t('permissions')
-      }
-      type={"info"}
+      message={i18n.t("permissions")}
+      type="info"
       image={require("../../assets/images/alert-dog-sad-2.png")}
     />
   );
