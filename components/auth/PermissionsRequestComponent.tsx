@@ -14,9 +14,9 @@ import i18n from "@/i18n";
 
 const PermissionsRequestComponent = () => {
   const [permissionsGranted, setPermissionsGranted] = useState({
-    location: uiStore.getLocationPermissionGranted(),
-    notifications: uiStore.getNotificationPermissionGranted(),
-    photos: uiStore.getPhotosPermissionGranted(),
+    location: false,
+    notifications: false,
+    photos: false,
   });
   const [alertVisible, setAlertVisible] = useState(false);
 

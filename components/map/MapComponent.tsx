@@ -1,9 +1,9 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, BackHandler, ImageSourcePropType, Animated, ActivityIndicator } from 'react-native';
+import { View, BackHandler, ImageSourcePropType, Animated, ActivityIndicator, TouchableOpacity } from 'react-native';
 import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer, LineLayer } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
-import { Provider } from 'react-native-paper';
+import { IconButton, Provider, Text } from 'react-native-paper';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent'; // Импортируйте новый компонент
 import BottomSheet from '@gorhom/bottom-sheet';
 import AdvtComponent from './AdvtComponent';
@@ -43,6 +43,7 @@ import PointMarker from './markers/PointMarker';
 import { createGeoJSONFeatures } from '@/utils/mapUtils';
 import { generateChatData, generateChatIdForTwoUsers } from '@/utils/chatUtils';
 import { Easing } from 'react-native-reanimated';
+import { BG_COLORS } from '@/constants/Colors';
 
 
 const MapBoxMap = observer(() => {
@@ -428,6 +429,17 @@ const MapBoxMap = observer(() => {
     setModalVisible(true);
   };
 
+  const handleRecenter = () => {
+    if (cameraRef.current && userCoordinates) {
+      cameraRef.current.setCamera({
+        centerCoordinate: userCoordinates,
+        zoomLevel: 14, // выберите подходящий уровень зума
+        animationDuration: 1000,
+      });
+    }
+  };
+
+
   return (
     <Provider>
       {/* Компонент, проверяющий и запрашивающий разрешения */}
@@ -537,7 +549,36 @@ const MapBoxMap = observer(() => {
               />
             )}
           </MapView>
+          {/* === Кнопка "Моя локация" поверх карты === */} 
+          {hasPermission && userCoordinates && (
+        <TouchableOpacity  className='absolute bottom-[180px] right-[25px]  '  onPress={handleRecenter}>
+          <View style={{
+            backgroundColor: '#fff',
+            borderRadius: 25,
+            height: 45,
+            width: 45,
+            // Тень на Android
+            elevation: 3,
+            // Тень на iOS
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 3,
+          
+          }}>
+          <IconButton
+            icon="crosshairs-gps"
+            size={25}
+            className='bg-white -left-1 -top-1'
+            iconColor={BG_COLORS.indigo[700]}
+            
+            />
 
+          </View>
+          
+        </TouchableOpacity>
+      )}
+    
           {/* Блок с поиском, фильтрами и переключателем карточного вида */}
           <View
             style={{
@@ -611,6 +652,25 @@ const styles = {
       'defaultIcon', // Иконка по умолчанию
     ],
     iconSize: 1,
+  },
+  myLocationButton: {
+    position: 'absolute',
+    bottom: 180,
+    right: 28,
+    backgroundColor: '#fff',
+    borderRadius: 25,
+    padding: 12,
+    // Тень на Android
+    elevation: 3,
+    // Тень на iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+  },
+  myLocationText: {
+    color: '#000',
+    fontWeight: '600',
   },
 };
 
