@@ -201,7 +201,7 @@ export function parseStringToDate(dateString: string): Date | null {
   if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
     // Проверяем, что месяц и день находятся в допустимом диапазоне
     if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-      return new Date(year, month - 1, day);
+      return new Date(Date.UTC(year, month - 1, day)); // Привести к UTC
     }
   }
 
