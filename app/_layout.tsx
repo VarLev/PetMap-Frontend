@@ -1,13 +1,15 @@
 import { useFonts } from 'expo-font';
 import { Stack, SplashScreen } from 'expo-router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans';
 import { AlertProvider } from '@/contexts/AlertContext';
 import { DefaultTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { StoreProvider } from '@/contexts/StoreProvider';
-import { View } from 'react-native';
+import { AppState, AppStateStatus, View } from 'react-native';
 import uiStore from '@/stores/UIStore';
 import { observer } from 'mobx-react-lite';
+import { setUserStatus, initOnDisconnect } from '@/firebaseConfig';
+import userStore from '@/stores/UserStore';
 
 // Создаем кастомную тему для react-native-paper
 const customTheme = {
@@ -72,6 +74,56 @@ const Layout = observer(() => {
     NunitoSans_700Bold,
   });
 
+  // Для отслеживания AppState
+  const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
+  const appStateRef = useRef<AppStateStatus>(AppState.currentState);
+
+  // ========= ОБРАБОТЧИК СМЕНЫ СОСТОЯНИЯ =========
+  const handleAppStateChange = (nextAppState: AppStateStatus) => {
+    // Было background → стало active
+    if (nextAppState === 'active') {
+      const currentUserId = userStore.getCurrentUserId();
+      // Ставим онлайн
+      if (currentUserId) {
+        setUserStatus(currentUserId, true).catch(console.error);
+      }
+    }
+    // Было active → стало background
+    else if (appStateRef.current === 'active' && nextAppState.match(/inactive|background/)) {
+      const currentUserId = userStore.getCurrentUserId();
+      // Ставим офлайн
+      if (currentUserId) {
+        setUserStatus(currentUserId, false).catch(console.error);
+      }
+    } else if (appStateRef.current === 'active') {
+      const currentUserId = userStore.getCurrentUserId();
+      // Ставим онлайн
+      if (currentUserId) {
+        setUserStatus(currentUserId, true).catch(console.error);
+      }
+    }
+    setAppState(nextAppState);
+    appStateRef.current = nextAppState;
+  };
+
+  // 1) Подписка на AppState (один раз), не зависящая от userId
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  // 2) Отдельный эффект для onDisconnect, который вызывается при изменении userId
+  useEffect(() => {
+    const currentUserId = userStore.getCurrentUserId();
+    if (currentUserId) {
+      initOnDisconnect(currentUserId)
+        .then(() => setUserStatus(currentUserId, true)) // При «подключении» ставим онлайн
+        .catch(console.error);
+    }
+  }, [userStore.getCurrentUserId()]);
+
   useEffect(() => {
     if (error) {
       console.error(error);
@@ -88,10 +140,10 @@ const Layout = observer(() => {
       <StoreProvider>
         <AlertProvider>
           <PaperProvider theme={customTheme}>
-            <Stack initialRouteName='index'>
-              <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-              <Stack.Screen name='(auth)' options={{ headerShown: false }} />
-              <Stack.Screen name='index' options={{ headerShown: false }} />
+            <Stack initialRouteName="index">
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="index" options={{ headerShown: false }} />
             </Stack>
           </PaperProvider>
         </AlertProvider>

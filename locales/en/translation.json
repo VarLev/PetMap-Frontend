@@ -1,10 +1,10 @@
 {
-  "registration":"Account created successfully! A verification email has been sent to your email address. Please check your inbox and verify your email to complete the registration.",
-  "verification":"Email not verified. We have sent the verification email again.",
+  "registration": "Account created successfully! A verification email has been sent to your email address. Please check your inbox and verify your email to complete the registration.",
+  "verification": "Email not verified. We have sent the verification email again.",
   "permissions": "Not all permissions were granted, functionality will be limited. Please provide permissions in the app manager.",
   "ok": "OK",
   "cancel": "Cancel",
-  "search":{
+  "search": {
     "news": "News",
     "activitis": "Activities"
   },
@@ -92,7 +92,8 @@
     "submitButton": "Submit",
     "passwordResetLink": "Password reset screen link (temporary) to simulate pressing Confirm button",
     "noAccount": "Don't have an account?",
-    "register": "Sign up"
+    "register": "Sign up",
+    "domain": "This domain does not exist"
   },
   "signUpPasswordReset": {
     "title": "Reset Password",
@@ -397,20 +398,9 @@
       "Business",
       "Startups"
     ],
-    "languages": [
-      "Spanish",
-      "Russian",
-      "English"
-    ],
-    "petGender": [
-      "Boy",
-      "Girl"
-    ],
-    "gender": [
-      "Male",
-      "Female",
-      "N/A"
-    ],
+    "languages": ["Spanish", "Russian", "English"],
+    "petGender": ["Boy", "Girl"],
+    "gender": ["Male", "Female", "N/A"],
     "professions": [
       "Programming",
       "Design",
@@ -808,7 +798,9 @@
     "socialMedia": "Social Media",
     "ageUnits": {
       "month": { "one": "month", "few": "months", "many": "months" },
-      "year": { "one": "year", "few": "years", "many": "years" }
+      "year": { "one": "year", "few": "years", "many": "years" },
+      "shortMonth": "mo.",
+      "shortYear": "yr."
     }
   },
   "EditPetProfile": {
@@ -863,7 +855,28 @@
   },
   "UserJobsList": {
     "reward": "Reward",
-    "noJobs": "No Tasks"
+    "noJobs": "No Tasks",
+    "headerTitle": "Take care of a pet — earn Pet-bonuses!",
+    "useBonuses": "Use bonuses for:",
+    "appImprovements": "• App improvements and new features.",
+    "discounts": "• Discounts and coupons in pet-stores.",
+    "assortmentUpdates": "Assortment of stores and coupons will be updated regularly! 🐾",
+    
+    "userEditName": "Filling out the user profile",
+    "fillOnboardingName": "Completing onboarding",
+    "petEditName": "Filling out the pet profile",
+    "addFirstWalkName": "Adding the first walk",
+    "addMapPointName": "Adding a public map marker",
+    "addMapPointCommentName": "Adding a comment",
+    "getMapBonusesName": "Collecting a bonus on the map",
+
+    "userEditDesc": "Fill out your profile so that other pet owners can easily find you. Your interests and preferences will help you make new friends and schedule meetups for your beloved pets!",
+    "fillOnboardingDesc": "Onboarding is an essential step in registration that helps you set up your profile and start using all the app’s features. The most dedicated users who complete onboarding receive extra Pet-bonuses as a reward! 🐾✨",
+    "petEditDesc": "Fill out your pet’s profile — this will help you find new friends for walks and playtime. Specify the breed, age, and any special traits. If your pet has unique needs or health issues, you can use search filters to find owners with similar experiences and exchange useful information!",
+    "addFirstWalkDesc": "Add your first walk on the map so that other pet owners can see it and join. This makes you a full-fledged member of our wonderful community! Let’s bring together furry friends and their owners for joint walks and socializing! 🌟",
+    "addMapPointDesc": "Add a public marker on the map to help the entire pet owner community! This could be parks, playgrounds, vet clinics, pet shops, or restaurants. Each marker is verified and then becomes available to all participants. Share important information and make your pet’s world more convenient! 🌟",
+    "addMapPointCommentDesc": "Share your experience — leave comments on markers and rate their usefulness. Your feedback helps other pet owners find the best places and avoid unreliable ones. Together, we make our map more useful and convenient for everyone! 🌟",
+    "getMapBonusesDesc": "Every day, 3 coins appear on the map! Go for a walk with your pet, find the coin, get as close to it as possible, and tap it on the map. You’ll immediately receive a Pet-bonus! Walks with your pet are now not only fun, but also profitable! 🌟🐶"
   },
   "EditDangerPoint": {
     "title": "Danger",
@@ -1170,18 +1183,18 @@
     "place": "Place",
     "check": "Check"
   },
-  "avatar":{
+  "avatar": {
     "female": "Female",
     "male": "Male",
     "selectAvatarTitle": "Choose your avatar!",
-    "selectAvatarDescription":"This image will be displayed in your profile and seen by other users.",
+    "selectAvatarDescription": "This image will be displayed in your profile and seen by other users.",
     "save": "Save"
   },
   "myWalks": {
     "noWalks": "You have no walks"
-},
+  },
   "Snackbar": {
     "noResults": "No results"
-}
-
+  },
+  "searchWord": "Enter the name in English"
 }

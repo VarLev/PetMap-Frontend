@@ -19,6 +19,7 @@ const Feed: FC = observer(() => {
   const [bottomSheetType, setBottomSheetType ] = useState<'create-post' | 'comments' | ''>('')
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [postComments, setPostComments] = useState<ICommentWithUser[]>();
+  const [isPostRefresh, setIsPostRefresh] = useState<boolean>(false);
   const [selectedPostId, setSelectedPostId] = useState('');
   const sheetRef = useRef<BottomSheet>(null);
 
@@ -55,7 +56,7 @@ const Feed: FC = observer(() => {
     runInAction(async () => {
       const comments = await searchStore.fetchGetComments(selectedPostId);
       setPostComments(comments);
-      console.log('refresh')
+      setIsPostRefresh(true);
     })
   }
 
@@ -77,6 +78,8 @@ const Feed: FC = observer(() => {
         runInAction( async () => {
           const comments = await searchStore.fetchGetComments(selectedPostId);
           setPostComments(comments);
+          searchStore.fetchPosts();
+          setIsPostRefresh(true);
         })
       }
     }
@@ -123,7 +126,13 @@ const Feed: FC = observer(() => {
         onRefresh={handleRefresh}
         ListFooterComponent={searchStore.loading ? <ActivityIndicator size="large" color="#6200ee" /> : <View className='h-20' />}
         renderItem={({ item }) => {
-          return <PostItem post={item} handleSheetCommentsOpenById={(postId) => handleSheetCommentsOpen(postId)}/>
+          return (
+            <PostItem
+              post={item}
+              handleSheetCommentsOpenById={(postId) => handleSheetCommentsOpen(postId)}
+              refresh={isPostRefresh}
+            />
+          )
         }}
       />
       <FAB icon="pen" size='medium' color='white' style={styles.fab} onPress={handleCreatePost}/>

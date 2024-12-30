@@ -32,6 +32,7 @@ export class User implements IUser {
   instagram?: string | null ;
   location?: string | null ;
   jobs?: Job[] | null;
+  isOnline?: boolean | null;
 
   
 

@@ -10,6 +10,8 @@ import i18n from '@/i18n';
 import { BG_COLORS } from '@/constants/Colors';
 import { router } from 'expo-router';
 import userStore from '@/stores/UserStore';
+import CustomButtonOutlined from '@/components/custom/buttons/CustomButtonOutlined';
+import CustomButtonPrimary from '@/components/custom/buttons/CustomButtonPrimary';
 
 const languageToIndex = (lang: Language): number => {
   switch (lang) {
@@ -102,15 +104,7 @@ const Settings = observer(() => {
 
       {/* Кнопка выхода из приложения внизу и по центру */}
       <View className="pb-20 items-center">
-        <Button
-          mode="outlined"
-          onPress={exitApp}
-          style={{ alignSelf: 'center' }}
-          textColor={BG_COLORS.indigo[700]}
-          className='w-full'
-        >
-          {i18n.t('UserProfile.logout')}
-        </Button>
+        <CustomButtonPrimary handlePress={exitApp} title={i18n.t('UserProfile.logout')} containerStyles='w-full' />
       </View>
 
       <CustomConfirmAlert

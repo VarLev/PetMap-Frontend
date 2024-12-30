@@ -16,7 +16,6 @@ import {
 import { router } from "expo-router";
 import mapStore from "@/stores/MapStore";
 import {petUriImage } from "@/constants/Strings";
-import { IUserChat } from "@/dtos/Interfaces/user/IUserChat";
 import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
 import CircleIcon from "../custom/icons/CircleIcon";
 //import  { renderWalkDetails } from "@/utils/utils";
@@ -26,7 +25,7 @@ import { getPushTokenFromServer } from "@/hooks/notifications";
 interface AdvtProps {
   advrt: IWalkAdvrtDto;
   isShort?: boolean;
-  onInvite: (uid: IUserChat) => void;
+  onInvite: (uid: IChatUser) => void;
   onClose: () => void;
 }
 
@@ -62,7 +61,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
     const handleConfirmInvite = async () => {
       const fmcToken = await getPushTokenFromServer(advrt.userId!);
       console.log("fmc",fmcToken);
-      const user: IUserChat = {
+      const user: IChatUser = {
         id: advrt.userId!,
         name: advrt.userName!,
         thumbnailUrl: advrt.userPhoto ?? 'https://avatar.iran.liara.run/public',

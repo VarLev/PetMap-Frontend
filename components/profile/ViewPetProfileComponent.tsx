@@ -101,7 +101,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
       <BottomSheetComponent
         ref={sheetRef}
         enablePanDownToClose={false}
-        snapPoints={['60%', '100%']}
+        snapPoints={['54%', '100%']}
         renderContent={
           <View className="bg-white h-full">
             <Text className="pl-5 text-2xl font-nunitoSansBold">

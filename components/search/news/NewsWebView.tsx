@@ -1,6 +1,6 @@
-import React, { FC, useEffect, useState, useMemo } from 'react';
+import React, { FC, useEffect, useState, useMemo, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Animated, Easing } from 'react-native';
 import { PanGestureHandler, GestureHandlerRootView, State } from 'react-native-gesture-handler';
 import { WebView } from 'react-native-webview';
 import searchStore from '@/stores/SearchStore';
@@ -12,75 +12,38 @@ interface NewsWebViewProps {
 const NewsWebView: FC<NewsWebViewProps> = observer(({ setSwipeEnabled }) => {
   const [loading, setLoading] = useState(false);
 
+  // Animated.Value для плавного появления
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Когда загрузка завершилась (loading === false), запускаем анимацию
 
   const fetchData = () => {
     setLoading(true);
     searchStore.fetchNews().finally(() => {
       setLoading(false);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1500, // Длительность анимации
+        easing: Easing.ease, // Тип "смягчения" анимации
+        useNativeDriver: true,
+      }).start();
     });
   };
 
   const combinedHTML = useMemo(() => {
-    if (searchStore.news.length === 0) {
-      return `
-        <!DOCTYPE html>
-        <html>
-          <head><meta charset="UTF-8"/></head>
-          <body style="display:flex;align-items:center;justify-content:center;height:100%;margin:0;font-family:sans-serif">
-            <h2>Новостей пока нет</h2>
-          </body>
-        </html>
-      `;
-    }
-
     // Формируем содержимое, где в одной из «новостей» есть iframe
-    const content = searchStore.news
-      .map((itemHtml) => `
-        <div style="border-bottom:1px solid #ccc; padding: 16px 0;">
-          ${itemHtml}
-        </div>
-      `)
-      .join('');
+    const content = searchStore.news.map((itemHtml) => itemHtml).join('');
 
     return `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="UTF-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <style>
-          body {
-            margin: 0;
-            padding: 16px;
-            font-family: sans-serif;
-            color: #333;
-            background-color: #f5f5f5;
-          }
-          .card {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 16px;
-            padding: 16px;
-            line-height: 1.4;
-            text-align: justify;
-          }
-          .card img {
-            width: 100%;
-            display: block;
-            margin: 0 auto 10px;
-            border-radius: 6px;
-          }
-          h2 { margin: 0 0 8px; }
-          iframe {
-            display: block;
-            margin: 10px auto;
-            border: none;
-          }
-        </style>
+        <meta name="viewport" content="width=device-width, initial-scale=0.9"/>
       </head>
       <body>
         ${content}
@@ -93,11 +56,7 @@ const NewsWebView: FC<NewsWebViewProps> = observer(({ setSwipeEnabled }) => {
     const { state } = event.nativeEvent;
     if (state === State.BEGAN) {
       setSwipeEnabled(false);
-    } else if (
-      state === State.END ||
-      state === State.CANCELLED ||
-      state === State.FAILED
-    ) {
+    } else if (state === State.END || state === State.CANCELLED || state === State.FAILED) {
       setSwipeEnabled(true);
     }
   };
@@ -105,27 +64,29 @@ const NewsWebView: FC<NewsWebViewProps> = observer(({ setSwipeEnabled }) => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       {loading && (
-        <View style={{
-          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-          justifyContent: 'center', alignItems: 'center', zIndex: 99,
-          backgroundColor: '#ffffffcc'
-        }}>
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 99,
+            backgroundColor: '#ffffffcc',
+          }}
+        >
           <ActivityIndicator size="large" color="#6200ee" />
-          
         </View>
       )}
 
-      <PanGestureHandler
-        onHandlerStateChange={onHandlerStateChange}
-        failOffsetY={[-9999, 9999]}
-      >
+      <PanGestureHandler onHandlerStateChange={onHandlerStateChange} failOffsetY={[-9999, 9999]}>
         <View style={{ flex: 1 }}>
-          <WebView
-            source={{ html: combinedHTML }}
-            javaScriptEnabled
-            onLoadEnd={() => setLoading(false)}
-            style={{ flex: 1 }}
-          />
+          {/* Анимируем WebView, меняя opacity с 0 до 1 */}
+          <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+            <WebView source={{ html: combinedHTML }} javaScriptEnabled onContentProcessDidTerminate={() => setLoading(false)} style={{ flex: 1 }} />
+          </Animated.View>
         </View>
       </PanGestureHandler>
     </GestureHandlerRootView>

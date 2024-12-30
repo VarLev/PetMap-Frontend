@@ -5,6 +5,7 @@ import { handleAxiosError } from '@/utils/axiosUtils';
 import { makeAutoObservable, runInAction } from 'mobx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLocales } from 'expo-localization';
+import * as Location from 'expo-location';
 
 class UIStore {
   isPointSearchFilterTagSelected : boolean = false;
@@ -80,6 +81,13 @@ class UIStore {
     else
       i18n.locale = 'es';
   }
+
+  async getGpsStatus() {
+    // 2. Проверяем, включены ли службы геолокации
+    return await Location.hasServicesEnabledAsync();
+  }
+
+  
 
 
   async setSystemLanguage(language: Language) {

@@ -92,7 +92,8 @@
     "submitButton": "Confirmar",
     "passwordResetLink": "Enlace a la pantalla de restablecer contraseña (temporal) para simular presionar el botón Confirmar",
     "noAccount": "¿No tenés cuenta?",
-    "register": "Registrate"
+    "register": "Registrate",
+    "domain": "Este dominio no existe"
   },
   "signUpPasswordReset": {
     "title": "Restablecer Contraseña",
@@ -398,20 +399,9 @@
       "Negocios",
       "Startups"
     ],
-    "languages": [
-      "Español",
-      "Ruso",
-      "Inglés"
-    ],
-    "petGender": [
-      "Macho",
-      "Hembra"
-    ],
-    "gender": [
-      "Masculino",
-      "Femenino",
-      "N/A"
-    ],
+    "languages": ["Español", "Ruso", "Inglés"],
+    "petGender": ["Macho", "Hembra"],
+    "gender": ["Masculino", "Femenino", "N/A"],
     "professions": [
       "Programación",
       "Diseño",
@@ -809,7 +799,9 @@
     "socialMedia": "Redes Sociales",
     "ageUnits": {
       "month": { "one": "mes", "few": "meses", "many": "meses" },
-      "year": { "one": "año", "few": "años", "many": "años" }
+      "year": { "one": "año", "few": "años", "many": "años" },
+      "shortMonth": "m.",
+      "shortYear": "a."
     }
   },
   "EditPetProfile": {
@@ -864,7 +856,28 @@
   },
   "UserJobsList": {
     "reward": "Recompensa",
-    "noJobs": "No Hay Tareas"
+    "noJobs": "No Hay Tareas",
+    "headerTitle": "¡Cuidá a tu mascota y ganá Pet-bonos!",
+    "useBonuses": "Usá tus bonos para:",
+    "appImprovements": "• Mejoras y nuevas funciones en la aplicación.",
+    "discounts": "• Descuentos y cupones en las tiendas de mascotas.",
+    "assortmentUpdates": "¡La variedad de tiendas y cupones se actualizará regularmente! 🐾",
+      
+    "userEditName": "Completar el perfil de usuario",
+    "fillOnboardingName": "Completar el onboarding",
+    "petEditName": "Completar el perfil de la mascota",
+    "addFirstWalkName": "Agregar la primera caminata",
+    "addMapPointName": "Agregar un marcador público en el mapa",
+    "addMapPointCommentName": "Agregar un comentario al marcador",
+    "getMapBonusesName": "Recoger el bono en el mapa",
+
+    "userEditDesc": "Completa tu perfil para que otros dueños de mascotas puedan encontrarte fácilmente. ¡Tus intereses y preferencias te ayudarán a hacer nuevos amigos y organizar encuentros para tus adoradas mascotas!",
+    "fillOnboardingDesc": "El onboarding es un paso esencial en el registro que te ayuda a configurar tu perfil y comenzar a usar todas las funciones de la aplicación. ¡Los usuarios más dedicados que completen el onboarding reciben Pet-bonos adicionales como recompensa! 🐾✨",
+    "petEditDesc": "Completa el perfil de tu mascota — así podrás encontrar nuevos amigos para pasear y jugar. Indica la raza, la edad y cualquier característica especial. Si tu mascota tiene necesidades específicas o problemas de salud, podrás usar filtros de búsqueda para encontrar dueños con experiencias similares y compartir información útil.",
+    "addFirstWalkDesc": "Agrega tu primera caminata en el mapa para que otros dueños de mascotas puedan verla y unirse. ¡Así te conviertes en un miembro de pleno derecho de nuestra maravillosa comunidad! ¡Reunamos a los amigos peludos y sus dueños para paseos y socialización conjunta! 🌟",
+    "addMapPointDesc": "Agrega un marcador público en el mapa y ayuda a toda la comunidad de dueños de mascotas. Pueden ser parques, áreas de juego, clínicas veterinarias, tiendas de mascotas o restaurantes. Cada marcador agregado se verifica y luego está disponible para todos los participantes. ¡Comparte información importante y haz el mundo de tu mascota más práctico! 🌟",
+    "addMapPointCommentDesc": "Comparte tu experiencia — escribe comentarios en los marcadores y evalúa su utilidad. Tus comentarios ayudarán a otros dueños de mascotas a encontrar los mejores lugares y a evitar los que no son confiables. ¡Juntos hacemos que nuestro mapa sea más útil y cómodo para todos! 🌟",
+    "getMapBonusesDesc": "¡Cada día aparecen 3 monedas en el mapa! Sal a pasear con tu mascota, encuentra la moneda, acércate lo más posible y tócala en el mapa. ¡Recibirás un Pet-bono de inmediato! ¡Ahora las caminatas con tu mascota no solo son divertidas, sino también rentables! 🌟🐶"
   },
   "EditDangerPoint": {
     "title": "Peligro",
@@ -1183,5 +1196,6 @@
   },
   "Snackbar": {
     "noResults": "No hay resultados"
-}
+  },
+  "searchWord":"Ingrese el nombre en inglés"
 }

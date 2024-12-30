@@ -1,10 +1,9 @@
 import React from "react";
 import { View, Text, Image, Platform } from "react-native";
-import { Button, List, TouchableRipple } from "react-native-paper";
+import { List, TouchableRipple } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/Images";
 import userStore from "@/stores/UserStore";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { router } from "expo-router";
 import { useDrawer } from "@/contexts/DrawerProvider";
 import { AntDesign, Feather } from "@expo/vector-icons";
@@ -43,7 +42,7 @@ const SidebarUserProfileComponent = () => {
             source={images.logoWithName}
             style={{ width: 175, height: 43 }}
           />
-          <Text className="font-nunitoSansBold">v0.0.5</Text>
+          <Text className="font-nunitoSansBold">v0.0.7</Text>
         </View>
 
         <TouchableRipple

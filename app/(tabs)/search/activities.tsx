@@ -6,7 +6,7 @@ export default function Activities() {
   return (
     <>
       <GestureHandlerRootView className='flex-1 bg-white'>
-        <Feed  />
+        <Feed />
       </GestureHandlerRootView>
     </>
  

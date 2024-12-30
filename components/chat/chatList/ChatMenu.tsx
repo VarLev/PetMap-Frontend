@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Menu, Button, Switch, TouchableRipple } from "react-native-paper";
 import { FontAwesome6 } from "@expo/vector-icons";
 import ChatStore from "@/stores/ChatStore";
-import CustomConfirmAlert from "../custom/alert/CustomConfirmAlert";
+import CustomConfirmAlert from "../../custom/alert/CustomConfirmAlert";
 import MenuItemWrapper from "@/components/custom/menuItem/MunuItemWrapper";
 import userStore from "@/stores/UserStore";
 import i18n from "@/i18n";

@@ -3,20 +3,14 @@ import { MarkerView } from '@rnmapbox/maps';
 import { Image, ImageSourcePropType, Pressable } from 'react-native';
 import haversine from 'haversine-distance';
 import { observer } from 'mobx-react-lite';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  Easing,
-  cancelAnimation
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, cancelAnimation } from 'react-native-reanimated';
 import CustomAlert from '../custom/alert/CustomAlert';
 import userStore from '@/stores/UserStore';
 import { Job } from '@/dtos/classes/job/Job';
 import { IPOI } from '@/dtos/Interfaces/map/POI/IPOI';
 import mapStore from '@/stores/MapStore';
 import i18n from '@/i18n';
+import uiStore from '@/stores/UIStore';
 
 interface Props {
   userLocation: [number, number];
@@ -60,8 +54,7 @@ const PulsatingMarker: React.FC<{
     longPressScale.value = withTiming(2.7, {
       duration: 500,
       easing: Easing.inOut(Easing.quad),
-     
-    })
+    });
     cancelAnimation(scale); // Останавливаем анимацию пульсирования
     // Вызываем переданный обработчик долгого нажатия
     onLongPress(point);
@@ -73,31 +66,12 @@ const PulsatingMarker: React.FC<{
     longPressScale.value = withTiming(1, {
       duration: 500,
       easing: Easing.inOut(Easing.quad),
-
-    })
-    // scale.value = withRepeat(
-    //   withTiming(1.7, {
-    //     duration: 500,
-    //     easing: Easing.linear,
-    //   }),
-    //   -1, // Бесконечное повторение
-    //   true // Реверс анимации
-    // );
+    });
   };
 
   return (
-    <MarkerView
-      key={point.id}
-      id={point.id}
-      coordinate={[point.longitude, point.latitude]}
-      anchor={{ x: 0.5, y: 0.5 }}
-    >
-      <Pressable
-        onPress={() => onPress(point.id)}
-        onLongPress={handleLongPressIn}
-        onPressOut={handleLongPressOut}
-        delayLongPress={200}
-      >
+    <MarkerView key={point.id} id={point.id} coordinate={[point.longitude, point.latitude]} anchor={{ x: 0.5, y: 0.5 }}>
+      <Pressable onPress={() => onPress(point.id)} onLongPress={handleLongPressIn} onPressOut={handleLongPressOut} delayLongPress={200}>
         <Animated.View
           className="rounded-full justify-center items-center"
           style={[animatedStyle, { overflow: 'visible' }]} // Добавлено overflow: 'visible' для предотвращения обрезания
@@ -126,16 +100,18 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, onR
   useEffect(() => {
     const fetchPoints = async () => {
       if (!isDataLoaded) {
-        await mapStore.fetchUserPOIs(userLocation);
-        const generatedPoints = mapStore.getPoi();
-        setPointsOfInterest(generatedPoints);
+        if (uiStore.getLocationPermissionGranted() && await uiStore.getGpsStatus()) {
+          await mapStore.fetchUserPOIs(userLocation);
+          const generatedPoints = mapStore.getPoi();
+          setPointsOfInterest(generatedPoints);
+        }
         setIsDataLoaded(true);
       }
     };
     console.log('fetchPoints');
 
     fetchPoints();
-  }, [isDataLoaded]);
+  }, [isDataLoaded, userLocation]);
 
   useEffect(() => {
     // Обновляем список видимых точек на основе текущего местоположения
@@ -160,9 +136,7 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, onR
       );
 
       if (distance <= 50) {
-        setPointsOfInterest((prevPoints) =>
-          prevPoints.filter((point) => point.id !== pointId)
-        );
+        setPointsOfInterest((prevPoints) => prevPoints.filter((point) => point.id !== pointId));
         const job = new Job({
           id: 41,
           name: 'Test',
@@ -220,20 +194,9 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, onR
   return (
     <>
       {visiblePoints.map((point) => (
-        <PulsatingMarker
-          key={point.id}
-          point={point}
-          onPress={handleMarkerPress}
-          onLongPress={handleMarkerLongPress}
-        />
+        <PulsatingMarker key={point.id} point={point} onPress={handleMarkerPress} onLongPress={handleMarkerLongPress} />
       ))}
-      <CustomAlert
-        isVisible={isModalVisible}
-        onClose={() => setModalVisible(false)}
-        message={alertText}
-        type={'info'}
-        image={alertImage}
-      />
+      <CustomAlert isVisible={isModalVisible} onClose={() => setModalVisible(false)} message={alertText} type={'info'} image={alertImage} />
     </>
   );
 });

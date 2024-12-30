@@ -30,4 +30,5 @@ export interface IUser {
   instagram?: string | null;
   facebook?: string | null;
   jobs?: Job[] | null;
+  isOnline?: boolean | null;
 }

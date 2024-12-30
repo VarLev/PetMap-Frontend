@@ -21,6 +21,7 @@ import { JobType } from '@/dtos/enum/JobType';
 import { Job } from '@/dtos/classes/job/Job';
 import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
 import { IUserCardDto } from '@/dtos/Interfaces/user/IUserCardDto';
+import { getUserStatus } from '@/utils/userUtils';
 
 //fghjkl
 class UserStore {
@@ -33,6 +34,7 @@ class UserStore {
   isError: boolean = false;
   currentCity: string = '';
   userHasSubscription = false;
+  isUserJustRegistrated = false;
 
 
   constructor() {
@@ -49,7 +51,8 @@ class UserStore {
       registerUser: action,
       updateUserOnbordingData: action,
       updateOnlyUserData: action,
-      loadUsersOnce: action
+      loadUsersOnce: action,
+      setIsUserJustRegistrated: action,
     });
   }
 
@@ -97,8 +100,20 @@ class UserStore {
     return this.currentCity;
   }
 
+  getCurrentUserId() {
+    return this.currentUser?.id;
+  }
+
   getUser(user: UserCredential) {
     this.fUid = user.user.uid;
+  }
+
+  getIsUserJustRegistrated() {
+    return this.isUserJustRegistrated;
+  }
+
+  setIsUserJustRegistrated(isJustRegistrated: boolean) {
+    this.isUserJustRegistrated = isJustRegistrated;
   }
 
   async getCurrentUser(): Promise<IUser | null | false> {
@@ -298,6 +313,7 @@ class UserStore {
         this.setCreatedUser(userCred);
         this.setLogged(true);
         this.setUser(registeredUser);
+        this.setIsUserJustRegistrated(true);
       });
 
       return userCred;
@@ -583,6 +599,10 @@ class UserStore {
     } catch (error) {
       return handleAxiosError(error);
     }
+  }
+
+  async getUserStatus(userId: string): Promise<boolean | undefined> {
+    return getUserStatus(userId);
   }
 
 }
