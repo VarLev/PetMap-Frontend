@@ -685,7 +685,28 @@
   },
   "UserJobsList": {
     "reward": "Reward",
-    "noJobs": "No Tasks"
+    "noJobs": "No Tasks",
+    "headerTitle": "Take care of a pet — earn Pet-bonuses!",
+    "useBonuses": "Use bonuses for:",
+    "appImprovements": "• App improvements and new features.",
+    "discounts": "• Discounts and coupons in pet-stores.",
+    "assortmentUpdates": "Assortment of stores and coupons will be updated regularly! 🐾",
+    
+    "userEditName": "Filling out the user profile",
+    "fillOnboardingName": "Completing onboarding",
+    "petEditName": "Filling out the pet profile",
+    "addFirstWalkName": "Adding the first walk",
+    "addMapPointName": "Adding a public map marker",
+    "addMapPointCommentName": "Adding a comment",
+    "getMapBonusesName": "Collecting a bonus on the map",
+
+    "userEditDesc": "Fill out your profile so that other pet owners can easily find you. Your interests and preferences will help you make new friends and schedule meetups for your beloved pets!",
+    "fillOnboardingDesc": "Onboarding is an essential step in registration that helps you set up your profile and start using all the app’s features. The most dedicated users who complete onboarding receive extra Pet-bonuses as a reward! 🐾✨",
+    "petEditDesc": "Fill out your pet’s profile — this will help you find new friends for walks and playtime. Specify the breed, age, and any special traits. If your pet has unique needs or health issues, you can use search filters to find owners with similar experiences and exchange useful information!",
+    "addFirstWalkDesc": "Add your first walk on the map so that other pet owners can see it and join. This makes you a full-fledged member of our wonderful community! Let’s bring together furry friends and their owners for joint walks and socializing! 🌟",
+    "addMapPointDesc": "Add a public marker on the map to help the entire pet owner community! This could be parks, playgrounds, vet clinics, pet shops, or restaurants. Each marker is verified and then becomes available to all participants. Share important information and make your pet’s world more convenient! 🌟",
+    "addMapPointCommentDesc": "Share your experience — leave comments on markers and rate their usefulness. Your feedback helps other pet owners find the best places and avoid unreliable ones. Together, we make our map more useful and convenient for everyone! 🌟",
+    "getMapBonusesDesc": "Every day, 3 coins appear on the map! Go for a walk with your pet, find the coin, get as close to it as possible, and tap it on the map. You’ll immediately receive a Pet-bonus! Walks with your pet are now not only fun, but also profitable! 🌟🐶"
   },
   "EditDangerPoint": {
     "title": "Danger",

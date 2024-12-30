@@ -2,8 +2,9 @@ import IconSelectorComponent from '@/components/custom/icons/IconSelectorCompone
 import { JobTypeDto } from '@/dtos/Interfaces/job/IJob';
 import userStore from '@/stores/UserStore';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList } from 'react-native';
-import i18n from '@/i18n';
+import { View, Text, TouchableOpacity, FlatList, Image } from 'react-native';
+import i18n from '@/i18n'; // <-- импорт вашего инициализированного i18n
+import { Divider } from 'react-native-paper';
 
 const UserJobsList = () => {
   const [jobTypes, setJobTypes] = useState<JobTypeDto[]>([]);
@@ -17,7 +18,7 @@ const UserJobsList = () => {
     };
 
     fetchJobs();
-  }, []);
+  }, [userId]);
 
   const toggleExpand = (jobType: number) => {
     setExpandedTypes((prev) => ({
@@ -27,24 +28,37 @@ const UserJobsList = () => {
   };
 
   const selectJobName = (jobType: string) => {
-    //создать словарь для типов работт и их названий и вернуть название по ключу jobType 
     const jobNamesDictionary: { [key: string]: string } = {
-      'UserEdit': 'Заполнение профиля пользователя',
-      'FillOnboarding': 'Заполнение онбординга',
-      'PetEdit': 'Заполнение профиля питомца',
-      'AddFirstWalk': 'Добавление первой прогулки',
-      'AddMapPoint': 'Добавление публичной метки на карте',
-      'AddMapPointComment': 'Добавление комментария',
-      'GetMapBonuses': 'Собрать бонус на карте',
-      // Add more job types as needed
+      'UserEdit': i18n.t('UserJobsList.userEditName'),
+      'FillOnboarding': i18n.t('UserJobsList.fillOnboardingName'),
+      'PetEdit': i18n.t('UserJobsList.petEditName'),
+      'AddFirstWalk': i18n.t('UserJobsList.addFirstWalkName'),
+      'AddMapPoint': i18n.t('UserJobsList.addMapPointName'),
+      'AddMapPointComment': i18n.t('UserJobsList.addMapPointCommentName'),
+      'GetMapBonuses': i18n.t('UserJobsList.getMapBonusesName'),
+      // и т.д., дополняйте по необходимости
     };
 
-    return jobNamesDictionary[jobType];
+    return jobNamesDictionary[jobType] || jobType; // fallback, если нет в словаре
+  };
 
-  }
+  const selectJobDescription = (jobDesc: string) => {
+    const jobDictionary: { [key: string]: string } = {
+      'UserEdit': i18n.t('UserJobsList.userEditDesc'),
+      'FillOnboarding': i18n.t('UserJobsList.fillOnboardingDesc'),
+      'PetEdit': i18n.t('UserJobsList.petEditDesc'),
+      'AddFirstWalk': i18n.t('UserJobsList.addFirstWalkDesc'),
+      'AddMapPoint': i18n.t('UserJobsList.addMapPointDesc'),
+      'AddMapPointComment': i18n.t('UserJobsList.addMapPointCommentDesc'),
+      'GetMapBonuses': i18n.t('UserJobsList.getMapBonusesDesc'),
+      // и т.д.
+    };
+    return jobDictionary[jobDesc] || jobDesc; // fallback
+  };
 
   const renderJobTypeCard = ({ item }: { item: JobTypeDto }) => {
     const isExpanded = expandedTypes[item.jobType] || false;
+    // Если задание выполнено, окрашиваем бэкграунд в серый
     const cardStyle = item.isCompleted ? 'bg-gray-300' : 'bg-white';
 
     return (
@@ -53,11 +67,19 @@ const UserJobsList = () => {
           <View className="items-start justify-start">
             <View className="flex-row items-start">
               {isExpanded ? (
-                <IconSelectorComponent iconName="chevron-down-circle-outline" iconSet="Ionicons" />
+                <IconSelectorComponent
+                  iconName="chevron-down-circle-outline"
+                  iconSet="Ionicons"
+                />
               ) : (
-                <IconSelectorComponent iconName="chevron-up-circle-outline" iconSet="Ionicons" />
+                <IconSelectorComponent
+                  iconName="chevron-up-circle-outline"
+                  iconSet="Ionicons"
+                />
               )}
-              <Text className="text-base font-nunitoSansBold ml-2">{selectJobName(item.jobTypeName)}</Text>
+              <Text className="text-base font-nunitoSansBold ml-2">
+                {selectJobName(item.jobTypeName)}
+              </Text>
             </View>
             <Text className="text-base text-gray-600 font-nunitoSansRegular">
               {i18n.t('UserJobsList.reward')}: {item.totalBenefits}
@@ -66,24 +88,9 @@ const UserJobsList = () => {
         </TouchableOpacity>
         {isExpanded && (
           <View className="mt-1">
-            {item.jobs.map((job) => (
-              <View key={job.id} className="flex-row items-end">
-                <Text
-                  className={`text-base font-bold ${
-                    job.isCompleted ? 'line-through text-gray-500' : 'text-black'
-                  }`}
-                >
-                  {job.name}
-                </Text>
-                <Text
-                  className={`text-sm ${
-                    job.isCompleted ? 'line-through text-gray-500' : 'text-gray-700'
-                  }`}
-                >
-                  {` - ${job.description}`}
-                </Text>
-              </View>
-            ))}
+            <Text className="font-nunitoSansRegular ml-2">
+              {selectJobDescription(item.jobTypeName)}
+            </Text>
           </View>
         )}
       </View>
@@ -92,6 +99,37 @@ const UserJobsList = () => {
 
   return (
     <FlatList
+      className="flex-1"
+      ListHeaderComponent={
+        <View className="px-4 items-center justify-center mt-5">
+          <Image
+            className="w-24 h-24"
+            source={require('@/assets/images/bonuse.png')}
+          />
+          <Text className="text-lg text-center font-nunitoSansBold text-gray-600">
+            {i18n.t('UserJobsList.headerTitle')}
+          </Text>
+          <View className="mt-2">
+            <Text className="text-gray-600">
+              {i18n.t('UserJobsList.useBonuses')}
+            </Text>
+            <View className="ml-2">
+              <Text className="text-gray-600">
+                {i18n.t('UserJobsList.appImprovements')}
+              </Text>
+              <Text className="text-gray-600">
+                {i18n.t('UserJobsList.discounts')}
+              </Text>
+            </View>
+            <Text className="text-gray-600 mt-2">
+              {i18n.t('UserJobsList.assortmentUpdates')}
+            </Text>
+          </View>
+          <View className="h-2" />
+          <Divider className="w-full" />
+          <View className="h-2" />
+        </View>
+      }
       data={jobTypes}
       renderItem={renderJobTypeCard}
       keyExtractor={(item) => item.jobType.toString()}
@@ -102,6 +140,7 @@ const UserJobsList = () => {
           </Text>
         </View>
       }
+      ListFooterComponent={<View className="h-32" />}
     />
   );
 };
