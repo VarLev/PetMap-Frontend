@@ -42,7 +42,7 @@ const SidebarUserProfileComponent = () => {
             source={images.logoWithName}
             style={{ width: 175, height: 43 }}
           />
-          <Text className="font-nunitoSansBold">v0.0.6</Text>
+          <Text className="font-nunitoSansBold">v0.0.7</Text>
         </View>
 
         <TouchableRipple
