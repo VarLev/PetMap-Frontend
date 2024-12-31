@@ -48,6 +48,8 @@ import { BG_COLORS } from '@/constants/Colors';
 
 const MapBoxMap = observer(() => {
   const [isLoading, setIsLoading] = useState(true);
+  // пользователь загрузился первый раз
+  const [didLoad, setDidLoad] = useState(false);
   const sheetRef = useRef<BottomSheet>(null);
   const cameraRef = useRef<Camera>(null);
   const mapRef = useRef<Mapbox.MapView>(null);
@@ -74,13 +76,18 @@ const MapBoxMap = observer(() => {
   const [selectedWalkMarker, setSelectedWalkMarker] = useState('');
   const [alertImage, setAlertImage] = useState<ImageSourcePropType>();
   const [hasPermission, setHasPermission] = useState<boolean>();
-  // ... существующие состояния и переменные
+  // Данные для маршрута
   const [routeData, setRouteData] = useState<any>(null);
 
+  // Нужно, чтобы понимать, показывать форму редактирования прогулки или нет
   const [renderAdvrtForm, setRenderAdvrtForm] = useState(false);
+
+  // Снэкбар при отсутствии точек
   const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
+
   // Анимированное значение для плавного появления карты
   const fadeAnim = useRef(new Animated.Value(0)).current;
+ 
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
@@ -97,6 +104,10 @@ const MapBoxMap = observer(() => {
   }, [isLoading, fadeAnim]);
 
   useEffect(() => {
+    if (!userCoordinates) return; // Если координаты ещё null, выходим
+    // Если уже загрузили данные (didLoad = true), выходим,
+    // Если уже загрузили данные (didLoad = true), выходим,
+    if (didLoad) return;
     const loadData = async () => {
       setIsLoading(true);
       setHasPermission(uiStore.getLocationPermissionGranted());
@@ -114,6 +125,7 @@ const MapBoxMap = observer(() => {
             console.error('Ошибка при получении города:', error);
           }
         } else {
+          // Если координат ещё нет, выставляем город по умолчанию
           userStore.setCurrentUserCity('Buenos Aires');
           mapStore.setCity('Buenos Aires');
           await mapStore.setWalkAdvrts();
@@ -124,15 +136,25 @@ const MapBoxMap = observer(() => {
         const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
         setGeoJSONData(data);
       };
-      
+
+      // Порядок: сначала пытаемся определить город (если координаты есть), потом собираем GeoJSON
       await fetchCity();
       await fetchData();
       
       setIsLoading(false);
     };
 
-    loadData();
-  }, []);
+     // Загрузка данных только после того, как поменялось состояние userCoordinates
+    if (userCoordinates) {
+      loadData().then(() => {
+        // После успешного выполнения ставим флаг
+        setDidLoad(true);
+      }).catch((error) => console.error(error));
+    } else {
+      // Если userCoordinates пока нет, мы можем либо ждать, либо показывать некий "заглушечный" город.
+      setIsLoading(false);
+    }
+  }, [userCoordinates, didLoad]);
 
   // --- Периодический опрос при фокусе экрана ---
   useFocusEffect(
@@ -148,7 +170,7 @@ const MapBoxMap = observer(() => {
           } catch (err) {
             console.error(err);
           }
-        }, 180_000); 
+        }, 300_000); 
   
         // Возвращаем колбэк очистки
         return () => {
@@ -160,6 +182,7 @@ const MapBoxMap = observer(() => {
     }, [currentPointType])
   );
 
+  // Обработка системной кнопки "Назад" на Android
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
@@ -532,8 +555,13 @@ const MapBoxMap = observer(() => {
               pointAnnotationCurrentUser={pointAnnotationCurrentUser}
             />
 
-            {/* Точки интереса (POI) и построение маршрута до них */}
-            {userCoordinates && uiStore.getLocationPermissionGranted() && (
+            {/* 
+              Рендерим PointsOfInterestComponent ТОЛЬКО если:
+               1) есть разрешение (hasPermission)
+               2) есть реальные координаты пользователя (userCoordinates !== null)
+               3) не идёт загрузка (isLoading === false)
+            */}
+            {!isCardView && hasPermission && userCoordinates && !isLoading && (
               <PointsOfInterestComponent
                 userLocation={userCoordinates}
                 onRouteReady={handleRouteReady}
@@ -551,34 +579,31 @@ const MapBoxMap = observer(() => {
           </MapView>
           {/* === Кнопка "Моя локация" поверх карты === */} 
           {hasPermission && userCoordinates && (
-        <TouchableOpacity  className='absolute bottom-[180px] right-[25px]  '  onPress={handleRecenter}>
-          <View style={{
-            backgroundColor: '#fff',
-            borderRadius: 25,
-            height: 45,
-            width: 45,
-            // Тень на Android
-            elevation: 3,
-            // Тень на iOS
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.3,
-            shadowRadius: 3,
-          
-          }}>
-          <IconButton
-            icon="crosshairs-gps"
-            size={25}
-            className='bg-white -left-1 -top-1'
-            iconColor={BG_COLORS.indigo[700]}
-            
-            />
-
-          </View>
-          
-        </TouchableOpacity>
-      )}
-    
+            <TouchableOpacity  className='absolute bottom-[180px] right-[25px]'  onPress={handleRecenter}>
+              <View style={{
+                backgroundColor: '#fff',
+                borderRadius: 25,
+                height: 45,
+                width: 45,
+                // Тень на Android
+                elevation: 3,
+                // Тень на iOS
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 3,
+              
+              }}>
+              <IconButton
+                icon="crosshairs-gps"
+                size={25}
+                className='bg-white -left-1 -top-1'
+                iconColor={BG_COLORS.indigo[700]}
+                />
+              </View>      
+            </TouchableOpacity>
+          )}
+        
           {/* Блок с поиском, фильтрами и переключателем карточного вида */}
           <View
             style={{

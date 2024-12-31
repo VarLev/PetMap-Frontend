@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { FlatList, View, ActivityIndicator, StyleSheet, TextInput } from 'react-native';
 import { Text, IconButton } from 'react-native-paper';
 import { FAB } from 'react-native-paper';
-import { ICommentWithUser } from '@/dtos/Interfaces/feed/IPost';
+import { ICommentWithUser, IPost } from '@/dtos/Interfaces/feed/IPost';
 import { BG_COLORS } from '@/constants/Colors';
 import { runInAction } from 'mobx';
 import BottomSheet, { BottomSheetFooter, BottomSheetFooterProps } from '@gorhom/bottom-sheet';
@@ -15,22 +15,49 @@ import CreatePost from '@/components/search/feed/CreatePost';
 import i18n from '@/i18n';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent';
 
-const Feed: FC = observer(() => {
+// Если userId не передан, компонент показывает все посты.
+// Если userId передан, компонент показывает посты только указанного пользователя.
+interface FeedProps {
+  userId?: string;
+}
+
+const Feed: FC<FeedProps> = observer(({ userId }) => {
   const [bottomSheetType, setBottomSheetType ] = useState<'create-post' | 'comments' | ''>('')
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [postComments, setPostComments] = useState<ICommentWithUser[]>();
   const [isPostRefresh, setIsPostRefresh] = useState<boolean>(false);
   const [selectedPostId, setSelectedPostId] = useState('');
+  const [userPosts, setUserPosts] = useState<IPost[]>([]);
   const sheetRef = useRef<BottomSheet>(null);
 
-  useEffect(() => {
+
+   /**
+   * Функция, определяющая, какие посты загружать:
+   * - Все общие посты, если userId не задан;
+   * - Посты конкретного пользователя, если userId задан.
+   */
+   const fetchPosts = async () => {
     searchStore.resetPage();
-    searchStore.fetchPosts();
-  }, []);
+    if (userId) {
+      const posts = await searchStore.getUserPosts(userId);
+      if(posts)
+        setUserPosts(posts);
+    } else {
+      await searchStore.fetchPosts();
+    }
+  };
+
+ useEffect(() => {
+    fetchPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   const loadMorePosts = () => {
-    //feedStore.incrementPage();
-    //feedStore.fetchPosts();
+    // if (userId) {
+    //   searchStore.fetchUserPosts(userId);
+    // } else {
+    //   searchStore.fetchPosts();
+    // }
   };
 
   const handleSheetClose = async () => {
@@ -118,7 +145,7 @@ const Feed: FC = observer(() => {
             </View>
           ) : null
         }
-        data={searchStore.posts}
+        data={userId? userPosts : searchStore.posts}
         keyExtractor={(_, index) => index.toString()}
         onEndReached={loadMorePosts}
         onEndReachedThreshold={0.5}

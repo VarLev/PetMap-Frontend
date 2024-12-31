@@ -21,6 +21,7 @@ import i18n from '@/i18n';
 import { generateChatIdForTwoUsers } from '@/utils/chatUtils';
 import { RefreshControl } from 'react-native';
 import { BG_COLORS } from '@/constants/Colors';
+import Feed from '../search/feed/Feed';
 
 const ViewProfileComponent = observer(
   ({ onEdit, onPetOpen, loadedUser }: { onEdit: () => void; onPetOpen: (petId: string) => void; loadedUser: IUser }) => {
@@ -44,6 +45,7 @@ const ViewProfileComponent = observer(
         setUser(user!);
         setIsCurrentUser(true);
         setRightIcon('chevron-right');
+        setIsOnline(true);
       } else {
         if (!loadedUser.id) {
           console.log('Пользователь не найден');
@@ -55,8 +57,8 @@ const ViewProfileComponent = observer(
         setRightIcon(null);
         const onlineStatus = await userStore.getUserStatus(otherUser.id);
         console.log('Статус пользователя:', onlineStatus);
-        if (onlineStatus !== undefined) 
-          setIsOnline(onlineStatus);
+        setIsOnline(isCurrentUser || (onlineStatus ?? false));
+        
       }
     };
 
@@ -285,7 +287,12 @@ const ViewProfileComponent = observer(
                     <Divider className="mt-3" />
                   </View>
                 )}
+                 <View>
+                <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">My PetPosts</Text>
+                <Feed userId={user.id} />
               </View>
+              </View>
+             
               <View className="h-28" />
             </View>
           }
