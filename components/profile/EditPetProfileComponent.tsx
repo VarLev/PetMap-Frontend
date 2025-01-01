@@ -305,6 +305,7 @@ const EditPetProfileComponent = observer(
                 label={i18n.t("EditPetProfile.name")}
                 value={editablePet.petName}
                 handleChange={(text) => handleFieldChange("petName", text)}
+                allowOnlyLetters = {true}
               />
 
               {/* Поле даты с onPress */}

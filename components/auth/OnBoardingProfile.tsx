@@ -418,6 +418,8 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             handleChange={setName}
             containerStyles="my-4"
             labelInput={i18n.t("onboardingProfile.slide3.nameLabel")}
+            allowOnlyLetters={true}
+            
           />
           <View className="flex-row items-start justify-between">
             <CustomInputText
@@ -503,6 +505,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
             value={petName}
             handleChange={setPetName}
             containerStyles="-mb-2"
+            allowOnlyLetters={true}
           />
           <View key={key}  className="pb-2">
             <CustomDropdownList
