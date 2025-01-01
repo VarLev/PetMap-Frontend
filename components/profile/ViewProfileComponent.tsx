@@ -287,10 +287,10 @@ const ViewProfileComponent = observer(
                     <Divider className="mt-3" />
                   </View>
                 )}
-                 <View>
-                <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">My PetPosts</Text>
-                <Feed userId={user.id} />
-              </View>
+                 <View className='-mx-3'>
+                <Text className="pl-3 pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">🐾 PetShots</Text>
+                  <Feed userId={user.id} />
+                </View>
               </View>
              
               <View className="h-28" />

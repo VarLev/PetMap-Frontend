@@ -31,7 +31,7 @@ export default function Layout() {
               <NewsScreen setSwipeEnabled={setSwipeEnabled} />
             )}
           </TopTab.Screen>
-      <TopTab.Screen name="activities" component={ActivitiesScreen} options={{ title: i18n.t("search.activitis") }} />
+      <TopTab.Screen name="activities" component={ActivitiesScreen} options={{ title: '🐾 PetShots' }} />
       <TopTab.Screen name="wiki" component={WikiScreen} options={{ title: 'WIKI' }} />
     </TopTab.Navigator>
     </NavigationContainer>

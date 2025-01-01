@@ -158,11 +158,14 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
               post={item}
               handleSheetCommentsOpenById={(postId) => handleSheetCommentsOpen(postId)}
               refresh={isPostRefresh}
+              isProfileView={!!userId}
             />
           )
         }}
       />
-      <FAB icon="pen" size='medium' color='white' style={styles.fab} onPress={handleCreatePost}/>
+      {!userId &&
+        (<FAB icon="pen" size='medium' color='white' style={styles.fab} onPress={handleCreatePost}/>)
+      }
       {
         bottomSheetType && 
         <BottomSheetComponent
