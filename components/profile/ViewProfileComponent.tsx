@@ -51,6 +51,7 @@ const ViewProfileComponent = observer(
           console.log('Пользователь не найден');
           return;
         }
+      
         const otherUser = await userStore.getUserById(loadedUser.id);
         setUser(otherUser as User);
         setIsCurrentUser(false);
@@ -90,7 +91,7 @@ const ViewProfileComponent = observer(
       const chatId = generateChatIdForTwoUsers(userId, loadedUser.id);
 
       router.push({
-        pathname: `/chat/${chatId}`,
+        pathname: `(chat)/${chatId}`,
         params: {
           otherUserId: loadedUser.id,
         },
@@ -108,7 +109,6 @@ const ViewProfileComponent = observer(
               <StatusBar backgroundColor="transparent" translucent />
               <View className="relative w-full aspect-square">
                 <Image source={{ uri: user?.thumbnailUrl! }} className="w-full h-full" />
-
                 <View style={styles.iconContainer} className={`${isIOS ? 'mt-8' : 'mt-0'}`}>
                   {!isCurrentUser && (
                     <View style={styles.iconContainer} className={`${isIOS ? '-mt-2' : '-mt-8'} -mr-2`}>
@@ -117,7 +117,7 @@ const ViewProfileComponent = observer(
                   )}
                   {isCurrentUser && (
                     <Menu
-                      style={{ marginTop: 25 }}
+                      style={{ marginTop: 50 }}
                       visible={menuVisible}
                       onDismiss={closeMenu}
                       contentStyle={{ backgroundColor: 'white' }}

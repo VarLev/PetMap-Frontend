@@ -33,7 +33,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({ item, currentUserId}) => {
 
   const handleOpenChat = () => {
     if (!recipient) return;
-    router.push(`/chat/${item.id}`);
+    router.push(`(chat)/${item.id}`);
   };
 
   if (!recipient) {

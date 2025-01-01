@@ -16,7 +16,7 @@ interface ChatHeaderProps {
 const ChatHeader: React.FC<ChatHeaderProps> = ({ userName, avatarUrl, onPressAvatar , isOnline}) => {
   
   // Обработчик нажатия кнопки "Назад"
-  const handleBack = () => router.replace("/chat");
+  const handleBack = () => router.back();
 
   return (
     <>

@@ -33,6 +33,7 @@ const ChatScreen: React.FC = observer(() => {
   useEffect(() => {
     const loadData = async () => {
       try { 
+        console.log("ChatId", chatId);
         const loadedChat = await ChatStore.getChatById(chatId);
         if(loadedChat){
           // Чат уже существует в базе
@@ -44,6 +45,7 @@ const ChatScreen: React.FC = observer(() => {
         }
         else {
           // Чат не существует в базе
+          console.log("otherUserId", otherUserId);
           const otherDbUser = await UserStore.getUserById(otherUserId)
           const otherUserOnlineStatus = await ChatStore.getUserStatus(otherDbUser.id);
           console.log("Other user online status", otherUserOnlineStatus);
@@ -96,7 +98,7 @@ const ChatScreen: React.FC = observer(() => {
         console.log(chat);
         const chatData = await ChatStore.sendMessageUniversal(chat!, message.text);
         if(chatData?.chatType === ChatType.NewChat){
-          router.replace(`/chat/${chatData.thisChatId}`);
+          router.replace(`/[chatId]/${chatData.thisChatId}`);
         }
       }
     },
