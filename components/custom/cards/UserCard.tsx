@@ -38,7 +38,7 @@ const UserCard: React.FC<UserCardProps> = React.memo(({ user }) => {
   }
 
   const handleUserProfileOpen = () => {
-    router.push(`/(tabs)/profile/${user.id}`);
+    router.push(`(user)/${user.id}`);
   };
 
   return (

@@ -89,7 +89,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
       if (userIsOwner) {
         router.push("/profile");
       } else {
-        router.push(`/(tabs)/profile/${userId}`);
+        router.push(`(user)/${userId}`);
       }
       mapStore.setBottomSheetVisible(false);
     };
@@ -97,12 +97,12 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
     const handlePetProfileOpen = (petId: string) => {
       if (userIsOwner) {
         router.push({
-          pathname: "/profile/pet/[petId]",
+          pathname: "/(pet)/[petId]",
           params: { petId: petId },
         });
       } else {
         router.push({
-          pathname: "/(tabs)/profile/pet/[petId]",
+          pathname: "/(pet)/[petId]",
           params: { petId: petId },
         });
       }

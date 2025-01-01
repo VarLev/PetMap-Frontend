@@ -125,7 +125,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
   }
 
   const openUserProfile = (userId: string) => {
-    router.push(`/(tabs)/profile/${userId}`);
+    router.push(`/(user)/${userId}`);
   }
 
   const onComplain = async (text: string) => {

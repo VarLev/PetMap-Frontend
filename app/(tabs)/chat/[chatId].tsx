@@ -120,7 +120,7 @@ const ChatScreen: React.FC = observer(() => {
 
   const handleOpenProfile = useCallback(() => {
     if (otherUser) {
-      router.push(`/(tabs)/profile/${otherUser.id}`);
+      router.push(`/(user)/${otherUser.id}`);
     }
   }, [otherUser, router]);
 

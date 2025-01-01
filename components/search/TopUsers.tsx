@@ -63,8 +63,8 @@ const TopUsers = () => {
     }
   };
 
-  const handleUserProfileOpen = (uiserId: string) => {
-    router.push(`/(tabs)/profile/${uiserId}`);
+  const handleUserProfileOpen = (userId: string) => {
+    router.push(`(user)/${userId}`);
   };
 
   const renderTopThreeUsers = useCallback(() => {

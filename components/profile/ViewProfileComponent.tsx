@@ -8,7 +8,7 @@ import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomTextComponent from '../custom/text/CustomTextComponent';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
-import { calculateDogAge, calculateHumanAge, calculateShortDogAge, getTagsByIndex, shortenName } from '@/utils/utils';
+import { calculateHumanAge, calculateShortDogAge, getTagsByIndex, shortenName } from '@/utils/utils';
 import CustomSocialLinkInput from '../custom/text/SocialLinkInputProps';
 import { router } from 'expo-router';
 import petStore from '@/stores/PetStore';
@@ -80,7 +80,7 @@ const ViewProfileComponent = observer(
     const handleAddPet = () => {
       const newPat = petStore.getEmptyPetProfile('new', user.id);
       petStore.setPetProfile(newPat);
-      router.push('/profile/pet/new/edit');
+      router.push('/pet/new/edit');
     };
 
     const openChat = () => {
@@ -141,7 +141,7 @@ const ViewProfileComponent = observer(
         <BottomSheetComponent
           ref={sheetRef}
           enablePanDownToClose={false}
-          snapPoints={['56%', '100%']}
+          snapPoints={['55%', '100%']}
           renderContent={
             <View className="bg-white h-full">
               <View className='flex-row items-center pl-4'>

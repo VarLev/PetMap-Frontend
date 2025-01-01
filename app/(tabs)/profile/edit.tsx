@@ -7,6 +7,7 @@ import { BonusProvider } from '@/contexts/BonusContex';
 const EditUserProfile = observer(() => {
 
   const handleSave = async () => {
+    //TODO: Странно что мы вызываем загрузку пользователя после нажатия на сейв, по идее это все должно происходить на странице профиля
     await userStore.loadUser(); 
     router.push('/(tabs)/profile');
   };

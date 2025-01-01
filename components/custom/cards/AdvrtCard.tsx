@@ -42,7 +42,7 @@ const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
   };
 
   const handleUserProfileOpen = () => {
-    const route = userIsOwner ? '/profile' : `/(tabs)/profile/${ad.userId}`;
+    const route = userIsOwner ? '/profile' : `/(user)/${ad.userId}`;
     router.push(route);
     uiStore.setIsBottomTableViewSheetOpen(false);
   };
