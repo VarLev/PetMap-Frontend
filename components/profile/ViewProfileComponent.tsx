@@ -108,7 +108,9 @@ const ViewProfileComponent = observer(
             <View style={{ alignItems: 'center' }}>
               <StatusBar backgroundColor="transparent" translucent />
               <View className="relative w-full aspect-square">
+               
                 <Image source={{ uri: user?.thumbnailUrl! }} className="w-full h-full" />
+                <Image source={require('@/assets/images/subscription-marker.png')} className='h-14 w-10 absolute bottom-7 right-2' />
                 <View style={styles.iconContainer} className={`${isIOS ? 'mt-8' : 'mt-0'}`}>
                   {!isCurrentUser && (
                     <View style={styles.iconContainer} className={`${isIOS ? '-mt-2' : '-mt-8'} -mr-2`}>

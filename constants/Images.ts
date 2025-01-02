@@ -4,6 +4,7 @@ import logoWithName from "../assets/images/LogoWithName.png";
 import bonuse from "../assets/images/bonuse.png";
 
 
+
 export default {
   logo,
   logoWithBack,
