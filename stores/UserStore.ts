@@ -188,7 +188,6 @@ class UserStore {
     } catch (error) {
       return handleAxiosError(error);
     }
-    return {} as IUser;
   }
 
   async loadUserAfterSignIn() {

@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { View, BackHandler, ImageSourcePropType, Animated, ActivityIndicator, TouchableOpacity } from 'react-native';
 import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer, LineLayer } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
-import { IconButton, Provider, Text } from 'react-native-paper';
+import { IconButton, Provider } from 'react-native-paper';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent'; // Импортируйте новый компонент
 import BottomSheet from '@gorhom/bottom-sheet';
 import AdvtComponent from './AdvtComponent';

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity, View, Image, Text } from 'react-native';
+import { TouchableOpacity, View, Text } from 'react-native';
 import { Divider } from 'react-native-paper';
 import ChatMenu from '@/components/chat/chatList/ChatMenu';
 import { shortenName } from '@/utils/utils';
