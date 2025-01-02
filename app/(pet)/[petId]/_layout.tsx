@@ -19,10 +19,12 @@ export default function PetLayout() {
       <Stack.Screen 
         name="index" 
         options={{ 
+          headerShown: true,
+          headerBackButtonMenuEnabled: true,
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' },
           headerTransparent: true,
-                    headerTitle: '',
-                    headerTintColor: BG_COLORS.indigo[700],
+          headerTitle: '',
+          headerTintColor: BG_COLORS.indigo[700],
         }} 
         
       />
