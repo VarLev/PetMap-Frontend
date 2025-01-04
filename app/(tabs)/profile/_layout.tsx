@@ -16,21 +16,14 @@ export default function ProfileLayout() {
         }} 
       />
       <Stack.Screen 
-        name="[id]" 
-        options={{ 
-          headerShown: false,
-        }} 
-   
-      />
-      <Stack.Screen 
-        name="editUser" 
+        name="edit" 
         options={{ 
           title: i18n.t('ProfileLayout.editUserTitle'),
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
         }} 
         
       />
-      <Stack.Screen 
+      {/* <Stack.Screen 
         name="pet/[petId]/index" 
         options={{ 
           title: '',
@@ -47,7 +40,7 @@ export default function ProfileLayout() {
           title:i18n.t('ProfileLayout.editPetTitle'),
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
         }} 
-      />
+      /> */}
       <Stack.Screen 
         name="myjobs" 
         options={{ 

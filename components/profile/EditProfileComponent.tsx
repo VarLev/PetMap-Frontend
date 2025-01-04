@@ -239,6 +239,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 label={i18n.t('EditProfileComponent.nameLabel')}
                 value={editableUser.name || ''}
                 handleChange={(text) => handleChange('name', text)}
+                allowOnlyLetters = {true}
               />
 
               <View className=" flex-row w-full">

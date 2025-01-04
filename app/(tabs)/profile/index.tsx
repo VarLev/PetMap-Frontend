@@ -24,12 +24,12 @@ const Profile = observer(() => {
     }, []);
 
   const handleEdit = () => {
-    router.push('/profile/editUser');
+    router.push('profile/edit');
     
   }
 
   const handlePetOpen = (petId:string) => {
-    router.push(`/profile/pet/${petId}`);
+    router.push(`/(pet)/${petId}`);
   }
 
   if (!editableUser) {

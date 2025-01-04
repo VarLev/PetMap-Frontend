@@ -8,7 +8,7 @@ import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomTextComponent from '../custom/text/CustomTextComponent';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
-import { calculateDogAge, calculateHumanAge, calculateShortDogAge, getTagsByIndex, shortenName } from '@/utils/utils';
+import { calculateHumanAge, calculateShortDogAge, getTagsByIndex, shortenName } from '@/utils/utils';
 import CustomSocialLinkInput from '../custom/text/SocialLinkInputProps';
 import { router } from 'expo-router';
 import petStore from '@/stores/PetStore';
@@ -21,6 +21,7 @@ import i18n from '@/i18n';
 import { generateChatIdForTwoUsers } from '@/utils/chatUtils';
 import { RefreshControl } from 'react-native';
 import { BG_COLORS } from '@/constants/Colors';
+import Feed from '../search/feed/Feed';
 
 const ViewProfileComponent = observer(
   ({ onEdit, onPetOpen, loadedUser }: { onEdit: () => void; onPetOpen: (petId: string) => void; loadedUser: IUser }) => {
@@ -44,19 +45,21 @@ const ViewProfileComponent = observer(
         setUser(user!);
         setIsCurrentUser(true);
         setRightIcon('chevron-right');
+        setIsOnline(true);
       } else {
         if (!loadedUser.id) {
           console.log('Пользователь не найден');
           return;
         }
+      
         const otherUser = await userStore.getUserById(loadedUser.id);
         setUser(otherUser as User);
         setIsCurrentUser(false);
         setRightIcon(null);
         const onlineStatus = await userStore.getUserStatus(otherUser.id);
         console.log('Статус пользователя:', onlineStatus);
-        if (onlineStatus !== undefined) 
-          setIsOnline(onlineStatus);
+        setIsOnline(isCurrentUser || (onlineStatus ?? false));
+        
       }
     };
 
@@ -78,7 +81,7 @@ const ViewProfileComponent = observer(
     const handleAddPet = () => {
       const newPat = petStore.getEmptyPetProfile('new', user.id);
       petStore.setPetProfile(newPat);
-      router.push('/profile/pet/new/edit');
+      router.push('/pet/new/edit');
     };
 
     const openChat = () => {
@@ -88,7 +91,7 @@ const ViewProfileComponent = observer(
       const chatId = generateChatIdForTwoUsers(userId, loadedUser.id);
 
       router.push({
-        pathname: `/chat/${chatId}`,
+        pathname: `(chat)/${chatId}`,
         params: {
           otherUserId: loadedUser.id,
         },
@@ -105,21 +108,22 @@ const ViewProfileComponent = observer(
             <View style={{ alignItems: 'center' }}>
               <StatusBar backgroundColor="transparent" translucent />
               <View className="relative w-full aspect-square">
+               
                 <Image source={{ uri: user?.thumbnailUrl! }} className="w-full h-full" />
-
+                <Image source={require('@/assets/images/subscription-marker.png')} className='h-14 w-10 absolute bottom-7 right-2' />
                 <View style={styles.iconContainer} className={`${isIOS ? 'mt-8' : 'mt-0'}`}>
-                  {!isCurrentUser && (
-                    <View style={styles.iconContainer} className={`${isIOS ? '-mt-2' : '-mt-8'} -mr-2`}>
-                      <IconButton icon="message-processing-outline" size={30} iconColor="black" style={styles.menuButton} onPress={openChat} />
+                  {!isCurrentUser ? (
+                    <View style={styles.iconContainer} className={` -mr-2`}>
+                      <IconButton icon="message-processing-outline" size={30} iconColor={BG_COLORS.indigo[700]} style={styles.menuButton}  onPress={openChat} />
                     </View>
-                  )}
-                  {isCurrentUser && (
+                  ):
+                   (
                     <Menu
-                      style={{ marginTop: 25 }}
+                      style={{ paddingTop: 100 }}
                       visible={menuVisible}
                       onDismiss={closeMenu}
                       contentStyle={{ backgroundColor: 'white' }}
-                      anchor={<IconButton icon="menu" size={30} iconColor="black" style={styles.menuButton} onPress={openMenu} />}
+                      anchor={<IconButton icon="menu" size={30} iconColor={BG_COLORS.indigo[700]} style={styles.menuButton} onPress={openMenu} />}
                     >
                       <MenuItemWrapper
                         onPress={() => {
@@ -139,7 +143,7 @@ const ViewProfileComponent = observer(
         <BottomSheetComponent
           ref={sheetRef}
           enablePanDownToClose={false}
-          snapPoints={['56%', '100%']}
+          snapPoints={['55%', '100%']}
           renderContent={
             <View className="bg-white h-full">
               <View className='flex-row items-center pl-4'>
@@ -285,7 +289,12 @@ const ViewProfileComponent = observer(
                     <Divider className="mt-3" />
                   </View>
                 )}
+                 <View className='-mx-3'>
+                <Text className="pl-3 pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">🐾 PetShots</Text>
+                  <Feed userId={user.id} />
+                </View>
               </View>
+             
               <View className="h-28" />
             </View>
           }
@@ -313,9 +322,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: StatusBar.currentHeight ? StatusBar.currentHeight + 8 : 8,
     right: 8,
+    elevation: 3,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.20,
+    shadowRadius: 3,
   },
   menuButton: {
+    marginTop:100,
     backgroundColor: 'white',
-    opacity: 0.7,
   },
 });

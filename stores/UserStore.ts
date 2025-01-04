@@ -188,7 +188,6 @@ class UserStore {
     } catch (error) {
       return handleAxiosError(error);
     }
-    return {} as IUser;
   }
 
   async loadUserAfterSignIn() {
@@ -214,6 +213,7 @@ class UserStore {
 
   async getUserById(id:string): Promise<IUser> {
     try {
+      console.log('Получение пользователя по ID:', id);
       const response = await apiClient.get(`/users/${id}`);
       return response.data as IUser;
     } catch (error) {

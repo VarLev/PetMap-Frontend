@@ -12,6 +12,7 @@ import i18n from "@/i18n";
 
 const SidebarUserProfileComponent = () => {
   const currentUser = userStore.currentUser;
+  const hasSubscription = userStore.currentUser?.isPremium;
   const { closeDrawer } = useDrawer();
 
   const handleProfilePress = () => {
@@ -38,6 +39,7 @@ const SidebarUserProfileComponent = () => {
     <SafeAreaView className="bg-white h-full">
       <View className="flex-1 p-5 bg-white">
         <View className="flex-row">
+        
           <Image
             source={images.logoWithName}
             style={{ width: 175, height: 43 }}
@@ -51,10 +53,17 @@ const SidebarUserProfileComponent = () => {
           onPress={handleProfilePress}
         >
           <View className="flex-row justify-start items-center">
+          <View className="relative">
             <Image
-              source={{ uri: currentUser?.thumbnailUrl?? 'https://avatar.iran.liara.run/public'}}
+              source={{ uri: currentUser?.thumbnailUrl ?? 'https://avatar.iran.liara.run/public' }}
               className="h-20 w-20 rounded-xl"
             />
+            {hasSubscription && (<Image
+              source={require('@/assets/images/subscription-marker.png')}
+              className="h-7 w-5 absolute -bottom-2 right-1"
+            />)}
+           
+          </View>
             <View className="flex-col ml-3 flex-1">
               <Text
                 className="text-xl text-gray-800 font-nunitoSansBold"

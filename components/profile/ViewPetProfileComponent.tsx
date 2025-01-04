@@ -17,6 +17,7 @@ import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import CircleIcon from '../custom/icons/CircleIcon';
 import MenuItemWrapper from '@/components/custom/menuItem/MunuItemWrapper';
 import i18n from '@/i18n';
+import { BG_COLORS } from '@/constants/Colors';
 
 const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: () => void }) => {
   const sheetRef = useRef<BottomSheet>(null);
@@ -70,7 +71,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
                   <IconButton
                     icon="menu"
                     size={30}
-                    iconColor="black"
+                    iconColor={BG_COLORS.indigo[700]}
                     style={styles.menuButton}
                     onPress={openMenu}
                   />
@@ -101,7 +102,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
       <BottomSheetComponent
         ref={sheetRef}
         enablePanDownToClose={false}
-        snapPoints={['54%', '100%']}
+        snapPoints={['55%', '100%']}
         renderContent={
           <View className="bg-white h-full">
             <Text className="pl-5 text-2xl font-nunitoSansBold">
@@ -351,6 +352,11 @@ const styles = StyleSheet.create({
   },
   menuButton: {
     backgroundColor: 'white',
-    opacity: 0.7,
+    elevation: 5,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    marginTop:100
   },
 });

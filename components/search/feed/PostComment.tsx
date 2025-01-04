@@ -75,7 +75,7 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
   }
 
   const openUserProfile = (userId: string) => {
-    router.push(`/(tabs)/profile/${userId}`);
+    router.push(`/(user)/${userId}`);
   }
 
   const closeComplaintModal = () => {

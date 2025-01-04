@@ -144,6 +144,21 @@ const Layout = observer(() => {
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
               <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(user)" 
+              options={{ 
+                headerShown: true, 
+                headerTransparent:true, 
+                title:'', headerBackTitle:'' ,
+                headerBackTitleVisible: false,
+              }} />
+              <Stack.Screen name="(pet)/[petId]" 
+              options={{ 
+                headerShown: true, 
+                headerTransparent:true, 
+                title:'', headerBackTitle:'' ,
+                headerBackTitleVisible: false,
+              }} />
+              <Stack.Screen name="(chat)" options={{ headerShown: false }} />
             </Stack>
           </PaperProvider>
         </AlertProvider>

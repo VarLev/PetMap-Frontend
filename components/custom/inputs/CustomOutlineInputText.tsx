@@ -17,6 +17,7 @@ type InputTextProps = {
   maxLength?: number;
   onPress?: () => void;
   editable?: boolean;
+  allowOnlyLetters?: boolean; // Новый проп
 };
 
 const CustomOutlineInputText = ({
@@ -31,16 +32,20 @@ const CustomOutlineInputText = ({
   maxLength,
   onPress,
   editable = true,
+  allowOnlyLetters = false, // Новый проп со значением по умолчанию
 }: InputTextProps) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const handleTextChange = (text: string) => {
-    //const cleanedText = text.replace(/[^0-9]/g, '');
+    let processedText = text;
+    if (allowOnlyLetters) {
+      processedText = text.replace(/[^a-zA-ZА-Яа-я\s]/g, ''); // Удаляем всё, кроме букв и пробелов
+    }
     if (handleChange) {
-      handleChange(text);
+      handleChange(processedText);
     }
   };
-  
+
   return (
     <>
       {mask ? (
@@ -51,12 +56,11 @@ const CustomOutlineInputText = ({
               fontFamily: 'NunitoSans_400Regular',
               fontSize: 12,
               position: 'absolute',
-              top:9,
+              top: 9,
               left: 8,
               backgroundColor: '#fff',
               paddingHorizontal: 4,
-              
-              zIndex: 3001
+              zIndex: 3001,
             }}>
               {label}
             </Text>
@@ -64,7 +68,7 @@ const CustomOutlineInputText = ({
           <TextInputMask
             type={'custom'}
             options={{
-              mask: mask
+              mask: mask,
             }}
             value={value !== undefined ? String(value) : ''}
             onChangeText={handleTextChange}
@@ -77,18 +81,15 @@ const CustomOutlineInputText = ({
               color: '#363636',
               borderColor: isFocused ? '#7038c9' : '#bababa',
               borderRadius: 8,
-              borderWidth: isFocused? 2:1,
+              borderWidth: isFocused ? 2 : 1,
               marginTop: 18,
               backgroundColor: '#ffffff',
-              padding: 10, // добавляем padding для текстового инпута
-              
+              padding: 10,
             }}
-            
             className={`text-base font-nunitoSansBold bg-white ${containerStyles}`}
             keyboardType={keyboardType || 'default'}
           />
         </View>
-        
       ) : (
         <TextInput
           maxLength={maxLength}
@@ -96,30 +97,27 @@ const CustomOutlineInputText = ({
           label={label}
           value={value !== undefined ? String(value) : ''}
           placeholder={placeholder}
-          onChangeText={handleChange}
-          onEndEditing={(d)=> handleTextChange(d.nativeEvent.text)}
-          //onChange={() =>handleChange}
+          onChangeText={handleTextChange}
+          onEndEditing={(d) => handleTextChange(d.nativeEvent.text)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           mode="outlined"
           className={`mt-1 text-base font-nunitoSansBold bg-white ${containerStyles}`}
           contentStyle={{ fontFamily: 'NunitoSans_400Regular', fontSize: 16, color: '#363636' }}
-          style={{ fontFamily: 'NunitoSans_400Regular', fontSize: 16}}
+          style={{ fontFamily: 'NunitoSans_400Regular', fontSize: 16 }}
           numberOfLines={numberOfLines || 1}
           outlineStyle={{
-            borderColor: isFocused ? '#7038c9' : '#bababa', // Цвет границы в зависимости от фокуса
+            borderColor: isFocused ? '#7038c9' : '#bababa',
           }}
           keyboardType={keyboardType || 'default'}
           onPress={onPress}
           editable={editable}
-          theme={{ 
-            fonts: {      
-              bodyLarge: { fontFamily: 'NunitoSans_400Regular'  }, 
+          theme={{
+            fonts: {
+              bodyLarge: { fontFamily: 'NunitoSans_400Regular' },
             },
-            roundness: 8, 
-          }
-          
-        }
+            roundness: 8,
+          }}
         />
       )}
     </>

@@ -10,7 +10,7 @@ export default function EmptyUserProfile() {
   
   const handleCompleteProfile = () => {
     // Перейти на экран редактирования профиля
-    router.push('/profile/editUser');
+    router.push('/profile/edit');
   };
 
   return (
