@@ -524,7 +524,7 @@ class UserStore {
       mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [3, 3],
-      quality: 0.5,
+      quality: 0.8,
       
     });
 

@@ -16,7 +16,7 @@ interface AddPhotoButtonProps {
 const AddPhotoButton: React.FC<AddPhotoButtonProps> = ({
   buttonText,
   onImageSelected,
-  compressQuality = 0.5,
+  compressQuality = 0.8,
   resizeWidth = 400,
   aspectRatio = [4, 3],
 }) => {

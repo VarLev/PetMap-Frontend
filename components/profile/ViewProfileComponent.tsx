@@ -82,7 +82,7 @@ const ViewProfileComponent = observer(
     const handleAddPet = () => {
       const newPat = petStore.getEmptyPetProfile('new', user.id);
       petStore.setPetProfile(newPat);
-      router.push('/pet/new/edit');
+      router.push('/(pet)/new/edit');
     };
 
     const openChat = () => {

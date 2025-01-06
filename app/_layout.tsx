@@ -146,14 +146,14 @@ const Layout = observer(() => {
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="(user)" 
               options={{ 
-                headerShown: true, 
+                headerShown: false, 
                 headerTransparent:true, 
                 title:'', headerBackTitle:'' ,
                 headerBackTitleVisible: false,
               }} />
               <Stack.Screen name="(pet)/[petId]" 
               options={{ 
-                headerShown: true, 
+                headerShown: false, 
                 headerTransparent:true, 
                 title:'', headerBackTitle:'' ,
                 headerBackTitleVisible: false,
