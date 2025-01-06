@@ -149,7 +149,7 @@ const ViewProfileComponent = observer(
             <View className="bg-white h-full">
               <View className='flex-row items-center pl-4'>
                 <View className="relative">
-                  {hasSubscription && (<Image source={require('@/assets/images/subscription-marker.png')} className='h-[34px] w-[27px] absolute  -top-[5px] -right-[6px]' />)}
+                  {hasSubscription && isCurrentUser && (<Image source={require('@/assets/images/subscription-marker.png')} className='h-[34px] w-[27px] absolute  -top-[5px] -right-[6px]' />)}
                   <View className={`w-4 h-4 rounded-full ${isOnline ? 'bg-emerald-400' : 'bg-gray-400'}`} />
                 </View>
                

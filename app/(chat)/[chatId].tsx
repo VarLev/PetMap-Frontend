@@ -15,8 +15,9 @@ import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
 import BottomSheet from "@gorhom/bottom-sheet";
 import CustomMessageComponent from "@/components/chat/chatView/CustomMessageComponent";
 import { ChatType } from "@/dtos/enum/ChatType";
-import { generateChatData, translateText } from "@/utils/chatUtils";
+import { generateChatData } from "@/utils/chatUtils";
 import TranslatableTextMessage from "@/components/chat/chatView/TranslatableTextMessage";
+import uiStore from "@/stores/UIStore";
 
 const ChatScreen: React.FC = observer(() => {
   const { chatId, otherUserId } = useLocalSearchParams<{chatId: string, otherUserId:string }>();
@@ -106,7 +107,7 @@ const ChatScreen: React.FC = observer(() => {
     // Ставим флаг загрузки
     setLoadingTranslation((prev) => ({ ...prev, [message.id]: true }))
     try {
-      const result = await translateText(message.text, "ru"); // Пример: переводим на русский
+      const result = await uiStore.translateText(message.text); // Пример: переводим на русский
       // Сохраняем результат
       setTranslatedMessages((prev) => ({ ...prev, [message.id]: result }))
     } catch (err) {
