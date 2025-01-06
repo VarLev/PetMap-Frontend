@@ -1,7 +1,7 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { View, BackHandler, ImageSourcePropType, Animated, ActivityIndicator, TouchableOpacity } from 'react-native';
-import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer, LineLayer } from '@rnmapbox/maps';
+import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer, LineLayer, SymbolLayerStyle } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
 import { IconButton, Provider } from 'react-native-paper';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent'; // Импортируйте новый компонент
@@ -44,6 +44,7 @@ import { createGeoJSONFeatures } from '@/utils/mapUtils';
 import { generateChatData, generateChatIdForTwoUsers } from '@/utils/chatUtils';
 import { Easing } from 'react-native-reanimated';
 import { BG_COLORS } from '@/constants/Colors';
+import { set } from 'firebase/database';
 
 
 const MapBoxMap = observer(() => {
@@ -115,9 +116,13 @@ const MapBoxMap = observer(() => {
         if (userCoordinates) {
           try {
             if (userStore.getCurrentUserCity() === '') {
-              const city = await mapStore.getUserCity(userCoordinates);
-              userStore.setCurrentUserCity(city);
-              await mapStore.setWalkAdvrts();
+              const address = await mapStore.getUserCity(userCoordinates);
+              if(address) {
+                userStore.setCurrentUserCountry(address![0]);
+                userStore.setCurrentUserCity(address![1]);
+                await mapStore.setWalkAdvrts();
+              }
+              
             }
             mapStore.setCity(userStore.getCurrentUserCity());
             console.log('Город успешно получен для координат:', mapStore.getCity());
@@ -217,7 +222,9 @@ const MapBoxMap = observer(() => {
   };
 
   const handlePress = (event: any) => {
-    console.log('Long press detected');
+    if(uiStore.getIsSearchAddressExpanded())
+      return;
+    console.log('Press detected');
     if (
       currentPointType === MapPointType.Walk ||
       currentPointType === MapPointType.Danger ||
@@ -523,10 +530,30 @@ const MapBoxMap = observer(() => {
               />
             )}
 
+
+             {/* Простейший pin через PointAnnotation */}
+            <PointAnnotation
+              id="my-marker"
+              coordinate={[10, 10]}
+            >
+              {/* Сам вид маркера. Можно поставить свою иконку */}
+              <View>
+                <View style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 10,
+                  backgroundColor: BG_COLORS.indigo[700],
+                  borderWidth: 2,
+                  borderColor: 'white'}} />
+              </View>
+            </PointAnnotation>
+             
+
             {/* Кластеризация меток (если используем ShapeSource / SymbolLayer) */}
             {!isCardView && geoJSONData && (
               <ShapeSource id="points" shape={geoJSONData} cluster clusterRadius={38}>
                 <SymbolLayer id="clusteredPoints" filter={['has', 'point_count']} style={styles.clusterStyle} />
+                
               </ShapeSource>
             )}
 
@@ -624,6 +651,15 @@ const MapBoxMap = observer(() => {
               badgeCount={modifiedFieldsCount}
               setSnackbarVisible={setSnackbarVisible}
               snackbarVisible={snackbarVisible}
+              onAddressSelected={(coordinates)=>{
+                cameraRef.current?.flyTo(coordinates, 500);
+                setTimeout(() => {
+                  uiStore.setIsSearchAddressExpanded(false);
+                  handlePress({geometry: {coordinates: coordinates}});
+                }
+                , 600);
+                
+              }}
             />
           </View>
 

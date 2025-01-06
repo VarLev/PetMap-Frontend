@@ -33,6 +33,7 @@ const ViewProfileComponent = observer(
     const [rightIcon, setRightIcon] = useState<string | null>();
     const [isIOS, setIsIOS] = useState(false);
     const [isOnline, setIsOnline] = useState(false);
+    const [hasSubscription, setHasSubscription] = useState(userStore.currentUser?.isPremium ?? false);
 
     useEffect(() => {
       setIsIOS(Platform.OS === 'ios');
@@ -110,7 +111,7 @@ const ViewProfileComponent = observer(
               <View className="relative w-full aspect-square">
                
                 <Image source={{ uri: user?.thumbnailUrl! }} className="w-full h-full" />
-                <Image source={require('@/assets/images/subscription-marker.png')} className='h-14 w-10 absolute bottom-7 right-2' />
+                
                 <View style={styles.iconContainer} className={`${isIOS ? 'mt-8' : 'mt-0'}`}>
                   {!isCurrentUser ? (
                     <View style={styles.iconContainer} className={` -mr-2`}>
@@ -147,8 +148,13 @@ const ViewProfileComponent = observer(
           renderContent={
             <View className="bg-white h-full">
               <View className='flex-row items-center pl-4'>
-                <View className={`w-4 h-4 rounded-full ${isOnline ? 'bg-emerald-400' : 'bg-gray-400'}`} />
-                <Text className="pl-1 text-2xl font-nunitoSansBold" numberOfLines={2}>
+                <View className="relative">
+                  {hasSubscription && (<Image source={require('@/assets/images/subscription-marker.png')} className='h-[34px] w-[27px] absolute  -top-[5px] -right-[6px]' />)}
+                  <View className={`w-4 h-4 rounded-full ${isOnline ? 'bg-emerald-400' : 'bg-gray-400'}`} />
+                </View>
+               
+                
+                <Text className="pl-2 text-2xl font-nunitoSansBold" numberOfLines={2}>
                   {user.name}
                   {user.birthDate && `, ${calculateHumanAge(user.birthDate)}`}
                 </Text>

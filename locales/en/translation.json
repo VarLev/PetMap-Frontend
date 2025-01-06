@@ -1026,5 +1026,9 @@
   "Snackbar": {
     "noResults": "No results"
   },
-  "searchWord": "Enter the name in English"
+  "searchWord": "Enter the name in English",
+  "translation": {
+    "translate": "Translate",
+    "reverse": "Show original"
+  }
 }

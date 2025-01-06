@@ -15,7 +15,8 @@ import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
 import BottomSheet from "@gorhom/bottom-sheet";
 import CustomMessageComponent from "@/components/chat/chatView/CustomMessageComponent";
 import { ChatType } from "@/dtos/enum/ChatType";
-import { generateChatData } from "@/utils/chatUtils";
+import { generateChatData, translateText } from "@/utils/chatUtils";
+import TranslatableTextMessage from "@/components/chat/chatView/TranslatableTextMessage";
 
 const ChatScreen: React.FC = observer(() => {
   const { chatId, otherUserId } = useLocalSearchParams<{chatId: string, otherUserId:string }>();
@@ -28,6 +29,10 @@ const ChatScreen: React.FC = observer(() => {
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [selectedWalk, setSelectedWalk] = useState<IWalkAdvrtDto | null>(null);
   const [otherUser, setOtherUser] = useState<IChatUser | null>(null);
+
+  const [translatedMessages, setTranslatedMessages] = useState<Record<string, string>>({})
+  const [loadingTranslation, setLoadingTranslation] = useState<Record<string, boolean>>({})
+  const hasSubscription = UserStore.currentUser?.isPremium ?? false;  
 
   // Загружаем чёрный список, FMC-токен и проверяем блокировку
   useEffect(() => {
@@ -92,6 +97,56 @@ const ChatScreen: React.FC = observer(() => {
     return () => backHandler.remove();
   }, [chatId, router]);
 
+  // ---------------------------
+  // Функции для перевода
+  // ---------------------------
+
+  // При нажатии "Перевести"
+  const handleTranslatePress = useCallback(async (message: MessageType.Text) => {
+    // Ставим флаг загрузки
+    setLoadingTranslation((prev) => ({ ...prev, [message.id]: true }))
+    try {
+      const result = await translateText(message.text, "ru"); // Пример: переводим на русский
+      // Сохраняем результат
+      setTranslatedMessages((prev) => ({ ...prev, [message.id]: result }))
+    } catch (err) {
+      console.error("Ошибка при переводе:", err);
+    } finally {
+      setLoadingTranslation((prev) => ({ ...prev, [message.id]: false }))
+    }
+  }, []);
+
+   // При нажатии "Показать оригинал"
+   const handleShowOriginalPress = useCallback((messageId: string) => {
+    setTranslatedMessages((prev) => {
+      const updated = { ...prev }
+      delete updated[messageId]
+      return updated
+    })
+  }, []);
+
+  // ---------------------------
+  // Рендер обычных текстовых сообщений с переводом
+  // ---------------------------
+  const renderTextMessage = useCallback(
+    (message: MessageType.Text, messageWidth: number, showName: boolean) => {
+      const translatedText = translatedMessages[message.id]
+      const isLoading = loadingTranslation[message.id]
+
+      return (
+        <TranslatableTextMessage
+          message={message}
+          translatedText={translatedText}
+          isLoading={isLoading}
+          onTranslate={handleTranslatePress}
+          onShowOriginal={handleShowOriginalPress}
+        />
+      )
+    },
+    [translatedMessages, loadingTranslation]
+  )
+
+
   const handleSendPress = useCallback(
     async (message: MessageType.PartialText) => {
       if (chatId && UserStore.currentUser) {
@@ -138,6 +193,7 @@ const ChatScreen: React.FC = observer(() => {
           avatarUrl={otherUser?.thumbnailUrl}
           onPressAvatar={handleOpenProfile}
           isOnline={otherUser?.isOnline}
+          hasSubscription={hasSubscription}
         />
        
         <Chat
@@ -181,12 +237,14 @@ const ChatScreen: React.FC = observer(() => {
           messages={ChatStore.messages}
           onSendPress={handleSendPress}
           user={{ id: currentUserId }}
+          // Рендерим КАСТОМНЫЕ сообщения (системные/специальные)
           renderCustomMessage={renderMessage}
+          renderTextMessage={renderTextMessage}
           emptyState={() => <Text></Text>}
           {...(Platform.OS === "ios" && { enableAnimation: true })}
           showUserAvatars
           //showUserNames
-          timeFormat="HH:mm DD MMM"
+         
         />
 
       </SafeAreaView>

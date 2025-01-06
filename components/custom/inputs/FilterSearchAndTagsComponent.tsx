@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, Platform } from 'react-native';
+import { View, ScrollView, StyleSheet, Platform, Text, Pressable, Modal, Button } from 'react-native';
 import { Searchbar } from 'react-native-paper';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import IconSelectorComponent from '../icons/IconSelectorComponent';
 import CustomButtonWithIcon from '../buttons/CustomButtonWithIcon';
 import CustomBudgeButton from '../buttons/CustomBudgeButton';
@@ -9,6 +9,7 @@ import CustomSnackBar from '../alert/CustomSnackBar';
 import uiStore from '@/stores/UIStore';
 import i18n from '@/i18n';
 import { MapPointType } from '@/dtos/enum/MapPointType';
+import userStore from '@/stores/UserStore';
 
 interface SearchAndTagsProps {
   selectedTag: string;
@@ -20,6 +21,7 @@ interface SearchAndTagsProps {
   badgeCount: number;
   setSnackbarVisible: (visible: boolean) => void;
   snackbarVisible: boolean;
+  onAddressSelected: (coordinates: [number, number]) => void;
 }
 
 const SearchAndTags: React.FC<SearchAndTagsProps> = ({
@@ -31,77 +33,205 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
   onOpenCardView,
   badgeCount,
   setSnackbarVisible,
-  snackbarVisible
+  snackbarVisible,
+  onAddressSelected,
 }) => {
-  // Показывать ли сейчас список тегов или нет
+  // Проверяем, есть ли подписка
+  const hasSubscription = userStore.currentUser?.isPremium;
+
+  // Модальное окно для призыва к подписке
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+
   const [isTagSelected, setIsTagSelected] = useState(false);
-  // Показываем ли сейчас карту/список (переключение иконки)
   const [isCardView, setIsCardView] = useState(false);
-  // Проверяем платформу (iOS или нет)
   const [isIOS, setIsIOS] = useState(false);
-  // Храним, для какого тега идёт загрузка (показывается ActivityIndicator на кнопке)
   const [loadingTag, setLoadingTag] = useState<MapPointType | null>(null);
+
+  // Строка ввода
+  const [searchText, setSearchText] = useState('');
+  // Результаты поиска
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  // Флаг загрузки при запросе
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     setIsIOS(Platform.OS === 'ios');
   }, []);
 
-  // Вызывается при выборе конкретного тега
+  // Debounce-логика для поиска
+  useEffect(() => {
+    // 1. Если тег выбран — отключаем поиск
+    if (isTagSelected) {
+      setSearchResults([]);
+      return;
+    }
+    // 2. Если у пользователя нет подписки — тоже отключаем поиск
+    if (!hasSubscription) {
+      setSearchResults([]);
+      return;
+    }
+    // 3. Если меньше 3 символов — не ищем
+    if (searchText.length < 3) {
+      setSearchResults([]);
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        setIsSearching(true);
+        const queryParam = `${searchText},${userStore.getCurrentUserCity()},${userStore.getCurrentUserCountry()}`;
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&accept-language=en&q=${encodeURIComponent(
+            queryParam
+          )}`
+        );
+        const data = (await response.json()) as any[];
+        console.log('Полученные данные:', data);
+
+        if (data.length > 0) uiStore.setIsSearchAddressExpanded(true);
+        setSearchResults(data);
+      } catch (error) {
+        console.log('Ошибка при поиске:', error);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 900);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [searchText, isTagSelected, hasSubscription]);
+
+  // При выборе адреса
+  const handleSelectSearchResult = (item: any) => {
+    setSearchText(item.display_name);
+    setSearchResults([]);
+    const lat = parseFloat(item.lat);
+    const lon = parseFloat(item.lon);
+    onAddressSelected([lon, lat]);
+  };
+
+  // Очистка строки
+  const handleClearSearchText = () => {
+    setSearchText('');
+    setSearchResults([]);
+  };
+
+  // === ЛОГИКА С ТЕГАМИ ===
   const handleSelectTag = (tagName: string, type: MapPointType = 0) => {
-    // Ставим «идёт загрузка» на выбранный тег
     setLoadingTag(type);
-    // Скрываем снэкбар, если вдруг был показан
     setSnackbarVisible(false);
 
-    // Эмулируем запрос к серверу (замените setTimeout на ваш реальный запрос)
     setTimeout(() => {
-      // Когда получили ответ, снимаем загрузку
       setLoadingTag(null);
-      // Теперь окончательно считаем, что тег выбран => список тегов скрывается
       setIsTagSelected(true);
-
-      // Устанавливаем выбранный тег и флаг в UIStore
       setSelectedTag(tagName);
+      setSearchText(tagName);
+      setSearchResults([]);
       uiStore.setIsPointSearchFilterTagSelected(true);
 
-      // Вызываем колбэк родителя
       onTagSelected(type);
     }, 1500);
   };
 
-  // Сброс выбранного тега
   const handleClearTag = () => {
     setSelectedTag('');
     setIsTagSelected(false);
+    setSearchText('');
     uiStore.setIsPointSearchFilterTagSelected(false);
   };
 
-  // Переключаем вид (карта / список)
+  // Переключение карты/списка
   const handleOpenCardView = () => {
     setIsCardView(!isCardView);
     onOpenCardView();
   };
 
+  // Обработка ввода текста
+  const handleChangeText = (text: string) => {
+    // Если выбран тег — не даём вводить
+    if (isTagSelected) {
+      return;
+    }
+    // Если нет подписки — показываем модал и сбрасываем ввод
+    if (!hasSubscription) {
+      setShowSubscriptionModal(true);
+      // Сбрасываем строку обратно, чтобы пользователь не видел ввод
+      return;
+    }
+    // Иначе вводим
+    setSearchText(text);
+    onSearchTextChange(text);
+  };
+
   return (
     <View style={{ position: 'relative', top: 0, left: 0, right: 0, zIndex: 1 }}>
-      {/* Поиск и две кнопки (Фильтры, переключатель Карта/Список) */}
+      {/* Модальное окно призыва подключить подписку */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showSubscriptionModal}
+        onRequestClose={() => setShowSubscriptionModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Подключите Премиум</Text>
+            <Text style={{ marginTop: 8 }}>
+              С подпиской вы сможете искать адреса, видеть дополнительные функции и т.д.
+            </Text>
+            <View style={{ marginTop: 20 }}>
+              <Button title="Закрыть" onPress={() => setShowSubscriptionModal(false)} />
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Верхняя панель: поле ввода / фильтр / переключатель */}
       <View
         className={`flex-row w-full ${isIOS ? 'pt-6' : 'pt-2'} px-2 justify-center items-center`}
       >
-        <Searchbar
-          onChangeText={onSearchTextChange}
-          value={selectedTag}
-          onClearIconPress={handleClearTag}
-          elevation={1}
-          style={{ backgroundColor: 'white' }}
-          inputStyle={{
-            color: 'black',
-            fontFamily: 'NunitoSans_400Regular',
-            padding: -10,
-            alignSelf: 'center',
-          }}
-          className="flex-1 h-12"
-        />
+        <View style={{ flex: 1 }}>
+          <Searchbar
+            // При выбранном теге поле ввода блокируем
+            editable={!isTagSelected}
+            value={isTagSelected ? selectedTag : searchText}
+            onChangeText={handleChangeText}
+            onClearIconPress={() => {
+              if (isTagSelected) {
+                handleClearTag();
+              } else {
+                handleClearSearchText();
+              }
+            }}
+            elevation={1}
+            style={{ backgroundColor: 'white' }}
+            inputStyle={{
+              color: 'black',
+              fontFamily: 'NunitoSans_400Regular',
+              padding: -10,
+              alignSelf: 'center',
+            }}
+            className="h-12"
+            placeholder="Введите адрес..."
+          />
+
+          {/* Показываем выпадающий список, только если тег не выбран и есть подписка */}
+          {!isTagSelected && hasSubscription && searchResults.length > 0 && (
+            <FlatList
+              style={styles.dropdown}
+              data={searchResults}
+              renderItem={({ item }) => (
+                <Pressable
+                  onPressOut={() => handleSelectSearchResult(item)}
+                  style={styles.dropdownItem}
+                >
+                  <Text style={styles.dropdownItemText}>{item.display_name}</Text>
+                </Pressable>
+              )}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          )}
+        </View>
 
         <CustomBudgeButton
           iconSet="Ionicons"
@@ -124,9 +254,10 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
         </TouchableOpacity>
       </View>
 
-      {/* Если тег уже «окончательно» выбран (isTagSelected = true), то показываем снэкбар.
-          Если нет, показываем список тегов (при этом на нажатой кнопке будет спиннер). */}
-      {!isTagSelected ? (
+      {/* Если тег выбран — SnackBar, иначе — горизонтальный список тегов */}
+      {isTagSelected ? (
+        <CustomSnackBar visible={snackbarVisible} setVisible={setSnackbarVisible} />
+      ) : (
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View className="flex-row space-x-2 px-1">
             <CustomButtonWithIcon
@@ -137,7 +268,6 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
               buttonStyle="bg-white"
               isLoading={loadingTag === MapPointType.Walk}
             />
-
             <CustomButtonWithIcon
               iconName="alert-circle-outline"
               iconSet="Ionicons"
@@ -146,7 +276,6 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
               buttonStyle="bg-white"
               isLoading={loadingTag === MapPointType.Danger}
             />
-
             <CustomButtonWithIcon
               iconName="leaf-outline"
               iconSet="Ionicons"
@@ -155,7 +284,6 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
               buttonStyle="bg-white"
               isLoading={loadingTag === MapPointType.Park}
             />
-
             <CustomButtonWithIcon
               iconName="basketball-outline"
               iconSet="Ionicons"
@@ -166,7 +294,6 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
               buttonStyle="bg-white"
               isLoading={loadingTag === MapPointType.Playground}
             />
-
             <CustomButtonWithIcon
               iconName="select-place"
               iconSet="MaterialCommunityIcons"
@@ -175,7 +302,6 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
               buttonStyle="bg-white"
               isLoading={loadingTag === MapPointType.DogArea}
             />
-
             <CustomButtonWithIcon
               iconName="cafe-outline"
               iconSet="Ionicons"
@@ -184,7 +310,6 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
               buttonStyle="bg-white"
               isLoading={loadingTag === MapPointType.Cafe}
             />
-
             <CustomButtonWithIcon
               iconName="restaurant-outline"
               iconSet="Ionicons"
@@ -195,7 +320,6 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
               buttonStyle="bg-white"
               isLoading={loadingTag === MapPointType.Restaurant}
             />
-
             <CustomButtonWithIcon
               iconName="heart-outline"
               iconSet="Ionicons"
@@ -206,7 +330,6 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
               buttonStyle="bg-white"
               isLoading={loadingTag === MapPointType.Veterinary}
             />
-
             <CustomButtonWithIcon
               iconName="storefront-outline"
               iconSet="Ionicons"
@@ -217,7 +340,6 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
               buttonStyle="bg-white"
               isLoading={loadingTag === MapPointType.PetStore}
             />
-
             <CustomButtonWithIcon
               iconName="location-pin"
               iconSet="SimpleLine"
@@ -228,9 +350,6 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
             />
           </View>
         </ScrollView>
-      ) : (
-        // Снэкбар, который виден, когда тег уже «окончательно» выбран
-        <CustomSnackBar visible={snackbarVisible} setVisible={setSnackbarVisible} />
       )}
     </View>
   );
@@ -243,8 +362,48 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.3,
     shadowRadius: 1.5,
-    // Android тени через elevation
+    // Android тени
     elevation: 3,
+  },
+  dropdown: {
+    position: 'absolute',
+    top: 52, // чтобы список был под Searchbar
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    zIndex: 9999,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    maxHeight: 500,
+  },
+  dropdownItem: {
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  dropdownItemText: {
+    fontSize: 14,
+    color: '#333',
+  },
+
+  // Пример простого стиля для модального окна
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)', // полупрозрачный фон
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });
 

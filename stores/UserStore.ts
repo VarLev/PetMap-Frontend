@@ -33,6 +33,7 @@ class UserStore {
   isInitialized: boolean = false;
   isError: boolean = false;
   currentCity: string = '';
+  currentCountry: string = '';
   userHasSubscription = false;
   isUserJustRegistrated = false;
 
@@ -98,6 +99,14 @@ class UserStore {
   
   getCurrentUserCity() {
     return this.currentCity;
+  }
+
+  setCurrentUserCountry(country: string) {
+    this.currentCountry = country;
+  }
+
+  getCurrentUserCountry() {
+    return this.currentCountry;
   }
 
   getCurrentUserId() {
