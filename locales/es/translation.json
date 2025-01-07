@@ -843,7 +843,8 @@
   },
   "Map": {
     "fillProfileAndAddPet": "Para crear un paseo, necesitás completar tu perfil y agregar una mascota.",
-    "walkCreatedWithBonus": "El paseo se creó con éxito. Sumaste 400 puntos de bonificación por crear tu primer paseo."
+    "walkCreatedWithBonus": "El paseo se creó con éxito. Sumaste 400 puntos de bonificación por crear tu primer paseo.",
+    "searchAddress":"Ingrese la dirección..."
   },
   "FilterSearchTags": {
     "walk": "Paseo",

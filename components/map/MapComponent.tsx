@@ -44,7 +44,7 @@ import { createGeoJSONFeatures } from '@/utils/mapUtils';
 import { generateChatData, generateChatIdForTwoUsers } from '@/utils/chatUtils';
 import { Easing } from 'react-native-reanimated';
 import { BG_COLORS } from '@/constants/Colors';
-import { set } from 'firebase/database';
+
 
 
 const MapBoxMap = observer(() => {
@@ -506,6 +506,8 @@ const MapBoxMap = observer(() => {
             zoomEnabled={!isCardView}
             rotateEnabled={!isCardView}
           >
+
+           
             {hasPermission && (
               <UserLocation
                 minDisplacement={50}
@@ -641,6 +643,7 @@ const MapBoxMap = observer(() => {
               zIndex: 10,
             }}
           >
+             
             <SearchAndTags
               selectedTag={selectedTag}
               setSelectedTag={setSelectedTag}
@@ -661,6 +664,8 @@ const MapBoxMap = observer(() => {
                 
               }}
             />
+
+            
           </View>
 
           {/* BottomSheet для отображения деталей выбранной точки/объявления */}

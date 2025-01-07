@@ -259,8 +259,9 @@ class UserStore {
         // Обновляем MobX состояние и возвращаем пользователя
         runInAction(() => {
           this.currentUser = new User(user);
+          this.setUserHasSubscription(user.isPremium?? false);
         });
-        console.log('Пользователь загружен из AsyncStorage');
+        
         return this.currentUser;
       } 
 

@@ -212,7 +212,7 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
               alignSelf: 'center',
             }}
             className="h-12"
-            placeholder="Введите адрес..."
+            placeholder={i18n.t('Map.searchAddress')}
           />
 
           {/* Показываем выпадающий список, только если тег не выбран и есть подписка */}

@@ -9,6 +9,8 @@ import { useDrawer } from "@/contexts/DrawerProvider";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import CustomListItemWrapper from "@/components/custom/menuItem/ListItemWrapper";
 import i18n from "@/i18n";
+import DismissibleBanner from "../ads/DismissibleBanner";
+import { BannerAdSize } from "react-native-google-mobile-ads";
 
 const SidebarUserProfileComponent = () => {
   const currentUser = userStore.currentUser;
@@ -199,6 +201,7 @@ const SidebarUserProfileComponent = () => {
             onPress={() => console.log(i18n.t("Sidebar.support"))}
           /> */}
         </List.Section>
+        {userStore.getUserHasSubscription() && <DismissibleBanner adSize={BannerAdSize.LARGE_BANNER} />}
       </View>
     </SafeAreaView>
   );

@@ -25,14 +25,18 @@ GoogleSignin.configure({
 const App = () => {
   const { loading, isLogged, isInitialized, isError, isUserJustRegistrated} = useStore();
   const { showAlert } = useAlert();
-  const [adShown, setAdShown] = useState(true);
-  const userHasSubscription = userStore.getUserHasSubscription(); // Проверка на наличие подписки у пользователя
+  const [adShown, setAdShown] = useState(false); // Проверка, показывали ли уже рекламу
+  const [userHasSubscription, setUserHasSubscription] = useState(false); // Проверка на наличие подписки у пользователя
 
   // проверка, если платформа IOS, показываем иконку регистрации через Aple
-
+  
   useEffect(() => {
+    console.log("userStore.getUserHasSubscription()", userStore.getUserHasSubscription());
+    setAdShown(userStore.getUserHasSubscription());
+    setUserHasSubscription(userStore.getUserHasSubscription());
+
     const checkAuthAndRedirect = async () => {
-      if (isInitialized && !loading && userStore.getLogged() && !isUserJustRegistrated) {
+      if (isInitialized && adShown && !loading && userStore.getLogged() && !isUserJustRegistrated) {
         await router.replace("/search/news"); // Перенаправление на карту, если пользователь авторизован
       }
     };
@@ -46,7 +50,7 @@ const App = () => {
         require("../assets/images/InternetError.webp")
       );
     }
-  }, [loading, isLogged, isInitialized, isError, adShown, showAlert, isUserJustRegistrated]);
+  }, [loading, isLogged, isInitialized, isError, adShown, isUserJustRegistrated]);
 
    // Отображаем загрузочный экран до инициализации
   if (!isError && (loading || !isInitialized)) return <ScreenHolderLogo />;
@@ -69,6 +73,7 @@ const App = () => {
       router.replace("/search/news");
   }
 
+  
   // Если у пользователя нет подписки и реклама еще не была показана, показываем AppOpenAdHandler
   if (!userHasSubscription && !adShown) {
     return <AppOpenAdHandler onAdComplete={() => setAdShown(true)} />;
@@ -81,46 +86,46 @@ const App = () => {
 
   return (
     <GestureHandlerRootView >
-    <SafeAreaView className="bg-white h-full">
-      <View className="w-full h-full px-4 justify-center ">
-        <View className="flex-row mt-2 items-start justify-center">
-          <Text variant="titleSmall" className="ml-0 text-xl font-nunitoSansBold mt-4 mb-2">
-            {i18n.t('index.welcome')} 
-          </Text>
-        </View>
-        <View className="justify-center items-center ">
-          <OnboardingCarousel />
-        </View>
-        <View className="pt-8" >
-          <CustomButtonPrimary
-            title={i18n.t('index.signUp')} 
-            handlePress={() => router.push("/sign-up")}
-            containerStyles="w-full"
-          />
-          <CustomButtonOutlined
-            title={i18n.t('index.alreadyHaveAccount')} 
-            handlePress={() => router.push("/sign-in")}
-            containerStyles="w-full"
-          />
-        </View>
-        <View className="flex-col justify-center items-center pt-3">
-          <Text variant="titleSmall" className="text-sm font-nunitoSansRegular text-stone-400">
-            {i18n.t('index.otherSignInMethods')}  
-          </Text>
-          <View className="flex-row justify-around mt-2 gap-x-4">
-            <TouchableOpacity onPress={handleGooglePress}>
-              <Image className="w-12 h-12" source={googleLogo} />
-            </TouchableOpacity>
-            {/* {isIos && <TouchableOpacity onPress={() => console.log("Pressed Apple")}>
-              <Image className="w-12 h-12" source={appleLogo} />
-            </TouchableOpacity>}
-            <TouchableOpacity onPress={() => console.log("Pressed Facebook")}>
-              <Image className="w-12 h-12" source={facebookLogo} />
-            </TouchableOpacity> */}
+      <SafeAreaView className="bg-white h-full">
+        <View className="w-full h-full px-4 justify-center ">
+          <View className="flex-row mt-2 items-start justify-center">
+            <Text variant="titleSmall" className="ml-0 text-xl font-nunitoSansBold mt-4 mb-2">
+              {i18n.t('index.welcome')} 
+            </Text>
+          </View>
+          <View className="justify-center items-center ">
+            <OnboardingCarousel />
+          </View>
+          <View className="pt-8" >
+            <CustomButtonPrimary
+              title={i18n.t('index.signUp')} 
+              handlePress={() => router.push("/sign-up")}
+              containerStyles="w-full"
+            />
+            <CustomButtonOutlined
+              title={i18n.t('index.alreadyHaveAccount')} 
+              handlePress={() => router.push("/sign-in")}
+              containerStyles="w-full"
+            />
+          </View>
+          <View className="flex-col justify-center items-center pt-3">
+            <Text variant="titleSmall" className="text-sm font-nunitoSansRegular text-stone-400">
+              {i18n.t('index.otherSignInMethods')}  
+            </Text>
+            <View className="flex-row justify-around mt-2 gap-x-4">
+              <TouchableOpacity onPress={handleGooglePress}>
+                <Image className="w-12 h-12" source={googleLogo} />
+              </TouchableOpacity>
+              {/* {isIos && <TouchableOpacity onPress={() => console.log("Pressed Apple")}>
+                <Image className="w-12 h-12" source={appleLogo} />
+              </TouchableOpacity>}
+              <TouchableOpacity onPress={() => console.log("Pressed Facebook")}>
+                <Image className="w-12 h-12" source={facebookLogo} />
+              </TouchableOpacity> */}
+            </View>
           </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
     </GestureHandlerRootView>
   );
 };
