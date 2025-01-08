@@ -185,7 +185,14 @@ class UIStore {
     }
   }
 
-  
+  async subscribe(userId: string, subscriptionTypeId: number) {
+    try {
+      // await apiClient.post(`/${userId}/`, subscriptionTypeId);
+      return true;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
 
 }
 
