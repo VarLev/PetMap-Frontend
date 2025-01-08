@@ -50,7 +50,7 @@ const App = () => {
         require("../assets/images/InternetError.webp")
       );
     }
-  }, [loading, isLogged, isInitialized, isError, adShown, isUserJustRegistrated]);
+  }, [loading, isLogged, isInitialized, isError, isUserJustRegistrated]);
 
    // Отображаем загрузочный экран до инициализации
   if (!isError && (loading || !isInitialized)) return <ScreenHolderLogo />;
