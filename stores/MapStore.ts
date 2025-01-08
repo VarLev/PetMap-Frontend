@@ -222,7 +222,7 @@ class MapStore {
     }
   }
   
-  async getUserCity(location: [number, number]) {
+  async getUserCity(location: [number, number]): Promise<[string, string] | undefined> {
     try {
       const response = await axios.get(
         `https://api.mapbox.com/search/geocode/v6/reverse?&longitude=${location[0]}&latitude=${location[1]}&types=address&access_token=${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}`
@@ -232,12 +232,14 @@ class MapStore {
         const feature = response.data.features[0];
         const context = feature.properties.context;
   
+        const country = context.country?.name || '';
         const city = context.place?.name || '';
 
         console.log('City:', city);
         this.setCity(city);
-
-        return city;
+        
+        
+        return [country, city];
       } else {
         console.error("No address found for the provided coordinates.");
       }

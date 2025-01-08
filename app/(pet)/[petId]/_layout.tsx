@@ -10,9 +10,8 @@ export default function PetLayout() {
         name="edit" 
         options={{ 
           headerShown: true,
-          headerTransparent: true,
-          headerTitle: '',
-          headerTintColor: BG_COLORS.indigo[700],
+          title: i18n.t('ProfileLayout.editUserTitle'),
+         
         }} 
    
       />
@@ -24,7 +23,7 @@ export default function PetLayout() {
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' },
           headerTransparent: true,
           headerTitle: '',
-          headerTintColor: BG_COLORS.indigo[700],
+
         }} 
         
       />

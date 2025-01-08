@@ -33,6 +33,7 @@ class UserStore {
   isInitialized: boolean = false;
   isError: boolean = false;
   currentCity: string = '';
+  currentCountry: string = '';
   userHasSubscription = false;
   isUserJustRegistrated = false;
 
@@ -98,6 +99,14 @@ class UserStore {
   
   getCurrentUserCity() {
     return this.currentCity;
+  }
+
+  setCurrentUserCountry(country: string) {
+    this.currentCountry = country;
+  }
+
+  getCurrentUserCountry() {
+    return this.currentCountry;
   }
 
   getCurrentUserId() {
@@ -250,8 +259,9 @@ class UserStore {
         // Обновляем MobX состояние и возвращаем пользователя
         runInAction(() => {
           this.currentUser = new User(user);
+          this.setUserHasSubscription(user.isPremium?? false);
         });
-        console.log('Пользователь загружен из AsyncStorage');
+        
         return this.currentUser;
       } 
 
@@ -515,7 +525,7 @@ class UserStore {
       mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [3, 3],
-      quality: 0.5,
+      quality: 0.8,
       
     });
 
