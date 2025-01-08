@@ -5,21 +5,25 @@ import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 import { Image, StyleSheet, View } from 'react-native';
 import { RadioButton, IconButton, Portal, Text } from 'react-native-paper';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
+import { SubsciptionType } from '@/dtos/enum/SubscriptionType';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
 import SubscriptionRadioButton from './SubscriptionRadioButton';
 import BottomSheetComponent from '../common/BottomSheetComponent';
 import FullBenefitsTable from './FullBenefitsTable';
+import userStore from '@/stores/UserStore';
+import uiStore from '@/stores/UIStore';
 
 type PaywallModalProps = {
-    handleCloseModal: () => void;
+    closeModal: () => void;
 }
 
-const PaywallModal: FC<PaywallModalProps> = observer(({handleCloseModal}) => {
+const PaywallModal: FC<PaywallModalProps> = observer(({closeModal}) => {
     const [subscriptionType, setSubscriptionType] = useState("");
     const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
     const [isFullBenefitsVisible, setIsFullBenefitsVisible] = useState(false);
     const [buttonMarginTop, setButtonMarginTop] = useState("mt-[auto]");
+    const [isSubcribedSuccess, setIsSubcribedSuccess] = useState(false);
     const sheetRef = useRef<BottomSheet>(null);
 
     useEffect(() => {
@@ -32,6 +36,14 @@ const PaywallModal: FC<PaywallModalProps> = observer(({handleCloseModal}) => {
         } else setButtonMarginTop("mt-[auto]");
     }, [subscriptionType, isFullBenefitsVisible])
 
+    const handleCloseModal = () => {
+        if (isSubcribedSuccess) {
+            setIsSubcribedSuccess(false);
+        }
+
+        closeModal();
+    }
+
     const openBenefits = () => setIsFullBenefitsVisible(true);
 
     const handleSheetClose = () => {
@@ -41,6 +53,19 @@ const PaywallModal: FC<PaywallModalProps> = observer(({handleCloseModal}) => {
     const handleSheetOpen = (subscriptionType: string) => {
         setSubscriptionType(subscriptionType);
         sheetRef.current?.expand();
+    }
+
+    const handleSubmitPayment = async (subscriptionType: string) => {
+        const subscriptionTypeId = subscriptionType === "year" ? SubsciptionType.Year : subscriptionType === "month" ? SubsciptionType.Month : null;
+        const userId = userStore.currentUser?.id;
+
+        if (subscriptionTypeId && userId) {
+            await uiStore.subscribe(userId, subscriptionTypeId)
+                .then(() => {
+                    sheetRef.current?.close();
+                    setIsSubcribedSuccess(true);
+                })
+        }
     }
 
     const RenderedContent = () => {
@@ -61,7 +86,7 @@ const PaywallModal: FC<PaywallModalProps> = observer(({handleCloseModal}) => {
                 </View>
                 <CustomButtonOutlined
                     title="Оформить подписку" 
-                    handlePress={() => {}}
+                    handlePress={() => handleSubmitPayment(subscriptionType)}
                     containerStyles="w-full bg-[#ACFFB9] mt-[16px] h-[46px]"
                     textStyles="text-[16px]"
                     fontWeight="font-semibold"
@@ -91,56 +116,95 @@ const PaywallModal: FC<PaywallModalProps> = observer(({handleCloseModal}) => {
                     </Defs>
                     <Rect x="0" y="0" width="100%" height="100%" fill="url(#grad)" />
                 </Svg>
-                <View className="h-full flex-column justify-start content-start px-[20px] pt-[40px]">
-                    <IconButton
-                        icon="close"
-                        size={30}
-                        iconColor="white"
-                        onPress={handleCloseModal}
-                        style={{alignSelf: "flex-end", marginHorizontal: 0, marginVertical: 0}}
-                    />
-                    {!isFullBenefitsVisible &&
-                        <Image
-                            source={require("@/assets/images/paywall/Placeholder.png")} 
-                            resizeMode="contain"
-                            style={{maxWidth: "90%", maxHeight: "36%", alignSelf: "center"}}
+                {!isSubcribedSuccess ? (
+                    <View className="h-full flex-column justify-start content-start px-[20px] pt-[40px]">
+                        <IconButton
+                            icon="close"
+                            size={30}
+                            iconColor="white"
+                            onPress={handleCloseModal}
+                            style={{alignSelf: "flex-end", marginHorizontal: 0, marginVertical: 0}}
                         />
-                    }
-                    
-                    <Text className="text-[20px] font-nunitoSansBold text-center color-white mt-4">Премиум подписка со скидкой!</Text>
-                    <Text className="text-[16px] text-center color-white  mt-2">Оформите подписку, чтобы использовать весь функционал приложения без ограничений!</Text>
-                    <View className="self-start mt-6">
-                        <RadioButton.Group
-                            onValueChange={newValue => setSubscriptionType(newValue)}  
-                            value={subscriptionType}
-                        >
-                            <SubscriptionRadioButton
-                                value="year"
-                                price="599 RUB / год"
-                                handleOpenBenefits={openBenefits}
-                                checked={subscriptionType === "year"}
-                                handleSheetOpen={() => handleSheetOpen("year")}
+                        {!isFullBenefitsVisible &&
+                            <Image
+                                source={require("@/assets/images/paywall/Placeholder.png")} 
+                                resizeMode="contain"
+                                style={{maxWidth: "90%", maxHeight: "36%", alignSelf: "center"}}
                             />
-                            <SubscriptionRadioButton
-                                value="month"
-                                price="99 RUB / месяц"
-                                handleOpenBenefits={openBenefits}
-                                checked={subscriptionType === "month"}
-                                handleSheetOpen={() => handleSheetOpen("month")}
-                            />
-                        </RadioButton.Group>
+                        }
+                        
+                        <Text className="text-[20px] font-nunitoSansBold text-center color-white mt-4">Премиум подписка со скидкой!</Text>
+                        <Text className="text-[16px] text-center color-white  mt-2">Оформите подписку, чтобы использовать весь функционал приложения без ограничений!</Text>
+                        <View className="self-start mt-6">
+                            <RadioButton.Group
+                                onValueChange={newValue => setSubscriptionType(newValue)}  
+                                value={subscriptionType}
+                            >
+                                <SubscriptionRadioButton
+                                    value="year"
+                                    price="599 RUB / год"
+                                    handleOpenBenefits={openBenefits}
+                                    checked={subscriptionType === "year"}
+                                    handleSheetOpen={() => handleSheetOpen("year")}
+                                />
+                                <SubscriptionRadioButton
+                                    value="month"
+                                    price="99 RUB / месяц"
+                                    handleOpenBenefits={openBenefits}
+                                    checked={subscriptionType === "month"}
+                                    handleSheetOpen={() => handleSheetOpen("month")}
+                                />
+                            </RadioButton.Group>
+                        </View>
+                        {isFullBenefitsVisible &&
+                            <FullBenefitsTable />
+                        }
+                        <CustomButtonOutlined
+                            title="Попробовать 7 дней бесплатно" 
+                            handlePress={() => {}}
+                            containerStyles={`w-full bg-[#ACFFB9] ${buttonMarginTop} h-[46px]`}
+                            textStyles="text-[16px]"
+                            fontWeight="font-semibold"
+                        />
                     </View>
-                    {isFullBenefitsVisible &&
-                        <FullBenefitsTable />
-                    }
-                    <CustomButtonOutlined
-                        title="Попробовать 7 дней бесплатно" 
-                        handlePress={() => {}}
-                        containerStyles={`w-full bg-[#ACFFB9] ${buttonMarginTop} h-[46px]`}
-                        textStyles="text-[16px]"
-                        fontWeight="font-semibold"
-                    />
-                </View>
+                ) : (
+                    <View className="h-full flex-column items-center justify-center px-[20px] py-[40px]">
+                        <IconButton
+                            icon="close"
+                            size={30}
+                            iconColor="white"
+                            onPress={handleCloseModal}
+                            style={{alignSelf: "flex-end", marginHorizontal: 0, marginVertical: 0}}
+                        />
+                        <Image
+                            source={require("@/assets/images/paywall/StarsTop.png")} 
+                            resizeMode="contain"
+                            style={{height: 115, marginBottom: "auto"}}
+                        />
+                        <View className="w-full flex-column items-center">
+                            <Image
+                                source={require("@/assets/images/paywall/Success.png")} 
+                                resizeMode="contain"
+                                style={{height: 220}}
+                            />
+                            <Text className="text-[20px] font-nunitoSansBold text-center color-white mt-4">Ура! Вы оформили подписку!</Text>
+                            <Text className="text-[16px] text-center color-white  mt-2">Добро пожаловать в семью PetMap в качестве Премиум пользователя. Теперь вам доступен весь функционал приложения.</Text>
+                            <CustomButtonOutlined
+                                title="Спасибо!" 
+                                handlePress={handleCloseModal}
+                                containerStyles={`w-full bg-[#ACFFB9] mt-[30px] h-[46px]`}
+                                textStyles="text-[16px]"
+                                fontWeight="font-semibold"
+                            />
+                        </View>
+                        <Image
+                            source={require("@/assets/images/paywall/StarsBottom.png")} 
+                            resizeMode="contain"
+                            style={{height: 90, marginTop: "auto"}}
+                        />
+                    </View>
+                )}
+                
             </View>
         )
     }
