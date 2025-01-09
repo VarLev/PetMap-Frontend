@@ -23,6 +23,7 @@ import { ReviewDTO } from '@/dtos/classes/review/Review';
 import { IMapPointTagDTO } from '@/dtos/Interfaces/map/IMapPointTagDTO';
 import { IPOI } from '@/dtos/Interfaces/map/POI/IPOI';
 
+
 class MapStore {
   address = '';
   advrtAddress = '';
@@ -213,7 +214,7 @@ class MapStore {
         this.isAvaliableToCreateWalk = true;
       } else {
         console.error("No address found for the provided coordinates.");
-        this.setAdvrtAddress("Address not found");
+        this.setAdvrtAddress(this.city??'');
         this.isAvaliableToCreateWalk = false;
       }
     } catch (error) {

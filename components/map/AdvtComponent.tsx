@@ -314,11 +314,15 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
               <Text className="mt-2 text-justify text-base text-indigo-800 font-nunitoSansBold">
                 {i18n.t("WalkDetails.walkDetails")}
               </Text>
-              <Text className="mt-2 text-justify text-base text-gray-600 font-nunitoSansRegular">
-                {advrt.description?.trim()}
-              </Text>
               <CustomTextComponent
-                text={advrt.address}
+                text={advrt.description?.trim()}
+                enableTranslation={true}
+              />
+              {/* <Text className="mt-2 text-justify text-base text-gray-600 font-nunitoSansRegular">
+                {advrt.description?.trim()}
+              </Text> */}
+              <CustomTextComponent
+                text={advrt.address === "Address not found" ? "" : advrt.address}
                 leftIcon="location-pin"
                 iconSet="simpleLine"
               />
