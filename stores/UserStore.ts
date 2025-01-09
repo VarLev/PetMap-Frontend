@@ -62,7 +62,7 @@ class UserStore {
   }
 
   getUserHasSubscription() {
-    return this.userHasSubscription;
+    return true;
   }
   
   setLoginedUser(user: any) {
@@ -259,7 +259,7 @@ class UserStore {
         // Обновляем MobX состояние и возвращаем пользователя
         runInAction(() => {
           this.currentUser = new User(user);
-          this.setUserHasSubscription(user.isPremium?? false);
+          this.setUserHasSubscription(this.getUserHasSubscription()?? false);
         });
         
         return this.currentUser;

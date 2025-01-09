@@ -20,7 +20,7 @@ const TranslatableTextMessage: React.FC<TranslatableTextMessageProps> = observer
   // Либо показываем переведённый текст, либо оригинальный
   const textToDisplay = translatedText ?? message.text;
   
-  const hasSubscription = userStore.currentUser?.isPremium ?? false;
+  const hasSubscription = userStore.getUserHasSubscription() ?? false;
   const isFromOtherUser = message.author.id !== userStore.currentUser?.id
 
   return (

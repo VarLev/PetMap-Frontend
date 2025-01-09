@@ -33,7 +33,7 @@ const ChatScreen: React.FC = observer(() => {
 
   const [translatedMessages, setTranslatedMessages] = useState<Record<string, string>>({})
   const [loadingTranslation, setLoadingTranslation] = useState<Record<string, boolean>>({})
-  const hasSubscription = UserStore.currentUser?.isPremium ?? false;  
+  const hasSubscription = UserStore.getUserHasSubscription() ?? false;  
 
   // Загружаем чёрный список, FMC-токен и проверяем блокировку
   useEffect(() => {

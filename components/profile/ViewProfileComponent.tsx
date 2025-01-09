@@ -33,7 +33,7 @@ const ViewProfileComponent = observer(
     const [rightIcon, setRightIcon] = useState<string | null>();
     const [isIOS, setIsIOS] = useState(false);
     const [isOnline, setIsOnline] = useState(false);
-    const [hasSubscription, setHasSubscription] = useState(userStore.currentUser?.isPremium ?? false);
+    const [hasSubscription, setHasSubscription] = useState(userStore.getUserHasSubscription() ?? false);
 
     useEffect(() => {
       setIsIOS(Platform.OS === 'ios');

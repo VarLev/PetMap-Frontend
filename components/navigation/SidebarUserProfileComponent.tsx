@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Image, Platform } from "react-native";
-import { List, TouchableRipple } from "react-native-paper";
+import { Button, List, TouchableRipple } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/Images";
 import userStore from "@/stores/UserStore";
@@ -14,7 +14,7 @@ import { BannerAdSize } from "react-native-google-mobile-ads";
 
 const SidebarUserProfileComponent = () => {
   const currentUser = userStore.currentUser;
-  const hasSubscription = userStore.currentUser?.isPremium;
+  const hasSubscription = userStore.getUserHasSubscription();
   const { closeDrawer } = useDrawer();
 
   const handleProfilePress = () => {
@@ -36,6 +36,7 @@ const SidebarUserProfileComponent = () => {
     router.replace("/profile/settings");
     closeDrawer();
   };
+
 
   return (
     <SafeAreaView className="bg-white h-full">
@@ -110,6 +111,7 @@ const SidebarUserProfileComponent = () => {
             </View>
           </View>
         </TouchableRipple>
+       
 
         {/* Подписка */}
         {/* <View className="flex-row mt-4 content-center items-center">
