@@ -216,10 +216,6 @@ const MapBoxMap = observer(() => {
     setModifiedFieldsCount(count);
   };
 
-  const handleAddressChange = (text: string) => {
-    mapStore.setAddress(text);
-    mapStore.fetchSuggestions(text);
-  };
 
   const handlePress = (event: any) => {
     if(uiStore.getIsSearchAddressExpanded())
@@ -389,8 +385,7 @@ const MapBoxMap = observer(() => {
       //await chatStore.sendInviteMessage(chatId!, otherUser);
       
       if (chatId) {
-        
-        router.push(`/chat/${chatId}`);
+        router.push(`/(chat)/${chatId}`);
         //router.push(`/chat/${chatId}`);
       }
     } catch (error) {

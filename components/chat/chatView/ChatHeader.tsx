@@ -49,7 +49,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ userName, avatarUrl, onPressAva
             <Text className="text-lg font-nunitoSansBold">{shortenName(userName)}</Text>
           </View>
         </View>
-        <View className="flex-row items-center gap-2">
+        <View className="flex-row items-center gap-2 pr-4">
           <FontAwesome6 name="language" size={24} color={BG_COLORS.violet[300]} />
           <Switch
             value={isTranslationEnabled}

@@ -193,7 +193,7 @@ const ViewProfileComponent = observer(
 
               <View className="pr-3 pl-4">
                 {/* Описание - рендерим, только если есть текст */}
-                {!!user.description?.trim() && (
+                {user.description?.trim()  && user.description.length > 0 &&(
                   <View>
                     <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">{i18n.t('UserProfile.aboutMe')}</Text>
                     <CustomTextComponent
