@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { TouchableOpacity, View, Image } from "react-native";
+import { TouchableOpacity, View, Image, Platform } from "react-native";
 import { Text } from "react-native-paper";
+import Purchases, { LOG_LEVEL } from 'react-native-purchases';
 import OnboardingCarousel from "../components/auth/OnboardingCarousel";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButtonPrimary from "@/components/custom/buttons/CustomButtonPrimary";
@@ -22,12 +23,14 @@ GoogleSignin.configure({
   webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
 });
 
+
+
 const App = () => {
   const { loading, isLogged, isInitialized, isError, isUserJustRegistrated} = useStore();
   const { showAlert } = useAlert();
   const [adShown, setAdShown] = useState(false); // Проверка, показывали ли уже рекламу
   const [userHasSubscription, setUserHasSubscription] = useState(false); // Проверка на наличие подписки у пользователя
-
+  
   // проверка, если платформа IOS, показываем иконку регистрации через Aple
   
   useEffect(() => {
