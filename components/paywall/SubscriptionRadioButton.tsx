@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { FC, useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -7,29 +8,60 @@ type SubscriptionRadioButtonProps = {
     value: string;
     price: string;
     checked: boolean;
+    sale?: number;
     handleSheetOpen: () => void;
     handleOpenBenefits: () => void;
 }
 
-const SubscriptionRadioButton: FC<SubscriptionRadioButtonProps> = ({value, price, handleOpenBenefits, checked, handleSheetOpen}) => {
+const SubscriptionRadioButton: FC<SubscriptionRadioButtonProps> = ({value, price, checked, sale, handleSheetOpen, handleOpenBenefits}) => {
     const [borderColor, setBorderColor] = useState("#BFA8FF");
     const [borderWidth, setBorderWidth] = useState(1);
-    const [paddingVertical, setPaddingVertical] = useState(16);
+    const [paddingVertical, setPaddingVertical] = useState(14);
     const [paddingHorizontal, setPaddingHorizontal] = useState(10);
+    const [isSaleInfo, setIsSaleInfo] = useState(false);
 
     useEffect(() => {
         if (checked === true) {
             setBorderColor("#ACFFB9");
             setBorderWidth(2);
-            setPaddingVertical(15);
+            setPaddingVertical(13);
             setPaddingHorizontal(9);
         } else {
             setBorderColor("#BFA8FF");
             setBorderWidth(1);
-            setPaddingVertical(16);
+            setPaddingVertical(14);
             setPaddingHorizontal(10);
         }
     }, [checked]);
+
+    useEffect(() => {
+        if (sale) {
+            setIsSaleInfo(true)
+        } else setIsSaleInfo(false);
+    }, [sale]);
+
+    const fullBenefits = [
+        {
+            id: 1,
+            firstWord: "Безлимитное",
+            lastWords: "создание прогулок"
+        },
+        {
+            id: 2,
+            firstWord: "Безлимитное",
+            lastWords: "создание меток на карте"
+        },
+        {
+            id: 3,
+            firstWord: "Встроеный",
+            lastWords: "AI-переводчик"
+        },
+        {
+            id: 4,
+            firstWord: "Пет-Бонусы:",
+            lastWords: "4000"
+        }
+    ];
 
     return (
         <TouchableOpacity onPress={handleSheetOpen}>
@@ -50,14 +82,22 @@ const SubscriptionRadioButton: FC<SubscriptionRadioButtonProps> = ({value, price
                 <View className="flex-column gap-1">
                     <Text className="text-[24px] font-nunitoSansBold color-white">{price}</Text>
                     <View className="flex-column">
-                        <View className="flex-row">
+                        {fullBenefits.map(benefit => {
+                            return (
+                                <View key={benefit.id} className="flex-row">
+                                    <Text style={{...styles.textSmall, ...styles.semiBold}}>{'\u2022 '} {benefit.firstWord} </Text>
+                                    <Text style={styles.textSmall}>{benefit.lastWords}</Text>
+                                </View>
+                            )
+                        })}
+                        {/* <View className="flex-row">
                             <Text style={{...styles.textSmall, ...styles.semiBold}}>{'\u2022 '} Безлимитное </Text>
                             <Text style={styles.textSmall}>создание прогулок</Text>
                         </View>
                         <View className="flex-row">
                             <Text style={{...styles.textSmall, ...styles.semiBold}}>{'\u2022 '} Безлимитное </Text>
                             <Text style={styles.textSmall}>создание меток на карте</Text>
-                        </View>
+                        </View> */}
                     </View>
                     <TouchableOpacity
                         className="flex-row items-center"
@@ -72,6 +112,11 @@ const SubscriptionRadioButton: FC<SubscriptionRadioButtonProps> = ({value, price
                         />
                     </TouchableOpacity>
                 </View>
+                {isSaleInfo &&
+                    <View style={styles.saleContainer}>
+                        <Text style={styles.saleText}>Выгоднее на {sale}%</Text>
+                    </View>
+                }
             </View>
         </TouchableOpacity>
         
@@ -89,7 +134,8 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         borderWidth: 1,
         backgroundColor: "#1D1B204D",
-        marginBottom: 12
+        marginBottom: 12,
+        position: "relative"
     },
     iconButton: {
         alignSelf: "flex-end",
@@ -103,8 +149,21 @@ const styles = StyleSheet.create({
     },
     semiBold: {
         fontWeight: 600
+    },
+    saleContainer: {
+        position: "absolute",
+        top: -16,
+        right: 20,
+        backgroundColor: "white",
+        padding: 8,
+        borderRadius: 16
+
+    },
+    saleText: {
+        color: Colors.darkViolet,
+        fontSize: 14,
+        fontWeight: 500,
     }
-      
 })
 
 export default SubscriptionRadioButton;
