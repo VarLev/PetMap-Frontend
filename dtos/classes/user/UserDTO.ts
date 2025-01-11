@@ -33,6 +33,8 @@ export class User implements IUser {
   location?: string | null ;
   jobs?: Job[] | null;
   isOnline?: boolean | null;
+  userGroup?: number | null;
+  userStatus?: number | null;
 
   
 
@@ -63,5 +65,7 @@ export class User implements IUser {
     this.instagram = data.instagram;
     this.location = data.location;
     this.jobs = data.jobs || [];
+    this.userGroup = data.userGroup;
+    this.userStatus = data.userStatus;
   }
 }

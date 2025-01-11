@@ -1,6 +1,7 @@
 import { Job } from "@/dtos/classes/job/Job";
 import { IPhoto } from "../IPhoto";
 import { IPet } from "../pet/IPet";
+import { UserStatus } from "@/dtos/enum/UserStatus";
 
 export interface IUser {
   id: string;
@@ -31,4 +32,6 @@ export interface IUser {
   facebook?: string | null;
   jobs?: Job[] | null;
   isOnline?: boolean | null;
+  userGroup?: number | null;
+  userStatus?: UserStatus | null;
 }
