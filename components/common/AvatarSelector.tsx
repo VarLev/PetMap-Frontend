@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { FlatList, Pressable, View, Image } from "react-native";
 import { femaleAvatars, maleAvatars } from "@/constants/Avatars";
-import { Button, Text, Switch } from "react-native-paper";
+import { Text, Switch } from "react-native-paper";
 import i18n from "@/i18n";
+import CustomButtonPrimary from "../custom/buttons/CustomButtonPrimary";
+import { BG_COLORS } from "@/constants/Colors";
 
 interface AvatarSelectorProps {
   onAvatarSelect: (avatar: number, isMail: boolean) => void;
@@ -28,7 +30,7 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({ onAvatarSelect }) => {
     <View className="flex-1 p-4 bg-white">
       <View className="flex-row justify-center items-center mb-4">
         <Text className="text-xl mr-2">{i18n.t("avatar.female")}</Text>
-        <Switch value={isMale} onValueChange={handleToggle} />
+        <Switch value={isMale} onValueChange={handleToggle} trackColor={{ false: BG_COLORS.violet[300], true: BG_COLORS.violet[300] }} thumbColor={BG_COLORS.violet[600]}/>
         <Text className="text-xl ml-2">{i18n.t("avatar.male")}</Text>
       </View>
 
@@ -38,6 +40,7 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({ onAvatarSelect }) => {
       </Text>
 
       <FlatList
+      className="self-center"
         data={avatars}
         renderItem={({ item, index }) => (
           <Pressable
@@ -55,16 +58,11 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({ onAvatarSelect }) => {
         numColumns={2}
         keyExtractor={(_, index) => index.toString()}
       />
-
-      <Button
-        mode="contained"
-        onPress={() => {
-          console.log("Selected avatar index:", selectedAvatar);
-        }}
-        className="mt-4 bg-indigo-700"
-      >
-        {i18n.t("avatar.save")}
-      </Button>
+      <CustomButtonPrimary
+        title={i18n.t("avatar.save")}
+        handlePress={() => onAvatarSelect(selectedAvatar || 0, isMale)}
+        containerStyles="mt-4"
+      />
     </View>
   );
 };

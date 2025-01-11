@@ -3,7 +3,7 @@ import { View, Text, Image  } from 'react-native';
 import { Card } from 'react-native-paper';
 import CustomTextComponent from '../text/CustomTextComponent';
 import userStore from '@/stores/UserStore';
-import { PET_IMAGE } from '@/constants/Strings';
+import { PET_IMAGE, petCatUriImage, petUriImage } from '@/constants/Strings';
 import {getTagsByIndex } from '@/utils/utils';
 import { router } from 'expo-router';
 import { IUserCardDto } from '@/dtos/Interfaces/user/IUserCardDto';
@@ -51,7 +51,7 @@ const UserCard: React.FC<UserCardProps> = React.memo(({ user }) => {
        
         {user.petProfiles && user.petProfiles.length > 0 && (
           <View className="absolute top-10 left-12 rounded-full ">
-            <Image source={[{ uri: user.petProfiles[0].thumbnailUrl || petImage || 'https://placehold.it/100x100' }]} className="w-10 h-10 rounded-full" style={{borderWidth:2, borderColor:'white'}} />
+            <Image source={[{ uri: user.petProfiles[0].thumbnailUrl || (user.petProfiles[0].animalType === 1 ? petCatUriImage : petUriImage) }]} className="w-10 h-10 rounded-full" style={{borderWidth:2, borderColor:'white'}} />
           </View>
         )}
         <View className="ml-8 w-full flex-1">
@@ -69,7 +69,7 @@ const UserCard: React.FC<UserCardProps> = React.memo(({ user }) => {
             </Text>
             {user.petProfiles && user.petProfiles .length > 0 && (
               <CustomTextComponent 
-                text={`${user.petProfiles[0].petName}, ${getTagsByIndex(i18n.t('tags.breeds') as string[], user.petProfiles[0].breed!) }`} 
+                text={`${user.petProfiles[0].petName}, ${getTagsByIndex(user.petProfiles[0].animalType === 1 ? i18n.t('tags.breedsCat') as string[] : i18n.t('tags.breedsDog') as string[] , user.petProfiles[0].breed!) }`} 
                 leftIcon='paw-outline' 
                 iconSet='ionicons' 
                 maxLines={1}

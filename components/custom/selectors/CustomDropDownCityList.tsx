@@ -76,7 +76,7 @@ const CustomDropDownCityList: React.FC<CityDropdownProps> = ({
             const countryName = city.address.country || 'Unknown Country';
             return {
               label: `${cityName}, ${countryName}`,
-              value: `${city.lat},${city.lon}`,
+              value: `${cityName}, ${countryName}`,
             };
           }
         );
@@ -124,7 +124,6 @@ const CustomDropDownCityList: React.FC<CityDropdownProps> = ({
         </Text>
       )}
       <DropDownPicker
-      
         open={open}
         value={value}
         items={items}
@@ -143,7 +142,6 @@ const CustomDropDownCityList: React.FC<CityDropdownProps> = ({
         /* Вместо прямого fetch внутри onChangeSearchText
            просто обновляем state searchText */
         onChangeSearchText={(text) => {
-            
           //setValue(null);
           //setItems([]);
           setSearchText(text);
