@@ -35,7 +35,7 @@ const PetScreen = observer(() => {
   }, [petId]);
 
   const handleEdit = () => {
-    router.push(`/pet/${petId}/edit`);
+    router.push(`/(pet)/${petId}/edit`);
   }
 
   if (isLoading) {

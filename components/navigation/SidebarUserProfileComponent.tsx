@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Image, Platform } from "react-native";
-import { List, TouchableRipple } from "react-native-paper";
+import { Button, List, TouchableRipple } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/Images";
 import userStore from "@/stores/UserStore";
@@ -9,10 +9,12 @@ import { useDrawer } from "@/contexts/DrawerProvider";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import CustomListItemWrapper from "@/components/custom/menuItem/ListItemWrapper";
 import i18n from "@/i18n";
+import DismissibleBanner from "../ads/DismissibleBanner";
+import { BannerAdSize } from "react-native-google-mobile-ads";
 
 const SidebarUserProfileComponent = () => {
   const currentUser = userStore.currentUser;
-  const hasSubscription = userStore.currentUser?.isPremium;
+  const hasSubscription = userStore.getUserHasSubscription();
   const { closeDrawer } = useDrawer();
 
   const handleProfilePress = () => {
@@ -35,6 +37,7 @@ const SidebarUserProfileComponent = () => {
     closeDrawer();
   };
 
+
   return (
     <SafeAreaView className="bg-white h-full">
       <View className="flex-1 p-5 bg-white">
@@ -44,7 +47,7 @@ const SidebarUserProfileComponent = () => {
             source={images.logoWithName}
             style={{ width: 175, height: 43 }}
           />
-          <Text className="font-nunitoSansBold">v0.0.7</Text>
+          <Text className="font-nunitoSansBold">v0.0.8</Text>
         </View>
 
         <TouchableRipple
@@ -108,6 +111,7 @@ const SidebarUserProfileComponent = () => {
             </View>
           </View>
         </TouchableRipple>
+       
 
         {/* Подписка */}
         {/* <View className="flex-row mt-4 content-center items-center">
@@ -199,6 +203,8 @@ const SidebarUserProfileComponent = () => {
             onPress={() => console.log(i18n.t("Sidebar.support"))}
           /> */}
         </List.Section>
+        <Button className="mt-4" onPress={() => router.push('/(paywall)') } >Подписка Тест</Button>
+        {userStore.getUserHasSubscription() && <DismissibleBanner adSize={BannerAdSize.LARGE_BANNER} />}
       </View>
     </SafeAreaView>
   );

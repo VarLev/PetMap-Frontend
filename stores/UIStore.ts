@@ -14,6 +14,8 @@ class UIStore {
   isLocationPermissionGranted: boolean = false;
   isNotificationPermissionGranted: boolean = false;
   isPhotosPermissionGranted: boolean = false;
+  isSearchAddressExpanded: boolean = false;
+  isChatTranslatinEnabled: boolean = false;
 
 
   
@@ -29,6 +31,14 @@ class UIStore {
       this.currentLanguage = lang;
     });
     await this.setLanguagei18n(lang);
+  }
+
+  setIsSearchAddressExpanded(isExpanded: boolean) {
+    this.isSearchAddressExpanded = isExpanded;
+  }
+  
+  getIsSearchAddressExpanded() {
+    return this.isSearchAddressExpanded;
   }
 
   setLocationPermissionGranted(isGranted: boolean) {
@@ -70,6 +80,14 @@ class UIStore {
 
   getIsBottomTableViewSheetOpen() {
     return this.isBottomTableViewSheetOpen;
+  }
+
+  setIsChatTranslatinEnabled(isEnabled: boolean) {
+    this.isChatTranslatinEnabled = isEnabled;
+  }
+
+  getIsChatTranslatinEnabled() {
+    return this.isChatTranslatinEnabled;
   }
 
   async setLanguagei18n(language: Language) {
@@ -162,6 +180,15 @@ class UIStore {
         TargetLanguage: Language[currentLanguageIndex]  
       });
       return response.data.translatedText;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+
+  async subscribe(userId: string, subscriptionTypeId: number) {
+    try {
+      // await apiClient.post(`/${userId}/`, subscriptionTypeId);
+      return true;
     } catch (error) {
       return handleAxiosError(error);
     }

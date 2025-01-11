@@ -283,7 +283,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({
       mediaTypes: MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [3, 3],
-      quality: 0.7,
+      quality: 0.8,
     });
 
     if (!result.canceled) {

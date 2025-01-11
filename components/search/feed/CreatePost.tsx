@@ -21,7 +21,7 @@ const CreatePost: FC<CreatePostProps> = ({ onClose }) => {
       mediaTypes: MediaTypeOptions.Images,
       allowsMultipleSelection: true,
       selectionLimit: 1,
-      quality: 0.5,
+      quality: 0.8,
     });
 
     if (!result.canceled) {

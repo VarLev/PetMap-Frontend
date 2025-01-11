@@ -30,7 +30,7 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
       setIsCurrentUser(false);
     }
 
-    if (userStore.currentUser?.isPremium === true) {
+    if (userStore.getUserHasSubscription() === true) {
       setIsPremium(true);
     } else {
       setIsPremium(false);
@@ -38,7 +38,7 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
     
   }, [isPremium])
 
-  // const isPremium = userStore.currentUser?.isPremium;
+
 
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
