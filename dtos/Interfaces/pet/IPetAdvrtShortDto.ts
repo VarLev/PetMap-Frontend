@@ -5,4 +5,5 @@ export interface IPetAdvrtShortDto {
   birthDate: Date | null;
   gender?: number | null;
   thumbnailUrl?: string | null;
+  animalType?: number | null;
 }

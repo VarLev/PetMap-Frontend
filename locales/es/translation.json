@@ -47,7 +47,9 @@
       "nameLabel": "¿Cómo te llamás?",
       "birthDateLabel": "Fecha de nacimiento",
       "uploadPhotoButton": "Subir foto",
-      "chooseAvatarButton": "Elegir avatar"
+      "chooseAvatarButton": "Elegir avatar",
+      "errorName": "Es necesario indicar un nombre",
+      "errorAvatar": "Agrega una foto o elige un avatar"
     },
     "slide4": {
       "title": "Configurá el perfil de tu mascota",
@@ -55,7 +57,8 @@
       "petNameLabel": "¿Cómo se llama la mascota?",
       "breedLabel": "Raza",
       "birthDateLabel": "Fecha de nacimiento",
-      "uploadPhotoButton": "Subir foto"
+      "uploadPhotoButton": "Subir foto",
+      "errorName": "Es necesario indicar un nombre"
     },
     "slide5": {
       "title": "¿Qué te interesa?",

@@ -28,6 +28,7 @@
     "slide4": {
       "title": "Будьте в курсе всех мероприятий для питомцев."
     }
+    
   },
   "onboardingProfile": {
     "slide1": {
@@ -47,7 +48,9 @@
       "nameLabel": "Как вас зовут?",
       "birthDateLabel": "Дата рождения",
       "uploadPhotoButton": "Загрузить фото",
-      "chooseAvatarButton": "Выбрать аватар"
+      "chooseAvatarButton": "Выбрать аватар",
+      "errorName":"Необходимо указать имя",
+      "errorAvatar":"Добавьте фотографию или выберите аватар"
     },
     "slide4": {
       "title": "Настройте профиль вашего питомца",
@@ -55,7 +58,8 @@
       "petNameLabel": "Как зовут питомца?",
       "breedLabel": "Порода",
       "birthDateLabel": "Дата рождения",
-      "uploadPhotoButton": "Загрузить фото"
+      "uploadPhotoButton": "Загрузить фото",
+      "errorName":"Необходимо указать имя"
     },
     "slide5": {
       "title": "Что вам интересно?",

@@ -47,7 +47,9 @@
       "nameLabel": "What's your name?",
       "birthDateLabel": "Date of birth",
       "uploadPhotoButton": "Upload Photo",
-      "chooseAvatarButton": "Choose Avatar"
+      "chooseAvatarButton": "Choose Avatar",
+      "errorName": "Name is required",
+      "errorAvatar": "Add a photo or choose an avatar"
     },
     "slide4": {
       "title": "Set up your pet's profile",
@@ -55,7 +57,8 @@
       "petNameLabel": "What is the pet’s name?",
       "breedLabel": "Breed",
       "birthDateLabel": "Date of birth",
-      "uploadPhotoButton": "Upload Photo"
+      "uploadPhotoButton": "Upload Photo",
+      "errorName": "Name is required"
     },
     "slide5": {
       "title": "What interests you?",

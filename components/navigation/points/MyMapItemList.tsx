@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { FlatList, ActivityIndicator, View, Image, Dimensions, Text, ScrollView,
+import { FlatList, ActivityIndicator, View, ScrollView,
   RefreshControl } from "react-native";
 import MapPointDangerCard from "@/components/custom/cards/MapPointDangerCard";
 import { MapPointType } from "@/dtos/enum/MapPointType";

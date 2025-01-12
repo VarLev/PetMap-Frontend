@@ -26,6 +26,7 @@ import CustomConfirmAlert from '../custom/alert/CustomConfirmAlert';
 import BonusSlider from '../custom/sliders/BonusSlider';
 import CustomLoadingButton from '../custom/buttons/CustomLoadingButton';
 import i18n from '@/i18n';
+import { petCatUriImage, petUriImage } from '@/constants/Strings';
 
 const { width, height } = Dimensions.get('window');
 
@@ -229,7 +230,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
         birthDate: petAge,
         gender: petGender,
         userId: currentUser!.id,
-        thumbnailUrl: petImage,
+        thumbnailUrl: petImage ?? (selectedAnimalType === 1 ? petCatUriImage : petUriImage),
         animalType: selectedAnimalType,
       };
 
@@ -419,7 +420,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
           />
           {showUserNameError && (
             <HelperText className='-mt-4' type="error" visible={showUserNameError}>
-              Необходимо указать имя
+              {i18n.t('onboardingProfile.slide3.errorName')}
             </HelperText>
           )}
           <View className="flex-row items-start justify-between">
@@ -438,7 +439,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
                   <View className="bg-white mx-5 p-5 rounded-3xl shadow-lg">
                     <DateTimePicker value={age} mode="date" display="spinner" onChange={onAgeChange} />
                     <Button mode="contained" onPress={() => setShowUserAge(false)}>
-                      Готово
+                      OK
                     </Button>
                   </View>
                 </View>
@@ -467,7 +468,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
           </View>
           {showUserPhotoError && (
             <HelperText type="error" visible={showUserPhotoError}>
-              Добавьте фотографию или выберите аватар
+              {i18n.t('onboardingProfile.slide3.errorAvatar')}
             </HelperText>
           )}
         </View>
@@ -496,7 +497,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
           />
           {showPetNameError && (
             <HelperText className='h-6 mt-1 -mb-4' type="error" visible={showPetNameError}>
-              Необходимо указать имя
+              {i18n.t('onboardingProfile.slide4.errorName')}
             </HelperText>
           )}
           <View className="pt-2">
