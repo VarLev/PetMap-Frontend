@@ -640,7 +640,7 @@
       "month": { "one": "mes", "few": "meses", "many": "meses" },
       "year": { "one": "año", "few": "años", "many": "años" },
       "shortMonth": "m.",
-      "shortYear": {"few": "a.", "many": "a."}
+      "shortYear": "a."
     }
   },
   "EditPetProfile": {

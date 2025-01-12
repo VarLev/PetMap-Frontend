@@ -9,7 +9,7 @@ import CustomTextComponent from "../custom/text/CustomTextComponent";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import {
   calculateDistance,
-  calculateShortDogAge,
+  calculateDogAge,
   convertDistance,
   getTagsByIndex,
 } from "@/utils/utils";
@@ -256,7 +256,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                             </Text>
                           </View>
                           <Text className="text-sm -mt-1 font-nunitoSansRegular">
-                            {calculateShortDogAge(pet.birthDate)}{" "}
+                            {calculateDogAge(pet.birthDate)}{" "}
                             {getTagsByIndex(i18n.t("tags.breeds") as string[], pet.breed!) ||
                               i18n.t("WalkDetails.breed")}
                           </Text>

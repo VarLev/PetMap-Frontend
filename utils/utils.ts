@@ -104,11 +104,7 @@ export function calculateShortDogAge(birthDate?: Date | null | undefined): strin
     if (ageYears === 0) {
       return `${ageMonths} ${i18n.t('PetProfile.ageUnits.shortMonth')}`;
     } else {
-      if (i18n.locale === 'ru') {
-        return `${ageYears} ${(ageYears % 100 >= 11 && ageYears % 100 <= 20) || ageYears % 10 === 0 || ageYears % 10 >= 5 ? i18n.t('PetProfile.ageUnits.shortYear.many') : i18n.t('PetProfile.ageUnits.shortYear.few')}`
-      } else {
-        return `${ageYears} ${i18n.t('PetProfile.ageUnits.shortYear.few')}`;
-      }
+      return `${ageYears} ${i18n.t('PetProfile.ageUnits.shortYear')}`;
     }
   } else {
     return 'Unknown';
