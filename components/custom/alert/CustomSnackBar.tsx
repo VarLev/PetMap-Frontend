@@ -17,7 +17,7 @@ function CustomSnackBar({ visible, setVisible }: CustomSnackBarProps) {
   }, []);
 
   return (
-    <View className={`z-10 items-center justify-center ${isIOS ? "pt-24" : "pt-10"}`}>
+    <View className={`z-10 items-center justify-center ${isIOS ? "pt-24" : "pt-16"}`}>
       <Snackbar
         visible={visible}
         onDismiss={onDismissSnackBar}

@@ -12,6 +12,7 @@ type InputTextProps = {
   label?: string;
   labelStyles?: string;
   labelInput?: string;
+  allowOnlyLetters?: boolean; // Новый пропс для ограничения ввода
 };
 
 const CustomInputText = ({
@@ -24,19 +25,19 @@ const CustomInputText = ({
   label,
   labelStyles,
   labelInput,
+  allowOnlyLetters = false, // По умолчанию отключено
 }: InputTextProps) => {
-  return (
-    // <View className={`w-full ${containerStyles}`}>
-    //   {label && <Text className={`text-gray-700 text-base font-nunitoSansRegular mb-2 ${labelStyles}`}>{label}</Text>}
-    //   <TextInput
-    //     value={value}
-    //     placeholder={placeholder}
-    //     onChangeText={handleChange}
-    //     onFocus={handleClick}
+  // Функция обработки ввода
+  const handleTextChange = (text: string) => {
+    if (allowOnlyLetters) {
+      const filteredText = text.replace(/[^a-zA-Zа-яА-ЯёЁ]/g, ""); // Удаляем все, кроме букв
+      handleChange && handleChange(filteredText);
+    } else {
+      handleChange && handleChange(text);
+    }
+  };
 
-    //     className={`border border-gray-300 text-base font-nunitoSansRegular rounded-lg px-4 py-2 ${inputStyles}`}
-    //   />
-    // </View>
+  return (
     <View className={`w-full ${containerStyles}`}>
       {label && (
         <Text className={` text-base font-nunitoSansRegular ${labelStyles}`}>
@@ -49,14 +50,14 @@ const CustomInputText = ({
         value={value}
         theme={{ roundness: 8 }}
         placeholder={placeholder}
-        onChangeText={handleChange}
+        onChangeText={handleTextChange} // Используем обработчик с фильтрацией
         onFocus={handleClick}
         keyboardType="default"
         style={{
           backgroundColor: "white",
           height: 50,
         }}
-        outlineStyle= {{borderWidth: 1}}
+        outlineStyle={{ borderWidth: 1 }}
         outlineColor="#d1d5db" // Цвет рамки при неактивном состоянии
         activeOutlineColor="#ababab" // Цвет рамки при фокусе
         className={`text-base font-nunitoSansRegular ${inputStyles}`}

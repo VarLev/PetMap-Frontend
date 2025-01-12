@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { database } from '@/firebaseConfig';
-import { ref, get, push, update, query, orderByChild, onValue, remove, set, off } from 'firebase/database';
+import { ref, get, push, update, query, orderByChild, onValue, remove, set, off, equalTo } from 'firebase/database';
 import userStore from '@/stores/UserStore';
 import { MessageType } from '@flyerhq/react-native-chat-ui';
 import { getPushTokenFromServer, sendPushNotification } from '@/hooks/notifications';
@@ -37,15 +37,25 @@ class ChatStore {
   }
 
   subscribeToChats() {
+    // Предположим, что в `chats/{chatId}/participants/{userId}` хранится значение true,
+    // если пользователь `userId` участвует в чате.
     const chatsRef = ref(database, 'chats');
+    
+    // Формируем запрос: ищем все записи, где `participants/{userId} === true`
+    const userChatsQuery = query(
+      chatsRef,
+      orderByChild(`participants/${userStore.getCurrentUserId()}`),
+      equalTo(true)
+    );
 
-    // Подписка onValue слушает все изменения под 'chats'
-    const unsubscribe = onValue(chatsRef, (snapshot) => {
+    // Подписка на изменения
+    const callback = (snapshot: any) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        // Логика трансформации (как в fetchChats) — превратить data в массив IChat
+        // Преобразуем raw-данные Firebase в массив IChat (как в вашем fetchChats)
         const updatedChats = this.transformChats(data);
-        
+
+        console.log('Обновленные чаты:', updatedChats);
         runInAction(() => {
           this.chats = updatedChats;
         });
@@ -55,11 +65,14 @@ class ChatStore {
           this.chats = [];
         });
       }
-    });
+    };
+
+    // Ставим слушатель
+    onValue(userChatsQuery, callback);
 
     // Возвращаем функцию «отписки»
     return () => {
-      off(chatsRef, 'value', unsubscribe);
+      off(userChatsQuery, 'value', callback);
     };
   }
 
@@ -115,17 +128,24 @@ class ChatStore {
     const data = snapshot.val();
     const chatsList: IChat[] = [];
   
-    // Шаг 1. Собираем всех userIds
-    const userIdsNeeded = new Set<string>();
+    // // Шаг 1. Собираем всех userIds
+    // const userIdsNeeded = new Set<string>();
   
-    for (const chatId in data) {
-      const chatData = data[chatId];
-      if (!chatData?.participants) continue;
+    // for (const chatId in data) {
+    //   const chatData = data[chatId];
+    //   if (!chatData?.participants) continue;
   
-      const participantIds = Object.keys(chatData.participants);
-      // Добавляем их всех в userIdsNeeded
-      participantIds.forEach((id) => userIdsNeeded.add(id));
-    }
+    //   const participantIds = Object.keys(chatData.participants);
+    //   console.log('Пользователь', userId);
+    //   console.log('Участники чата', chatId, participantIds);
+    //   if (!participantIds.includes(userId)) {
+    //     console.log('Пропускаем чат, так как текущий пользователь не участвует');
+    //     // пропускаем чат, если этот юзер не участвует
+    //     continue;
+    //   }
+    //   // Добавляем их всех в userIdsNeeded
+    //   participantIds.forEach((id) => userIdsNeeded.add(id));
+    // }
   
     // Шаг 2. Делаем один запрос ко всем пользователям
     const usersRef = ref(database, 'users');
@@ -136,6 +156,14 @@ class ChatStore {
     for (const chatId in data) {
       const chatData = data[chatId]; // сырые данные чата
       if (!chatData?.participants) continue;
+      const participantIds = Object.keys(chatData.participants);
+      console.log('Пользователь', userId);
+      console.log('Участники чата', chatId, participantIds);
+      if (!participantIds.includes(userId)) {
+        console.log('Пропускаем чат, так как текущий пользователь не участвует');
+        // пропускаем чат, если этот юзер не участвует
+        continue;
+      }
   
       // Преобразуем { userA: true, userB: true } в [{ key, value: IChatUser }, ...]
       const participantsArray: { key: string; value: IChatUser }[] = Object.keys(chatData.participants).map(
@@ -244,12 +272,13 @@ class ChatStore {
   
     // Обновляем или создаём запись в /users/${userId} и /users/${otherUser.id}
     // (при желании, если нужна актуализация именно в этот момент)
-    updates[`users/${userId}`] = {
-      ...currentUserUpdates,
-    };
-    updates[`users/${otherUser.id}`] = {
-      ...otherUserUpdates,
-    };
+    updates[`users/${userId}/name`] = userStore.currentUser?.name ?? 'NoName';
+    updates[`users/${userId}/avatar`] = userStore.currentUser?.thumbnailUrl ?? '';
+    updates[`users/${userId}/fmcToken`] = userStore.currentUser?.fmcToken ?? null;
+
+    updates[`users/${otherUser.id}/name`] = otherUserUpdates.name;
+    updates[`users/${otherUser.id}/avatar`] = otherUserUpdates.avatar;
+    updates[`users/${otherUser.id}/fmcToken`] = otherUserUpdates.fmcToken ?? null;
   
     try {
       // Пакетное обновление
@@ -258,20 +287,6 @@ class ChatStore {
       console.error('Ошибка при создании чата:', error);
       throw error;
     }
-  
-    // Если нужно сразу же обновить локальный стор, делаем это в runInAction
-    runInAction(() => {
-      // В chats храним только участников-ид и базовые поля
-      // или же дождёмся, пока fetchChats() заново подтянет
-      // новые данные из Firebase
-      // Пример:
-      // chatStore.chats.push({
-      //   id: chatId,
-      //   lastMessage: '',
-      //   lastCreatedAt: now,
-      //   participants: { [userId]: true, [otherUser.id]: true },
-      // });
-    });
   
     return chatId;
   }

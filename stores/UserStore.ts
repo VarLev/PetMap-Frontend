@@ -33,7 +33,9 @@ class UserStore {
   isInitialized: boolean = false;
   isError: boolean = false;
   currentCity: string = '';
+  currentCountry: string = '';
   userHasSubscription = false;
+  isUserJustRegistrated = false;
 
 
   constructor() {
@@ -50,7 +52,8 @@ class UserStore {
       registerUser: action,
       updateUserOnbordingData: action,
       updateOnlyUserData: action,
-      loadUsersOnce: action
+      loadUsersOnce: action,
+      setIsUserJustRegistrated: action,
     });
   }
 
@@ -59,7 +62,7 @@ class UserStore {
   }
 
   getUserHasSubscription() {
-    return this.userHasSubscription;
+    return true;
   }
   
   setLoginedUser(user: any) {
@@ -98,12 +101,28 @@ class UserStore {
     return this.currentCity;
   }
 
+  setCurrentUserCountry(country: string) {
+    this.currentCountry = country;
+  }
+
+  getCurrentUserCountry() {
+    return this.currentCountry;
+  }
+
   getCurrentUserId() {
     return this.currentUser?.id;
   }
 
   getUser(user: UserCredential) {
     this.fUid = user.user.uid;
+  }
+
+  getIsUserJustRegistrated() {
+    return this.isUserJustRegistrated;
+  }
+
+  setIsUserJustRegistrated(isJustRegistrated: boolean) {
+    this.isUserJustRegistrated = isJustRegistrated;
   }
 
   async getCurrentUser(): Promise<IUser | null | false> {
@@ -178,7 +197,6 @@ class UserStore {
     } catch (error) {
       return handleAxiosError(error);
     }
-    return {} as IUser;
   }
 
   async loadUserAfterSignIn() {
@@ -204,6 +222,7 @@ class UserStore {
 
   async getUserById(id:string): Promise<IUser> {
     try {
+      console.log('Получение пользователя по ID:', id);
       const response = await apiClient.get(`/users/${id}`);
       return response.data as IUser;
     } catch (error) {
@@ -240,8 +259,9 @@ class UserStore {
         // Обновляем MobX состояние и возвращаем пользователя
         runInAction(() => {
           this.currentUser = new User(user);
+          this.setUserHasSubscription(this.getUserHasSubscription()?? false);
         });
-        console.log('Пользователь загружен из AsyncStorage');
+        
         return this.currentUser;
       } 
 
@@ -303,6 +323,7 @@ class UserStore {
         this.setCreatedUser(userCred);
         this.setLogged(true);
         this.setUser(registeredUser);
+        this.setIsUserJustRegistrated(true);
       });
 
       return userCred;
@@ -504,7 +525,7 @@ class UserStore {
       mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [3, 3],
-      quality: 0.5,
+      quality: 0.8,
       
     });
 

@@ -231,6 +231,8 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
                 label={i18n.t("WalkEditDetails.address")}
                 value={address}
                 handleChange={setAddress}
+                containerStyles="h-10"
+
               />
               <View className="pt-2" />
               <CustomOutlineInputText

@@ -4,11 +4,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 //import { F_TOKEN } from '@env';
 
 const apiClient = axios.create({
- //timeout: 10000,
+ timeout: 15000,
   //baseURL: 'http://10.113.1.31:5142/api',
-  baseURL: 'https://petmeetar-test.azurewebsites.net/api'
+  //baseURL: 'https://petmeetar-test.azurewebsites.net/api'
   //baseURL: 'http://192.168.0.98:5142/api'
-  //baseURL: 'http://192.168.1.35:5142/api'
+  baseURL: 'http://192.168.1.35:5142/api'
   //baseURL: 'http://192.168.1.82:5142/api'
   //baseURL: 'http://192.168.82.221:5142/api'
   //baseURL: 'http://192.168.1.17:5142/api'

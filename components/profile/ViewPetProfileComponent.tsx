@@ -17,6 +17,7 @@ import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import CircleIcon from '../custom/icons/CircleIcon';
 import MenuItemWrapper from '@/components/custom/menuItem/MunuItemWrapper';
 import i18n from '@/i18n';
+import { BG_COLORS } from '@/constants/Colors';
 
 const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: () => void }) => {
   const sheetRef = useRef<BottomSheet>(null);
@@ -70,7 +71,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
                   <IconButton
                     icon="menu"
                     size={30}
-                    iconColor="black"
+                    iconColor={BG_COLORS.indigo[700]}
                     style={styles.menuButton}
                     onPress={openMenu}
                   />
@@ -101,7 +102,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
       <BottomSheetComponent
         ref={sheetRef}
         enablePanDownToClose={false}
-        snapPoints={['54%', '100%']}
+        snapPoints={['55%', '100%']}
         renderContent={
           <View className="bg-white h-full">
             <Text className="pl-5 text-2xl font-nunitoSansBold">
@@ -117,7 +118,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
                 </Text>
                 {!!pet.petName?.trim() && (
                   <CustomTextComponent
-                    text={i18n.t('PetProfile.dog')}
+                    text={pet.animalType === 1 ? i18n.t('PetProfile.cat'): i18n.t('PetProfile.dog')}
                     rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                     leftIcon="paw-outline"
@@ -137,7 +138,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
 
                 {pet.breed !== undefined && pet.breed !== null && (
                   <CustomTextComponent
-                    text={getTagsByIndex(i18n.t('tags.breeds') as string[], pet.breed!)}
+                    text={pet.animalType === 1 ? getTagsByIndex(i18n.t('tags.breedsCat') as string[], pet.breed!): getTagsByIndex(i18n.t('tags.breedsDog') as string[], pet.breed!)}
                     rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                     leftIcon="dog"
@@ -288,7 +289,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
               )}
 
               {/* Социальные сети - рендерим, только если есть ссылки */}
-              {(!!pet.instagram?.trim() || !!pet.facebook?.trim()) && (
+              {/* {(!!pet.instagram?.trim() || !!pet.facebook?.trim()) && (
                 <View>
                   <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
                     {i18n.t('PetProfile.socialMedia')}
@@ -315,7 +316,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
                   )}
                   <Divider className="mt-3" />
                 </View>
-              )}
+              )} */}
 
             </View>
             <View className="h-28" />
@@ -351,6 +352,11 @@ const styles = StyleSheet.create({
   },
   menuButton: {
     backgroundColor: 'white',
-    opacity: 0.7,
+    elevation: 5,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    marginTop:100
   },
 });

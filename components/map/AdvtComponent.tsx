@@ -89,7 +89,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
       if (userIsOwner) {
         router.push("/profile");
       } else {
-        router.push(`/(tabs)/profile/${userId}`);
+        router.push(`(user)/${userId}`);
       }
       mapStore.setBottomSheetVisible(false);
     };
@@ -97,12 +97,12 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
     const handlePetProfileOpen = (petId: string) => {
       if (userIsOwner) {
         router.push({
-          pathname: "/profile/pet/[petId]",
+          pathname: "/(pet)/[petId]",
           params: { petId: petId },
         });
       } else {
         router.push({
-          pathname: "/(tabs)/profile/pet/[petId]",
+          pathname: "/(pet)/[petId]",
           params: { petId: petId },
         });
       }
@@ -250,14 +250,14 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                       <View className="ml-2">
                         <View className="flex-col items-start">
                           <View className="justify-center items-center flex-row">
-                            <Ionicons name="male" size={18} color="indigo" />
-                            <Text className="pl-1 text-lg font-nunitoSansBold w-52" numberOfLines={1} ellipsizeMode='tail'>
-                              {pet.petName || i18n.t("WalkDetails.pet")}
+                            <Ionicons name={pet.gender === 0? 'male':'female'} size={18} color="indigo" />
+                            <Text className="pl-1 text-lg font-nunitoSansBold w-max-60" numberOfLines={1} ellipsizeMode='tail'>
+                              {pet.petName || i18n.t("WalkDetails.pet")}{", "} 
                             </Text>
+                            <Text className="text-sm font-nunitoSansRegular ">{calculateDogAge(pet.birthDate)}</Text>
                           </View>
-                          <Text className="text-sm -mt-1 font-nunitoSansRegular">
-                            {calculateDogAge(pet.birthDate)}{" "}
-                            {getTagsByIndex(i18n.t("tags.breeds") as string[], pet.breed!) ||
+                          <Text className="text-sm -mt-1 font-nunitoSansRegular w-60" numberOfLines={1} ellipsizeMode='tail'>
+                            {getTagsByIndex(pet.animalType === 1 ? i18n.t("tags.breedsCat") as string[] : i18n.t("tags.breedsDog") as string[], pet.breed!) ||
                               i18n.t("WalkDetails.breed")}
                           </Text>
                         </View>
@@ -314,11 +314,15 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
               <Text className="mt-2 text-justify text-base text-indigo-800 font-nunitoSansBold">
                 {i18n.t("WalkDetails.walkDetails")}
               </Text>
-              <Text className="mt-2 text-justify text-base text-gray-600 font-nunitoSansRegular">
-                {advrt.description?.trim()}
-              </Text>
               <CustomTextComponent
-                text={advrt.address}
+                text={advrt.description?.trim()}
+                enableTranslation={true}
+              />
+              {/* <Text className="mt-2 text-justify text-base text-gray-600 font-nunitoSansRegular">
+                {advrt.description?.trim()}
+              </Text> */}
+              <CustomTextComponent
+                text={advrt.address === "Address not found" ? "" : advrt.address}
                 leftIcon="location-pin"
                 iconSet="simpleLine"
               />

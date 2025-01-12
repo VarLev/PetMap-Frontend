@@ -94,7 +94,7 @@ const WalkMarker: React.FC<MapMarkersProps> = ({
       ))}
 
       {/* Временный маркер (например, создаваемой прогулки или поинта) */}
-      {markerCoordinate && isSheetVisible && (
+      {markerCoordinate && (
         <Mapbox.PointAnnotation
           ref={pointAnnotationCurrentUser}
           id="currentUserMarker"

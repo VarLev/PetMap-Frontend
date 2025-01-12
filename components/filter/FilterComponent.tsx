@@ -167,7 +167,7 @@ const FilterComponent:React.FC<FilterComponentProps> = observer(({ onFilterChang
           {i18n.t('filters.pet')}
         </Text>
         <CustomDropdownList
-          tags={ i18n.t('tags.breeds') as string[] }
+          tags={ i18n.t('tags.breedsDog') as string[] }
           label=""
           placeholder={i18n.t('filters.breed')}
           initialSelectedTag={filter.petBreed || ''}

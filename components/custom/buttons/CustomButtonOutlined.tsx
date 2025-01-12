@@ -1,5 +1,5 @@
 import { TouchableOpacity, Text } from 'react-native';
-import React from 'react';
+import React, { FC } from 'react';
 
 type CustomButtonPrimaryProps = {
   title?: string;
@@ -7,9 +7,17 @@ type CustomButtonPrimaryProps = {
   containerStyles?: string;
   textStyles?: string;
   isLoading?: boolean;
+  fontWeight?: string;
 };
 
-const CustomButtonOutlined = ({ title, handlePress, containerStyles, textStyles, isLoading }: CustomButtonPrimaryProps) => {
+const CustomButtonOutlined: FC<CustomButtonPrimaryProps> = ({
+  title,
+  handlePress,
+  containerStyles,
+  textStyles,
+  isLoading,
+  fontWeight = "font-nunitoSansRegular"
+}) => {
   return (
     <TouchableOpacity
       onPress={handlePress}
@@ -18,7 +26,7 @@ const CustomButtonOutlined = ({ title, handlePress, containerStyles, textStyles,
       className={`bg-violet-200 rounded-full min-h-[40px] justify-center items-center mt-2
       ${containerStyles} ${isLoading ? 'opacity-50' : ''}`}
     >
-      <Text className={`text-gray-900 font-nunitoSansRegular text-base ${textStyles}`}>{title}</Text>
+      <Text className={`text-gray-900 text-base ${textStyles} ${fontWeight}`}>{title}</Text>
     </TouchableOpacity>
   );
 };

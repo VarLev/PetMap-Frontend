@@ -73,6 +73,20 @@ class SearchStore {
     }
   }
 
+  async getUserPosts(userId: string): Promise<Post[] | [] | void> {
+    try {
+      const response = await apiClient.get(`/post/owner/${userId}` );
+      
+      const fetchedPosts = response.data.map((postData: any) => new Post(postData));
+      if (fetchedPosts.length === 0) {
+        return [];
+      }
+      return fetchedPosts;
+    } catch (error) {
+      return handleAxiosError(error);
+    } 
+  }
+
   async likePost(postId: string): Promise<boolean> {
     try {
       await apiClient.post(`/post/${postId}/like`, { userId: this.getUserId() });
@@ -254,6 +268,7 @@ class SearchStore {
       return handleAxiosError(error);
     }
   }
+
 
 }
 

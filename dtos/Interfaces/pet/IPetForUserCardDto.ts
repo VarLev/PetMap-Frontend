@@ -4,4 +4,5 @@ export interface IPetForUserCardDto {
   petName: string;
   breed?: number | null;
   thumbnailUrl?: string | null;
+  animalType?: number | null;
 }

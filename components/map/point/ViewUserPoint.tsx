@@ -129,7 +129,7 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
                       <Text className="text-base font-nunitoSansBold text-indigo-700">
                         {i18n.t('ViewUserPoint.address')}
                       </Text>
-                      <Text className="text-base font-nunitoSansRegular">
+                      <Text className="text-base font-nunitoSansRegular truncate h-6">
                         {pointData.address}
                       </Text>
                     </>

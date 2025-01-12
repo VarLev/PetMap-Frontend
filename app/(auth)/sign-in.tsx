@@ -14,6 +14,7 @@ import userStore from "@/stores/UserStore";
 import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton";
 import ArrowHelp from "@/components/auth/arrowHelp";
 import i18n from "@/i18n"; // Импорт i18n для мультиязычности
+import { UserStatus } from "@/dtos/enum/UserStatus";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -33,7 +34,11 @@ const SignIn = () => {
 
     try {
       await userStore.singInUser(email, password);
-      router.replace("/screenholder");
+      const user = userStore.currentUser ;
+      if(user?.userStatus === UserStatus.Onboarding)
+        router.replace("(auth)/onboarding");
+      else
+        router.replace("/screenholder");
     } catch (error: any) {
       Alert.alert("Login Error", error.message.replace("Firebase:", ""));
     }

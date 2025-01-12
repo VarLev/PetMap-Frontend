@@ -39,7 +39,7 @@ const EditPetProfile = observer(() => {
       router.back();
       
       // Если нужно обновить экран после возвращения
-      router.replace(`/profile/pet/${petId}`);
+      router.replace(`/(pet)/${petId}`);
     } catch (error) {
       console.error('Error updating profile:', error);
     }

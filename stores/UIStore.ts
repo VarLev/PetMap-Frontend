@@ -5,6 +5,7 @@ import { handleAxiosError } from '@/utils/axiosUtils';
 import { makeAutoObservable, runInAction } from 'mobx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLocales } from 'expo-localization';
+import * as Location from 'expo-location';
 
 class UIStore {
   isPointSearchFilterTagSelected : boolean = false;
@@ -13,6 +14,8 @@ class UIStore {
   isLocationPermissionGranted: boolean = false;
   isNotificationPermissionGranted: boolean = false;
   isPhotosPermissionGranted: boolean = false;
+  isSearchAddressExpanded: boolean = false;
+  isChatTranslatinEnabled: boolean = false;
 
 
   
@@ -28,6 +31,14 @@ class UIStore {
       this.currentLanguage = lang;
     });
     await this.setLanguagei18n(lang);
+  }
+
+  setIsSearchAddressExpanded(isExpanded: boolean) {
+    this.isSearchAddressExpanded = isExpanded;
+  }
+  
+  getIsSearchAddressExpanded() {
+    return this.isSearchAddressExpanded;
   }
 
   setLocationPermissionGranted(isGranted: boolean) {
@@ -71,6 +82,14 @@ class UIStore {
     return this.isBottomTableViewSheetOpen;
   }
 
+  setIsChatTranslatinEnabled(isEnabled: boolean) {
+    this.isChatTranslatinEnabled = isEnabled;
+  }
+
+  getIsChatTranslatinEnabled() {
+    return this.isChatTranslatinEnabled;
+  }
+
   async setLanguagei18n(language: Language) {
     console.log('Установка языка:', Language[language]);
     if(language === Language.English)
@@ -80,6 +99,13 @@ class UIStore {
     else
       i18n.locale = 'es';
   }
+
+  async getGpsStatus() {
+    // 2. Проверяем, включены ли службы геолокации
+    return await Location.hasServicesEnabledAsync();
+  }
+
+  
 
 
   async setSystemLanguage(language: Language) {
@@ -154,6 +180,15 @@ class UIStore {
         TargetLanguage: Language[currentLanguageIndex]  
       });
       return response.data.translatedText;
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+
+  async subscribe(userId: string, subscriptionTypeId: number) {
+    try {
+      // await apiClient.post(`/${userId}/`, subscriptionTypeId);
+      return true;
     } catch (error) {
       return handleAxiosError(error);
     }

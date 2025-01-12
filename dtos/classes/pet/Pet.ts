@@ -30,9 +30,9 @@ export class Pet implements IPet {
     this.id = data.id!;
     this.petName = data.petName || '';
     this.animalType = data.animalType;
-    this.breed = data.breed || null;
+    this.breed = data.breed || 0;
     this.birthDate = data.birthDate ? new Date(data.birthDate) : null;
-    this.gender = data.gender || null;
+    this.gender = data.gender || 0;
     this.weight = data.weight || null;
     this.color = data.color || null;
     this.size = data.size || null;

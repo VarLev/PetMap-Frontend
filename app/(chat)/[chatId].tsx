@@ -16,6 +16,8 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import CustomMessageComponent from "@/components/chat/chatView/CustomMessageComponent";
 import { ChatType } from "@/dtos/enum/ChatType";
 import { generateChatData } from "@/utils/chatUtils";
+import TranslatableTextMessage from "@/components/chat/chatView/TranslatableTextMessage";
+import uiStore from "@/stores/UIStore";
 
 const ChatScreen: React.FC = observer(() => {
   const { chatId, otherUserId } = useLocalSearchParams<{chatId: string, otherUserId:string }>();
@@ -29,10 +31,15 @@ const ChatScreen: React.FC = observer(() => {
   const [selectedWalk, setSelectedWalk] = useState<IWalkAdvrtDto | null>(null);
   const [otherUser, setOtherUser] = useState<IChatUser | null>(null);
 
+  const [translatedMessages, setTranslatedMessages] = useState<Record<string, string>>({})
+  const [loadingTranslation, setLoadingTranslation] = useState<Record<string, boolean>>({})
+  const hasSubscription = UserStore.getUserHasSubscription() ?? false;  
+
   // Загружаем чёрный список, FMC-токен и проверяем блокировку
   useEffect(() => {
     const loadData = async () => {
       try { 
+        console.log("ChatId", chatId);
         const loadedChat = await ChatStore.getChatById(chatId);
         if(loadedChat){
           // Чат уже существует в базе
@@ -44,6 +51,7 @@ const ChatScreen: React.FC = observer(() => {
         }
         else {
           // Чат не существует в базе
+          console.log("otherUserId", otherUserId);
           const otherDbUser = await UserStore.getUserById(otherUserId)
           const otherUserOnlineStatus = await ChatStore.getUserStatus(otherDbUser.id);
           console.log("Other user online status", otherUserOnlineStatus);
@@ -90,13 +98,63 @@ const ChatScreen: React.FC = observer(() => {
     return () => backHandler.remove();
   }, [chatId, router]);
 
+  // ---------------------------
+  // Функции для перевода
+  // ---------------------------
+
+  // При нажатии "Перевести"
+  const handleTranslatePress = useCallback(async (message: MessageType.Text) => {
+    // Ставим флаг загрузки
+    setLoadingTranslation((prev) => ({ ...prev, [message.id]: true }))
+    try {
+      const result = await uiStore.translateText(message.text); // Пример: переводим на русский
+      // Сохраняем результат
+      setTranslatedMessages((prev) => ({ ...prev, [message.id]: result }))
+    } catch (err) {
+      console.error("Ошибка при переводе:", err);
+    } finally {
+      setLoadingTranslation((prev) => ({ ...prev, [message.id]: false }))
+    }
+  }, []);
+
+   // При нажатии "Показать оригинал"
+   const handleShowOriginalPress = useCallback((messageId: string) => {
+    setTranslatedMessages((prev) => {
+      const updated = { ...prev }
+      delete updated[messageId]
+      return updated
+    })
+  }, []);
+
+  // ---------------------------
+  // Рендер обычных текстовых сообщений с переводом
+  // ---------------------------
+  const renderTextMessage = useCallback(
+    (message: MessageType.Text, messageWidth: number, showName: boolean) => {
+      const translatedText = translatedMessages[message.id]
+      const isLoading = loadingTranslation[message.id]
+
+      return (
+        <TranslatableTextMessage
+          message={message}
+          translatedText={translatedText}
+          isLoading={isLoading}
+          onTranslate={handleTranslatePress}
+          onShowOriginal={handleShowOriginalPress}
+        />
+      )
+    },
+    [translatedMessages, loadingTranslation]
+  )
+
+
   const handleSendPress = useCallback(
     async (message: MessageType.PartialText) => {
       if (chatId && UserStore.currentUser) {
         console.log(chat);
         const chatData = await ChatStore.sendMessageUniversal(chat!, message.text);
         if(chatData?.chatType === ChatType.NewChat){
-          router.replace(`/chat/${chatData.thisChatId}`);
+          router.replace(`/[chatId]/${chatData.thisChatId}`);
         }
       }
     },
@@ -120,7 +178,7 @@ const ChatScreen: React.FC = observer(() => {
 
   const handleOpenProfile = useCallback(() => {
     if (otherUser) {
-      router.push(`/(tabs)/profile/${otherUser.id}`);
+      router.push(`/(user)/${otherUser.id}`);
     }
   }, [otherUser, router]);
 
@@ -136,6 +194,7 @@ const ChatScreen: React.FC = observer(() => {
           avatarUrl={otherUser?.thumbnailUrl}
           onPressAvatar={handleOpenProfile}
           isOnline={otherUser?.isOnline}
+          hasSubscription={hasSubscription}
         />
        
         <Chat
@@ -179,12 +238,14 @@ const ChatScreen: React.FC = observer(() => {
           messages={ChatStore.messages}
           onSendPress={handleSendPress}
           user={{ id: currentUserId }}
+          // Рендерим КАСТОМНЫЕ сообщения (системные/специальные)
           renderCustomMessage={renderMessage}
+          renderTextMessage={renderTextMessage}
           emptyState={() => <Text></Text>}
           {...(Platform.OS === "ios" && { enableAnimation: true })}
           showUserAvatars
           //showUserNames
-          timeFormat="HH:mm DD MMM"
+         
         />
 
       </SafeAreaView>

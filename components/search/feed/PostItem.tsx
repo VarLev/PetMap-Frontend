@@ -15,9 +15,10 @@ type PostCardProps = {
   post: IPost;
   handleSheetCommentsOpenById: (postId: string) => void;
   refresh: boolean;
+  isProfileView?: boolean;
 }
 
-const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenById, refresh }) => {
+const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenById, refresh, isProfileView}) => {
   const [hasLiked, setHasLiked] = useState<boolean>(post.hasLiked);
   const [commentText, setCommentText] = useState<string>('');
   const [menuVisible, setMenuVisible] = useState(false);
@@ -125,7 +126,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
   }
 
   const openUserProfile = (userId: string) => {
-    router.push(`/(tabs)/profile/${userId}`);
+    router.push(`/(user)/${userId}`);
   }
 
   const onComplain = async (text: string) => {
@@ -144,51 +145,63 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
     <Card className="mx-2 mt-2 bg-white rounded-2xl">
         <Card.Content>
           <View className="flex-row items-center justify-between mb-1">
-            <View className="flex-row items-center">
-              <TouchableRipple onPress={() => openUserProfile(post.userId)}>
-                <Avatar.Image size={36} source={{ uri: `${post.userAvatar}` }} />
-              </TouchableRipple>
-              <View className="ml-2">
-                <TouchableRipple onPress={() => openUserProfile(post.userId)}>
-                  <Text className="font-bold text-sm">{post.userName}</Text>
-                </TouchableRipple>
-                <Text className="text-gray-500 text-xs">
-                  {new Date(post.createdAt).toLocaleDateString()}
-                </Text>
-              </View>
-            </View>
-            <View>
-              <Menu
-                contentStyle={{
-                  backgroundColor: "white",
-                  borderRadius: 10,
-                  top: 40
-                }}
-                visible={menuVisible}
-                onDismiss={closeMenu}
-                anchor={<IconButton
-                  icon="dots-vertical"
-                  style={{ margin: 0 }}
-                  onPress={openMenu}
-                  size={20}
-                />}
-              >
-                {isCurrentUser ?
-                <Menu.Item
+          {isProfileView &&
+           (
+            <Text className="text-gray-500 text-xs">
+              {new Date(post.createdAt).toLocaleDateString()}
+            </Text>
+          )}
+            {!isProfileView && (
+              <>
+                <View className="flex-row items-center">
+                  <TouchableRipple onPress={() => openUserProfile(post.userId)}>
+                    <Avatar.Image size={36} source={{ uri: `${post.userAvatar}` }} />
+                  </TouchableRipple>
+                  <View className="ml-2">
+                    <TouchableRipple onPress={() => openUserProfile(post.userId)}>
+                      <Text className="font-bold text-sm">{post.userName}</Text>
+                    </TouchableRipple>
+                    <Text className="text-gray-500 text-xs">
+                      {new Date(post.createdAt).toLocaleDateString()}
+                    </Text>
+                  </View>
+                </View>
+                <View>
+                <Menu
                   contentStyle={{
-                    display: "flex"
+                    backgroundColor: "white",
+                    borderRadius: 10,
+                    top: 40
                   }}
-                  onPress={() => deletePost(post.id)}
-                  title={isLoadingDeletingPost ?
-                    <ActivityIndicator
-                      size="small"
-                      color="#6200ee"
-                    /> : 
-                    i18n.t("feedPosts.deletePost")}
-                /> :
-                <Menu.Item onPress={handleComplain} title={i18n.t("feedPosts.complainOnPost")} />}
-              </Menu>
-            </View>
+                  visible={menuVisible}
+                  onDismiss={closeMenu}
+                  anchor={<IconButton
+                    icon="dots-vertical"
+                    style={{ margin: 0 }}
+                    onPress={openMenu}
+                    size={20}
+                  />}
+                >
+                  {isCurrentUser ?
+                  <Menu.Item
+                    contentStyle={{
+                      display: "flex"
+                    }}
+                    onPress={() => deletePost(post.id)}
+                    title={isLoadingDeletingPost ?
+                      <ActivityIndicator
+                        size="small"
+                        color="#6200ee"
+                      /> : 
+                      i18n.t("feedPosts.deletePost")}
+                  /> :
+                  <Menu.Item onPress={handleComplain} title={i18n.t("feedPosts.complainOnPost")} />}
+                </Menu>
+              </View>
+            </>
+            )}
+            
+
             <ComplaintModal
               isVisible={isComplaintModal}
               handleCloseModal={closeComplaintModal}

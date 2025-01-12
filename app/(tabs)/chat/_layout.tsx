@@ -1,7 +1,6 @@
 import React from "react";
-import { router, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import i18n from "@/i18n";
-import { IconButton } from "react-native-paper";
 
 
 
@@ -14,13 +13,13 @@ const ChatLayout = () => {
           options={{ 
             headerShown: true, 
             title: i18n.t('chat.messages'),
-            headerLeft: () => (
-              <IconButton
-                icon="arrow-left"
-                size={24}
-                onPress={() => router.back()}
-              />
-            )
+            // headerLeft: () => (
+            //   <IconButton
+            //     icon="arrow-left"
+            //     size={24}
+            //     onPress={() => router.back()}
+            //   />
+            // )
           }}
           
         />

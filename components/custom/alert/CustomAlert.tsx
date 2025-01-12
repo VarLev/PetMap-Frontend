@@ -11,6 +11,7 @@ interface CustomAlertProps {
   title?: string;
   confirmText?: string;
   image?: ImageSourcePropType; // Добавлен новый проп для изображения
+  backgroundColor?: string; // Добавлен новый проп для цвета фона
 }
 
 const CustomAlert: React.FC<CustomAlertProps> = ({
@@ -21,10 +22,11 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   title = i18n.t("cancel"),
   confirmText = i18n.t("ok"),
   image,
+  backgroundColor = '#FFFFFF',
 }) => {
   return (
     <Modal isVisible={isVisible} onBackdropPress={onClose} backdropOpacity={0.6}>
-      <View className="p-6 px-8 rounded-2xl bg-white">
+      <View className="p-6 px-8 rounded-2xl" style={{ backgroundColor: backgroundColor }}>
         {/* Если изображение передано, оно отображается здесь */}
         {image && (
           <Image 
@@ -36,7 +38,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
         {/* <Text className="text-lg font-nunitoSansBold mb-2">
           {title}
         </Text> */}
-        <Text className="text-base text-center font-nunitoSansRegular mb-1">
+        <Text className="text-base text-justify font-nunitoSansRegular mb-1">
           {message}
         </Text>
         <TouchableOpacity onPress={onClose} className="py-2 px-4 rounded">

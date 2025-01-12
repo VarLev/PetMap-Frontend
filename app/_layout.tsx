@@ -5,7 +5,7 @@ import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nu
 import { AlertProvider } from '@/contexts/AlertContext';
 import { DefaultTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { StoreProvider } from '@/contexts/StoreProvider';
-import { AppState, AppStateStatus, View } from 'react-native';
+import { AppState, AppStateStatus, Platform, View } from 'react-native';
 import uiStore from '@/stores/UIStore';
 import { observer } from 'mobx-react-lite';
 import { setUserStatus, initOnDisconnect } from '@/firebaseConfig';
@@ -144,6 +144,21 @@ const Layout = observer(() => {
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
               <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(user)" 
+              options={{ 
+               headerShown: Platform.OS === 'ios' , 
+                headerTransparent:true, 
+                title:'', headerBackTitle:'' ,
+                headerBackTitleVisible: false,
+              }} />
+              <Stack.Screen name="(pet)/[petId]" 
+              options={{ 
+                headerShown: Platform.OS === 'ios', 
+                headerTransparent:true, 
+                title:'', headerBackTitle:'' ,
+                headerBackTitleVisible: false,
+              }} />
+              <Stack.Screen name="(chat)" options={{ headerShown: false }} />
             </Stack>
           </PaperProvider>
         </AlertProvider>
