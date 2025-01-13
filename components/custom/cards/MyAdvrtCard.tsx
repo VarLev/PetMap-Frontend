@@ -51,25 +51,16 @@ const MyAdvrtCard: React.FC<AdCardProps> = ({ ad, pressDelete }) => {
         <View className="ml-2 w-60">
           <Text className="text-lg font-nunitoSansBold">{ad.userName}</Text>
           <CustomTextComponent
-            text={
-              ad.date
-                ? new Date(ad.date).toLocaleTimeString()
-                : i18n.t('MyAdvrtCard.noDate')
-            }
-            leftIcon="time-outline"
-            iconSet="ionicons"
-            className_="p-0"
-          />
-          <CustomTextComponent
             text={ad.address}
             leftIcon="paper-plane-outline"
             iconSet="ionicons"
             className_="p-0"
+            maxLines={3}
           />
           {ad.userPets && ad.userPets.length > 0 && (
             <CustomTextComponent
               text={`${ad.userPets[0].petName}, ${getTagsByIndex(
-                i18n.t('tags.breeds') as string[],
+                i18n.t('tags.breedsDog') as string[],
                 ad.userPets[0].breed!
               )}`}
               leftIcon="paw-outline"

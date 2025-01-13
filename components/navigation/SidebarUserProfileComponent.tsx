@@ -204,7 +204,7 @@ const SidebarUserProfileComponent = () => {
           /> */}
         </List.Section>
         <Button className="mt-4" onPress={() => router.push('/(paywall)') } >Подписка Тест</Button>
-        {userStore.getUserHasSubscription() && <DismissibleBanner adSize={BannerAdSize.LARGE_BANNER} />}
+        {!userStore.getUserHasSubscription() && <DismissibleBanner adSize={BannerAdSize.LARGE_BANNER} />}
       </View>
     </SafeAreaView>
   );

@@ -62,7 +62,7 @@ const FullBenefitsTable = () => {
     ];
 
     return (
-        <View className="mt-[18px]">
+        <View className="mb-[18px]">
             <Text className="text-[20px] text-center color-white font-nunitoSansBold mb-[16px]">Что вы получите?</Text>
             <View style={styles.table}>
                 <View style={styles.header}>

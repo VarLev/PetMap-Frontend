@@ -79,7 +79,8 @@ const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
           >
             {ad.userName}
           </Text>
-          <CustomTextComponent
+          
+          {/* <CustomTextComponent
             text={
               ad.date
                 ? new Date(ad.date).toLocaleTimeString([], {
@@ -91,7 +92,8 @@ const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
             leftIcon="time-outline"
             iconSet="ionicons"
             className_="p-0"
-          />
+          /> */}
+
           <CustomTextComponent
             text={convertDistance(distance)}
             leftIcon="paper-plane-outline"
@@ -99,16 +101,27 @@ const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
             className_="p-0"
           />
           {ad.userPets && ad.userPets.length > 0 && (
-            <CustomTextComponent
-              text={`${ad.userPets[0].petName}, ${getTagsByIndex(
-                i18n.t('tags.breeds') as string[],
-                ad.userPets[0].breed!
-              )}`}
-              leftIcon="paw-outline"
-              iconSet="ionicons"
-              maxLines={1}
-              className_="p-0 pt-1"
-            />
+            <View>
+              <CustomTextComponent
+                text={`${ad.userPets[0].petName}, ${getTagsByIndex(
+                 i18n.t('tags.TypePet') as string[] ,
+                  ad.userPets[0].animalType!
+                )}`}
+                leftIcon="paw-outline"
+                iconSet="ionicons"
+                maxLines={1}
+                className_="p-0 pt-1"
+              />
+              <CustomTextComponent
+                text={`${getTagsByIndex(
+                  ad.userPets[0].animalType === 1 ? i18n.t('tags.breedsCat') as string[] : i18n.t('tags.breedsDog') as string[],
+                  ad.userPets[0].breed!
+                )}`}
+                
+                maxLines={1}
+                className_="p-0 pt-1"
+              />
+            </View>
           )}
         </View>
       </View>

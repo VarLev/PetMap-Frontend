@@ -7,6 +7,7 @@ import { IUser } from '@/dtos/Interfaces/user/IUser';
 import { BonusProvider } from '@/contexts/BonusContex';
 import PermissionsRequestComponent from '@/components/auth/PermissionsRequestComponent';
 import uiStore from '@/stores/UIStore';
+
 const Onboarding = () => {
   const [selectedLanguage, setSelectedLanguage] = React.useState<number>(0);  
 
@@ -25,10 +26,10 @@ const Onboarding = () => {
     router.replace('/congrats');
   };
 
-  const handleEscape = async (user: IUser) => {
-    await userStore.updateUserOnbordingData(user);
-    router.replace('/map');
-  };
+  // const handleEscape = async (user: IUser) => {
+  //   await userStore.updateUserOnbordingData(user);
+  //   router.replace('/map');
+  // };
 
   return (
     <BonusProvider>
@@ -37,7 +38,7 @@ const Onboarding = () => {
           <OnboardingProfile 
             onLanguageSelect={handleLanguageSelect}
             onComplete={handleComplete}  
-            onEscape={handleEscape}/>      
+            onEscape={()=>{}}/>      
       </SafeAreaView>
     </BonusProvider>
   );

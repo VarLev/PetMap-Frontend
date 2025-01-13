@@ -18,6 +18,8 @@ import ScreenHolderLogo from "@/components/common/ScreenHolderLogo";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAlert } from "@/contexts/AlertContext";
 import AppOpenAdHandler from "@/components/ads/AppOpenAdHandler"; 
+import { IUser } from "@/dtos/Interfaces/user/IUser";
+import { UserStatus } from "@/dtos/enum/UserStatus";
 
 GoogleSignin.configure({
   webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
@@ -40,7 +42,11 @@ const App = () => {
 
     const checkAuthAndRedirect = async () => {
       if (isInitialized && adShown && !loading && userStore.getLogged() && !isUserJustRegistrated) {
-        await router.replace("/search/news"); // Перенаправление на карту, если пользователь авторизован
+        const currentUser = await userStore.getCurrentUser() as IUser;
+        if(currentUser.userStatus === UserStatus.Onboarding)
+          await router.replace("/(auth)/onboarding"); 
+        else if(currentUser.userStatus === UserStatus.ReadyToGo)
+          await router.replace("/search/news"); // Перенаправление на карту, если пользователь авторизован
       }
     };
    
@@ -82,7 +88,7 @@ const App = () => {
     return <AppOpenAdHandler onAdComplete={() => setAdShown(true)} />;
   }
 
-  // Если пользователь авторизован и всё инициализировано, редиректим на /search/news
+  //Если пользователь авторизован и всё инициализировано, редиректим на /search/news
   if (!isError && !loading && userStore.getLogged() && isInitialized && (adShown || userHasSubscription))
     return <Redirect href="/search/news" />;
 

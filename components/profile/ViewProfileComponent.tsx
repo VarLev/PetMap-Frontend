@@ -12,7 +12,7 @@ import { calculateHumanAge, calculateShortDogAge, getTagsByIndex, shortenName } 
 import CustomSocialLinkInput from '../custom/text/SocialLinkInputProps';
 import { router } from 'expo-router';
 import petStore from '@/stores/PetStore';
-import { petUriImage } from '@/constants/Strings';
+import { petCatUriImage, petUriImage } from '@/constants/Strings';
 import { User } from '@/dtos/classes/user/UserDTO';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import AddCard from '../custom/buttons/AddCard';
@@ -152,50 +152,49 @@ const ViewProfileComponent = observer(
                   {hasSubscription && isCurrentUser && (<Image source={require('@/assets/images/subscription-marker.png')} className='h-[34px] w-[27px] absolute  -top-[5px] -right-[6px]' />)}
                   <View className={`w-4 h-4 rounded-full ${isOnline ? 'bg-emerald-400' : 'bg-gray-400'}`} />
                 </View>
-               
-                
                 <Text className="pl-2 text-2xl font-nunitoSansBold" numberOfLines={2}>
                   {user.name}
                   {user.birthDate && `, ${calculateHumanAge(user.birthDate)}`}
                 </Text>
               </View>
-              
-              <FlatList
-                horizontal={true}
-                data={user.petProfiles}
-                keyExtractor={(item, index) => item.id}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: 10 }}
-                renderItem={({ item }) => (
-                  <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => onPetOpen(item.id)}>
-                    <Card className="w-[180px] h-[235px] p-2 m-2 rounded-2xl shadow bg-purple-100">
-                      <Card.Cover source={{ uri: item.thumbnailUrl || petUriImage }} style={{ height: 150, borderRadius: 14 }} />
-                      <Text className="block font-nunitoSansBold text-lg mt-1 mb-[-8px] leading-5" numberOfLines={1} ellipsizeMode="tail">
-                        {shortenName(item.petName)}, {calculateShortDogAge(item.birthDate)}
-                      </Text>
-                      <View style={{ marginTop: 12 }}>
+              <View>
+                <FlatList
+                  horizontal={true}
+                  data={user.petProfiles}
+                  keyExtractor={(item, index) => item.id}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ paddingHorizontal: 10 }}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => onPetOpen(item.id)}>
+                      <Card className="w-[180px] h-[235px] p-2 m-2 rounded-2xl shadow bg-purple-100">
+                        <Card.Cover source={{ uri: item.thumbnailUrl?? (item.animalType === 1 ? petCatUriImage : petUriImage)}} style={{ height: 150, borderRadius: 14 }} />
+                        <Text className="block font-nunitoSansBold text-lg mt-1 mb-[-8px] leading-5" numberOfLines={1} ellipsizeMode="tail">
+                          {shortenName(item.petName)}, {calculateShortDogAge(item.birthDate)}
+                        </Text>
+                        <View style={{ marginTop: 5 }}>
                         <Text className="font-nunitoSansRegular" numberOfLines={1} ellipsizeMode="tail">
-                          {getTagsByIndex(i18n.t('tags.breeds') as string[], item.breed!)}
-                        </Text>
-                        <Text className="font-nunitoSansRegular">
-                          {getTagsByIndex(i18n.t('tags.petGender') as string[], item.gender! ? item.gender! : 0)}
-                          {item.weight ? `, ${item.weight} kg` : ''}
-                        </Text>
-                      </View>
-                    </Card>
-                  </TouchableOpacity>
-                )}
-                ListFooterComponent={() =>
-                  isCurrentUser ? <AddCard buttonText={i18n.t('UserProfile.addPet')} onPress={handleAddPet} /> : null
-                }
-                
-              />
-
-              <View className="pr-3 pl-4">
+                            {getTagsByIndex(i18n.t('tags.TypePet') as string[], item.animalType!) + ', '}
+                            {getTagsByIndex(i18n.t('tags.petGender') as string[], item.gender! ? item.gender! : 0)}
+                              {item.weight ? `, ${item.weight} kg` : ''}
+                          </Text>
+                          <Text className="font-nunitoSansRegular" numberOfLines={1} ellipsizeMode="tail">
+                            {getTagsByIndex(item.animalType === 0 ? i18n.t('tags.breedsDog') as string[] : i18n.t('tags.breedsCat') as string[], item.breed!)}
+                          </Text>
+                        </View>
+                      </Card>
+                    </TouchableOpacity>
+                  )}
+                  ListFooterComponent={() =>
+                    isCurrentUser ? <AddCard buttonText={i18n.t('UserProfile.addPet')} onPress={handleAddPet} /> : null
+                  }
+                />
+              </View>
+              
+              <View className="pt-0 pr-3 pl-4">
                 {/* Описание - рендерим, только если есть текст */}
-                {user.description?.trim()  && user.description.length > 0 &&(
+                {user.description && user.description.length > 0 && (
                   <View>
-                    <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">{i18n.t('UserProfile.aboutMe')}</Text>
+                    <Text className="-mb-1 text-base font-nunitoSansBold text-indigo-700">{i18n.t('UserProfile.aboutMe')}</Text>
                     <CustomTextComponent
                       text={user.description}
                       rightIcon={rightIcon}
@@ -224,8 +223,7 @@ const ViewProfileComponent = observer(
 
                 {/* Основная информация */}
                 {(!!user.location?.trim() ||
-                  (user.userLanguages && user.userLanguages.length > 0) ||
-                  (user.work && user.work.length > 0) ||
+                  (user.userLanguages && user.userLanguages.length > 0) || (user.work && user.work.length > 0) ||
                   !!user.education?.trim()) && (
                   <View>
                     <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">{i18n.t('UserProfile.mainInfo')}</Text>
@@ -304,8 +302,6 @@ const ViewProfileComponent = observer(
               <View className="h-28" />
             </View>
           }
-          
-          
         />
       </GestureHandlerRootView>
     );

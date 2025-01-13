@@ -7,6 +7,9 @@ import UserStore from '@/stores/UserStore';
 import { Keyboard } from 'react-native';
 import {isDevice} from 'expo-device';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import DismissibleBanner from '@/components/ads/DismissibleBanner';
+import userStore from '@/stores/UserStore';
+import { BannerAdSize } from 'react-native-google-mobile-ads';
 
 const Tabslayout = () => {
   const pathname = usePathname();
@@ -112,7 +115,7 @@ const Tabslayout = () => {
           }}
         />
       </Tabs>
-      
+       {!userStore.getUserHasSubscription() && <DismissibleBanner adSize={BannerAdSize.BANNER} />}
       </DrawerProvider>
     </GestureHandlerRootView>
   );
