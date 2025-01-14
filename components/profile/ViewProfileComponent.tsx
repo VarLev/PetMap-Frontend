@@ -167,7 +167,7 @@ const ViewProfileComponent = observer(
                   renderItem={({ item }) => (
                     <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => onPetOpen(item.id)}>
                       <Card className="w-[180px] h-[235px] p-2 m-2 rounded-2xl shadow bg-purple-100">
-                        <Card.Cover source={{ uri: item.thumbnailUrl?? (item.animalType === 1 ? petCatUriImage : petUriImage)}} style={{ height: 150, borderRadius: 14 }} />
+                        <Card.Cover source={{ uri: item.thumbnailUrl|| (item.animalType === 1 ? petCatUriImage : petUriImage)}} style={{ height: 150, borderRadius: 14 }} />
                         <Text className="block font-nunitoSansBold text-lg mt-1 mb-[-8px] leading-5" numberOfLines={1} ellipsizeMode="tail">
                           {shortenName(item.petName)}, {calculateShortDogAge(item.birthDate)}
                         </Text>
