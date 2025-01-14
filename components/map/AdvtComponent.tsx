@@ -262,7 +262,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                           </Text>
                         </View>
                         <View className="flex-col pt-0 ">
-                          <View className="flex-row justify-between items-center">
+                          <View className="flex-row justify-between items-center pr-2">
                             <Text className="font-nunitoSansRegular text-sm">
                               {i18n.t("WalkDetails.friendliness")}
                             </Text>
@@ -271,11 +271,11 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                               starSize={15}
                               color="#BFA8FF"
                               maxStars={5}
-                              starStyle={{ marginHorizontal: 2 }}
+                              starStyle={{ marginHorizontal: 2}}
                               StarIconComponent={CircleIcon}
                             />
                           </View>
-                          <View className=" flex-row justify-between items-center">
+                          <View className=" flex-row justify-between items-center pr-2">
                             <Text className="font-nunitoSansRegular text-sm">
                               {i18n.t("WalkDetails.activity")}
                             </Text>
