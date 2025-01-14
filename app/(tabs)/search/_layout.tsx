@@ -20,7 +20,7 @@ export default function Layout() {
         tabBarIndicatorStyle: { backgroundColor: 'blue' }, // Индикатор активной вкладки
         tabBarLabelStyle: { fontSize: 14, color: 'black', fontFamily: 'NunitoSans_700Bold'}, // Стили текста вкладок
         tabBarStyle: { backgroundColor: 'white' }, // Фон панели вкладок
-        swipeEnabled: swipeEnabled,
+        swipeEnabled: false,
       }}
     >
        <TopTab.Screen
