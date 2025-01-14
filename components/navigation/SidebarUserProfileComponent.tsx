@@ -203,7 +203,7 @@ const SidebarUserProfileComponent = () => {
             onPress={() => console.log(i18n.t("Sidebar.support"))}
           /> */}
         </List.Section>
-        <Button className="mt-4" onPress={() => router.push('/(paywall)') } >Подписка Тест</Button>
+        {/* <Button className="mt-4" onPress={() => router.push('/(paywall)') } >Подписка Тест</Button> */}
         {!userStore.getUserHasSubscription() && <DismissibleBanner adSize={BannerAdSize.LARGE_BANNER} />}
       </View>
     </SafeAreaView>

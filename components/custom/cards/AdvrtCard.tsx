@@ -127,14 +127,13 @@ const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
       </View>
       {/* Детали объявления */}
       {ad.description && (
-        <Text
-          className="mt-1 text-xs text-gray-800"
-          numberOfLines={2}
-          ellipsizeMode="tail"
-          style={{ flexShrink: 1 }}
-        >
-          {ad.description}
-        </Text>
+        <CustomTextComponent
+          text={ad.description}
+          enableTranslation
+          maxLines={5}
+
+        />
+
       )}
       <View className="flex-row w-full justify-between">
         <CustomButtonPrimary title={i18n.t('AdvrtCard.invite')} containerStyles="w-1/2" />

@@ -10,6 +10,7 @@ import uiStore from '@/stores/UIStore';
 import { observer } from 'mobx-react-lite';
 import { setUserStatus, initOnDisconnect } from '@/firebaseConfig';
 import userStore from '@/stores/UserStore';
+import i18n from '@/i18n';
 
 // Создаем кастомную тему для react-native-paper
 const customTheme = {
@@ -151,12 +152,19 @@ const Layout = observer(() => {
                 title:'', headerBackTitle:'' ,
                 headerBackTitleVisible: false,
               }} />
-              <Stack.Screen name="(pet)/[petId]" 
+              <Stack.Screen name="(pet)/[petId]/index" 
               options={{ 
-                headerShown: Platform.OS === 'ios', 
-                headerTransparent:true, 
-                title:'', headerBackTitle:'' ,
-                headerBackTitleVisible: false,
+                headerShown: true,
+                headerBackButtonMenuEnabled: true,
+                headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' },
+                headerTransparent: true,
+                headerTitle: '',
+              }} />
+               <Stack.Screen name="(pet)/[petId]/edit" 
+              options={{ 
+                headerShown: true,
+                title: i18n.t('ProfileLayout.editUserTitle'),
+                headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' },
               }} />
               <Stack.Screen name="(chat)" options={{ headerShown: false }} />
             </Stack>

@@ -36,10 +36,10 @@ const EditPetProfile = observer(() => {
       console.log('Profile updated successfully');
 
       // Возвращаемся на предыдущий экран с обновлением
-      router.back();
+      
       
       // Если нужно обновить экран после возвращения
-      router.replace(`/(pet)/${petId}`);
+      router.replace(`/(pet)/${updatedPet.id}`);
     } catch (error) {
       console.error('Error updating profile:', error);
     }

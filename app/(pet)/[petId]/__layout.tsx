@@ -11,7 +11,7 @@ export default function PetLayout() {
         options={{ 
           headerShown: true,
           title: i18n.t('ProfileLayout.editUserTitle'),
-         
+          headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' },
         }} 
    
       />

@@ -12,7 +12,7 @@ import { observer } from 'mobx-react-lite';
 import { StarRatingDisplay } from 'react-native-star-rating-widget';
 import { router } from 'expo-router';
 import petStore from '@/stores/PetStore';
-import { petUriImage } from '@/constants/Strings';
+import { petCatUriImage, petUriImage } from '@/constants/Strings';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import CircleIcon from '../custom/icons/CircleIcon';
 import MenuItemWrapper from '@/components/custom/menuItem/MunuItemWrapper';
@@ -59,7 +59,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
       <View style={{ alignItems: 'center' }}>
         <StatusBar backgroundColor="transparent" translucent />
         <View className="relative w-full aspect-square">
-          <Image source={{ uri: pet?.thumbnailUrl || petUriImage }} className="w-full h-full" />
+          <Image source={{ uri: pet.thumbnailUrl|| (pet.animalType === 1 ? petCatUriImage : petUriImage) }} className="w-full h-full" />
           <View style={styles.iconContainer} className={`${isIOS ? 'mt-14' : 'mt-6'} `}>
             {isCurrentUser && (
               <Menu
