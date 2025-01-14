@@ -10,6 +10,7 @@ import { randomUUID } from "expo-crypto";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { compressImage } from "@/utils/utils";
 import userStore from "./UserStore";
+import i18n from "@/i18n";
 
 class SearchStore {
   posts: IPost[] = [];
@@ -258,7 +259,8 @@ class SearchStore {
 
   async fetchNews() {
     try {
-      const files = await getFilesInDirectory('news');
+      const files = await getFilesInDirectory(`news/${i18n.locale}`);
+      console.log(files)
       if (files.length > 0) {
         this.setNews(files);
         return;

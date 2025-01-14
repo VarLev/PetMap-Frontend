@@ -160,7 +160,7 @@ const Layout = observer(() => {
                 headerTransparent: true,
                 headerTitle: '',
               }} />
-               <Stack.Screen name="(pet)/[petId]/edit" 
+              <Stack.Screen name="(pet)/[petId]/edit" 
               options={{ 
                 headerShown: true,
                 title: i18n.t('ProfileLayout.editUserTitle'),

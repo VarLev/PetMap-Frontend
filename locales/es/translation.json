@@ -374,7 +374,7 @@
       "Laika de Yakutia",
       "Yorkshire Terrier"
     ],
-    "breedsCat":[
+    "breedsCat": [
       "Abisinio",
       "Bobtail Americano",
       "Curl Americano",
@@ -869,10 +869,7 @@
       "Legislación Específica de Razas",
       "Kit de Seguridad para Retirar Collares"
     ],
-    "TypePet": [
-      "Perro",
-      "Gato"
-    ]
+    "TypePet": ["Perro", "Gato"]
   },
   "emptyProfile": {
     "welcome": "Bienvenido",
@@ -947,7 +944,7 @@
       "month": { "one": "mes", "few": "meses", "many": "meses" },
       "year": { "one": "año", "few": "años", "many": "años" },
       "shortMonth": "m.",
-      "shortYear": {"few": "a.", "many": "a."}
+      "shortYear": { "few": "a.", "many": "a." }
     }
   },
   "EditPetProfile": {
@@ -1008,7 +1005,7 @@
     "appImprovements": "• Mejoras y nuevas funciones en la aplicación.",
     "discounts": "• Descuentos y cupones en las tiendas de mascotas.",
     "assortmentUpdates": "¡La variedad de tiendas y cupones se actualizará regularmente! 🐾",
-      
+
     "userEditName": "Completar el perfil de usuario",
     "fillOnboardingName": "Completar el onboarding",
     "petEditName": "Completar el perfil de la mascota",
@@ -1161,7 +1158,7 @@
   "Map": {
     "fillProfileAndAddPet": "Para crear un paseo, necesitás completar tu perfil y agregar una mascota.",
     "walkCreatedWithBonus": "El paseo se creó con éxito. Sumaste 400 puntos de bonificación por crear tu primer paseo.",
-    "searchAddress":"Ingrese la dirección..."
+    "searchAddress": "Ingrese la dirección..."
   },
   "FilterSearchTags": {
     "walk": "Paseo",
@@ -1344,10 +1341,16 @@
   "Snackbar": {
     "noResults": "No hay resultados"
   },
-  "searchWord":"Ingrese el nombre en inglés",
+  "searchWord": "Ingrese el nombre en inglés",
   "translation": {
     "translate": "Traducir",
     "reverse": "Mostrar original"
   },
-   "typeOfPet":"Tipo de mascota"
+  "typeOfPet": "Tipo de mascota",
+  "wiki": {
+    "autorMessage": "¿Te gustaría publicar artículos en PetMap? Cuéntanos sobre ti y sugiere temas sobre los que te gustaría escribir.",
+    "becomeAutor": "Conviértete en Autor",
+    "close": "Cerrar",
+    "read": "Leer"
+  }
 }
