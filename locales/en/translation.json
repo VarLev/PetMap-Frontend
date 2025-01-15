@@ -1089,7 +1089,8 @@
     "myWalks": "My Walks",
     "myLocations": "My Locations",
     "settings": "Settings",
-    "support": "Support"
+    "support": "Support",
+    "shelter":"Pet Shelters"
   },
   "UserJobsList": {
     "reward": "Reward",
@@ -1446,5 +1447,8 @@
     "becomeAutor": "Become an Author",
     "close": "Close",
     "read": "Read"
+  },
+  "petShelter":{
+    "shelter":"Pet Shelters"
   }
 }

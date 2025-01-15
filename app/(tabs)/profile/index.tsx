@@ -25,7 +25,6 @@ const Profile = observer(() => {
 
   const handleEdit = () => {
     router.push('profile/edit');
-    
   }
 
   const handlePetOpen = (petId:string) => {
@@ -35,7 +34,7 @@ const Profile = observer(() => {
   if (!editableUser) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#6200ee"  />
+        <ActivityIndicator size="large" color="#6200ee" />
         <Text>Loading...</Text>
       </View>
     );

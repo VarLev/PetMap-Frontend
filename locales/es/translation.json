@@ -1089,7 +1089,8 @@
     "myWalks": "Mis Paseos",
     "myLocations": "Mis Ubicaciones",
     "settings": "Configuraciones",
-    "support": "Soporte"
+    "support": "Soporte",
+    "shelter":"Refugios para mascotas"
   },
   "UserJobsList": {
     "reward": "Recompensa",
@@ -1446,5 +1447,8 @@
     "becomeAutor": "Conviértete en Autor",
     "close": "Cerrar",
     "read": "Leer"
+  },
+  "petShelter":{
+    "shelter":"Refugios para mascotas"
   }
 }

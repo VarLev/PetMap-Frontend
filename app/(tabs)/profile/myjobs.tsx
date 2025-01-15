@@ -6,7 +6,7 @@ import UserJobsList from '@/components/navigation/userJob/UserJobsList';
 const MyJobs = observer(() => {
   return (
     <BonusProvider>
-      <UserJobsList  />
+      <UserJobsList />
     </BonusProvider>
   );
 });

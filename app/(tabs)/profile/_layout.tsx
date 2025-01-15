@@ -62,6 +62,20 @@ export default function ProfileLayout() {
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
         }} 
       />
+      <Stack.Screen 
+        name="petShelters/index" 
+        options={{ 
+          title: i18n.t('petShelter.shelter'),
+          headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
+        }} 
+      />
+      <Stack.Screen 
+        name="petShelters/ayudacan" 
+        options={{ 
+          title: 'AyudaCan',
+          headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
+        }} 
+      />
     </Stack>
   );
 }

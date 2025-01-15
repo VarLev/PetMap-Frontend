@@ -1103,7 +1103,8 @@
     "myWalks": "Мои прогулки",
     "myLocations": "Мои локации",
     "settings": "Настройки",
-    "support": "Поддержка"
+    "support": "Поддержка",
+    "shelter":"Приюты для питомцев"
   },
   "UserJobsList": {
     "reward": "Награда",
@@ -1460,5 +1461,8 @@
     "becomeAutor": "Стать автором",
     "close": "Закрыть",
     "read": "Читать"
+  },
+  "petShelter":{
+    "shelter":"Приюты для питомцев"
   }
 }
