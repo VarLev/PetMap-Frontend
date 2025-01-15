@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Image, Platform } from "react-native";
-import { Button, Divider, List, TouchableRipple } from "react-native-paper";
+import { Divider, List, TouchableRipple } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/Images";
 import userStore from "@/stores/UserStore";
