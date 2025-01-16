@@ -35,6 +35,7 @@ const TranslatableTextMessage: React.FC<TranslatableTextMessageProps> = observer
           <>
             {translatedText ? (
               <TouchableOpacity
+                activeOpacity={0.8}
                 onPress={() => onShowOriginal(message.id)}
                 className="px-2 py-1 rounded self-start"
               >
@@ -42,6 +43,7 @@ const TranslatableTextMessage: React.FC<TranslatableTextMessageProps> = observer
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
+                activeOpacity={0.8}
                 onPress={() => onTranslate(message)}
                 className="px-2 py-1 rounded self-start"
               >

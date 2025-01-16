@@ -604,7 +604,7 @@ const MapBoxMap = observer(() => {
           </MapView>
           {/* === Кнопка "Моя локация" поверх карты === */} 
           {hasPermission && userCoordinates && (
-            <TouchableOpacity  className='absolute bottom-[180px] right-[25px]'  onPress={handleRecenter}>
+            <TouchableOpacity activeOpacity={0.8} className='absolute bottom-[180px] right-[25px]'  onPress={handleRecenter}>
               <View style={{
                 backgroundColor: '#fff',
                 borderRadius: 25,

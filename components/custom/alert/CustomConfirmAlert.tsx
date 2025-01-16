@@ -31,11 +31,11 @@ const CustomConfirmAlert: React.FC<CustomConfirmAlertProps> = ({
         </Text>
 
         <View className="flex-row justify-between">
-          <TouchableOpacity onPress={onClose} className="py-2 px-4 rounded w-1/2 mr-2">
+          <TouchableOpacity activeOpacity={0.8} onPress={onClose} className="py-2 px-4 rounded w-1/2 mr-2">
             <Text className="font-nunitoSansBold text-center">{cancelText}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={onConfirm} className="py-2 px-4 rounded w-1/2">
+          <TouchableOpacity activeOpacity={0.8} onPress={onConfirm} className="py-2 px-4 rounded w-1/2">
             <Text className="font-nunitoSansBold text-center">{confirmText}</Text>
           </TouchableOpacity>
         </View>

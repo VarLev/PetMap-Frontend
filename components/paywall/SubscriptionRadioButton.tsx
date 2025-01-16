@@ -64,7 +64,7 @@ const SubscriptionRadioButton: FC<SubscriptionRadioButtonProps> = ({value, price
     ];
 
     return (
-        <TouchableOpacity onPress={handleSheetOpen}>
+        <TouchableOpacity activeOpacity={0.8} onPress={handleSheetOpen}>
             <View
                 style={{
                     ...styles.radioButton,
@@ -100,6 +100,7 @@ const SubscriptionRadioButton: FC<SubscriptionRadioButtonProps> = ({value, price
                         </View> */}
                     </View>
                     <TouchableOpacity
+                        activeOpacity={0.8}
                         className="flex-row items-center"
                         onPress={handleOpenBenefits}
                     >

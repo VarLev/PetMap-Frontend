@@ -118,6 +118,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
         <View className="h-full bg-white">
           <View className="flex-row">
             <TouchableOpacity
+              activeOpacity={0.8}
               className="rounded-2xl"
               onPress={() => handleUserProfileOpen(advrt.userId!)}
             >
@@ -239,6 +240,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                   >
                     <View className="p-1 flex-row ">
                       <TouchableOpacity
+                        activeOpacity={0.8}
                         className="rounded-2xl"
                         onPress={() => handlePetProfileOpen(pet.id)}
                       >

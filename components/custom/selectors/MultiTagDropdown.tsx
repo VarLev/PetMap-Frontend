@@ -71,7 +71,7 @@ const MultiTagDropdown: React.FC<MultiTagDropdownProps> = ({
         }}
       >
         <Text style={{ color: 'black', marginRight: 5, fontFamily: 'NunitoSans_700Bold', fontSize: 12 }}>{label}</Text>
-        <TouchableOpacity onPress={() => handleRemoveTag(index)}>
+        <TouchableOpacity activeOpacity={0.8} onPress={() => handleRemoveTag(index)}>
           <Text style={{ color: 'black' }}>✕</Text>
         </TouchableOpacity>
       </View>

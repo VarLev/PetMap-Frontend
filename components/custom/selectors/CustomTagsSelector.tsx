@@ -82,6 +82,7 @@ const CustomTagsSelector: React.FC<CustomTagsSelectorProps> = ({
           ref={refTags}
           renderTag={({ tag, index, onPress }) => (
             <TouchableOpacity
+              activeOpacity={0.8}
               key={`${tag}-${index}`}
               className={`px-2 py-2 m-1 justify-between rounded-full ${
                 isTagSelected(tag, index) ? ' bg-purple-100' : 'bg-white border border-indigo-700'
@@ -101,7 +102,7 @@ const CustomTagsSelector: React.FC<CustomTagsSelectorProps> = ({
       </View>
       {/* Спойлер для показа всех тегов, если не в режиме readonly и если visibleTagsCount установлен */}
       {!readonlyMode && visibleTagsCount && tags.length > visibleTagsCount && (
-        <TouchableOpacity onPress={() => handleTagShortPress(!showAll)} className="mt-2">
+        <TouchableOpacity activeOpacity={0.8} onPress={() => handleTagShortPress(!showAll)} className="mt-2">
           <Text className="text-indigo-700 text-sm font-nunitoSansBold">
             {showAll ? i18n.t('tagSelectors.collapse') : i18n.t('tagSelectors.showMore')+`(${tags.length - visibleTagsCount})`}
           </Text>

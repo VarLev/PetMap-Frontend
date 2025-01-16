@@ -41,7 +41,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
         <Text className="text-base text-center font-nunitoSansRegular mb-1">
           {message}
         </Text>
-        <TouchableOpacity onPress={onClose} className="py-2 px-4 rounded">
+        <TouchableOpacity activeOpacity={0.8} onPress={onClose} className="py-2 px-4 rounded">
           <Text className="font-nunitoSansBold text-center">{confirmText}</Text>
         </TouchableOpacity>
       </View>

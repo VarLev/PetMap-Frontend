@@ -83,6 +83,7 @@ const CustomAlert: React.FC<{
         {message}
       </Text>
       <TouchableOpacity
+        activeOpacity={0.8}
         onPress={onClose}
         style={{ padding: 10, alignSelf: 'stretch', alignItems: 'center' }}
       >

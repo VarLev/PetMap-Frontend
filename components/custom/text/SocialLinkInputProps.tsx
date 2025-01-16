@@ -59,7 +59,7 @@ const CustomSocialLinkInput: React.FC<CustomSocialLinkInputProps> = ({
             <IconButton icon={leftIcon} size={20} />
           )
         )}
-        <TouchableOpacity onPress={handleOpenLink} style={{ flex: 1 }}>
+        <TouchableOpacity activeOpacity={0.8} onPress={handleOpenLink} style={{ flex: 1 }}>
           <Text
             numberOfLines={maxLines}
             ellipsizeMode="tail"
@@ -69,7 +69,7 @@ const CustomSocialLinkInput: React.FC<CustomSocialLinkInputProps> = ({
           </Text>
         </TouchableOpacity>
         {rightIcon && (
-          <TouchableOpacity onPress={onRightIconPress}>
+          <TouchableOpacity activeOpacity={0.8} onPress={onRightIconPress}>
             <MaterialIcons name={rightIcon ?? ''} size={20} color="black" />
           </TouchableOpacity>
         )}

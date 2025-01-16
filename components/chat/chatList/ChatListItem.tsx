@@ -41,7 +41,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({ item, currentUserId}) => {
   }
 
   return (
-    <TouchableOpacity onPress={handleOpenChat}>
+    <TouchableOpacity activeOpacity={0.8} onPress={handleOpenChat}>
       <View className="flex-row justify-between p-1 ml-4 items-center h-17 bg-gray-100 rounded-l-xl">
         <View className="flex-row items-center">
           {/* Аватарка + индикатор статуса */}

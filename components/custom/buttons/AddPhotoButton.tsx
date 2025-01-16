@@ -86,12 +86,12 @@ const AddPhotoButton: React.FC<AddPhotoButtonProps> = ({
     >
       {selectedImage ? (
         <View>
-          <TouchableOpacity className="items-center" onPress={handleAddPhoto}>
+          <TouchableOpacity activeOpacity={0.8} className="items-center" onPress={handleAddPhoto}>
             <Image source={{ uri: selectedImage }} className="w-80 h-40 rounded-2xl" />
           </TouchableOpacity>
         </View>
       ) : (
-        <TouchableOpacity className="items-center" onPress={handleAddPhoto}>
+        <TouchableOpacity activeOpacity={0.8} className="items-center" onPress={handleAddPhoto}>
          <IconButton icon="camera" size={30} className="bg-slate-100 rounded-full" />
         <Text className="font-nunitoSansRegular">{buttonText}</Text>
         </TouchableOpacity>

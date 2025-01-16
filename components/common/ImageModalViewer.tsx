@@ -34,7 +34,7 @@ const ImageModalViewer: React.FC<ImageModalViewerProps> = ({
       {/* Отображение миниатюр изображений */}
       <View className="flex-row flex-wrap justify-center">
         {images.map((image, index) => (
-          <TouchableOpacity key={index} onPress={() => openModal(index)} className="m-2">
+          <TouchableOpacity activeOpacity={0.8} key={index} onPress={() => openModal(index)} className="m-2">
             <Image
               source={{ uri: image.uri }}
               style={{ width: imageWidth, height: imageHeight, borderWidth: borderRadius, borderColor: 'white' }}

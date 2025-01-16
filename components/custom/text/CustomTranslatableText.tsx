@@ -47,6 +47,7 @@ const TranslatableText: FC<TranslatableTextProps> = ({
       </Text>
       {!translatedText ? (
         <TouchableOpacity
+          activeOpacity={0.8}
           onPress={handleTranslate}
           disabled={loading}
           className="h-6 justify-start items-start"
@@ -64,6 +65,7 @@ const TranslatableText: FC<TranslatableTextProps> = ({
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
+          activeOpacity={0.8}
           onPress={handleCancelTranslation}
           className="h-6 justify-start items-start"
         >

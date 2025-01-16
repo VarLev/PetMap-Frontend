@@ -177,7 +177,7 @@ const TopUsers = () => {
             <View className="flex-row items-center justify-center mx-2">
               {/* SECOND USER */}
               <View key={topUsers[1]?.id} className="items-center">
-                <TouchableOpacity onPress={() => handleUserProfileOpen(topUsers[1]?.id)}>
+                <TouchableOpacity activeOpacity={0.8} onPress={() => handleUserProfileOpen(topUsers[1]?.id)}>
                   <View className="border-2 rounded-full bg-white border-white">
                     <Avatar.Image
                       size={60}
@@ -208,7 +208,7 @@ const TopUsers = () => {
               {/* FIRST USER (the biggest one) */}
               <View key={topUsers[0]?.id} className="items-center -mt-2">
                 <View>
-                  <TouchableOpacity onPress={() => handleUserProfileOpen(topUsers[0]?.id)}>
+                  <TouchableOpacity activeOpacity={0.8} onPress={() => handleUserProfileOpen(topUsers[0]?.id)}>
                     <View className="border-2 rounded-full bg-white border-white">
                       <Avatar.Image
                         size={80}
@@ -244,7 +244,7 @@ const TopUsers = () => {
 
               {/* THIRD USER */}
               <View key={topUsers[2]?.id} className="items-center">
-                <TouchableOpacity onPress={() => handleUserProfileOpen(topUsers[2]?.id)}>
+                <TouchableOpacity activeOpacity={0.8} onPress={() => handleUserProfileOpen(topUsers[2]?.id)}>
                   <View className="border-2 rounded-full bg-white border-white">
                     <Avatar.Image
                       size={60}
