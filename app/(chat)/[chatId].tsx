@@ -124,7 +124,7 @@ const ChatScreen: React.FC = observer(() => {
   }, []);
 
    // При нажатии "Показать оригинал"
-   const handleShowOriginalPress = useCallback((messageId: string) => {
+  const handleShowOriginalPress = useCallback((messageId: string) => {
     setTranslatedMessages((prev) => {
       const updated = { ...prev }
       delete updated[messageId]

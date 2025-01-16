@@ -55,7 +55,7 @@ class ChatStore {
         // Преобразуем raw-данные Firebase в массив IChat (как в вашем fetchChats)
         const updatedChats = this.transformChats(data);
 
-        console.log('Обновленные чаты:', updatedChats);
+        //console.log('Обновленные чаты:', updatedChats);
         runInAction(() => {
           this.chats = updatedChats;
         });
@@ -157,10 +157,10 @@ class ChatStore {
       const chatData = data[chatId]; // сырые данные чата
       if (!chatData?.participants) continue;
       const participantIds = Object.keys(chatData.participants);
-      console.log('Пользователь', userId);
-      console.log('Участники чата', chatId, participantIds);
+      //console.log('Пользователь', userId);
+      //console.log('Участники чата', chatId, participantIds);
       if (!participantIds.includes(userId)) {
-        console.log('Пропускаем чат, так как текущий пользователь не участвует');
+        //console.log('Пропускаем чат, так как текущий пользователь не участвует');
         // пропускаем чат, если этот юзер не участвует
         continue;
       }
@@ -263,6 +263,9 @@ class ChatStore {
       fmcToken: otherUser.fmcToken ?? null,
       // ...
     };
+
+    console.log('currentUserUpdates:', currentUserUpdates);
+    console.log('otherUserUpdates:', otherUserUpdates);
   
     // Подготавливаем объект для пакетного обновления
     const updates: Record<string, unknown> = {};
@@ -272,9 +275,9 @@ class ChatStore {
   
     // Обновляем или создаём запись в /users/${userId} и /users/${otherUser.id}
     // (при желании, если нужна актуализация именно в этот момент)
-    updates[`users/${userId}/name`] = userStore.currentUser?.name ?? 'NoName';
-    updates[`users/${userId}/avatar`] = userStore.currentUser?.thumbnailUrl ?? '';
-    updates[`users/${userId}/fmcToken`] = userStore.currentUser?.fmcToken ?? null;
+    updates[`users/${userId}/name`] = currentUserUpdates.name ?? 'NoName';
+    updates[`users/${userId}/avatar`] = currentUserUpdates.avatar ?? '';
+    updates[`users/${userId}/fmcToken`] = currentUserUpdates.fmcToken ?? null;
 
     updates[`users/${otherUser.id}/name`] = otherUserUpdates.name;
     updates[`users/${otherUser.id}/avatar`] = otherUserUpdates.avatar;
@@ -411,6 +414,7 @@ class ChatStore {
         thumbnailUrl: otherUserData.thumbnailUrl?? 'https://avatar.iran.liara.run/public',
         fmcToken: otherUserData.fmcToken,
       };
+      
   
       const newChatId = await this.createNewChat(otherUserChat);
       if (!newChatId) {
@@ -438,7 +442,7 @@ class ChatStore {
       return;
     }
     const otherUser = otherParticipant.value;
-  
+    console.log('otherParticipant:', otherParticipant);
     // 4. Генерируем ключ сообщения
     const newMessageKey = push(ref(database, `messages/${chatId}`)).key;
     if (!newMessageKey) {
@@ -521,7 +525,9 @@ class ChatStore {
       pushBody = `${userStore.currentUser?.name ?? 'Кто-то'} приглашает вас на прогулку`;
     }
   
-    const fcmToken = this.getOtherUserFmcTokenByUserId(otherUser.id!);
+    const fcmToken = await this.getOtherUserFmcTokenByUserId(otherUser.id!);
+    console.log('otherUser.id:', otherUser.id);
+    console.log('fcmToken:', fcmToken);
     if (fcmToken) {
       try {
         await sendPushNotification(
@@ -607,7 +613,7 @@ class ChatStore {
   async getOtherUserFmcTokenByUserId(otherUserId: string): Promise<string | null> {
     const userRef = ref(database, `users/${otherUserId}`);
     const snapshot = await get(userRef);
-    console.log('snapshot:', snapshot.val());
+    
     if (snapshot.exists()) {
       return snapshot.val().fmcToken;
     }else{

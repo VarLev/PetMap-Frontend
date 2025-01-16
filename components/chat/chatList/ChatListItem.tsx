@@ -25,7 +25,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({ item, currentUserId}) => {
     }
     if (Array.isArray(item.participants)){
       const foundParticipant = item.participants?.find(p => p.key !== currentUserId);
-      console.log('foudndParticipant', foundParticipant);
+      //console.log('foudndParticipant', foundParticipant);
       setRecipient(foundParticipant?.value ?? null);
     }
   }, [currentUserId, item.participants]);
