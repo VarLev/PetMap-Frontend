@@ -195,11 +195,12 @@ const EditPetProfileComponent = observer(
       const resp = await petStore.uploadUserThumbnailImage(editablePet);
       editablePet.thumbnailUrl = resp;
       editablePet.birthDate = parseStringToDate(birthDate);
+      editablePet.animalType = editablePet.animalType || 0;
       try {
         const pet = await petStore.createNewPetProfile(editablePet);
 
         if (pet) {
-          router.replace('/profile'); // Перенаправление на профиль после добавления питомца
+          router.replace(`/(pet)/${pet.id}`); // Перенаправление на профиль после добавления питомца
         }
       } catch (error) {
         console.error('Ошибка при создании профиля питомца:', error);

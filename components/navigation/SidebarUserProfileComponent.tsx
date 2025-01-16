@@ -54,7 +54,6 @@ const SidebarUserProfileComponent = () => {
           />
           <Text className="font-nunitoSansBold">v0.0.9</Text>
         </View>
-
         <TouchableRipple
           className="w-full mt-6"
           rippleColor={Platform.OS === "ios" ? "rgba(0,0,0,0.1)" : "#E8DFFF"}
@@ -116,8 +115,6 @@ const SidebarUserProfileComponent = () => {
             </View>
           </View>
         </TouchableRipple>
-       
-
         {/* Подписка */}
         {/* <View className="flex-row mt-4 content-center items-center">
           <Button

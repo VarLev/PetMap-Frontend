@@ -1,6 +1,6 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, BackHandler, ImageSourcePropType, Animated, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, BackHandler, ImageSourcePropType, Animated, ActivityIndicator, TouchableOpacity, Keyboard } from 'react-native';
 import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer, LineLayer, SymbolLayerStyle } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
 import { IconButton, Provider } from 'react-native-paper';
@@ -218,6 +218,7 @@ const MapBoxMap = observer(() => {
 
 
   const handlePress = (event: any) => {
+    Keyboard.dismiss();
     if(uiStore.getIsSearchAddressExpanded())
       return;
     console.log('Press detected');

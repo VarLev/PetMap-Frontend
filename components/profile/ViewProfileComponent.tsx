@@ -33,6 +33,7 @@ const ViewProfileComponent = observer(
     const [rightIcon, setRightIcon] = useState<string | null>();
     const [isIOS, setIsIOS] = useState(false);
     const [isOnline, setIsOnline] = useState(false);
+    const [lastOnline, setLastOnline] = useState<Date | null>(null);
     const [hasSubscription, setHasSubscription] = useState(userStore.getUserHasSubscription() ?? false);
 
     useEffect(() => {
@@ -58,9 +59,10 @@ const ViewProfileComponent = observer(
         setIsCurrentUser(false);
         setRightIcon(null);
         const onlineStatus = await userStore.getUserStatus(otherUser.id);
+        const lastOnlineTime = await userStore.getUserLastOnline(otherUser.id);
         console.log('Статус пользователя:', onlineStatus);
         setIsOnline(isCurrentUser || (onlineStatus ?? false));
-        
+        setLastOnline(lastOnlineTime || null);
       }
     };
 
@@ -152,10 +154,18 @@ const ViewProfileComponent = observer(
                   {hasSubscription && isCurrentUser && (<Image source={require('@/assets/images/subscription-marker.png')} className='h-[34px] w-[27px] absolute  -top-[5px] -right-[6px]' />)}
                   <View className={`w-4 h-4 rounded-full ${isOnline ? 'bg-emerald-400' : 'bg-gray-400'}`} />
                 </View>
-                <Text className="pl-2 text-2xl font-nunitoSansBold" numberOfLines={2}>
-                  {user.name}
-                  {user.birthDate && `, ${calculateHumanAge(user.birthDate)}`}
-                </Text>
+                <View className='flex-col'>
+                  <Text className="pl-2 text-2xl font-nunitoSansBold" numberOfLines={2}>
+                    {user.name}
+                    {user.birthDate && `, ${calculateHumanAge(user.birthDate)}`}
+                  </Text>
+                  {lastOnline && (
+                  <Text className="pl-2 text-xs font-nunitoSansRegular text-gray-400" numberOfLines={2}>
+                    Last online: {lastOnline?.toLocaleDateString()}
+                  </Text>
+                  )
+                  }
+                </View>
               </View>
               <View>
                 <FlatList

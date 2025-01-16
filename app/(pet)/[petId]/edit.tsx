@@ -37,7 +37,7 @@ const EditPetProfile = observer(() => {
 
       // Возвращаемся на предыдущий экран с обновлением
       
-      
+      console.log(`/(pet)/${updatedPet.id}`);
       // Если нужно обновить экран после возвращения
       router.replace(`/(pet)/${updatedPet.id}`);
     } catch (error) {
