@@ -33,7 +33,7 @@ const ViewProfileComponent = observer(
     const [rightIcon, setRightIcon] = useState<string | null>();
     const [isIOS, setIsIOS] = useState(false);
     const [isOnline, setIsOnline] = useState(false);
-    const [lastOnline, setLastOnline] = useState<Date | null>(null);
+    const [lastOnline, setLastOnline] = useState<string | null>(null);
     const [hasSubscription, setHasSubscription] = useState(userStore.getUserHasSubscription() ?? false);
 
     useEffect(() => {
@@ -161,7 +161,7 @@ const ViewProfileComponent = observer(
                   </Text>
                   {lastOnline && (
                   <Text className="pl-2 -mt-1 text-xs font-nunitoSansRegular text-gray-400" numberOfLines={2}>
-                    {i18n.t("lastOnline")} {lastOnline?.toLocaleDateString()}
+                    {i18n.t("lastOnline")} {lastOnline}
                   </Text>
                   )
                   }

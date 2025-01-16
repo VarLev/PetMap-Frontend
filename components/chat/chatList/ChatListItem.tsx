@@ -41,8 +41,9 @@ const ChatListItem: React.FC<ChatListItemProps> = ({ item, currentUserId}) => {
   }
 
   return (
-    <TouchableOpacity activeOpacity={0.8} onPress={handleOpenChat}>
+    <>
       <View className="flex-row justify-between p-1 ml-4 items-center h-17 bg-gray-100 rounded-l-xl">
+        <TouchableOpacity activeOpacity={0.8} onPress={handleOpenChat}>
         <View className="flex-row items-center">
           {/* Аватарка + индикатор статуса */}
           <AvatarWithStatus onPress={()=>{}} imageUrl={recipient.thumbnailUrl}  isOnline={recipient.isOnline}/>
@@ -57,12 +58,12 @@ const ChatListItem: React.FC<ChatListItemProps> = ({ item, currentUserId}) => {
             </Text>
           </View>
         </View>
-
+        </TouchableOpacity>
         {/* Кнопка «меню» (удалить чат и т.д.) */}
         <ChatMenu chatId={item.id} otherUserId={recipient?.id} />
       </View>
       <Divider bold className="bg-gray-400" />
-    </TouchableOpacity>
+      </>
   );
 };
 

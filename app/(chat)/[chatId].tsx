@@ -31,8 +31,9 @@ const ChatScreen: React.FC = observer(() => {
   const [selectedWalk, setSelectedWalk] = useState<IWalkAdvrtDto | null>(null);
   const [otherUser, setOtherUser] = useState<IChatUser | null>(null);
 
-  const [translatedMessages, setTranslatedMessages] = useState<Record<string, string>>({})
-  const [loadingTranslation, setLoadingTranslation] = useState<Record<string, boolean>>({})
+  const [translatedMessages, setTranslatedMessages] = useState<Record<string, string>>({});
+  const [loadingTranslation, setLoadingTranslation] = useState<Record<string, boolean>>({});
+  const [lastOnline, setLastOnline] = useState<string | null>(null);
   const hasSubscription = UserStore.getUserHasSubscription() ?? false;  
 
   // Загружаем чёрный список, FMC-токен и проверяем блокировку
@@ -44,8 +45,11 @@ const ChatScreen: React.FC = observer(() => {
         if(loadedChat){
           // Чат уже существует в базе
           const otherUser = loadedChat?.participants?.find((p) => p.key !== currentUserId)?.value
+          
           if(otherUser){
             setOtherUser(otherUser)
+            const lastOnliune = await UserStore.getUserLastOnline(otherUser.id);
+            setLastOnline(lastOnliune || '');
           }
           setChat(loadedChat);
         }
@@ -54,6 +58,8 @@ const ChatScreen: React.FC = observer(() => {
           console.log("otherUserId", otherUserId);
           const otherDbUser = await UserStore.getUserById(otherUserId)
           const otherUserOnlineStatus = await ChatStore.getUserStatus(otherDbUser.id);
+          const lastOnliune = await UserStore.getUserLastOnline(otherDbUser.id);
+          setLastOnline(lastOnliune || '');
           console.log("Other user online status", otherUserOnlineStatus);
           if(otherDbUser){
             const chatUser: IChatUser = {
@@ -154,7 +160,7 @@ const ChatScreen: React.FC = observer(() => {
         console.log(chat);
         const chatData = await ChatStore.sendMessageUniversal(chat!, message.text);
         if(chatData?.chatType === ChatType.NewChat){
-          router.replace(`/[chatId]/${chatData.thisChatId}`);
+          router.replace(`/${chatData.thisChatId}`);
         }
       }
     },
@@ -195,6 +201,7 @@ const ChatScreen: React.FC = observer(() => {
           onPressAvatar={handleOpenProfile}
           isOnline={otherUser?.isOnline}
           hasSubscription={hasSubscription}
+          lastOnline={lastOnline!}
         />
        
         <Chat

@@ -615,7 +615,7 @@ class UserStore {
     return getUserStatus(userId);
   }
 
-  async getUserLastOnline(userId: string): Promise<Date | undefined> {
+  async getUserLastOnline(userId: string): Promise<string | undefined> {
     return getUserLastOnlineStatus(userId);
   }
 

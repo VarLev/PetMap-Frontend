@@ -83,8 +83,8 @@ const ArticlesList: React.FC = () => {
         icon={({ size, color }) => (
           <MaterialCommunityIcons
             name="gmail"
-            size={size}
-            color={BG_COLORS.indigo[800]} // указываем нужный цвет
+            size={60}
+            color={BG_COLORS.white} // указываем нужный цвет
           />
         )}
         style={{ marginTop: -5}}

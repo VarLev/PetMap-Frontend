@@ -8,17 +8,20 @@ import AvatarWithStatus from "@/components/custom/avatars/AvatarWithStatus";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { BG_COLORS } from "@/constants/Colors";
 import uiStore from "@/stores/UIStore";
+import i18n from "@/i18n";
 
 interface ChatHeaderProps {
   userName: string;
   avatarUrl?: string;
   onPressAvatar?: () => void; // Новый проп
   isOnline?: boolean;
+  lastOnline?: string;
   hasSubscription: boolean; // Новый проп для проверки подписки
 }
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ userName, avatarUrl, onPressAvatar, isOnline, hasSubscription }) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({ userName, avatarUrl, onPressAvatar, isOnline, lastOnline, hasSubscription }) => {
   const [isTranslationEnabled, setIsTranslationEnabled] = useState(false);
+  
   
 
   // Обработчик нажатия кнопки "Назад"
@@ -47,6 +50,11 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ userName, avatarUrl, onPressAva
           <AvatarWithStatus onPress={onPressAvatar || (() => {})} imageUrl={avatarUrl} isOnline={isOnline} />
           <View>
             <Text className="text-lg font-nunitoSansBold">{shortenName(userName)}</Text>
+            {isOnline ? 
+            <Text className="text-xs font-nunitoSansRegular text-emerald-600">Online</Text>
+            :
+             <><Text className="text-xs font-nunitoSansRegular">{i18n.t("lastOnline")}</Text><Text className="text-xs font-nunitoSansRegular">{lastOnline}</Text></>}
+            
           </View>
         </View>
         <View className="flex-row items-center gap-2 pr-4">
