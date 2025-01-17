@@ -97,6 +97,7 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
             <TouchableOpacity
               onPress={handleTranslate}
               disabled={loading}
+              activeOpacity={0.8}
               className="h-6 justify-start items-start"
             >
               {!loading ? (
@@ -107,6 +108,7 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
+              activeOpacity={0.8}
               onPress={handleCancelTranslation}
               className="h-6 justify-start items-start"
             >
@@ -120,7 +122,7 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
         </>
       )}
       {rightIcon && (
-        <TouchableOpacity onPress={onRightIconPress}>
+        <TouchableOpacity activeOpacity={0.8} onPress={onRightIconPress}>
           <MaterialIcons name={rightIcon} size={20} color="black" />
         </TouchableOpacity>
       )}

@@ -45,7 +45,7 @@ const UserCard: React.FC<UserCardProps> = React.memo(({ user }) => {
     <Card className="p-2 mx-1 mt-2 bg-white rounded-2xl" elevation={1} >
       {/* Информация о пользователе */}
       <View className="flex-row items-start">
-        <TouchableOpacity onPress={handleUserProfileOpen}>
+        <TouchableOpacity activeOpacity={0.8} onPress={handleUserProfileOpen}>
           <Image source={{ uri: user.thumbnailUrl || userImage || 'https://placehold.it/100x100' }} className="w-20 h-20 rounded-xl" />
         </TouchableOpacity>
        

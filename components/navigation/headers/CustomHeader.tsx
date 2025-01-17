@@ -7,7 +7,7 @@ const CustomHeader: React.FC<NativeStackHeaderProps> = ({ navigation, options, b
   return (
     <View style={styles.headerContainer}>
       {back ? (
-        <TouchableOpacity onPress={navigation.goBack}>
+        <TouchableOpacity activeOpacity={0.8} onPress={navigation.goBack}>
           <Icon source="arrow-left" size={24} />
         </TouchableOpacity>
       ) : null}

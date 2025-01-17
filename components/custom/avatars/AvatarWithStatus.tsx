@@ -13,7 +13,7 @@ const AvatarWithStatus: React.FC<AvatarWithStatusProps> = ({
   onPress,
 }) => {
   return (
-    <TouchableOpacity onPress={onPress} className="relative">
+    <TouchableOpacity activeOpacity={0.8} onPress={onPress} className="relative">
       <Image
         source={{
           uri: imageUrl ?? 'https://avatar.iran.liara.run/public',

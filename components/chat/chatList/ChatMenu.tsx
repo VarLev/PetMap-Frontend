@@ -7,6 +7,7 @@ import CustomConfirmAlert from "../../custom/alert/CustomConfirmAlert";
 import MenuItemWrapper from "@/components/custom/menuItem/MunuItemWrapper";
 import userStore from "@/stores/UserStore";
 import i18n from "@/i18n";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 interface IChatMenuProps {
   chatId: string;
@@ -88,11 +89,11 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
         onDismiss={closeMenu}
         anchor={
           <View className="overflow-hidden rounded-full">
-            <TouchableRipple onPress={openMenu} rippleColor="#E8DFFF">
+            <TouchableWithoutFeedback onPress={openMenu} >
               <Button>
                 <FontAwesome6 name="bars-staggered" size={20} color="#212121" />
               </Button>
-            </TouchableRipple>
+            </TouchableWithoutFeedback>
           </View>
         }
       >

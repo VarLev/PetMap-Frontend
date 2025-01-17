@@ -13,6 +13,7 @@ import { getFileUrl, getFoldersInDirectory } from '@/firebaseConfig';
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
 import { BG_COLORS } from '@/constants/Colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import i18n from '@/i18n';
 
 interface Article {
   title: string;
@@ -34,7 +35,7 @@ const ArticlesList: React.FC = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const folderList = await getFoldersInDirectory('WIKI/articles');
+        const folderList = await getFoldersInDirectory(`WIKI/articles/${i18n.locale}`);
 
         const articleData = await Promise.all(
           folderList.map(async (folder) => {
@@ -82,8 +83,8 @@ const ArticlesList: React.FC = () => {
         icon={({ size, color }) => (
           <MaterialCommunityIcons
             name="gmail"
-            size={size}
-            color={BG_COLORS.indigo[800]} // указываем нужный цвет
+            size={60}
+            color={BG_COLORS.white} // указываем нужный цвет
           />
         )}
         style={{ marginTop: -5}}
@@ -91,14 +92,14 @@ const ArticlesList: React.FC = () => {
         
         actions={[
           {
-            label: 'Стать автором',
+            label: i18n.t("wiki.becomeAutor"),
             onPress: () => handleOpenEmail(),
             textColor: BG_COLORS.indigo[800],
             labelStyle: { fontFamily: 'NunitoSans_700Bold' },
             style: { marginTop: -20 },
           },
           {
-            label: 'Закрыть',
+            label: i18n.t("wiki.close"),
             onPress: () => setBannerVisible(false),
             textColor: BG_COLORS.indigo[800],
             labelStyle: { fontFamily: 'NunitoSans_700Bold' },
@@ -109,8 +110,7 @@ const ArticlesList: React.FC = () => {
     
         
           <Text className='font-nunitoSansRegular' >
-            Хотите публиковать статьи в нашем приложении? 
-            Расскажите о себе и предложите темы, на которые вы хотите писать.
+          {i18n.t("wiki.autorMessage")}
           </Text>
    
    
@@ -138,7 +138,7 @@ const ArticlesList: React.FC = () => {
             </Card.Content>
             <Card.Actions>
               <CustomButtonOutlined
-                title="Читать"
+                title= {i18n.t("wiki.read")}
                 containerStyles="w-full"
                 handlePress={() =>
                   // @ts-ignore

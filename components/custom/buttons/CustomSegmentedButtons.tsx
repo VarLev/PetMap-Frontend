@@ -24,6 +24,7 @@ const CustomSegmentedButtons: React.FC<CustomSegmentedButtonsProps> = ({ value, 
     <View className={`flex-row h-[52px] mb-2 border border-gray-300 rounded-lg overflow-hidden ${containerStyles}`}>
       {buttons.map((button, index) => (
         <TouchableOpacity
+        activeOpacity={0.8}
           key={index} // Используем индекс как ключ
           className={`flex-1 p-2 items-center justify-center border-r border-gray-300 ${
             value === index ? 'bg-indigo-800 border-indigo-800' : 'bg-white'

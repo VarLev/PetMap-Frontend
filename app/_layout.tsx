@@ -5,7 +5,7 @@ import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nu
 import { AlertProvider } from '@/contexts/AlertContext';
 import { DefaultTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { StoreProvider } from '@/contexts/StoreProvider';
-import { AppState, AppStateStatus, Platform, View } from 'react-native';
+import { AppState, AppStateStatus, Platform, StatusBar, View } from 'react-native';
 import uiStore from '@/stores/UIStore';
 import { observer } from 'mobx-react-lite';
 import { setUserStatus, initOnDisconnect } from '@/firebaseConfig';
@@ -138,6 +138,7 @@ const Layout = observer(() => {
 
   return (
     <View key={uiStore.currentLanguage} style={{ flex: 1 }}>
+      <StatusBar barStyle="dark-content" />
       <StoreProvider>
         <AlertProvider>
           <PaperProvider theme={customTheme}>
@@ -160,7 +161,7 @@ const Layout = observer(() => {
                 headerTransparent: true,
                 headerTitle: '',
               }} />
-               <Stack.Screen name="(pet)/[petId]/edit" 
+              <Stack.Screen name="(pet)/[petId]/edit" 
               options={{ 
                 headerShown: true,
                 title: i18n.t('ProfileLayout.editUserTitle'),

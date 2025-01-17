@@ -21,7 +21,7 @@ import { JobType } from '@/dtos/enum/JobType';
 import { Job } from '@/dtos/classes/job/Job';
 import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
 import { IUserCardDto } from '@/dtos/Interfaces/user/IUserCardDto';
-import { getUserStatus } from '@/utils/userUtils';
+import { getUserLastOnlineStatus, getUserStatus } from '@/utils/userUtils';
 
 //fghjkl
 class UserStore {
@@ -613,6 +613,10 @@ class UserStore {
 
   async getUserStatus(userId: string): Promise<boolean | undefined> {
     return getUserStatus(userId);
+  }
+
+  async getUserLastOnline(userId: string): Promise<string | undefined> {
+    return getUserLastOnlineStatus(userId);
   }
 
 }

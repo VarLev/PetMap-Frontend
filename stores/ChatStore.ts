@@ -8,6 +8,7 @@ import { getPushTokenFromServer, sendPushNotification } from '@/hooks/notificati
 import { ChatType, SendMessageOptions } from '@/dtos/enum/ChatType';
 import { generateChatIdForTwoUsers } from '@/utils/chatUtils';
 import { getUserStatus } from '@/utils/userUtils';
+import apiClient from '@/hooks/axiosConfig';
 
 
 class ChatStore {
@@ -49,22 +50,37 @@ class ChatStore {
     );
 
     // Подписка на изменения
-    const callback = (snapshot: any) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        // Преобразуем raw-данные Firebase в массив IChat (как в вашем fetchChats)
-        const updatedChats = this.transformChats(data);
-
-        console.log('Обновленные чаты:', updatedChats);
-        runInAction(() => {
-          this.chats = updatedChats;
-        });
-      } else {
-        // Если нет данных
+    const callback = async (snapshot: any) => {
+      if (!snapshot.exists()) {
         runInAction(() => {
           this.chats = [];
         });
+        return;
       }
+    
+      const data = snapshot.val();
+      const updatedChats = this.transformChats(data);
+    
+      // 1. Получаем всех пользователей одной выборкой
+      const usersSnap = await get(ref(database, 'users'));
+      const allUsers = usersSnap.exists() ? usersSnap.val() : {};
+    
+      // 2. Пробегаемся по updatedChats и для каждого участника подтягиваем name, avatar
+      updatedChats.forEach((chat) => {
+        chat.participants.forEach((p) => {
+          const userId = p.key;
+          const uData = allUsers[userId];
+          if (uData) {
+            p.value.name = uData.name || '';
+            p.value.avatar = uData.avatar || '';
+            // ... и так далее
+          }
+        });
+      });
+    
+      runInAction(() => {
+        this.chats = updatedChats;
+      });
     };
 
     // Ставим слушатель
@@ -128,25 +144,6 @@ class ChatStore {
     const data = snapshot.val();
     const chatsList: IChat[] = [];
   
-    // // Шаг 1. Собираем всех userIds
-    // const userIdsNeeded = new Set<string>();
-  
-    // for (const chatId in data) {
-    //   const chatData = data[chatId];
-    //   if (!chatData?.participants) continue;
-  
-    //   const participantIds = Object.keys(chatData.participants);
-    //   console.log('Пользователь', userId);
-    //   console.log('Участники чата', chatId, participantIds);
-    //   if (!participantIds.includes(userId)) {
-    //     console.log('Пропускаем чат, так как текущий пользователь не участвует');
-    //     // пропускаем чат, если этот юзер не участвует
-    //     continue;
-    //   }
-    //   // Добавляем их всех в userIdsNeeded
-    //   participantIds.forEach((id) => userIdsNeeded.add(id));
-    // }
-  
     // Шаг 2. Делаем один запрос ко всем пользователям
     const usersRef = ref(database, 'users');
     const usersSnap = await get(usersRef);
@@ -157,10 +154,10 @@ class ChatStore {
       const chatData = data[chatId]; // сырые данные чата
       if (!chatData?.participants) continue;
       const participantIds = Object.keys(chatData.participants);
-      console.log('Пользователь', userId);
-      console.log('Участники чата', chatId, participantIds);
+      //console.log('Пользователь', userId);
+      //console.log('Участники чата', chatId, participantIds);
       if (!participantIds.includes(userId)) {
-        console.log('Пропускаем чат, так как текущий пользователь не участвует');
+        //console.log('Пропускаем чат, так как текущий пользователь не участвует');
         // пропускаем чат, если этот юзер не участвует
         continue;
       }
@@ -174,7 +171,7 @@ class ChatStore {
           const chatUser: IChatUser = {
             id: participantId,
             name: rawUserData.name ?? '...', // или rawUserData.firstName
-            thumbnailUrl: rawUserData.avatar ?? '',
+            avatar: rawUserData.avatar ?? '',
             isOnline: rawUserData.isOnline ?? false,
             lastSeen: rawUserData.lastSeen ?? 0,
             lastMessage: rawUserData.lastMessage ?? '',
@@ -207,7 +204,9 @@ class ChatStore {
   
     // Шаг 4. Обновляем стейт в одном runInAction (чтобы MobX среагировал разом)
     runInAction(() => {
-      this.chats = chatsList;
+      const pinnedChat = chatsList.find(chat => chat.id === process.env.EXPO_PUBLIC_AI_CHAT_ID!);
+      const otherChats = chatsList.filter(chat => chat.id !== process.env.EXPO_PUBLIC_AI_CHAT_ID!);
+      this.chats = pinnedChat ? [pinnedChat, ...otherChats] : otherChats;
     });
   }
 
@@ -258,11 +257,14 @@ class ChatStore {
   
     const otherUserUpdates = {
       name: otherUser.name ?? 'NoName',
-      avatar: otherUser.thumbnailUrl ?? '',
+      avatar: otherUser.avatar ?? '',
       lastSeen: 0,    // например, 0, если мы не знаем, когда он был онлайн
       fmcToken: otherUser.fmcToken ?? null,
       // ...
     };
+
+    console.log('currentUserUpdates:', currentUserUpdates);
+    console.log('otherUserUpdates:', otherUserUpdates);
   
     // Подготавливаем объект для пакетного обновления
     const updates: Record<string, unknown> = {};
@@ -272,9 +274,9 @@ class ChatStore {
   
     // Обновляем или создаём запись в /users/${userId} и /users/${otherUser.id}
     // (при желании, если нужна актуализация именно в этот момент)
-    updates[`users/${userId}/name`] = userStore.currentUser?.name ?? 'NoName';
-    updates[`users/${userId}/avatar`] = userStore.currentUser?.thumbnailUrl ?? '';
-    updates[`users/${userId}/fmcToken`] = userStore.currentUser?.fmcToken ?? null;
+    updates[`users/${userId}/name`] = currentUserUpdates.name ?? 'NoName';
+    updates[`users/${userId}/avatar`] = currentUserUpdates.avatar ?? '';
+    updates[`users/${userId}/fmcToken`] = currentUserUpdates.fmcToken ?? null;
 
     updates[`users/${otherUser.id}/name`] = otherUserUpdates.name;
     updates[`users/${otherUser.id}/avatar`] = otherUserUpdates.avatar;
@@ -344,7 +346,7 @@ class ChatStore {
         const chatUser: IChatUser = {
           id: userId,
           name: userData.name || 'NoName', 
-          thumbnailUrl: userData.avatar || '',     
+          avatar: userData.avatar || '',     
           isOnline: userData.isOnline || false, 
           lastSeen: userData.lastSeen || 0,
           lastMessage: userData.lastMessage || '',
@@ -408,9 +410,10 @@ class ChatStore {
       const otherUserChat: IChatUser = {
         id: otherUserData.id,
         name: otherUserData.name?? '...',
-        thumbnailUrl: otherUserData.thumbnailUrl?? 'https://avatar.iran.liara.run/public',
+        avatar: otherUserData.thumbnailUrl?? 'https://avatar.iran.liara.run/public',
         fmcToken: otherUserData.fmcToken,
       };
+      
   
       const newChatId = await this.createNewChat(otherUserChat);
       if (!newChatId) {
@@ -438,7 +441,7 @@ class ChatStore {
       return;
     }
     const otherUser = otherParticipant.value;
-  
+    console.log('otherParticipant:', otherParticipant);
     // 4. Генерируем ключ сообщения
     const newMessageKey = push(ref(database, `messages/${chatId}`)).key;
     if (!newMessageKey) {
@@ -521,7 +524,9 @@ class ChatStore {
       pushBody = `${userStore.currentUser?.name ?? 'Кто-то'} приглашает вас на прогулку`;
     }
   
-    const fcmToken = this.getOtherUserFmcTokenByUserId(otherUser.id!);
+    const fcmToken = await this.getOtherUserFmcTokenByUserId(otherUser.id!);
+    console.log('otherUser.id:', otherUser.id);
+    console.log('fcmToken:', fcmToken);
     if (fcmToken) {
       try {
         await sendPushNotification(
@@ -607,7 +612,7 @@ class ChatStore {
   async getOtherUserFmcTokenByUserId(otherUserId: string): Promise<string | null> {
     const userRef = ref(database, `users/${otherUserId}`);
     const snapshot = await get(userRef);
-    console.log('snapshot:', snapshot.val());
+    
     if (snapshot.exists()) {
       return snapshot.val().fmcToken;
     }else{
@@ -835,6 +840,186 @@ class ChatStore {
       this.messages = [];
     });
   }
+
+  async ensureAssistantChatExists(userId: string) {
+    const AI_ASSISTANT_CHAT_ID = process.env.EXPO_PUBLIC_AI_CHAT_ID!; // статический ID для бота
+    const AI_ASSISTANT_BOT_ID = process.env.EXPO_PUBLIC_AI_BOT_ID!;
+
+    const assistantUserRef = ref(database, `users/${AI_ASSISTANT_BOT_ID}`);
+    const assistantUserSnap = await get(assistantUserRef);
+    if (!assistantUserSnap.exists()) {
+      const assistantData  = {
+        id: AI_ASSISTANT_BOT_ID,
+        name: 'PetAI Assistant',
+        avatar: 'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2FuserAvatars%2Fai_assistent.webp?alt=media&token=8d1bf432-5006-4ef9-84f0-9ec45191d1aa',
+        isOnline: true,
+        // ... при необходимости другие поля
+      };
+      await set(assistantUserRef, assistantData);
+    }
+
+    // Ссылка на чат в Firebase (чтобы проверить, существует ли)
+    const chatRef = ref(database, `chats/${AI_ASSISTANT_CHAT_ID}`);
+    const snap = await get(chatRef);
+  
+    if (!snap.exists()) {
+      
+
+      const newChatData = {
+        id:AI_ASSISTANT_BOT_ID,
+        lastMessage: 'Hi! How can I help you?',
+        lastCreatedAt: Date.now(),
+        lastSeen: 0, // или любое подходящее вам значение
+        participants: {
+          [userId]: true,       // текущий пользователь
+          [AI_ASSISTANT_BOT_ID]: true,  // ассистент
+        },
+      };
+
+      await set(chatRef, newChatData);
+    } else {
+      // Если чат уже есть, можно, например, убедиться, что текущий пользователь числится в `participants`
+      const existingChatData = snap.val();
+      if (!existingChatData.participants[userId]) {
+        // Если по каким-то причинам текущего пользователя нет — добавим
+        const updatedParticipants = { ...existingChatData.participants, [userId]: true };
+        await update(chatRef, { participants: updatedParticipants });
+      }
+    }
+  }
+
+  async sendChatToAiAssistant(conversationHistory: IChatAIMessage[]): Promise<string | null> 
+  {
+    const chatId = process.env.EXPO_PUBLIC_AI_CHAT_ID
+
+    try {
+      // 1. Найдём последнее сообщение пользователя
+      //    Обычно это последнее по списку с role = 'user'
+      const lastUserMessage = conversationHistory[conversationHistory.length - 1]
+      if (lastUserMessage?.role !== 'user') {
+        console.warn('В конце истории нет сообщения от пользователя')
+        return null
+      }
+
+      // 2. Сохраним это сообщение в Firebase (аналогично sendMessageUniversal)
+      const userId = userStore.currentUser?.id ?? 'unknownUser'
+      const now = Date.now()
+      const newMessageKey = push(ref(database, `messages/${chatId}`)).key
+      if (!newMessageKey) {
+        console.error('Не удалось сгенерировать ключ для сообщения')
+        return null
+      }
+
+      const userMsg: MessageType.Text = {
+        id: newMessageKey,
+        type: 'text',
+        text: lastUserMessage.content,
+        createdAt: now,
+        author: {
+          id: userId,
+          firstName: userStore.currentUser?.name ?? 'Anonymous',
+          imageUrl: userStore.currentUser?.thumbnailUrl ?? '',
+        },
+      }
+
+      // Пакетное обновление
+      const updates: Record<string, unknown> = {}
+      updates[`messages/${chatId}/${newMessageKey}`] = userMsg
+      updates[`chats/${chatId}/lastMessage`] = userMsg.text
+      updates[`chats/${chatId}/lastCreatedAt`] = now
+      updates[`users/${userId}/lastSeen`] = now
+
+      await update(ref(database), updates)
+
+      // Сразу обновим локальный стор
+      runInAction(() => {
+        this.messages.unshift(userMsg) // или push в конец, в зависимости от логики
+        this.lastMessage[chatId!] = userMsg.text
+      })
+
+      // 3. Теперь отправляем запрос на бэкенд для получения ответа ассистента
+      const requestBody = {
+        messages: conversationHistory.map((msg) => ({
+          role: msg.role,
+          content: msg.content,
+        })),
+      }
+
+      const response = await apiClient.post('/chatgpt/askai', requestBody, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      if (response.status !== 200) {
+        console.error(
+          'Ошибка при обращении к AI-ассистенту:',
+          response.status,
+          response.statusText
+        )
+        return null
+      }
+
+      // 4. Парсим ответ (предположим, вы возвращаете { answer: "..." })
+      const data = response.data
+      const assistantText = data?.answer || null
+
+      console.log('Ответ AI-ассистента:', assistantText)
+      return assistantText
+    } catch (error) {
+      console.error('Ошибка при отправке разговора AI-ассистенту:', error)
+      return null
+    }
+  
+  }
+
+  async addAssistantMessage(chatId: string, assistantReply: string) {
+    try {
+      // 1. Генерируем ключ для сообщения
+      const newMessageKey = push(ref(database, `messages/${chatId}`)).key
+      if (!newMessageKey) {
+        console.error('Ошибка: не удалось создать ключ для бот-сообщения')
+        return
+      }
+  
+      // 2. Формируем новое сообщение
+      const now = Date.now()
+      const AI_BOT_ID = process.env.EXPO_PUBLIC_AI_BOT_ID || 'AI_ASSISTANT_BOT_ID'
+      const newMessage: MessageType.Text = {
+        id: newMessageKey,
+        type: 'text',
+        text: assistantReply,
+        createdAt: now,
+        author: {
+          id: AI_BOT_ID,
+          firstName: 'PetAI Assistant',
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2FuserAvatars%2Fai_assistent.webp?alt=media&token=8d1bf432-5006-4ef9-84f0-9ec45191d1aa', // или укажите URL аватара бота
+        },
+      }
+  
+      // 3. Подготавливаем пакет обновлений
+      const updates: Record<string, unknown> = {}
+      updates[`messages/${chatId}/${newMessageKey}`] = newMessage
+      updates[`chats/${chatId}/lastMessage`] = newMessage.text
+      updates[`chats/${chatId}/lastCreatedAt`] = now
+  
+      // При желании обновите lastSeen для бота, 
+      // хотя это не всегда нужно, но для единообразия:
+      updates[`users/${AI_BOT_ID}/lastSeen`] = now
+  
+      // 4. Пакетное обновление в Realtime Database
+      await update(ref(database), updates)
+  
+      // 5. Обновляем локальный стор (MobX), чтобы UI отобразил сообщение немедленно
+      runInAction(() => {
+        // Вставляем сообщение в начало или конец массива — как вам удобнее
+        this.messages.unshift(newMessage)
+        this.lastMessage[chatId] = newMessage.text
+      })
+  
+    } catch (error) {
+      console.error('Ошибка при добавлении бот-сообщения:', error)
+    }
+  }
+  
 }
 
 const chatStore = new ChatStore();

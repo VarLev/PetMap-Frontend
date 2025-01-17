@@ -13,7 +13,7 @@ const AddCard: React.FC<AddCardProps> = ({ onPress, buttonText, cardClassName })
     <Card className={`w-[180px] h-[235px] m-2 p-2 border-3 border-dashed border-[#D9CBFF] rounded-2xl shadow items-center justify-center ${cardClassName}`}
       style={{ borderWidth: 3, borderColor: '#D9CBFF' }}
     >
-      <TouchableOpacity className="items-center" onPress={onPress}>
+      <TouchableOpacity activeOpacity={0.8} className="items-center" onPress={onPress}>
         <IconButton
           icon="plus"
           size={30}

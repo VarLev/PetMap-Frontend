@@ -63,7 +63,7 @@ const UserJobsList = () => {
 
     return (
       <View className={`rounded-lg p-4 my-2 mx-4 ${cardStyle}`}>
-        <TouchableOpacity onPress={() => toggleExpand(item.jobType)}>
+        <TouchableOpacity activeOpacity={0.8} onPress={() => toggleExpand(item.jobType)}>
           <View className="items-start justify-start">
             <View className="flex-row items-start">
               {isExpanded ? (

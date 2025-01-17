@@ -1,6 +1,6 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, BackHandler, ImageSourcePropType, Animated, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, BackHandler, ImageSourcePropType, Animated, ActivityIndicator, TouchableOpacity, Keyboard } from 'react-native';
 import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer, LineLayer, SymbolLayerStyle } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
 import { IconButton, Provider } from 'react-native-paper';
@@ -218,6 +218,7 @@ const MapBoxMap = observer(() => {
 
 
   const handlePress = (event: any) => {
+    Keyboard.dismiss();
     if(uiStore.getIsSearchAddressExpanded())
       return;
     console.log('Press detected');
@@ -603,7 +604,7 @@ const MapBoxMap = observer(() => {
           </MapView>
           {/* === Кнопка "Моя локация" поверх карты === */} 
           {hasPermission && userCoordinates && (
-            <TouchableOpacity  className='absolute bottom-[180px] right-[25px]'  onPress={handleRecenter}>
+            <TouchableOpacity activeOpacity={0.8} className='absolute bottom-[180px] right-[25px]'  onPress={handleRecenter}>
               <View style={{
                 backgroundColor: '#fff',
                 borderRadius: 25,

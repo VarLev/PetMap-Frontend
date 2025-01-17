@@ -10,7 +10,7 @@ interface IChat {
 interface IChatUser {
   id: string;
   name: string;
-  thumbnailUrl?: string;
+  avatar?: string;
   isOnline?: boolean;
   lastSeen?: number;
   lastMessage?: string;
@@ -18,3 +18,7 @@ interface IChatUser {
 }
 
 
+interface IChatAIMessage {
+  role : 'assistant' | 'user';
+  content: string;
+}

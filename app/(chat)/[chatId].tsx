@@ -19,6 +19,8 @@ import { generateChatData } from "@/utils/chatUtils";
 import TranslatableTextMessage from "@/components/chat/chatView/TranslatableTextMessage";
 import uiStore from "@/stores/UIStore";
 
+const AI_ASSISTANT_CHAT_ID = process.env.EXPO_PUBLIC_AI_CHAT_ID;
+
 const ChatScreen: React.FC = observer(() => {
   const { chatId, otherUserId } = useLocalSearchParams<{chatId: string, otherUserId:string }>();
   const [chat, setChat] = useState<IChat | null>(null);
@@ -31,8 +33,9 @@ const ChatScreen: React.FC = observer(() => {
   const [selectedWalk, setSelectedWalk] = useState<IWalkAdvrtDto | null>(null);
   const [otherUser, setOtherUser] = useState<IChatUser | null>(null);
 
-  const [translatedMessages, setTranslatedMessages] = useState<Record<string, string>>({})
-  const [loadingTranslation, setLoadingTranslation] = useState<Record<string, boolean>>({})
+  const [translatedMessages, setTranslatedMessages] = useState<Record<string, string>>({});
+  const [loadingTranslation, setLoadingTranslation] = useState<Record<string, boolean>>({});
+  const [lastOnline, setLastOnline] = useState<string | null>(null);
   const hasSubscription = UserStore.getUserHasSubscription() ?? false;  
 
   // Загружаем чёрный список, FMC-токен и проверяем блокировку
@@ -44,8 +47,11 @@ const ChatScreen: React.FC = observer(() => {
         if(loadedChat){
           // Чат уже существует в базе
           const otherUser = loadedChat?.participants?.find((p) => p.key !== currentUserId)?.value
+          
           if(otherUser){
             setOtherUser(otherUser)
+            const lastOnliune = await UserStore.getUserLastOnline(otherUser.id);
+            setLastOnline(lastOnliune || '');
           }
           setChat(loadedChat);
         }
@@ -54,12 +60,14 @@ const ChatScreen: React.FC = observer(() => {
           console.log("otherUserId", otherUserId);
           const otherDbUser = await UserStore.getUserById(otherUserId)
           const otherUserOnlineStatus = await ChatStore.getUserStatus(otherDbUser.id);
+          const lastOnliune = await UserStore.getUserLastOnline(otherDbUser.id);
+          setLastOnline(lastOnliune || '');
           console.log("Other user online status", otherUserOnlineStatus);
           if(otherDbUser){
             const chatUser: IChatUser = {
               id: otherDbUser.id,
               name: otherDbUser.name || '',
-              thumbnailUrl: otherDbUser.thumbnailUrl || '',
+              avatar: otherDbUser.thumbnailUrl || '',
               isOnline: otherUserOnlineStatus
             }
             setOtherUser(chatUser)
@@ -118,7 +126,7 @@ const ChatScreen: React.FC = observer(() => {
   }, []);
 
    // При нажатии "Показать оригинал"
-   const handleShowOriginalPress = useCallback((messageId: string) => {
+  const handleShowOriginalPress = useCallback((messageId: string) => {
     setTranslatedMessages((prev) => {
       const updated = { ...prev }
       delete updated[messageId]
@@ -149,16 +157,52 @@ const ChatScreen: React.FC = observer(() => {
 
 
   const handleSendPress = useCallback(
-    async (message: MessageType.PartialText) => {
-      if (chatId && UserStore.currentUser) {
-        console.log(chat);
-        const chatData = await ChatStore.sendMessageUniversal(chat!, message.text);
-        if(chatData?.chatType === ChatType.NewChat){
-          router.replace(`/[chatId]/${chatData.thisChatId}`);
+    async (partialMsg: MessageType.PartialText) => {
+      if (!chatId || !UserStore.currentUser) return;
+
+      // 1. Если это чат с AI-ассистентом
+      if (chatId === AI_ASSISTANT_CHAT_ID) {
+        // Подготавливаем текущую историю (из ChatStore.messages)
+        // Преобразуем mobx-сообщения (MessageType.Any) в формат [{role, content}, ...]
+        const conversationHistory = ChatStore.messages.map((m) => {
+          // Предположим, бот имеет author.id === AI_ASSISTANT_BOT_ID
+          // или вы можете хранить этот ID в process.env
+          const isAssistant = (m.author.id === process.env.EXPO_PUBLIC_AI_BOT_ID);
+          const role: "assistant" | "user" = isAssistant ? "assistant" : "user";
+          // Тут нужно учесть, что не все Messages могут быть текстовыми
+          const text = m.type === "text" ? m.text : "[Non-text message]";
+          return {
+            role,
+            content: text || "",
+          };
+        });
+
+        // Добавляем новое сообщение пользователя
+        conversationHistory.push({
+          role: "user",
+          content: partialMsg.text,
+        });
+
+        // Отправляем запрос в ASP.NET контроллер через ChatStore
+        // (метод, который вы должны там реализовать, например sendChatToAiAssistant)
+        const assistantReply = await ChatStore.sendChatToAiAssistant(conversationHistory);
+
+        // Если пришёл ответ — добавим его в локальный стейт сообщений
+        if (assistantReply) {
+          // На ваш вкус: можете сделать что-то вроде ChatStore.addMessage(chatId, ...),
+          // Или воспользоваться sendMessageUniversal, но "от имени бота".
+          await ChatStore.addAssistantMessage(chatId, assistantReply);
+        }
+
+      } else {
+        // 2. Обычный чат
+        const chatData = await ChatStore.sendMessageUniversal(chat!, partialMsg.text);
+        if (chatData?.chatType === ChatType.NewChat) {
+          router.replace(`/${chatData.thisChatId}`);
         }
       }
     },
-    [chat, chatId, router]
+    [chatId, chat, router]
   );
 
   const handleOpenWalkDetails = useCallback((walk: IWalkAdvrtDto) => {
@@ -191,10 +235,11 @@ const ChatScreen: React.FC = observer(() => {
       <SafeAreaView className="bg-white h-full">
         <ChatHeader
           userName={otherUser?.name ?? "..."}
-          avatarUrl={otherUser?.thumbnailUrl}
+          avatarUrl={otherUser?.avatar}
           onPressAvatar={handleOpenProfile}
           isOnline={otherUser?.isOnline}
           hasSubscription={hasSubscription}
+          lastOnline={lastOnline!}
         />
        
         <Chat

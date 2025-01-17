@@ -7,7 +7,6 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import BottomSheetComponent from '../common/BottomSheetComponent';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import CustomTextComponent from '../custom/text/CustomTextComponent';
-import CustomSocialLinkInput from '../custom/text/SocialLinkInputProps';
 import { observer } from 'mobx-react-lite';
 import { StarRatingDisplay } from 'react-native-star-rating-widget';
 import { router } from 'expo-router';
@@ -18,6 +17,7 @@ import CircleIcon from '../custom/icons/CircleIcon';
 import MenuItemWrapper from '@/components/custom/menuItem/MunuItemWrapper';
 import i18n from '@/i18n';
 import { BG_COLORS } from '@/constants/Colors';
+import userStore from '@/stores/UserStore';
 
 const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: () => void }) => {
   const sheetRef = useRef<BottomSheet>(null);
@@ -51,7 +51,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
     setMenuVisible(false);
     console.log('Delete pet', pet.id);
     await petStore.deletePetProfile(pet.id);
-    router.replace('/profile');
+    router.replace(`/(user)/${userStore.currentUser?.id}`);
   };
 
   return (

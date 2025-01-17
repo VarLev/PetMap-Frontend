@@ -10,6 +10,8 @@ import searchStore from '@/stores/SearchStore';
 import userStore from "@/stores/UserStore";
 import i18n from '@/i18n';
 import ComplaintModal from '@/components/custom/complaint/ComplaintModal';
+import CustomTextComponent from '@/components/custom/text/CustomTextComponent';
+import { fontConfig } from 'react-native-paper/lib/typescript/styles/fonts';
 
 type PostCardProps = {
   post: IPost;
@@ -210,7 +212,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
               isComplaintSuccess={isComplaintSuccess}
             />
           </View>
-          <Text className="my-1 text-sm">{post.content}</Text>
+          <CustomTextComponent text={post.content} maxLines={10} enableTranslation/>
           {post.postPhotos.length > 0 && (
             <View className="rounded-md overflow-hidden">
               {post.postPhotos.map((image) => (

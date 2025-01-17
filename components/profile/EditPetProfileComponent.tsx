@@ -195,11 +195,12 @@ const EditPetProfileComponent = observer(
       const resp = await petStore.uploadUserThumbnailImage(editablePet);
       editablePet.thumbnailUrl = resp;
       editablePet.birthDate = parseStringToDate(birthDate);
+      editablePet.animalType = editablePet.animalType || 0;
       try {
         const pet = await petStore.createNewPetProfile(editablePet);
 
         if (pet) {
-          router.replace('/profile'); // Перенаправление на профиль после добавления питомца
+          router.replace(`/(pet)/${pet.id}`); // Перенаправление на профиль после добавления питомца
         }
       } catch (error) {
         console.error('Ошибка при создании профиля питомца:', error);
@@ -302,10 +303,10 @@ const EditPetProfileComponent = observer(
               </View>
 
               {showPetAge && Platform.OS === 'ios' && (
-                <Modal transparent={true} animationType="slide">
+                <Modal transparent={true} animationType="fade">
                   <View className="flex-1 justify-center bg-black/50">
                     <View className="bg-white mx-5 p-5 rounded-3xl shadow-lg">
-                      <DateTimePicker value={age} mode="date" display="spinner" onChange={onAgeChange} maximumDate={new Date()} />
+                      <DateTimePicker style={{width:'100%'}} value={age} mode="date" display="spinner" onChange={onAgeChange} maximumDate={new Date()} />
                       <Button mode="contained" onPress={() => setShowPetAge(false)}>
                         {i18n.t('ok')}
                       </Button>

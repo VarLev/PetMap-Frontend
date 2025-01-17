@@ -1,12 +1,12 @@
 import React from "react";
 import { View, Text, Image, Platform } from "react-native";
-import { Button, List, TouchableRipple } from "react-native-paper";
+import { Divider, List, TouchableRipple } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/Images";
 import userStore from "@/stores/UserStore";
 import { router } from "expo-router";
 import { useDrawer } from "@/contexts/DrawerProvider";
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
 import CustomListItemWrapper from "@/components/custom/menuItem/ListItemWrapper";
 import i18n from "@/i18n";
 import DismissibleBanner from "../ads/DismissibleBanner";
@@ -37,6 +37,11 @@ const SidebarUserProfileComponent = () => {
     closeDrawer();
   };
 
+  const handleShalterPress = () => {
+    router.replace("/profile/petShelters");
+    closeDrawer();
+  };
+
 
   return (
     <SafeAreaView className="bg-white h-full">
@@ -47,9 +52,8 @@ const SidebarUserProfileComponent = () => {
             source={images.logoWithName}
             style={{ width: 175, height: 43 }}
           />
-          <Text className="font-nunitoSansBold">v0.0.8</Text>
+          <Text className="font-nunitoSansBold">v0.0.9</Text>
         </View>
-
         <TouchableRipple
           className="w-full mt-6"
           rippleColor={Platform.OS === "ios" ? "rgba(0,0,0,0.1)" : "#E8DFFF"}
@@ -111,8 +115,6 @@ const SidebarUserProfileComponent = () => {
             </View>
           </View>
         </TouchableRipple>
-       
-
         {/* Подписка */}
         {/* <View className="flex-row mt-4 content-center items-center">
           <Button
@@ -180,6 +182,19 @@ const SidebarUserProfileComponent = () => {
               />
             )}
           /> */}
+          <Divider  />
+          <CustomListItemWrapper
+            title={i18n.t("Sidebar.shelter")}
+            leftIcon={() => (
+              <List.Icon
+                icon={() => (
+                  <Ionicons name="heart-outline" size={20} color="#474747" />
+                )}
+              />
+            )}
+            onPress={handleShalterPress}
+          />
+          
           <CustomListItemWrapper
             title={i18n.t("Sidebar.settings")}
             leftIcon={() => (

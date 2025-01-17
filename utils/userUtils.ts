@@ -1,19 +1,72 @@
-import { database } from "@/firebaseConfig";
-import { get, ref } from "firebase/database";
+import { database } from '@/firebaseConfig';
+import { get, ref } from 'firebase/database';
 
 export async function getUserStatus(userId: string): Promise<boolean | undefined> {
-    try {
-      const userRef = ref(database, `users/${userId}/isOnline`);
-      const snapshot = await get(userRef);
-      let status: boolean = false;
+  try {
+    const userRef = ref(database, `users/${userId}/isOnline`);
+    const snapshot = await get(userRef);
+    let status: boolean = false;
 
-      if (snapshot.exists()) {
-        const val = snapshot.val();
-        status = val === true;
-      }
-
-      return status;
-    } catch (error) {
-      console.error('Ошибка при получении статуса пользователя:', error);
+    if (snapshot.exists()) {
+      const val = snapshot.val();
+      status = val === true;
     }
+
+    return status;
+  } catch (error) {
+    console.error('Ошибка при получении статуса пользователя:', error);
   }
+}
+
+export async function getUserLastOnlineStatus(userId: string): Promise<string | undefined> {
+  try {
+    const userRef = ref(database, `users/${userId}/lastSeen`);
+    const snapshot = await get(userRef);
+
+    if (!snapshot.exists()) {
+      // Данных нет, возвращаем undefined
+      return undefined;
+    }
+
+    const val = snapshot.val();
+    if (!val) {
+      return undefined;
+    }
+
+    // Парсим дату последней активности
+    const lastSeenDate = new Date(val);
+
+    // Возвращаем отформатированную строку вида "X ч. Y мин. назад" или "X дн. назад"
+    return formatLastSeenTime(lastSeenDate);
+  } catch (error) {
+    console.error('Ошибка при получении статуса пользователя:', error);
+    return undefined;
+  }
+}
+
+function formatLastSeenTime(lastSeenDate: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - lastSeenDate.getTime();
+
+  // Если по каким-то причинам дата больше текущей (из будущего) или совпадает, отображаем "Только что"
+  if (diffMs <= 0) {
+    return 'Только что';
+  }
+
+  const diffMinutes = Math.floor(diffMs / 60000);
+  if (diffMinutes < 60) {
+    // Менее 60 минут назад
+    return `${diffMinutes} мин. назад`;
+  }
+
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) {
+    // Менее 24 часов назад
+    const remainMinutes = diffMinutes % 60;
+    return `${diffHours} ч. ${remainMinutes} мин. назад`;
+  }
+
+  // Больше суток — показываем количество дней
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays} дн. назад`;
+}

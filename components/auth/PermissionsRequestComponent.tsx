@@ -53,7 +53,7 @@ const PermissionsRequestComponent = () => {
 
         // Если хотя бы одно разрешение не выдано, показываем Alert
         if (!locationGranted || !notificationsGranted || !photosGranted) {
-          setAlertVisible(true);
+          setAlertVisible(false);
         }
 
         console.log("Результат разрешений:", {

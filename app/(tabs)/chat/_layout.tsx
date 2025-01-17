@@ -23,10 +23,6 @@ const ChatLayout = () => {
           }}
           
         />
-        <Stack.Screen
-          name="[chatId]"
-          options={{ headerShown: false, title: "Chat" }}
-        />
       </Stack>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, Platform, Text, Pressable, Modal, Button } from 'react-native';
+import { View, ScrollView, StyleSheet, Platform, Text, Pressable, Modal, Button, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import IconSelectorComponent from '../icons/IconSelectorComponent';
@@ -115,6 +115,7 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
   const handleClearSearchText = () => {
     setSearchText('');
     setSearchResults([]);
+    Keyboard.dismiss();
   };
 
   // === ЛОГИКА С ТЕГАМИ ===
@@ -135,10 +136,12 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
   };
 
   const handleClearTag = () => {
+    
     setSelectedTag('');
     setIsTagSelected(false);
     setSearchText('');
     uiStore.setIsPointSearchFilterTagSelected(false);
+    Keyboard.dismiss();
   };
 
   // Переключение карты/списка
@@ -188,9 +191,10 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
 
       {/* Верхняя панель: поле ввода / фильтр / переключатель */}
       <View
-        className={`flex-row w-full ${isIOS ? 'pt-6' : 'pt-2'} px-2 justify-center items-center`}
+        className={`flex-row w-full ${isIOS ? 'pt-6' : 'pt-2'} z-10 px-2 justify-center items-center`}
       >
-        <View style={{ flex: 1 }}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={{ flex: 1}}>
           <Searchbar
             // При выбранном теге поле ввода блокируем
             editable={!isTagSelected}
@@ -232,6 +236,8 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
             />
           )}
         </View>
+        </TouchableWithoutFeedback>
+        
 
         <CustomBudgeButton
           iconSet="Ionicons"
