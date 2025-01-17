@@ -46,7 +46,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({ item, currentUserId}) => {
         <TouchableOpacity activeOpacity={0.8} onPress={handleOpenChat}>
         <View className="flex-row items-center">
           {/* Аватарка + индикатор статуса */}
-          <AvatarWithStatus onPress={()=>{}} imageUrl={recipient.thumbnailUrl}  isOnline={recipient.isOnline}/>
+          <AvatarWithStatus onPress={()=>{}} imageUrl={recipient.avatar}  isOnline={recipient.isOnline}/>
 
           {/* Имя пользователя и последнее сообщение */}
           <View className="flex-col pl-4">

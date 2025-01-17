@@ -16,6 +16,7 @@ const ChatListView: React.FC = observer(() => {
   const fetchData = async () => {
     try {
       setIsLoading(true);
+      await ChatStore.ensureAssistantChatExists(currentUserId);
       await ChatStore.fetchChats();
       //setChats(ChatStore.chats);
     } catch (err) {
@@ -33,7 +34,7 @@ const ChatListView: React.FC = observer(() => {
   useEffect(() => {
     // Подписываемся на изменения в чатах
     const unsubscribe = ChatStore.subscribeToChats();
-  
+
     // Возвращаем функцию, которая "отпишется" при размонтиовании
     return () => unsubscribe && unsubscribe();
   }, []);
@@ -71,9 +72,9 @@ const ChatListView: React.FC = observer(() => {
       <FlatList
         data={ChatStore.chats}
         ListEmptyComponent={
-        <View className="h-full">
-          <EmptyChatScreen />
-        </View>}
+          <View className="h-full">
+            <EmptyChatScreen />
+          </View>}
         renderItem={({ item }) =>
           <ChatListItem item={item} currentUserId={currentUserId} />
         }
