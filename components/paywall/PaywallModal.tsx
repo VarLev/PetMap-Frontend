@@ -13,6 +13,7 @@ import FullBenefitsTable from './FullBenefitsTable';
 import userStore from '@/stores/UserStore';
 import uiStore from '@/stores/UIStore';
 import RevenueCatService from '@/services/RevenueCatService';
+import i18n from "@/i18n";
 
 type PaywallModalProps = {
   closeModal: () => void;
@@ -93,7 +94,7 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
         setIsFullBenefitsVisible(false);
       }
     } catch (error) {
-      console.error('Ошибка при покупке подписки:', error);
+      console.error(`${i18n.t("paywall.purchaseError")}`, error);
     }
   };
 
@@ -115,7 +116,7 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
     // Пример: currentPackage?.product?.priceString => "$4.00"
     const priceString = currentPackage?.product?.priceString;
     // Если нужно дополнить единицами (например, "/ месяц" или "/ год"), делаем это ниже
-    const priceSuffix = subscriptionType === 'year' ? '/ год' : '/ месяц';
+    const priceSuffix = subscriptionType === 'year' ? `/ ${i18n.t("paywall.year")}` : `/ ${i18n.t("paywall.month")}`;
 
     // Если есть пробный период (introPrice), можно условно вывести "7 дней бесплатно" и т.д.
     const introPrice = currentPackage?.product?.introPrice;
@@ -123,11 +124,11 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
     return (
       <View className="flex-column mx-[20px] my-[10px]">
         <View className="flex-row justify-between items-center">
-          <Text className="text-[24px] font-semibold"> {priceString ? `${priceString} ${priceSuffix}` : 'Загрузка...'}</Text>
-          <Text className="text-[16px] font-semibold">7 дней бесплатно</Text>
+          <Text className="text-[24px] font-semibold"> {priceString ? `${priceString} ${priceSuffix}` : `${i18n.t("paywall.loading")}`}</Text>
+          <Text className="text-[16px] font-semibold">{i18n.t("paywall.free")}</Text>
         </View>
         <CustomButtonOutlined
-          title="Оформить подписку"
+          title={i18n.t("paywall.subscribe")}
           handlePress={() => handleSubmitPayment(subscriptionType)}
           containerStyles="w-full bg-[#ACFFB9] mt-[16px] h-[46px]"
           textStyles="text-[16px]"
@@ -164,10 +165,8 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
           <FullBenefitsTable />
         )}
 
-        <Text className="text-[20px] font-nunitoSansBold text-center color-white mt-4">Премиум подписка со скидкой!</Text>
-        <Text className="text-[16px] text-center color-white mt-2">
-          Оформите подписку, чтобы использовать весь функционал приложения без ограничений!
-        </Text>
+        <Text className="text-[20px] font-nunitoSansBold text-center color-white mt-4">{i18n.t("paywall.startModal.title")}</Text>
+        <Text className="text-[16px] text-center color-white mt-2">{i18n.t("paywall.startModal.text")}</Text>
         <View className="self-start mt-[30px]">
           <RadioButton.Group onValueChange={(newValue) => setSubscriptionType(newValue)} value={subscriptionType}>
           <SubscriptionRadioButton
@@ -176,7 +175,7 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
               // Если annualPackage есть, берём annualPackage.product.priceString, иначе пишем "..."
               price={
                 annualPackage
-                  ? `${annualPackage.product.priceString} / год`
+                  ? `${annualPackage.product.priceString} / ${i18n.t("paywall.year")}`
                   : '...'
               }
               handleOpenBenefits={openBenefits}
@@ -187,7 +186,7 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
               value="month"
               price={
                 monthlyPackage
-                  ? `${monthlyPackage.product.priceString} / месяц`
+                  ? `${monthlyPackage.product.priceString} / ${i18n.t("paywall.month")}`
                   : '...'
               }
               handleOpenBenefits={openBenefits}
@@ -198,7 +197,7 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
         </View>
 
         <CustomButtonOutlined
-          title="Попробовать 7 дней бесплатно"
+          title={i18n.t("paywall.tryFree")}
           handlePress={() => {}}
           containerStyles={`w-full bg-[#ACFFB9] mt-auto h-[46px]`}
           textStyles="text-[16px]"
@@ -219,12 +218,10 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
         />
         <View className="w-full flex-column items-center">
           <Image source={require('@/assets/images/paywall/Success.png')} resizeMode="contain" style={{ height: 220 }} />
-          <Text className="text-[20px] font-nunitoSansBold text-center color-white mt-4">Ура! Вы оформили подписку!</Text>
-          <Text className="text-[16px] text-center color-white  mt-2">
-            Добро пожаловать в семью PetMap в качестве Премиум пользователя. Теперь вам доступен весь функционал приложения.
-          </Text>
+          <Text className="text-[20px] font-nunitoSansBold text-center color-white mt-4">{i18n.t("paywall.successModal.title")}</Text>
+          <Text className="text-[16px] text-center color-white  mt-2">{i18n.t("paywall.successModal.text")}</Text>
           <CustomButtonOutlined
-            title="Спасибо!"
+            title={i18n.t("paywall.thank")}
             handlePress={handleCloseModal}
             containerStyles={`w-full bg-[#ACFFB9] mt-[30px] h-[46px]`}
             textStyles="text-[16px]"

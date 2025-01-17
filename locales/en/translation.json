@@ -1349,5 +1349,57 @@
     "translate": "Translate",
     "reverse": "Show original"
   },
-  "typeOfPet":"Type of pet"
+  "typeOfPet":"Type of pet",
+  "paywall": {
+    "whatGet": "What will you get?",
+    "standard": "Standard",
+    "premium": "Premium",
+    "benefits": {
+      "item1": "Premium user badge",
+      "item2": "Number of created walks",
+      "item3": "Number of created markers",
+      "item4": "Access to all filters",
+      "item5": "Search on the map by direct address",
+      "item6": "Translation of all user-generated text",
+      "item7": "Advertising",
+      "item8": "Increase each bonus by +0.5%"
+    },
+    "perDay": "per day",
+    "purchaseError": "Subscription purchase error:",
+    "year": "year",
+    "month": "month",
+    "loading": "Loading...",
+    "free": "7 days free",
+    "subscribe": "Subscribe",
+    "tryFree": "Try 7 days for free",
+    "startModal": {
+      "title": "Premium subscription with a discount!",
+      "text": "Subscribe to unlock the full functionality of the app without limitations!"
+    },
+    "successModal": {
+      "title": "Yay! You've subscribed!",
+      "text": "Welcome to the PetMap family as a Premium user. Now you have access to the full functionality of the app."
+    },
+    "thank": "Thank you!",
+    "fullBenefits": {
+      "item1": {
+        "firstWord": "Unlimited",
+        "lastWords": "creation of walks"
+      },
+      "item2": {
+        "firstWord": "Unlimited",
+        "lastWords": "creation of map markers"
+      },
+      "item3": {
+        "firstWord": "Built-in",
+        "lastWords": "AI translator"
+      },
+      "item4": {
+        "firstWord": "Pet-bonuses:",
+        "lastWords": "4000"
+      }
+    },
+    "learnMore": "Learn more about the benefits",
+    "advantage": "more advantageous"
+  }
 }

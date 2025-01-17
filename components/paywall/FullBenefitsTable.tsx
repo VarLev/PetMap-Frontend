@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Icon } from 'react-native-paper';
+import i18n from "@/i18n";
 
 type IconProps = {
     icon: string,
@@ -13,49 +14,49 @@ const FullBenefitsTable = () => {
     const benefits = [
         {
           key: 1,
-          name: "Значок Премиум пользователя",
+          name: "paywall.benefits.item1",
           base: <TableIcon icon="close" color="white" />,
           premium: <TableIcon icon="check" color="#ACFFB9" />,
         },
         {
           key: 2,
-          name: "Количество созданных прогулок",
-          base: "2 шт / день",
+          name: "paywall.benefits.item2",
+          base: `2 ${i18n.t("paywall.perDay")}`,
           premium: <TableIcon icon="all-inclusive" color="#ACFFB9" />,
         },
         {
           key: 3,
-          name: "Количество созданных меток",
-          base: "20 шт",
+          name: "paywall.benefits.item3",
+          base: "20",
           premium: <TableIcon icon="all-inclusive" color="#ACFFB9" />,
         },
         {
           key: 4,
-          name: 'Доступ ко всем фильтрам',
+          name: 'paywall.benefits.item4',
           base: <TableIcon icon="close" color="white" />,
           premium: <TableIcon icon="check" color="#ACFFB9" />,
         },
         {
           key: 5,
-          name: 'Поиск на карте через прямой адрес',
+          name: 'paywall.benefits.item5',
           base: <TableIcon icon="close" color="white" />,
           premium: <TableIcon icon="check" color="#ACFFB9" />,
         },
         {
           key: 6,
-          name: 'Перевод всего пользовательского текста',
+          name: 'paywall.benefits.item6',
           base: <TableIcon icon="close" color="white" />,
           premium: <TableIcon icon="check" color="#ACFFB9" />,
         },
         {
           key: 7,
-          name: 'Реклама',
+          name: 'paywall.benefits.item7',
           base: <TableIcon icon="check" color="white" />,
           premium: <TableIcon icon="close" color="#ACFFB9" />,
         },
         {
           key: 8,
-          name: 'Увеличение каждого бонуса на +0.5%',
+          name: 'paywall.benefits.item8',
           base: <TableIcon icon="close" color="white" />,
           premium: <TableIcon icon="check" color="#ACFFB9" />,
         },
@@ -63,12 +64,12 @@ const FullBenefitsTable = () => {
 
     return (
         <View className="mb-[18px]">
-            <Text className="text-[20px] text-center color-white font-nunitoSansBold mb-[16px]">Что вы получите?</Text>
+            <Text className="text-[20px] text-center color-white font-nunitoSansBold mb-[16px]">{i18n.t("paywall.whatGet")}</Text>
             <View style={styles.table}>
                 <View style={styles.header}>
                     <Text style={styles.benefit}> </Text>
-                    <Text style={styles.column}>Обычный</Text>
-                    <Text style={{...styles.column, ...styles.premium}}>Премиум</Text>
+                    <Text style={styles.column}>{i18n.t("paywall.standard")}</Text>
+                    <Text style={{...styles.column, ...styles.premium}}>{i18n.t("paywall.premium")}</Text>
                 </View>
 
                 {benefits.map((benefit) => {
@@ -76,7 +77,7 @@ const FullBenefitsTable = () => {
 
                     return (
                         <View key={benefit.key} style={{...styles.row, ...borderTop}}>
-                            <Text style={styles.benefit}>{benefit.name}</Text>
+                            <Text style={styles.benefit}>{i18n.t(benefit.name)}</Text>
                             <Text style={styles.column}>{benefit.base}</Text>
                             <Text style={{...styles.column, ...styles.premium}}>{benefit.premium}</Text>
                         </View>
