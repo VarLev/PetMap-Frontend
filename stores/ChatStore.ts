@@ -991,7 +991,7 @@ class ChatStore {
         author: {
           id: AI_BOT_ID,
           firstName: 'PetAI Assistant',
-          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2FuserAvatars%2Fai_assistent.webp?alt=media&token=8d1bf432-5006-4ef9-84f0-9ec45191d1aa', // или укажите URL аватара бота
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2FuserAvatars%2Fai_assistent.webp?alt=media&token=002c427f-2a5b-4de2-b388-d3bda057df56', // или укажите URL аватара бота
         },
       }
   
