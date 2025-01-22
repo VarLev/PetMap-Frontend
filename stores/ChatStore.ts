@@ -851,7 +851,7 @@ class ChatStore {
       const assistantData  = {
         id: AI_ASSISTANT_BOT_ID,
         name: 'PetAI Assistant',
-        avatar: 'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2FuserAvatars%2Fai_assistent.webp?alt=media&token=8d1bf432-5006-4ef9-84f0-9ec45191d1aa',
+        avatar: 'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2FuserAvatars%2Fai_assistent.webp?alt=media&token=002c427f-2a5b-4de2-b388-d3bda057df56',
         isOnline: true,
         // ... при необходимости другие поля
       };
@@ -933,7 +933,7 @@ class ChatStore {
 
       // Сразу обновим локальный стор
       runInAction(() => {
-        this.messages.unshift(userMsg) // или push в конец, в зависимости от логики
+        //this.messages.unshift(userMsg) // или push в конец, в зависимости от логики
         this.lastMessage[chatId!] = userMsg.text
       })
 
@@ -1011,7 +1011,7 @@ class ChatStore {
       // 5. Обновляем локальный стор (MobX), чтобы UI отобразил сообщение немедленно
       runInAction(() => {
         // Вставляем сообщение в начало или конец массива — как вам удобнее
-        this.messages.unshift(newMessage)
+        //this.messages.unshift(newMessage)
         this.lastMessage[chatId] = newMessage.text
       })
   
