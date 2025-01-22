@@ -1,6 +1,6 @@
 import { getApps , initializeApp } from 'firebase/app';
 import { getStorage, ref, listAll, getDownloadURL, StorageReference} from 'firebase/storage';
-import { signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, sendEmailVerification  } from 'firebase/auth';
+import { signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail  } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getAuth, initializeAuth, getReactNativePersistence, onAuthStateChanged } from "firebase/auth";
 import {getDatabase, onDisconnect, serverTimestamp, set, ref as refDb, update} from 'firebase/database';
@@ -170,6 +170,14 @@ export const initOnDisconnect = async (userId: string) => {
     });
   } catch (error) {
     console.error('Ошибка при инициализации onDisconnect:', error);
+    throw error;
+  }
+};
+
+export const resetPassword = async (email: string) => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+  } catch (error) {
     throw error;
   }
 };

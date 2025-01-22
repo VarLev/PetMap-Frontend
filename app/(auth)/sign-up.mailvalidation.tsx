@@ -3,15 +3,14 @@ import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TextInput, Text } from "react-native-paper";
 import { Link, router } from "expo-router";
-import userStore from "@/stores/UserStore";
 import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton";
 import ArrowHelp from "@/components/auth/arrowHelp";
 import i18n from "@/i18n"; // Импорт i18n для мультиязычности
+import { resetPassword } from "@/firebaseConfig";
 
 const SignUpMailValidation = () => {
   const [email, setEmail] = useState("");
   const [isValidEmail, setIsValidEmail] = useState(true);
-  const [password, setPassword] = useState("");
 
   const handleSubmit = async () => {
     const validEmail = validateEmail(email);
@@ -22,12 +21,13 @@ const SignUpMailValidation = () => {
     }
 
     try {
-      await userStore.registerUser(email,password);
+      await resetPassword(email);
       Alert.alert(
-        "Success",
-        "Account created successfully! A verification email has been sent to your email address. Please check your inbox and verify your email to complete the registration."
+        "",
+        i18n.t('signUpMailValidation.successMessage') 
       );
-      router.replace("/onboarding");
+      router.back();
+     
     } catch (error: any) {
       Alert.alert("Registration Error", error.message.replace("Firebase:", ""));
     }
@@ -85,9 +85,7 @@ const SignUpMailValidation = () => {
                 containerStyles="w-full"
               />
             </View>
-            <Link href="/sign-up.passwordreset" className="text-base mt-20">
-              {i18n.t('signUpMailValidation.passwordResetLink')} 
-            </Link>
+           
           </View>
           <View>
             <View className="justify-center pt-5 flex-row gap-2">

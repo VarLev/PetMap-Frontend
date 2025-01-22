@@ -1,4 +1,5 @@
 import { database } from '@/firebaseConfig';
+import i18n from '@/i18n';
 import { get, ref } from 'firebase/database';
 
 export async function getUserStatus(userId: string): Promise<boolean | undefined> {
@@ -50,23 +51,23 @@ function formatLastSeenTime(lastSeenDate: Date): string {
 
   // Если по каким-то причинам дата больше текущей (из будущего) или совпадает, отображаем "Только что"
   if (diffMs <= 0) {
-    return 'Только что';
+    return `${i18n.t('chat.time.lessThanAMinute')}`;
   }
-
+  
   const diffMinutes = Math.floor(diffMs / 60000);
   if (diffMinutes < 60) {
     // Менее 60 минут назад
-    return `${diffMinutes} мин. назад`;
+    return `${diffMinutes} ${i18n.t('chat.time.m')}. ${i18n.t('chat.time.ago')}`;
   }
 
   const diffHours = Math.floor(diffMinutes / 60);
   if (diffHours < 24) {
     // Менее 24 часов назад
     const remainMinutes = diffMinutes % 60;
-    return `${diffHours} ч. ${remainMinutes} мин. назад`;
+    return `${diffHours} ${i18n.t('chat.time.h')}. ${remainMinutes} ${i18n.t('chat.time.m')}. ${i18n.t('chat.time.ago')}`;
   }
 
   // Больше суток — показываем количество дней
   const diffDays = Math.floor(diffHours / 24);
-  return `${diffDays} дн. назад`;
+  return `${diffDays} ${i18n.t('chat.time.d')}. ${i18n.t('chat.time.ago')}`;
 }
