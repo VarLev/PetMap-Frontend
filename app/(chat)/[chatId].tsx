@@ -166,7 +166,7 @@ const ChatScreen: React.FC = observer(() => {
       if (!chatId || !UserStore.currentUser) return;
 
       // 1. Если это чат с AI-ассистентом
-      if (chatId === AI_ASSISTANT_CHAT_ID) {
+      if (chatId === AI_ASSISTANT_CHAT_ID+currentUserId) {
         // 1. Добавляем «Typing Indicator» (фейковое сообщение)
         const typingIndicator: MessageType.Custom = {
           id: 'typing-indicator', // уникальный ID

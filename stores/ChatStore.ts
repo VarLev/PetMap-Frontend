@@ -204,8 +204,8 @@ class ChatStore {
   
     // Шаг 4. Обновляем стейт в одном runInAction (чтобы MobX среагировал разом)
     runInAction(() => {
-      const pinnedChat = chatsList.find(chat => chat.id === process.env.EXPO_PUBLIC_AI_CHAT_ID!);
-      const otherChats = chatsList.filter(chat => chat.id !== process.env.EXPO_PUBLIC_AI_CHAT_ID!);
+      const pinnedChat = chatsList.find(chat => chat.id === (process.env.EXPO_PUBLIC_AI_CHAT_ID+userId)!);
+      const otherChats = chatsList.filter(chat => chat.id !== (process.env.EXPO_PUBLIC_AI_CHAT_ID+userId)!);
       this.chats = pinnedChat ? [pinnedChat, ...otherChats] : otherChats;
     });
   }
@@ -859,7 +859,7 @@ class ChatStore {
     }
 
     // Ссылка на чат в Firebase (чтобы проверить, существует ли)
-    const chatRef = ref(database, `chats/${AI_ASSISTANT_CHAT_ID}`);
+    const chatRef = ref(database, `chats/${AI_ASSISTANT_CHAT_ID}`+userId);
     const snap = await get(chatRef);
   
     if (!snap.exists()) {
@@ -890,7 +890,8 @@ class ChatStore {
 
   async sendChatToAiAssistant(conversationHistory: IChatAIMessage[]): Promise<string | null> 
   {
-    const chatId = process.env.EXPO_PUBLIC_AI_CHAT_ID
+    const userId = userStore.currentUser?.id ?? 'unknownUser'
+    const chatId = process.env.EXPO_PUBLIC_AI_CHAT_ID + userId;
 
     try {
       // 1. Найдём последнее сообщение пользователя
@@ -902,7 +903,6 @@ class ChatStore {
       }
 
       // 2. Сохраним это сообщение в Firebase (аналогично sendMessageUniversal)
-      const userId = userStore.currentUser?.id ?? 'unknownUser'
       const now = Date.now()
       const newMessageKey = push(ref(database, `messages/${chatId}`)).key
       if (!newMessageKey) {

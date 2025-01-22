@@ -60,7 +60,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({ item, currentUserId}) => {
         </View>
         </TouchableOpacity>
         {/* Кнопка «меню» (удалить чат и т.д.) */}
-        {item.id !== process.env.EXPO_PUBLIC_AI_CHAT_ID! && <ChatMenu chatId={item.id} otherUserId={recipient?.id} />}
+        {item.id !== (process.env.EXPO_PUBLIC_AI_CHAT_ID+currentUserId) && <ChatMenu chatId={item.id} otherUserId={recipient?.id} />}
       </View>
       <Divider bold className="bg-gray-400" />
       </>
