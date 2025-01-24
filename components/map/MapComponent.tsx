@@ -88,7 +88,7 @@ const MapBoxMap = observer(() => {
 
   // Анимированное значение для плавного появления карты
   const fadeAnim = useRef(new Animated.Value(0)).current;
- 
+
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
@@ -117,12 +117,12 @@ const MapBoxMap = observer(() => {
           try {
             if (userStore.getCurrentUserCity() === '') {
               const address = await mapStore.getUserCity(userCoordinates);
-              if(address) {
+              if (address) {
                 userStore.setCurrentUserCountry(address![0]);
                 userStore.setCurrentUserCity(address![1]);
                 await mapStore.setWalkAdvrts();
               }
-              
+
             }
             mapStore.setCity(userStore.getCurrentUserCity());
             console.log('Город успешно получен для координат:', mapStore.getCity());
@@ -145,11 +145,11 @@ const MapBoxMap = observer(() => {
       // Порядок: сначала пытаемся определить город (если координаты есть), потом собираем GeoJSON
       await fetchCity();
       await fetchData();
-      
+
       setIsLoading(false);
     };
 
-     // Загрузка данных только после того, как поменялось состояние userCoordinates
+    // Загрузка данных только после того, как поменялось состояние userCoordinates
     if (userCoordinates) {
       loadData().then(() => {
         // После успешного выполнения ставим флаг
@@ -164,28 +164,36 @@ const MapBoxMap = observer(() => {
   // --- Периодический опрос при фокусе экрана ---
   useFocusEffect(
     useCallback(() => {
-      if(currentPointType === MapPointType.Walk) {
-        const intervalId = setInterval(async () => {
-          try {
-            await mapStore.setWalkAdvrts(); 
-            const data = createGeoJSONFeatures(mapStore.walkAdvrts, mapStore.mapPoints);
-            setGeoJSONData(data);
-            console.log('Walk advrts updated');
-            console.log(currentPointType);
-          } catch (err) {
-            console.error(err);
+      if (mapStore.getMyPointToNavigateOnMap()) {
+        if (mapStore.getMyPointToNavigateOnMap()?.pointType === MapPointType.Walk) {
+          const advrt = mapStore.walkAdvrts.find((advrt: IWalkAdvrtDto) => advrt.id === mapStore.getMyPointToNavigateOnMap()?.pointId);
+          if (advrt) {
+            onPinPress(advrt,14);
           }
-        }, 300_000); 
-  
-        // Возвращаем колбэк очистки
-        return () => {
-          
-          clearInterval(intervalId);
-        };
+        }
+        mapStore.setMyPointToNavigateOnMap(null);
+
       }
-     
-    }, [currentPointType])
+
+    }, [])
   );
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        // Если пользователь авторизован и нажимает "Назад", блокируем переход на экран авторизации
+        handleSheetClose();
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    }, [])
+  );
+
 
   // Обработка системной кнопки "Назад" на Android
   useFocusEffect(
@@ -217,9 +225,9 @@ const MapBoxMap = observer(() => {
   };
 
 
-  const handlePress = (event: any) => {
+  const handlePress = (event: any ) => {
     Keyboard.dismiss();
-    if(uiStore.getIsSearchAddressExpanded())
+    if (uiStore.getIsSearchAddressExpanded())
       return;
     console.log('Press detected');
     if (
@@ -315,15 +323,16 @@ const MapBoxMap = observer(() => {
     }
   };
 
-  const onPinPress = async (advrt: IWalkAdvrtDto) => {
+  const onPinPress = async (advrt: IWalkAdvrtDto, zoomLevelx?:number) => {
     cameraRef.current?.setCamera({
       centerCoordinate: [advrt.longitude!, advrt.latitude!],
       animationDuration: 300,
+      ...(zoomLevelx !== undefined && { zoomLevel: zoomLevelx }), // Only set zoomLevel if zoomLevelx is defined
       padding: {
-        paddingLeft: 0,
-        paddingRight: 0,
-        paddingTop: 0,
-        paddingBottom: 400,
+      paddingLeft: 0,
+      paddingRight: 0,
+      paddingTop: 0,
+      paddingBottom: 400,
       },
     });
     setRenderContent(() => <AdvtComponent advrt={advrt} onInvite={handleChatInvite} onClose={handleSheetClose} />);
@@ -375,16 +384,16 @@ const MapBoxMap = observer(() => {
       const chatId = generateChatIdForTwoUsers(currentUser!.id!, otherUser.id);
       let chat = await chatStore.getChatById(chatId);
       if (!chat) {
-        chat = generateChatData(chatId, currentUser!.id!, otherUser.id, otherUser,'request for a walk');
+        chat = generateChatData(chatId, currentUser!.id!, otherUser.id, otherUser, 'request for a walk');
       }
-      await chatStore.sendMessageUniversal(chat, '', { 
+      await chatStore.sendMessageUniversal(chat, '', {
         isInvite: true,
         inviteMetadata: {
           advrtId: mapStore.currentWalkId
         },
       });
       //await chatStore.sendInviteMessage(chatId!, otherUser);
-      
+
       if (chatId) {
         router.push(`/(chat)/${chatId}`);
         //router.push(`/chat/${chatId}`);
@@ -414,7 +423,7 @@ const MapBoxMap = observer(() => {
     setRenderAdvrtForm(false); // Сбрасываем форму редактирования прогулки
   };
 
-  const handleSearchTextChange = () => {};
+  const handleSearchTextChange = () => { };
 
   const tagSelected = async (type: number) => {
     setCurrentPointType(type);
@@ -474,7 +483,7 @@ const MapBoxMap = observer(() => {
       {/* Пока идёт загрузка, карту не отображаем. Можно вставить лоадер, если нужно. */}
       {isLoading ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large"  color="#6200ee" />
+          <ActivityIndicator size="large" color="#6200ee" />
         </View>
 
       ) : (
@@ -503,7 +512,7 @@ const MapBoxMap = observer(() => {
             rotateEnabled={!isCardView}
           >
 
-           
+
             {hasPermission && (
               <UserLocation
                 minDisplacement={50}
@@ -529,7 +538,7 @@ const MapBoxMap = observer(() => {
             )}
 
 
-             {/* Простейший pin через PointAnnotation */}
+            {/* Простейший pin через PointAnnotation */}
             <PointAnnotation
               id="my-marker"
               coordinate={[10, 10]}
@@ -542,16 +551,17 @@ const MapBoxMap = observer(() => {
                   borderRadius: 10,
                   backgroundColor: BG_COLORS.indigo[700],
                   borderWidth: 2,
-                  borderColor: 'white'}} />
+                  borderColor: 'white'
+                }} />
               </View>
             </PointAnnotation>
-             
+
 
             {/* Кластеризация меток (если используем ShapeSource / SymbolLayer) */}
             {!isCardView && geoJSONData && (
               <ShapeSource id="points" shape={geoJSONData} cluster clusterRadius={38}>
                 <SymbolLayer id="clusteredPoints" filter={['has', 'point_count']} style={styles.clusterStyle} />
-                
+
               </ShapeSource>
             )}
 
@@ -602,9 +612,9 @@ const MapBoxMap = observer(() => {
               />
             )}
           </MapView>
-          {/* === Кнопка "Моя локация" поверх карты === */} 
+          {/* === Кнопка "Моя локация" поверх карты === */}
           {hasPermission && userCoordinates && (
-            <TouchableOpacity activeOpacity={0.8} className='absolute bottom-[180px] right-[25px]'  onPress={handleRecenter}>
+            <TouchableOpacity activeOpacity={0.8} className='absolute bottom-[180px] right-[25px]' onPress={handleRecenter}>
               <View style={{
                 backgroundColor: '#fff',
                 borderRadius: 25,
@@ -617,18 +627,18 @@ const MapBoxMap = observer(() => {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.3,
                 shadowRadius: 3,
-              
+
               }}>
-              <IconButton
-                icon="crosshairs-gps"
-                size={25}
-                className='bg-white -left-1 -top-1'
-                iconColor={BG_COLORS.indigo[700]}
+                <IconButton
+                  icon="crosshairs-gps"
+                  size={25}
+                  className='bg-white -left-1 -top-1'
+                  iconColor={BG_COLORS.indigo[700]}
                 />
-              </View>      
+              </View>
             </TouchableOpacity>
           )}
-        
+
           {/* Блок с поиском, фильтрами и переключателем карточного вида */}
           <View
             style={{
@@ -639,7 +649,7 @@ const MapBoxMap = observer(() => {
               zIndex: 10,
             }}
           >
-             
+
             <SearchAndTags
               selectedTag={selectedTag}
               setSelectedTag={setSelectedTag}
@@ -650,18 +660,18 @@ const MapBoxMap = observer(() => {
               badgeCount={modifiedFieldsCount}
               setSnackbarVisible={setSnackbarVisible}
               snackbarVisible={snackbarVisible}
-              onAddressSelected={(coordinates)=>{
+              onAddressSelected={(coordinates) => {
                 cameraRef.current?.flyTo(coordinates, 500);
                 setTimeout(() => {
                   uiStore.setIsSearchAddressExpanded(false);
-                  handlePress({geometry: {coordinates: coordinates}});
+                  handlePress({ geometry: { coordinates: coordinates } });
                 }
-                , 600);
-                
+                  , 600);
+
               }}
             />
 
-            
+
           </View>
 
           {/* BottomSheet для отображения деталей выбранной точки/объявления */}

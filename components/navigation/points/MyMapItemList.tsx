@@ -11,6 +11,8 @@ import MyAdvrtCard from "@/components/custom/cards/MyAdvrtCard";
 import mapStore from "@/stores/MapStore";
 import CustomPlug from "@/components/custom/plug/CustomPlug";
 import i18n from "@/i18n";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { router } from "expo-router";
 
 interface AdvrtsListProps {
   renderType: MapPointType;
@@ -78,10 +80,18 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
       switch (renderType) {
         case MapPointType.Walk:
           return (
-            <MyAdvrtCard
-              ad={item as IWalkAdvrtShortDto}
-              pressDelete={handleDelete}
-            />
+            <TouchableOpacity activeOpacity={0.85} onPress={() => {
+              if (item.id) {
+                mapStore.setMyPointToNavigateOnMap({pointId: item.id, pointType: MapPointType.Walk});
+                router.push('(tabs)/map');
+              }
+              }}>
+              <MyAdvrtCard
+                ad={item as IWalkAdvrtShortDto}
+                pressDelete={handleDelete}
+              />
+            </TouchableOpacity>
+            
           );
         case MapPointType.Danger:
           return (

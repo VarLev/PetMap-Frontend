@@ -268,6 +268,8 @@ const ChatScreen: React.FC = observer(() => {
 
           locale={i18n.locale as "en" | "es" | "ru" | undefined}
           sendButtonVisibilityMode="always"
+         
+          onMessageLongPress={(item)=>{}}
           
           theme={{
             ...defaultTheme,

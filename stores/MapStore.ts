@@ -39,6 +39,7 @@ class MapStore {
   isAvaliableToCreateWalk = true; // Переменная для проверки возможности создания прогулки
   marker: [number, number] | null = null;
   selectedFeature: GeoJSON.Feature<GeoJSON.Point> | null = null;
+  myPointToNavigateOnMap: {pointId: string, pointType: MapPointType} | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -74,6 +75,14 @@ class MapStore {
 
   setCity(city: string) {
     this.city = city;
+  }
+
+  setMyPointToNavigateOnMap(point: {pointId: string, pointType: MapPointType} | null) {
+    this.myPointToNavigateOnMap = point;
+  }
+
+  getMyPointToNavigateOnMap() {
+    return this.myPointToNavigateOnMap;
   }
 
   getCity() {
