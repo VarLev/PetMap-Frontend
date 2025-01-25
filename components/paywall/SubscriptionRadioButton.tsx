@@ -3,6 +3,7 @@ import { FC, useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { RadioButton, IconButton , Text } from "react-native-paper";
+import i18n from "@/i18n";
 
 type SubscriptionRadioButtonProps = {
     value: string;
@@ -43,14 +44,24 @@ const SubscriptionRadioButton: FC<SubscriptionRadioButtonProps> = ({value, price
     const fullBenefits = [
         {
             id: 1,
-            firstWord: "Безлимитное",
-            lastWords: "создание прогулок"
+            firstWord: "paywall.fullBenefits.item1.firstWord",
+            lastWords: "paywall.fullBenefits.item1.lastWords"
+        },
+        {
+            id: 2,
+            firstWord: "paywall.fullBenefits.item2.firstWord",
+            lastWords: "paywall.fullBenefits.item2.lastWords"
         },
         {
             id: 3,
-            firstWord: "Встроеный",
-            lastWords: "AI-переводчик"
+            firstWord: "paywall.fullBenefits.item3.firstWord",
+            lastWords: "paywall.fullBenefits.item3.lastWords"
         },
+        {
+            id: 4,
+            firstWord: "paywall.fullBenefits.item4.firstWord",
+            lastWords: "paywall.fullBenefits.item4.lastWords"
+        }
     ];
 
     return (
@@ -75,8 +86,8 @@ const SubscriptionRadioButton: FC<SubscriptionRadioButtonProps> = ({value, price
                         {fullBenefits.map(benefit => {
                             return (
                                 <View key={benefit.id} className="flex-row">
-                                    <Text style={{...styles.textSmall, ...styles.semiBold}}>{'\u2022 '} {benefit.firstWord} </Text>
-                                    <Text style={styles.textSmall}>{benefit.lastWords}</Text>
+                                    <Text style={{...styles.textSmall, ...styles.semiBold}}>{'\u2022 '} {i18n.t(benefit.firstWord)} </Text>
+                                    <Text style={styles.textSmall}>{i18n.t(benefit.lastWords)}</Text>
                                 </View>
                             )
                         })}
@@ -94,7 +105,7 @@ const SubscriptionRadioButton: FC<SubscriptionRadioButtonProps> = ({value, price
                         className="flex-row items-center"
                         onPress={handleOpenBenefits}
                     >
-                        <Text style={{...styles.textSmall, ...styles.semiBold}}>Подробнее о преимуществах</Text>
+                        <Text style={{...styles.textSmall, ...styles.semiBold}}>{i18n.t("paywall.learnMore")}</Text>
                         <IconButton
                             icon="chevron-right"
                             size={24}
@@ -105,7 +116,7 @@ const SubscriptionRadioButton: FC<SubscriptionRadioButtonProps> = ({value, price
                 </View>
                 {isSaleInfo &&
                     <View style={styles.saleContainer}>
-                        <Text style={styles.saleText}>Выгоднее на {sale}%</Text>
+                        <Text style={styles.saleText}>{sale}% {i18n.t("paywall.advantage")}</Text>
                     </View>
                 }
             </View>

@@ -1480,5 +1480,57 @@
   "petShelter":{
     "shelter":"Refugios para mascotas"
   },
-  "lastOnline": "Estuvo en línea"
+  "lastOnline": "Estuvo en línea",
+  "paywall": {
+    "whatGet": "¿Qué obtendrás?",
+    "standard": "Estándar",
+    "premium": "Premium",
+    "benefits": {
+      "item1": "Insignia de usuario premium",
+      "item2": "Cantidad de paseos creados",
+      "item3": "Cantidad de marcadores creados",
+      "item4": "Acceso a todos los filtros",
+      "item5": "Búsqueda en el mapa por dirección directa",
+      "item6": "Traducción de todo el texto generado por usuarios",
+      "item7": "Publicidad",
+      "item8": "Aumento de cada bono en +0.5%"
+    },
+    "perDay": "por día",
+    "purchaseError": "Error al comprar la suscripción:",
+    "year": "año",
+    "month": "mes",
+    "loading": "Cargando...",
+    "free": "7 días gratis",
+    "subscribe": "Suscribirse",
+    "tryFree": "Prueba 7 días gratis",
+    "startModal": {
+      "title": "¡Suscripción premium con descuento!",
+      "text": "¡Suscríbete para desbloquear toda la funcionalidad de la aplicación sin límites!"
+    },
+    "successModal": {
+      "title": "¡Genial! ¡Te has suscrito!",
+      "text": "Bienvenido a la familia de PetMap como usuario Premium. Ahora tienes acceso a toda la funcionalidad de la aplicación."
+    },
+    "thank": "¡Gracias!",
+    "fullBenefits": {
+      "item1": {
+        "firstWord": "Ilimitada",
+        "lastWords": "creación de paseos"
+      },
+      "item2": {
+        "firstWord": "Ilimitada",
+        "lastWords": "creación de marcadores en el mapa"
+      },
+      "item3": {
+        "firstWord": "Traductor",
+        "lastWords": "AI incorporado"
+      },
+      "item4": {
+        "firstWord": "Pet-bonos:",
+        "lastWords": "4000"
+      }
+    },
+    "learnMore": "Más información sobre los beneficios",
+    "advantage": "más conveniente"
+  }
 }

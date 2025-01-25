@@ -10,6 +10,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import userStore from '@/stores/UserStore';
 import uiStore from '@/stores/UIStore';
 import RevenueCatService from '@/services/RevenueCatService';
+import i18n from "@/i18n";
 
 import BottomSheetComponent from '../common/BottomSheetComponent';
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
@@ -83,7 +84,7 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
         setIsFullBenefitsVisible(false);
       }
     } catch (error) {
-      console.error('Ошибка при покупке подписки:', error);
+      console.error(`${i18n.t("paywall.purchaseError")}`, error);
     }
   };
 
@@ -101,22 +102,24 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
   const RenderedContent = () => {
     const currentPackage = subscriptionType === 'year' ? annualPackage : monthlyPackage;
     const priceString = currentPackage?.product?.priceString;
-    const priceSuffix = subscriptionType === 'year' ? '/ год' : '/ месяц';
-    // Пробный период, если понадобится
+
+    // Если нужно дополнить единицами (например, "/ месяц" или "/ год"), делаем это ниже
+    const priceSuffix = subscriptionType === 'year' ? `/ ${i18n.t("paywall.year")}` : `/ ${i18n.t("paywall.month")}`;
+
+    // Если есть пробный период (introPrice), можно условно вывести "7 дней бесплатно" и т.д.
+
     const introPrice = currentPackage?.product?.introPrice;
 
     return (
       <View className="flex-col mx-[20px]">
         <View className="flex-row justify-between items-center">
-          <Text className="text-[24px] font-semibold">
-            {priceString ? `${priceString} ${priceSuffix}` : 'Загрузка...'}
-          </Text>
-          {/* Можно динамически подставить introPrice, если нужно */}
-          <Text className="text-[16px] font-semibold">3 дня бесплатно</Text>
+          <Text className="text-[24px] font-semibold"> {priceString ? `${priceString} ${priceSuffix}` : `${i18n.t("paywall.loading")}`}</Text>
+          <Text className="text-[16px] font-semibold">{i18n.t("paywall.free")}</Text>
+
         </View>
 
         <CustomButtonOutlined
-          title="Оформить подписку"
+          title={i18n.t("paywall.subscribe")}
           handlePress={() => handleSubmitPayment(subscriptionType)}
           containerStyles="w-full bg-[#ACFFB9] mt-[5px] h-[46px]"
           textStyles="text-[16px]"
@@ -142,6 +145,46 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
             className="mr-auto m-0"
           />
         )}
+
+
+        <Text className="text-[20px] font-nunitoSansBold text-center color-white mt-4">{i18n.t("paywall.startModal.title")}</Text>
+        <Text className="text-[16px] text-center color-white mt-2">{i18n.t("paywall.startModal.text")}</Text>
+        <View className="self-start mt-[30px]">
+          <RadioButton.Group onValueChange={(newValue) => setSubscriptionType(newValue)} value={subscriptionType}>
+          <SubscriptionRadioButton
+              value="year"
+              sale={20}
+              // Если annualPackage есть, берём annualPackage.product.priceString, иначе пишем "..."
+              price={
+                annualPackage
+                  ? `${annualPackage.product.priceString} / ${i18n.t("paywall.year")}`
+                  : '...'
+              }
+              handleOpenBenefits={openBenefits}
+              checked={subscriptionType === 'year'}
+              handleSheetOpen={() => handleSheetOpen('year')}
+            />
+            <SubscriptionRadioButton
+              value="month"
+              price={
+                monthlyPackage
+                  ? `${monthlyPackage.product.priceString} / ${i18n.t("paywall.month")}`
+                  : '...'
+              }
+              handleOpenBenefits={openBenefits}
+              checked={subscriptionType === 'month'}
+              handleSheetOpen={() => handleSheetOpen('month')}
+            />
+          </RadioButton.Group>
+        </View>
+
+        <CustomButtonOutlined
+          title={i18n.t("paywall.tryFree")}
+          handlePress={() => {}}
+          containerStyles={`w-full bg-[#ACFFB9] mt-auto h-[46px]`}
+          textStyles="text-[16px]"
+          fontWeight="font-semibold"
+        />
         <CloseIcon />
       </View>
 
@@ -152,29 +195,18 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
           className='-mt-12'
           style={{ height: 200, alignSelf: 'center' }}
         />
-      ) : (
-        <FullBenefitsTable />
-      )}
 
-      <Text className="text-[20px] font-nunitoSansBold text-center text-white mt-4">
-        Премиум подписка со скидкой!
-      </Text>
-      <Text className="text-[16px] text-center font-nunitoSansRegular text-white mt-2">
-        Оформите подписку, чтобы использовать весь функционал приложения без ограничений!
-      </Text>
+        <View className="w-full flex-column items-center">
+          <Image source={require('@/assets/images/paywall/Success.png')} resizeMode="contain" style={{ height: 220 }} />
+          <Text className="text-[20px] font-nunitoSansBold text-center color-white mt-4">{i18n.t("paywall.successModal.title")}</Text>
+          <Text className="text-[16px] text-center color-white  mt-2">{i18n.t("paywall.successModal.text")}</Text>
+          <CustomButtonOutlined
+            title={i18n.t("paywall.thank")}
+            handlePress={handleCloseModal}
+            containerStyles={`w-full bg-[#ACFFB9] mt-[30px] h-[46px]`}
+            textStyles="text-[16px]"
+            fontWeight="font-semibold"
 
-      <View className="self-start mt-[30px]">
-        <RadioButton.Group
-          onValueChange={newValue => setSubscriptionType(newValue)}
-          value={subscriptionType}
-        >
-          <SubscriptionRadioButton
-            value="year"
-            sale={20}
-            price={annualPackage ? `${annualPackage.product.priceString} / год` : '...'}
-            handleOpenBenefits={openBenefits}
-            checked={subscriptionType === 'year'}
-            handleSheetOpen={() => handleSheetOpen('year')}
           />
           <SubscriptionRadioButton
             value="month"
