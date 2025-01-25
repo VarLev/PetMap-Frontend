@@ -86,6 +86,7 @@ const ChatScreen: React.FC = observer(() => {
         // if (userId) {
         //   setIsBlocked(ChatStore.checkIfIBlocked(otherUserId));
         // }
+       
       } catch (error) {
         console.error("Failed to load blacklist:", error);
       }

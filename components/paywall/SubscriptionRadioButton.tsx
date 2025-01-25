@@ -150,7 +150,8 @@ const styles = StyleSheet.create({
         color: "white",
     },
     semiBold: {
-        fontWeight: 600
+        fontWeight: 600,
+        fontFamily: "NunitoSans_700Bold"
     },
     saleContainer: {
         position: "absolute",

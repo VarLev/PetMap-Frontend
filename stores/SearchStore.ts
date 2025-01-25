@@ -260,7 +260,6 @@ class SearchStore {
   async fetchNews() {
     try {
       const files = await getFilesInDirectory(`news/${i18n.locale}`);
-      console.log(files)
       if (files.length > 0) {
         this.setNews(files);
         return;

@@ -13,7 +13,6 @@ export default function ChatLayout() {
           headerTitle: '',
           headerTintColor: BG_COLORS.indigo[700],
         }} 
-   
       />
     </Stack>
   );

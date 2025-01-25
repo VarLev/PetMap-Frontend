@@ -30,14 +30,14 @@ GoogleSignin.configure({
 const App = () => {
   const { loading, isLogged, isInitialized, isError, isUserJustRegistrated} = useStore();
   const { showAlert } = useAlert();
-  const [adShown, setAdShown] = useState(false); // Проверка, показывали ли уже рекламу
+  const [adShown, setAdShown] = useState(true); // Проверка, показывали ли уже рекламу
   const [userHasSubscription, setUserHasSubscription] = useState(false); // Проверка на наличие подписки у пользователя
   
   // проверка, если платформа IOS, показываем иконку регистрации через Aple
   
   useEffect(() => {
     console.log("userStore.getUserHasSubscription()", userStore.getUserHasSubscription());
-    setAdShown(userStore.getUserHasSubscription());
+    //setAdShown(userStore.getUserHasSubscription());
     setUserHasSubscription(userStore.getUserHasSubscription());
 
     const checkAuthAndRedirect = async () => {

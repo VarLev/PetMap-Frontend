@@ -168,6 +168,7 @@ const Layout = observer(() => {
                 headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' },
               }} />
               <Stack.Screen name="(chat)" options={{ headerShown: false }} />
+              <Stack.Screen name="(paywall)/pay" options={{ headerShown: false }} />
             </Stack>
           </PaperProvider>
         </AlertProvider>

@@ -30,11 +30,16 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ userName, avatarUrl, onPressAva
   // Переключение перевода с проверкой подписки
   const toggleTranslation = () => {
     if (!hasSubscription) {
-      Alert.alert(
-        "Подписка необходима",
-        "Для включения перевода необходимо оформить подписку.",
-        [{ text: "Ок" }]
-      );
+      router.push("/(paywall)/pay");
+      // Alert.alert(
+      //   "Подписка",
+      //   "Для включения перевода необходимо оформить подписку.",
+      //   [
+      //     { text: "Посмотреть подписку", onPress: () => router.replace("app/(paywall)"), style:"default" },
+      //     { text: "Отмена", style: "cancel" },
+          
+      //   ]
+      // );
       return;
     }
     uiStore.setIsChatTranslatinEnabled(!isTranslationEnabled);
