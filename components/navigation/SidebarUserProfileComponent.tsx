@@ -115,7 +115,7 @@ const SidebarUserProfileComponent = () => {
         <View className="flex-row items-center">
           <IconButton className='-ml-2' size={20} icon={() => <FontAwesome name="diamond" size={20} color="#8F00FF" />} onPress={() => router.push('/(paywall)/pay')} />
          
-            <Text  onPress={() => router.push('/(paywall)/pay')} className="font-nunitoSansRegular text-violet-600 text-base">Оформить подписку</Text>
+            <Text  onPress={() => router.push('/(paywall)/pay')} className="font-nunitoSansRegular text-violet-600 text-base">{i18n.t("paywall.subscribe")}</Text>
           
         </View>
         </TouchableRipple>
