@@ -29,13 +29,18 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
 
   const sheetRef = useRef<BottomSheet>(null);
 
-  // Определяем нужные пакеты
-  const monthlyPackage = packages.find(pkg => pkg.packageType === 'MONTHLY');
-  const annualPackage = packages.find(pkg => pkg.packageType === 'ANNUAL' || pkg.packageType === 'YEARLY');
+  // Ищем нужные пакеты
+  const monthlyPackage = packages.find((pkg) => pkg.packageType === 'MONTHLY');
+  const annualPackage = packages.find(
+    (pkg) => pkg.packageType === 'ANNUAL' || pkg.packageType === 'YEARLY'
+  );
 
   useEffect(() => {
     (async () => {
-      await RevenueCatService.initialize(process.env.EXPO_PUBLIC_REVENUECAT_API_KEY!);
+      // Инициализируем RevenueCat
+      await RevenueCatService.initialize(
+        process.env.EXPO_PUBLIC_REVENUECAT_API_KEY!
+      );
       const availablePackages = await RevenueCatService.getOfferings();
       if (availablePackages) {
         setPackages(availablePackages);
@@ -62,12 +67,16 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
       if (!userId) return;
 
       let targetPackage = null;
-      if (type === 'month' && monthlyPackage) targetPackage = monthlyPackage;
-      else if (type === 'year' && annualPackage) targetPackage = annualPackage;
+      if (type === 'month' && monthlyPackage) {
+        targetPackage = monthlyPackage;
+      } else if (type === 'year' && annualPackage) {
+        targetPackage = annualPackage;
+      }
 
       if (targetPackage) {
         await RevenueCatService.purchasePackage(targetPackage);
 
+        // Обновляем подписку в нашем сторе
         const subscriptionTypeId =
           type === 'year'
             ? SubsciptionType.Year
@@ -88,40 +97,37 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
     }
   };
 
-  // Подкомпоненты без лишнего return
+  // Иконка закрытия
   const CloseIcon = () => (
     <IconButton
       icon="close"
       size={40}
       iconColor="white"
       onPress={handleCloseModal}
-      className="z-10"
     />
   );
 
-  const RenderedContent = () => {
-    const currentPackage = subscriptionType === 'year' ? annualPackage : monthlyPackage;
+  // Содержимое BottomSheet
+  const BottomSheetContent = () => {
+    const currentPackage =
+      subscriptionType === 'year' ? annualPackage : monthlyPackage;
     const priceString = currentPackage?.product?.priceString;
 
-    // Если нужно дополнить единицами (например, "/ месяц" или "/ год"), делаем это ниже
-    const priceSuffix = subscriptionType === 'year' ? `/ ${i18n.t("paywall.year")}` : `/ ${i18n.t("paywall.month")}`;
-
-    // Если есть пробный период (introPrice), можно условно вывести "7 дней бесплатно" и т.д.
-
-    const introPrice = currentPackage?.product?.introPrice;
+    const priceSuffix =
+      subscriptionType === 'year'
+        ? `/ ${i18n.t("paywall.year")}`
+        : `/ ${i18n.t("paywall.month")}`;
 
     return (
-      <View className="flex-col mx-[20px]">
-        <View className="flex-row justify-between items-center">
-          <Text className="text-[24px] font-semibold"> {priceString ? `${priceString} ${priceSuffix}` : `${i18n.t("paywall.loading")}`}</Text>
-          <Text className="text-[16px] font-semibold">{i18n.t("paywall.free")}</Text>
-
-        </View>
+      <View className="flex-col mx-5 mt-2 mb-5">
+        <Text className="text-[24px] font-semibold text-white">
+          {priceString ? `${priceString} ${priceSuffix}` : i18n.t("paywall.loading")}
+        </Text>
 
         <CustomButtonOutlined
           title={i18n.t("paywall.subscribe")}
           handlePress={() => handleSubmitPayment(subscriptionType)}
-          containerStyles="w-full bg-[#ACFFB9] mt-[5px] h-[46px]"
+          containerStyles="w-full bg-[#ACFFB9] mt-4 h-[46px]"
           textStyles="text-[16px]"
           fontWeight="font-semibold"
         />
@@ -129,88 +135,68 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
     );
   };
 
+  // Стартовый контент (до покупки)
   const StartModalContent = () => (
-    // Если нужен отступ снизу при раскрытой таблице, условно добавим класс
-    <View className={`h-full -mt-4 flex-col ${
-        isFullBenefitsVisible ? 'mb-[24%]' : 'mb-0'
-      }`}
-    >
-      <View className="flex-row justify-between w-full">
+    <View className="flex-col px-4">
+      {/* Шапка: стрелка назад (если benefits открыты) и крестик справа */}
+      <View className="flex-row justify-between items-center mb-4">
         {isFullBenefitsVisible && (
           <IconButton
             icon="arrow-left"
             size={40}
             iconColor="white"
             onPress={() => setIsFullBenefitsVisible(false)}
-            className="mr-auto m-0"
           />
         )}
-
-
-        <Text className="text-[20px] font-nunitoSansBold text-center color-white mt-4">{i18n.t("paywall.startModal.title")}</Text>
-        <Text className="text-[16px] text-center color-white mt-2">{i18n.t("paywall.startModal.text")}</Text>
-        <View className="self-start mt-[30px]">
-          <RadioButton.Group onValueChange={(newValue) => setSubscriptionType(newValue)} value={subscriptionType}>
-          <SubscriptionRadioButton
-              value="year"
-              sale={20}
-              // Если annualPackage есть, берём annualPackage.product.priceString, иначе пишем "..."
-              price={
-                annualPackage
-                  ? `${annualPackage.product.priceString} / ${i18n.t("paywall.year")}`
-                  : '...'
-              }
-              handleOpenBenefits={openBenefits}
-              checked={subscriptionType === 'year'}
-              handleSheetOpen={() => handleSheetOpen('year')}
-            />
-            <SubscriptionRadioButton
-              value="month"
-              price={
-                monthlyPackage
-                  ? `${monthlyPackage.product.priceString} / ${i18n.t("paywall.month")}`
-                  : '...'
-              }
-              handleOpenBenefits={openBenefits}
-              checked={subscriptionType === 'month'}
-              handleSheetOpen={() => handleSheetOpen('month')}
-            />
-          </RadioButton.Group>
-        </View>
-
-        <CustomButtonOutlined
-          title={i18n.t("paywall.tryFree")}
-          handlePress={() => {}}
-          containerStyles={`w-full bg-[#ACFFB9] mt-auto h-[46px]`}
-          textStyles="text-[16px]"
-          fontWeight="font-semibold"
-        />
         <CloseIcon />
       </View>
-
+      {/* Либо показываем картинку, либо таблицу */}
       {!isFullBenefitsVisible ? (
         <Image
           source={require('@/assets/images/paywall/Placeholder.png')}
           resizeMode="contain"
-          className='-mt-12'
-          style={{ height: 200, alignSelf: 'center' }}
+          className="mt-4 self-center"
+          style={{ height: 200 }}
         />
+      ) : (
+        <View className="mt-4">
+          <FullBenefitsTable />
+        </View>
+      )}
+      {/* Заголовок и описание */}
+      <Text className="text-[20px] font-nunitoSansBold text-center text-white">
+        {i18n.t("paywall.startModal.title")}
+      </Text>
+      <Text className="text-[16px] text-center text-white mt-2">
+        {i18n.t("paywall.startModal.text")}
+      </Text>
 
-        <View className="w-full flex-column items-center">
-          <Image source={require('@/assets/images/paywall/Success.png')} resizeMode="contain" style={{ height: 220 }} />
-          <Text className="text-[20px] font-nunitoSansBold text-center color-white mt-4">{i18n.t("paywall.successModal.title")}</Text>
-          <Text className="text-[16px] text-center color-white  mt-2">{i18n.t("paywall.successModal.text")}</Text>
-          <CustomButtonOutlined
-            title={i18n.t("paywall.thank")}
-            handlePress={handleCloseModal}
-            containerStyles={`w-full bg-[#ACFFB9] mt-[30px] h-[46px]`}
-            textStyles="text-[16px]"
-            fontWeight="font-semibold"
-
+      {/* Радио-кнопки выбора подписки */}
+      <View className="mt-6">
+        <RadioButton.Group
+          onValueChange={(newValue) => setSubscriptionType(newValue)}
+          value={subscriptionType}
+        >
+          <SubscriptionRadioButton
+            value="year"
+            sale={20}
+            price={
+              annualPackage
+                ? `${annualPackage.product.priceString} / ${i18n.t("paywall.year")}`
+                : '...'
+            }
+            handleOpenBenefits={openBenefits}
+            checked={subscriptionType === 'year'}
+            handleSheetOpen={() => handleSheetOpen('year')}
           />
+
           <SubscriptionRadioButton
             value="month"
-            price={monthlyPackage ? `${monthlyPackage.product.priceString} / месяц` : '...'}
+            price={
+              monthlyPackage
+                ? `${monthlyPackage.product.priceString} / ${i18n.t("paywall.month")}`
+                : '...'
+            }
             handleOpenBenefits={openBenefits}
             checked={subscriptionType === 'month'}
             handleSheetOpen={() => handleSheetOpen('month')}
@@ -218,54 +204,68 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
         </RadioButton.Group>
       </View>
 
-     {!isFullBenefitsVisible ? <CustomButtonOutlined
-        title="Попробовать 7 дней бесплатно"
+      {/* Пробная подписка */}
+      <CustomButtonOutlined
+        title={i18n.t("paywall.tryFree")}
         handlePress={() => {}}
-        containerStyles="w-full bg-[#ACFFB9] h-[46px]"
+        containerStyles="w-full bg-[#ACFFB9] mt-6 h-[46px]"
         textStyles="text-[16px]"
         fontWeight="font-semibold"
-      /> : <View className="h-10"/>}
+      />
+
+    
     </View>
   );
 
+  // Контент при успехе подписки
   const SuccessModalContent = () => (
-    <View className="h-full flex-col items-center justify-center">
-      <CloseIcon />
+    <View className="flex-col items-center px-4">
+      <View className="flex-row w-full justify-end mb-2">
+        <CloseIcon />
+      </View>
+
+      {/* Картинка «звёздочка сверху» (опционально) */}
       <Image
         source={require('@/assets/images/paywall/StarsTop.png')}
         resizeMode="contain"
-        style={{ height: 115, marginBottom: 'auto' }}
+        style={{ height: 115 }}
       />
-      <View className="w-full flex-col items-center">
+
+      <View className="w-full flex-col items-center mt-2">
         <Image
           source={require('@/assets/images/paywall/Success.png')}
           resizeMode="contain"
           style={{ height: 220 }}
         />
         <Text className="text-[20px] font-nunitoSansBold text-center text-white mt-4">
-          Ура! Вы оформили подписку!
+          {i18n.t("paywall.successModal.title")}
         </Text>
         <Text className="text-[16px] text-center text-white mt-2">
-          Добро пожаловать в семью PetMap в качестве Премиум пользователя. Теперь вам доступен весь функционал приложения.
+          {i18n.t("paywall.successModal.text")}
         </Text>
+
         <CustomButtonOutlined
-          title="Спасибо!"
+          title={i18n.t("paywall.thank")}
           handlePress={handleCloseModal}
-          containerStyles="w-full bg-[#ACFFB9] mt-[30px] h-[46px]"
+          containerStyles="w-full bg-[#ACFFB9] mt-6 h-[46px]"
           textStyles="text-[16px]"
           fontWeight="font-semibold"
         />
       </View>
+
+      {/* «звёздочка снизу» (опционально) */}
       <Image
         source={require('@/assets/images/paywall/StarsBottom.png')}
         resizeMode="contain"
-        style={{ height: 90, marginTop: 'auto' }}
+        style={{ height: 90, marginTop: 20 }}
       />
     </View>
   );
 
-  const Content = () => (
-    <View className="h-full">
+  // Общее «тело» модалки
+  const MainContent = () => (
+    <View>
+      {/* Градиент */}
       <Svg height="100%" width="100%" className="absolute">
         <Defs>
           <RadialGradient
@@ -284,29 +284,25 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
         </Defs>
         <Rect x="0" y="0" width="100%" height="100%" fill="url(#grad)" />
       </Svg>
-      <View className="px-[20px] pt-[40px] pb-[20px]">
+
+      {/* Контент экрана внутри ScrollView, чтобы всё прокручивалось на мелких экранах */}
+      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingTop: 40, paddingBottom: 20 }}>
         {!isSubcribedSuccess ? <StartModalContent /> : <SuccessModalContent />}
-      </View>
+      </ScrollView>
     </View>
   );
 
   return (
     <Portal>
-      <GestureHandlerRootView>
-        {/* Если таблица открыта, оборачиваем контент в ScrollView */}
-        {!isFullBenefitsVisible ? (
-          <Content />
-        ) : (
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <Content />
-          </ScrollView>
-        )}
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <MainContent />
 
+        {/** Если открываем «шторку» с ценой — показываем BottomSheet */}
         {isFullBenefitsVisible && (
           <BottomSheetComponent
-            renderContent={<RenderedContent />}
             ref={sheetRef}
-            snapPoints={['16%']}
+            renderContent={<BottomSheetContent />}
+            snapPoints={['20%']}
             enablePanDownToClose={false}
           />
         )}
