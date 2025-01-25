@@ -47,20 +47,10 @@ const SubscriptionRadioButton: FC<SubscriptionRadioButtonProps> = ({value, price
             lastWords: "создание прогулок"
         },
         {
-            id: 2,
-            firstWord: "Безлимитное",
-            lastWords: "создание меток на карте"
-        },
-        {
             id: 3,
             firstWord: "Встроеный",
             lastWords: "AI-переводчик"
         },
-        {
-            id: 4,
-            firstWord: "Пет-Бонусы:",
-            lastWords: "4000"
-        }
     ];
 
     return (
@@ -149,7 +139,8 @@ const styles = StyleSheet.create({
         color: "white",
     },
     semiBold: {
-        fontWeight: 600
+        fontWeight: 600,
+        fontFamily: "NunitoSans_700Bold"
     },
     saleContainer: {
         position: "absolute",

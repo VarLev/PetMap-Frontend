@@ -62,7 +62,7 @@ class UserStore {
   }
 
   getUserHasSubscription() {
-    return true;
+    return this.userHasSubscription;
   }
   
   setLoginedUser(user: any) {

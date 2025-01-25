@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Image, Platform } from "react-native";
-import { Divider, List, TouchableRipple } from "react-native-paper";
+import { Button, Divider, List, TouchableRipple } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/Images";
 import userStore from "@/stores/UserStore";
@@ -207,7 +207,7 @@ const SidebarUserProfileComponent = () => {
             onPress={handleSettingsPress}
           />
           {/* <CustomListItemWrapper
-            title={i18n.t("Sidebar.support")}
+            title={i18n.t("Sidear.support")}
             leftIcon={() => (
               <List.Icon
                 icon={() => (
@@ -218,7 +218,7 @@ const SidebarUserProfileComponent = () => {
             onPress={() => console.log(i18n.t("Sidebar.support"))}
           /> */}
         </List.Section>
-        {/* <Button className="mt-4" onPress={() => router.push('/(paywall)') } >Подписка Тест</Button> */}
+         <Button className="mt-4" onPress={() => router.push('/(paywall)') } >Подписка Тест</Button> 
         {!userStore.getUserHasSubscription() && <DismissibleBanner adSize={BannerAdSize.LARGE_BANNER} />}
       </View>
     </SafeAreaView>
