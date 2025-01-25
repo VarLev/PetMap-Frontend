@@ -1,16 +1,17 @@
 import React from "react";
 import { View, Text, Image, Platform } from "react-native";
-import { Button, Divider, List, TouchableRipple } from "react-native-paper";
+import { Button, Divider, IconButton, List, TouchableRipple } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/Images";
 import userStore from "@/stores/UserStore";
 import { router } from "expo-router";
 import { useDrawer } from "@/contexts/DrawerProvider";
-import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
+import { AntDesign, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import CustomListItemWrapper from "@/components/custom/menuItem/ListItemWrapper";
 import i18n from "@/i18n";
 import DismissibleBanner from "../ads/DismissibleBanner";
 import { BannerAdSize } from "react-native-google-mobile-ads";
+import { TouchableHighlight } from "react-native-gesture-handler";
 
 const SidebarUserProfileComponent = () => {
   const currentUser = userStore.currentUser;
@@ -71,6 +72,7 @@ const SidebarUserProfileComponent = () => {
             />)}
            
           </View>
+          
             <View className="flex-col ml-3 flex-1">
               <Text
                 className="text-xl text-gray-800 font-nunitoSansBold"
@@ -88,33 +90,39 @@ const SidebarUserProfileComponent = () => {
               >
                 {currentUser?.email}
               </Text>
-              <Text
-                className="mt-1 text-indigo-800 font-nunitoSansBold"
-                numberOfLines={1}
-                ellipsizeMode="tail"
+              <TouchableRipple
+                className="w-full"
+                onPress={handleJobPress}
               >
-                {i18n.t("Sidebar.openProfile")}
-              </Text>
+                <View className=" w-full flex-row items-center">
+                  <Image source={images.bonuse} className="h-5 w-5" />
+                  <View className="flex-col ml-3">
+                    <Text
+                      className="text-xl text-gray-800 font-nunitoSansBold"
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {currentUser?.balance}
+                    </Text>
+                  </View>
+                </View>
+              </TouchableRipple>
             </View>
           </View>
         </TouchableRipple>
-        <TouchableRipple
-          className="w-full mt-4 justify-center items-center  "
-          onPress={handleProfilePress}
-        >
-          <View className="h-9 w-full flex-row justify-center items-center">
-            <Image source={images.bonuse} className="h-8 w-8" />
-            <View className="flex-col ml-3">
-              <Text
-                className="text-xl text-gray-800 font-nunitoSansBold"
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {currentUser?.balance}
-              </Text>
-            </View>
-          </View>
+       
+        <TouchableRipple  className="w-full mt-0" rippleColor={Platform.OS === "ios" ? "rgba(0,0,0,0.1)" : "#E8DFFF"} onPress={() => router.push('/(paywall)/pay')}>
+        <View className="flex-row items-center">
+          <IconButton className='-ml-2' size={20} icon={() => <FontAwesome name="diamond" size={20} color="#8F00FF" />} onPress={() => router.push('/(paywall)/pay')} />
+         
+            <Text  onPress={() => router.push('/(paywall)/pay')} className="font-nunitoSansRegular text-violet-600 text-base">Оформить подписку</Text>
+          
+        </View>
         </TouchableRipple>
+
+        
+       
+        
         {/* Подписка */}
         {/* <View className="flex-row mt-4 content-center items-center">
           <Button
@@ -218,7 +226,8 @@ const SidebarUserProfileComponent = () => {
             onPress={() => console.log(i18n.t("Sidebar.support"))}
           /> */}
         </List.Section>
-         <Button className="mt-4" onPress={() => router.push('/(paywall)') } >Подписка Тест</Button> 
+       
+        
         {!userStore.getUserHasSubscription() && <DismissibleBanner adSize={BannerAdSize.LARGE_BANNER} />}
       </View>
     </SafeAreaView>
