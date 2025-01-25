@@ -13,6 +13,10 @@ import mapStore from '@/stores/MapStore';
 import { router } from 'expo-router';
 import uiStore from '@/stores/UIStore';
 import i18n from '@/i18n';
+import { generateChatData, generateChatIdForTwoUsers } from '@/utils/chatUtils';
+import chatStore from '@/stores/ChatStore';
+import { getPushTokenFromServer } from '@/hooks/notifications';
+import CustomConfirmAlert from '../alert/CustomConfirmAlert';
 
 interface AdCardProps {
   ad: IWalkAdvrtShortDto;
@@ -22,6 +26,7 @@ const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
   const [petImage, setPetImage] = useState<string>();
   const [distance, setDistance] = useState(0);
   const [userIsOwner, setUserIsOwner] = useState(false);
+  const [requestVisible, setRequestVisible] = React.useState(false);
 
   useEffect(() => {
     getPetImage().then((url) => setPetImage(url));
@@ -45,6 +50,41 @@ const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
     const route = userIsOwner ? '/profile' : `/(user)/${ad.userId}`;
     router.push(route);
     uiStore.setIsBottomTableViewSheetOpen(false);
+  };
+
+  const handleInvite = async () => {
+    setRequestVisible(true);
+  };
+
+  const handleConfirmInvite = async () => {
+    try {
+      const chatId = generateChatIdForTwoUsers(userStore.getCurrentUserId()!, ad.userId!);
+      let chat = await chatStore.getChatById(chatId);
+      if (!chat) {
+        const fmcToken = await getPushTokenFromServer(ad.userId!);
+        const user: IChatUser = {
+          id: ad.userId!,
+          name: ad.userName!,
+          avatar: ad.userPhoto ?? 'https://avatar.iran.liara.run/public',
+          fmcToken: fmcToken,
+        };
+        chat = generateChatData(chatId, userStore.getCurrentUserId()!,ad.userId!, user, 'request for a walk');
+      }
+      await chatStore.sendMessageUniversal(chat, '', {
+        isInvite: true,
+        inviteMetadata: {
+          advrtId: ad.id
+        },
+      });
+      //await chatStore.sendInviteMessage(chatId!, otherUser);
+
+      if (chatId) {
+        router.push(`/(chat)/${chatId}`);
+        //router.push(`/chat/${chatId}`);
+      }
+    } catch (error) {
+      console.error('Ошибка при создании чата:', error);
+    }
   };
 
   return (
@@ -136,13 +176,24 @@ const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
 
       )}
       <View className="flex-row w-full justify-between">
-        <CustomButtonPrimary title={i18n.t('AdvrtCard.invite')} containerStyles="w-1/2" />
+        <CustomButtonPrimary title={i18n.t('AdvrtCard.invite')} containerStyles="w-1/2" handlePress={handleInvite} />
         <CustomButtonOutlined
           title={i18n.t('AdvrtCard.profile')}
           containerStyles="w-1/2"
           handlePress={handleUserProfileOpen}
         />
       </View>
+      <CustomConfirmAlert
+          isVisible={requestVisible}
+          onClose={() => {
+            setRequestVisible(false);
+          }}
+          onConfirm={() => handleConfirmInvite()}
+          message={i18n.t("WalkDetails.confirmMessage")}
+          title={i18n.t("WalkDetails.confirmTitle")}
+          confirmText={i18n.t("WalkDetails.confirm")}
+          cancelText={i18n.t("WalkDetails.cancel")}
+        />
     </Card>
   );
 });
