@@ -94,8 +94,8 @@ const ViewDangerPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
                 images={[
                   {
                     uri:
-                      imageUrl ||
-                      'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2Fpoints%2FDanger.webp?alt=media&token=f0bc9054-bbfd-42cd-b8f7-ab46d35dc88d',
+                      imageUrl ??
+                      'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2Fpoints%2Fdanger.webp?alt=media&token=fe183408-c7ff-420e-9a0c-15037ad07b83',
                   },
                 ]}
                 imageHeight={150}

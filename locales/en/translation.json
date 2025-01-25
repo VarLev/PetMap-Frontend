@@ -96,7 +96,8 @@
     "passwordResetLink": "Password reset screen link (temporary) to simulate pressing Confirm button",
     "noAccount": "Don't have an account?",
     "register": "Sign up",
-    "domain": "This domain does not exist"
+    "domain": "This domain does not exist",
+    "successMessage": "An email with instructions to reset your password has been sent to your inbox."
   },
   "signUpPasswordReset": {
     "title": "Reset Password",

@@ -64,7 +64,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
       const user: IChatUser = {
         id: advrt.userId!,
         name: advrt.userName!,
-        thumbnailUrl: advrt.userPhoto ?? 'https://avatar.iran.liara.run/public',
+        avatar: advrt.userPhoto ?? 'https://avatar.iran.liara.run/public',
         fmcToken: fmcToken,
       };
       //chatStore.setSelectedAdvrtId(advrt.id!);

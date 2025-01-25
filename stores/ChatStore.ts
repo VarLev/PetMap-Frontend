@@ -204,8 +204,8 @@ class ChatStore {
   
     // Шаг 4. Обновляем стейт в одном runInAction (чтобы MobX среагировал разом)
     runInAction(() => {
-      const pinnedChat = chatsList.find(chat => chat.id === process.env.EXPO_PUBLIC_AI_CHAT_ID!);
-      const otherChats = chatsList.filter(chat => chat.id !== process.env.EXPO_PUBLIC_AI_CHAT_ID!);
+      const pinnedChat = chatsList.find(chat => chat.id === (process.env.EXPO_PUBLIC_AI_CHAT_ID+userId)!);
+      const otherChats = chatsList.filter(chat => chat.id !== (process.env.EXPO_PUBLIC_AI_CHAT_ID+userId)!);
       this.chats = pinnedChat ? [pinnedChat, ...otherChats] : otherChats;
     });
   }
@@ -851,7 +851,7 @@ class ChatStore {
       const assistantData  = {
         id: AI_ASSISTANT_BOT_ID,
         name: 'PetAI Assistant',
-        avatar: 'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2FuserAvatars%2Fai_assistent.webp?alt=media&token=8d1bf432-5006-4ef9-84f0-9ec45191d1aa',
+        avatar: 'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2FuserAvatars%2Fai_assistent.webp?alt=media&token=002c427f-2a5b-4de2-b388-d3bda057df56',
         isOnline: true,
         // ... при необходимости другие поля
       };
@@ -859,7 +859,7 @@ class ChatStore {
     }
 
     // Ссылка на чат в Firebase (чтобы проверить, существует ли)
-    const chatRef = ref(database, `chats/${AI_ASSISTANT_CHAT_ID}`);
+    const chatRef = ref(database, `chats/${AI_ASSISTANT_CHAT_ID}`+userId);
     const snap = await get(chatRef);
   
     if (!snap.exists()) {
@@ -890,7 +890,8 @@ class ChatStore {
 
   async sendChatToAiAssistant(conversationHistory: IChatAIMessage[]): Promise<string | null> 
   {
-    const chatId = process.env.EXPO_PUBLIC_AI_CHAT_ID
+    const userId = userStore.currentUser?.id ?? 'unknownUser'
+    const chatId = process.env.EXPO_PUBLIC_AI_CHAT_ID + userId;
 
     try {
       // 1. Найдём последнее сообщение пользователя
@@ -902,7 +903,6 @@ class ChatStore {
       }
 
       // 2. Сохраним это сообщение в Firebase (аналогично sendMessageUniversal)
-      const userId = userStore.currentUser?.id ?? 'unknownUser'
       const now = Date.now()
       const newMessageKey = push(ref(database, `messages/${chatId}`)).key
       if (!newMessageKey) {
@@ -933,7 +933,7 @@ class ChatStore {
 
       // Сразу обновим локальный стор
       runInAction(() => {
-        this.messages.unshift(userMsg) // или push в конец, в зависимости от логики
+        //this.messages.unshift(userMsg) // или push в конец, в зависимости от логики
         this.lastMessage[chatId!] = userMsg.text
       })
 
@@ -991,7 +991,7 @@ class ChatStore {
         author: {
           id: AI_BOT_ID,
           firstName: 'PetAI Assistant',
-          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2FuserAvatars%2Fai_assistent.webp?alt=media&token=8d1bf432-5006-4ef9-84f0-9ec45191d1aa', // или укажите URL аватара бота
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2FuserAvatars%2Fai_assistent.webp?alt=media&token=002c427f-2a5b-4de2-b388-d3bda057df56', // или укажите URL аватара бота
         },
       }
   
@@ -1011,7 +1011,7 @@ class ChatStore {
       // 5. Обновляем локальный стор (MobX), чтобы UI отобразил сообщение немедленно
       runInAction(() => {
         // Вставляем сообщение в начало или конец массива — как вам удобнее
-        this.messages.unshift(newMessage)
+        //this.messages.unshift(newMessage)
         this.lastMessage[chatId] = newMessage.text
       })
   

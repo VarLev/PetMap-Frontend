@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>938397449309-79aav0mqakr95rv69bv122s9rfkmsf58.apps.googleusercontent.com</string>
+	<string>938397449309-0irq01slhjms2faujncecabhs0k5aqdi.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.938397449309-79aav0mqakr95rv69bv122s9rfkmsf58</string>
+	<string>com.googleusercontent.apps.938397449309-0irq01slhjms2faujncecabhs0k5aqdi</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>938397449309-70nfumuf4h0s3fb0qsd1b3i2hdrmjpg9.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyC1Bg6L39nU6dtXQqvl8UsL-rtxoM0-Cl0</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.lightway.petmap</string>
+	<string>com.lightway.petmapapp</string>
 	<key>PROJECT_ID</key>
 	<string>petmeetar</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,7 +31,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:938397449309:ios:d8759110286fada94be1b4</string>
+	<string>1:938397449309:ios:11b50b5d7f2b75c64be1b4</string>
 	<key>DATABASE_URL</key>
 	<string>https://petmeetar-default-rtdb.firebaseio.com</string>
 </dict>

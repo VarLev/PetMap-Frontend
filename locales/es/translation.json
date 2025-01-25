@@ -96,7 +96,8 @@
     "passwordResetLink": "Enlace a la pantalla de restablecer contraseña (temporal) para simular presionar el botón Confirmar",
     "noAccount": "¿No tenés cuenta?",
     "register": "Registrate",
-    "domain": "Este dominio no existe"
+    "domain": "Este dominio no existe",
+    "successMessage": "Te enviamos un correo electrónico con instrucciones para restablecer tu contraseña."
   },
   "signUpPasswordReset": {
     "title": "Restablecer Contraseña",

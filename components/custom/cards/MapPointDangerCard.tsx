@@ -33,7 +33,7 @@ const MapPointDangerCard: React.FC<MapPointDangerCardProps> = ({ mapPointDanger 
       {/* Информация о пользователе */}
       <View className="flex-row items-center justify-stretch">
         <View className=' '>
-        <ImageModalViewer images={[{ uri: mapPointDanger.thumbnailUrl || 'https://placehold.it/100x100' }]} imageHeight={100} imageWidth={100} borderRadius={0} className_=' rounded-xl' />
+        <ImageModalViewer images={[{ uri: mapPointDanger.thumbnailUrl || 'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2Fpoints%2Fdanger.webp?alt=media&token=daf1312e-a62d-4fc4-8f53-f08bebf3eecf' }]} imageHeight={100} imageWidth={100} borderRadius={0} className_=' rounded-xl' />
 
         </View>
         

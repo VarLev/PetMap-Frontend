@@ -25,7 +25,7 @@ const TranslatableTextMessage: React.FC<TranslatableTextMessageProps> = observer
 
   return (
     <View className="p-2 my-1">
-      <Text className="text-base mb-0 font-nunitoSansRegular">{textToDisplay}</Text>
+      <Text selectable={true} className="text-base mb-0 font-nunitoSansRegular">{textToDisplay}</Text>
 
       {/* Если перевод загружается, показываем индикатор */}
       {uiStore.isChatTranslatinEnabled && hasSubscription && isFromOtherUser && (

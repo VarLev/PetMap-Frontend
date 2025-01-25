@@ -1,10 +1,11 @@
 import MapBoxMap from '@/components/map/MapComponent';
 import userStore from '@/stores/UserStore';
 import {useFocusEffect, useRouter } from 'expo-router';
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 
 
-const Map = () => {
+const Map = observer (() => {
   const router = useRouter();
 
   useFocusEffect(
@@ -25,6 +26,6 @@ const Map = () => {
   return (
     <MapBoxMap />
   )
-}
+});
 
 export default Map;

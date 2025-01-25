@@ -38,6 +38,9 @@ const ChatScreen: React.FC = observer(() => {
   const [lastOnline, setLastOnline] = useState<string | null>(null);
   const hasSubscription = UserStore.getUserHasSubscription() ?? false;  
 
+  const [ephemeralMessages, setEphemeralMessages] = useState<MessageType.Any[]>([])
+
+
   // Загружаем чёрный список, FMC-токен и проверяем блокировку
   useEffect(() => {
     const loadData = async () => {
@@ -90,15 +93,17 @@ const ChatScreen: React.FC = observer(() => {
     loadData();
   }, [chatId, otherUserId]);
 
-  // Загружаем сообщения + обработчик кнопки "Назад"
+  //Загружаем сообщения + обработчик кнопки "Назад"
   useEffect(() => {
     if (chatId) {
+      console.log("Fetching messages for chat", chatId);
       ChatStore.fetchMessages(chatId);
     }
 
     const handleBackPress = () => {
       router.back();
       mapStore.setBottomSheetVisible(false);
+      
       return true;
     };
 
@@ -161,7 +166,24 @@ const ChatScreen: React.FC = observer(() => {
       if (!chatId || !UserStore.currentUser) return;
 
       // 1. Если это чат с AI-ассистентом
-      if (chatId === AI_ASSISTANT_CHAT_ID) {
+      if (chatId === AI_ASSISTANT_CHAT_ID+currentUserId) {
+        // 1. Добавляем «Typing Indicator» (фейковое сообщение)
+        const typingIndicator: MessageType.Custom = {
+          id: 'typing-indicator', // уникальный ID
+          type: 'custom',
+          createdAt: Date.now(),
+          author: {
+            id: 'ai-bot',
+            firstName: 'PetAI',
+            imageUrl: 'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2FuserAvatars%2Fai_assistent.webp?alt=media&token=002c427f-2a5b-4de2-b388-d3bda057df56'
+          },
+          metadata: {
+            isTypingIndicator: true,
+          },
+        }
+        // Положим его в ephemeralMessages
+        setEphemeralMessages([typingIndicator])
+
         // Подготавливаем текущую историю (из ChatStore.messages)
         // Преобразуем mobx-сообщения (MessageType.Any) в формат [{role, content}, ...]
         const conversationHistory = ChatStore.messages.map((m) => {
@@ -186,7 +208,7 @@ const ChatScreen: React.FC = observer(() => {
         // Отправляем запрос в ASP.NET контроллер через ChatStore
         // (метод, который вы должны там реализовать, например sendChatToAiAssistant)
         const assistantReply = await ChatStore.sendChatToAiAssistant(conversationHistory);
-
+        setEphemeralMessages([]);
         // Если пришёл ответ — добавим его в локальный стейт сообщений
         if (assistantReply) {
           // На ваш вкус: можете сделать что-то вроде ChatStore.addMessage(chatId, ...),
@@ -243,8 +265,11 @@ const ChatScreen: React.FC = observer(() => {
         />
        
         <Chat
+
           locale={i18n.locale as "en" | "es" | "ru" | undefined}
           sendButtonVisibilityMode="always"
+         
+          onMessageLongPress={(item)=>{}}
           
           theme={{
             ...defaultTheme,
@@ -280,7 +305,7 @@ const ChatScreen: React.FC = observer(() => {
               messageInsetsHorizontal: 10,
             },
           }}
-          messages={ChatStore.messages}
+          messages={[...ephemeralMessages, ...ChatStore.messages]}
           onSendPress={handleSendPress}
           user={{ id: currentUserId }}
           // Рендерим КАСТОМНЫЕ сообщения (системные/специальные)
@@ -290,7 +315,7 @@ const ChatScreen: React.FC = observer(() => {
           {...(Platform.OS === "ios" && { enableAnimation: true })}
           showUserAvatars
           //showUserNames
-         
+          
         />
 
       </SafeAreaView>
