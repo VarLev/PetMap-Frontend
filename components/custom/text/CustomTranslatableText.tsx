@@ -4,6 +4,8 @@ import { BG_COLORS } from '@/constants/Colors';
 import IconSelectorComponent from '../icons/IconSelectorComponent';
 import CustomAlert from '../alert/CustomAlert';
 import uiStore from '@/stores/UIStore';
+import userStore from '@/stores/UserStore';
+import { router } from 'expo-router';
 
 interface TranslatableTextProps {
   text: string;
@@ -26,6 +28,11 @@ const TranslatableText: FC<TranslatableTextProps> = ({
   const handleTranslate = async () => {
     setLoading(true);
     try {
+      if(!userStore.getUserHasSubscription()){
+        router.push('/(paywall)/pay');
+        return;
+      }
+        
       const translatedText = await uiStore.translateText(text);
       setTranslatedText(translatedText);
     } catch (error) {

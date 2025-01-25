@@ -7,6 +7,8 @@ import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import uiStore from "@/stores/UIStore";
+import userStore from "@/stores/UserStore";
+import { router } from "expo-router";
 
 interface CustomTextComponentProps {
   text?: string | number | string[] | null;
@@ -49,6 +51,10 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
     if (!displayText) return;
     setLoading(true);
     try {
+      if(!userStore.getUserHasSubscription()){
+        router.push('/(paywall)/pay');
+        return;
+      }
       const translated = await uiStore.translateText(displayText.toString());
       setTranslatedText(translated);
     } catch (error) {
