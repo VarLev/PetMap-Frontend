@@ -1,16 +1,16 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable } from 'mobx';
 import axios from 'axios';
 import apiClient from '@/hooks/axiosConfig';
-import {launchImageLibraryAsync, MediaTypeOptions} from 'expo-image-picker';
-import {randomUUID} from "expo-crypto";
-import {manipulateAsync,SaveFormat } from 'expo-image-manipulator';
+import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
+import { randomUUID } from 'expo-crypto';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 
-import { IPet} from '@/dtos/Interfaces/pet/IPet';
-import { Pet } from "@/dtos/classes/pet/Pet";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "@/firebaseConfig";
-
-
+import { IPet } from '@/dtos/Interfaces/pet/IPet';
+import { Pet } from '@/dtos/classes/pet/Pet';
+import { getDownloadURL, ref, uploadBytes, deleteObject, listAll } from 'firebase/storage';
+import { storage } from '@/firebaseConfig';
+import userStore from './UserStore';
+import { IUser } from '@/dtos/Interfaces/user/IUser';
 
 class PetStore {
   currentPetProfile: IPet | null = null;
@@ -41,48 +41,40 @@ class PetStore {
     return newPet;
   }
 
-
-  async createPetProfile(pet: Partial<IPet>) 
-  {
-    try 
-    {
-      
+  async createPetProfile(pet: Partial<IPet>) {
+    try {
       if (this.currentPetProfile) {
-          this.currentPetProfile = { ...this.currentPetProfile, ...pet };
+        this.currentPetProfile = { ...this.currentPetProfile, ...pet };
 
-          await apiClient.post('/petprofiles/create', this.currentPetProfile);
-          console.log('Pet profile data updated');
+        await apiClient.post('/petprofiles/create', this.currentPetProfile);
+        console.log('Pet profile data updated');
       }
-    } catch (error) 
-    {
-      if (axios.isAxiosError(error)) 
-      {
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
         // Подробная информация об ошибке Axios
         console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            code: error.code,
-            config: error.config,
-            response: error.response ? {
+          message: error.message,
+          name: error.name,
+          code: error.code,
+          config: error.config,
+          response: error.response
+            ? {
                 data: error.response.data,
                 status: error.response.status,
                 headers: error.response.headers,
-            } : null
+              }
+            : null,
         });
-      } 
-      else {
+      } else {
         // Общая информация об ошибке
         console.error('Error:', error);
       }
       throw error;
-    } 
+    }
   }
 
-  async createNewPetProfile(pet: Partial<IPet>) : Promise<IPet | undefined>
-  {
-    try 
-    {
-      
+  async createNewPetProfile(pet: Partial<IPet>): Promise<IPet | undefined> {
+    try {
       if (this.currentPetProfile) {
         this.currentPetProfile = { ...this.currentPetProfile, ...pet };
         this.currentPetProfile.id = randomUUID();
@@ -90,62 +82,58 @@ class PetStore {
         const newPet = new Pet(response.data);
         return newPet!;
       }
-    } catch (error) 
-    {
-      if (axios.isAxiosError(error)) 
-      {
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
         // Подробная информация об ошибке Axios
         console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            code: error.code,
-            config: error.config,
-            response: error.response ? {
+          message: error.message,
+          name: error.name,
+          code: error.code,
+          config: error.config,
+          response: error.response
+            ? {
                 data: error.response.data,
                 status: error.response.status,
                 headers: error.response.headers,
-            } : null
+              }
+            : null,
         });
-      } 
-      else {
+      } else {
         // Общая информация об ошибке
         console.error('Error:', error);
       }
       throw error;
-    } 
+    }
   }
 
-  async getPetProfileById(petId: string) 
-  {
-    try 
-    {
+  async getPetProfileById(petId: string) {
+    try {
       const responce = await apiClient.get(`/petprofiles/${petId}`);
       const pet = new Pet(responce.data);
       this.setPetProfile(pet);
-      return pet;  
-    } catch (error) 
-    {
-      if (axios.isAxiosError(error)) 
-      {
+      return pet;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
         // Подробная информация об ошибке Axios
         console.error('Axios error:', {
-            message: error.message,
-            name: error.name,
-            code: error.code,
-            config: error.config,
-            response: error.response ? {
+          message: error.message,
+          name: error.name,
+          code: error.code,
+          config: error.config,
+          response: error.response
+            ? {
                 data: error.response.data,
                 status: error.response.status,
                 headers: error.response.headers,
-            } : null
+              }
+            : null,
         });
-      } 
-      else {
+      } else {
         // Общая информация об ошибке
         console.error('Error:', error);
       }
       throw error;
-    } 
+    }
   }
 
   async updatePetProfile(pet: Partial<IPet>) {
@@ -156,7 +144,7 @@ class PetStore {
         await apiClient.put('/petprofiles/update', this.currentPetProfile);
         console.log('Pet profile updated');
       }
-         } catch (error) {
+    } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('Axios error:', error);
       } else {
@@ -181,26 +169,24 @@ class PetStore {
     }
   }
 
-
   async setPetImage() {
     let result = await launchImageLibraryAsync({
       mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [3, 3],
       quality: 0.8,
-      
     });
 
     if (!result.canceled) {
       return result.assets[0].uri;
     }
-  };
-
-  async uploadUserThumbnailImage(pet: IPet): Promise<string|undefined> {
-    return this.uploadImage(pet.thumbnailUrl!,`pets/${pet.id}/thumbnail`)
   }
 
-  async uploadImage(image:string, pathToSave:string): Promise<string|undefined> {
+  async uploadUserThumbnailImage(pet: IPet): Promise<string | undefined> {
+    return this.uploadImage(pet.thumbnailUrl!, `pets/${pet.id}/thumbnail`);
+  }
+
+  async uploadImage(image: string, pathToSave: string): Promise<string | undefined> {
     if (!image) return;
     const compressedImage = await this.compressImage(image);
     const response = await fetch(compressedImage);
@@ -211,16 +197,37 @@ class PetStore {
 
     const downloadURL = await getDownloadURL(storageRef);
     return downloadURL;
-  };
+  }
 
-  async compressImage (uri: string): Promise<string> {
+  async compressImage(uri: string): Promise<string> {
     const manipResult = await manipulateAsync(
       uri,
       [{ resize: { width: 400 } }], // Изменение размера изображения
       { compress: 0.5, format: SaveFormat.JPEG }
     );
     return manipResult.uri;
-  };
+  }
+
+  async deletePetsFromFireStore(user: IUser) {
+    try {
+      const userPets = user?.petProfiles?.map((pet) => pet.id);
+      console.log('userPets:', userPets);
+      if (!userPets || userPets.length === 0) return;
+      for (let i of userPets) {
+        const folderRef = ref(storage, `pets/${i}/`);
+        const result = await listAll(folderRef);
+        if (result.items.length === 0) {
+          console.log(`Питомцы ${i} не найдены в FireStore`, folderRef);
+        }
+        for (const fileRef of result.items) {
+          await deleteObject(fileRef);
+        }
+        console.log('Питомцы удалены из FireStore');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
 }
 
 const petStore = new PetStore();

@@ -5,7 +5,7 @@ import { IUserRegister } from '@/dtos/Interfaces/user/IUserRegisterDTO';
 import { UserCredential } from 'firebase/auth';
 import { action, runInAction, makeAutoObservable } from 'mobx';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, storage, signOut, signInWithGoogle } from '@/firebaseConfig';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, deleteObject, listAll } from 'firebase/storage';
 import apiClient from '@/hooks/axiosConfig';
 import {manipulateAsync,SaveFormat } from 'expo-image-manipulator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -445,6 +445,8 @@ class UserStore {
     return this.uploadImage(user.thumbnailUrl!,`users/${this.currentUser?.email}/thumbnail`)
   }
 
+
+
   async uploadImage(image:string, pathToSave:string): Promise<string|undefined> {
     if (!image) return;
     const compressedImage = await this.compressImage(image);
@@ -457,6 +459,8 @@ class UserStore {
     const downloadURL = await getDownloadURL(storageRef);
     return downloadURL;
   };
+
+
 
   async compressImage (uri: string): Promise<string> {
     const manipResult = await manipulateAsync(
@@ -619,7 +623,33 @@ class UserStore {
     return getUserLastOnlineStatus(userId);
   }
 
+  async deleteUserFromFireStore(user: IUser) {
+  const storageRef = ref(storage, `users/${user.email}/`);
+  try {
+    const result = await listAll(storageRef);
+    if (result.items.length === 0) {
+      console.log(`Пользователь ${user.email} не найден в FireStore`, storageRef);
+    return;
+    }
+    for (const fileRef of result.items) {
+      await deleteObject(fileRef);
+    }
+   console.log(`Пользователь ${user.email} удален из Storage`, storageRef);
+    
+  }
+  catch (error) {
+    return handleAxiosError(error);
+  }
+}
+deleteUserAccountFromStore = async () => {
+  try {
+    this.currentUser = null;
+    await this.signOut();
+  } catch (error) {
+    console.error('Failed to delete user account from store:', error);
+  }
 }
 
+}
 const userStore = new UserStore();
 export default userStore;
