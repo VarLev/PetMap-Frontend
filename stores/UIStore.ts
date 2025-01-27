@@ -6,6 +6,8 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLocales } from 'expo-localization';
 import * as Location from 'expo-location';
+import { G } from 'react-native-svg';
+import { randomUUID } from 'expo-crypto';
 
 class UIStore {
   isPointSearchFilterTagSelected : boolean = false;
@@ -16,6 +18,7 @@ class UIStore {
   isPhotosPermissionGranted: boolean = false;
   isSearchAddressExpanded: boolean = false;
   isChatTranslatinEnabled: boolean = false;
+  resetAppId: string = '';
 
 
   
@@ -29,9 +32,17 @@ class UIStore {
     const lang = await this.getSystemLanguage();
     runInAction(() => {
       this.currentLanguage = lang;
+      this.resetApp();
     });
     await this.setLanguagei18n(lang);
   }
+
+  async resetApp() {
+    runInAction(() => {
+      this.resetAppId = randomUUID();
+    })
+  }
+
 
   setIsSearchAddressExpanded(isExpanded: boolean) {
     this.isSearchAddressExpanded = isExpanded;
@@ -90,6 +101,7 @@ class UIStore {
     return this.isChatTranslatinEnabled;
   }
 
+  
   async setLanguagei18n(language: Language) {
     
     if(language === Language.English)
@@ -122,6 +134,7 @@ class UIStore {
       // Затем меняем наблюдаемое значение
       runInAction(() => {
         this.currentLanguage = language; 
+        this.resetApp();
       });
     } catch (error) {
       return handleAxiosError(error);

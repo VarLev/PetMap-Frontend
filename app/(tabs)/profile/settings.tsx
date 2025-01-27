@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { ActivityIndicator, View, BackHandler, Alert } from 'react-native';
-import { List, Switch, Button } from 'react-native-paper';
+import { List, Switch } from 'react-native-paper';
 import CustomSegmentedButtonsWithProps from '@/components/custom/buttons/CustomSegmentedButtonsWithProps';
 import CustomConfirmAlert from '@/components/custom/alert/CustomConfirmAlert';
 import { Language } from '@/dtos/enum/Language';
@@ -11,6 +11,7 @@ import { router } from 'expo-router';
 import userStore from '@/stores/UserStore';
 import CustomButtonPrimary from '@/components/custom/buttons/CustomButtonPrimary';
 import petStore from '@/stores/PetStore';
+import CustomButtonOutlined from '@/components/custom/buttons/CustomButtonOutlined';
 
 const languageToIndex = (lang: Language): number => {
   switch (lang) {

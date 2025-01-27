@@ -18,6 +18,7 @@ import { ChatType } from "@/dtos/enum/ChatType";
 import { generateChatData } from "@/utils/chatUtils";
 import TranslatableTextMessage from "@/components/chat/chatView/TranslatableTextMessage";
 import uiStore from "@/stores/UIStore";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const AI_ASSISTANT_CHAT_ID = process.env.EXPO_PUBLIC_AI_CHAT_ID;
 
@@ -253,7 +254,7 @@ const ChatScreen: React.FC = observer(() => {
   }
 
   return (
-    <>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView className="bg-white h-full">
         <ChatHeader
           userName={otherUser?.name ?? "..."}
@@ -323,7 +324,7 @@ const ChatScreen: React.FC = observer(() => {
       {isSheetVisible && (
         <BottomSheetComponent
           ref={sheetRef}
-          snapPoints={["40%"]}
+          snapPoints={["50%"]}
           renderContent={selectedWalk ? (
             <AdvtComponent
               advrt={selectedWalk}
@@ -340,7 +341,7 @@ const ChatScreen: React.FC = observer(() => {
           initialIndex={0}
         />
       )}
-    </>
+    </GestureHandlerRootView>
   );
 });
 

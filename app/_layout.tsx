@@ -137,7 +137,7 @@ const Layout = observer(() => {
   if (!fontsLoaded && !error) return null;
 
   return (
-    <View key={uiStore.currentLanguage} style={{ flex: 1 }}>
+    <View key={uiStore.resetAppId} style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content" />
       <StoreProvider>
         <AlertProvider>

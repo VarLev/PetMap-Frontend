@@ -6,6 +6,8 @@ import mapStore from "@/stores/MapStore";
 
 import i18n from "@/i18n";
 import CustomButtonOutlined from "@/components/custom/buttons/CustomButtonOutlined";
+import petStore from "@/stores/PetStore";
+import userStore from "@/stores/UserStore";
 
 interface AdvtProps {
   message: MessageType.Custom;
@@ -59,9 +61,16 @@ const CustomMessageComponent = memo(({ message, openWalkDitails }: AdvtProps) =>
   const advrtId = message.metadata?.advrtId;
   
   const handleAccept = async () => {
-    const walk = await mapStore.getWalkAdvrtById(advrtId);
-    console.log(walk);
-    openWalkDitails(walk);
+   
+    //const walk = await mapStore.getWalkAdvrtById(advrtId);
+    const walk = mapStore.walkAdvrts.find((advrt) => advrt.id === advrtId);
+    
+   
+    if (walk) {
+      openWalkDitails(walk);
+    } else {
+      console.error("Walk advertisement not found");
+    }
   };
 
   return (

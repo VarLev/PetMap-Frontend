@@ -1,6 +1,6 @@
 import i18n from '@/i18n';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Modal from 'react-native-modal';
 
 interface CustomConfirmAlertProps {
@@ -24,6 +24,7 @@ const CustomConfirmAlert: React.FC<CustomConfirmAlertProps> = ({
 }) => {
   // Стейт, отвечающий за блокировку повторного нажатия
   const [isConfirmDisabled, setIsConfirmDisabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // При каждом открытии модалки сбрасываем блокировку
   useEffect(() => {
@@ -32,10 +33,15 @@ const CustomConfirmAlert: React.FC<CustomConfirmAlertProps> = ({
     }
   }, [isVisible]);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (isConfirmDisabled) return; // Если уже нажато, ничего не делаем
     setIsConfirmDisabled(true);
-    onConfirm();
+    setIsLoading(true);
+    try {
+      await onConfirm(); // Ждем выполнения действия
+    } finally {
+      setIsConfirmDisabled(false); // Разблокируем кнопку после завершения
+    }
   };
 
   return (
@@ -67,9 +73,13 @@ const CustomConfirmAlert: React.FC<CustomConfirmAlertProps> = ({
             disabled={isConfirmDisabled} // Отключаем кнопку, если уже нажали
             className="py-2 px-4 rounded w-1/2"
           >
-            <Text className="font-nunitoSansBold text-center">
+            {isLoading ? (
+              <ActivityIndicator size="small" color="black" />
+            ) : (
+              <Text className="font-nunitoSansBold text-center">
               {confirmText}
-            </Text>
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>

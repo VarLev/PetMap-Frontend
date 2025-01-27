@@ -16,6 +16,7 @@ import BottomSheetComponent from '../common/BottomSheetComponent';
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
 import SubscriptionRadioButton from './SubscriptionRadioButton';
 import FullBenefitsTable from './FullBenefitsTable';
+import { router } from 'expo-router';
 
 type PaywallModalProps = {
   closeModal: () => void;
@@ -259,7 +260,10 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
 
         <CustomButtonOutlined
           title={i18n.t("paywall.thank")}
-          handlePress={handleCloseModal}
+          handlePress={async ()=> {
+            await uiStore.resetApp();
+            router.back();
+          }}
           containerStyles="w-full bg-[#ACFFB9] mt-6 h-[46px]"
           textStyles="text-[16px]"
           fontWeight="font-semibold"
@@ -300,7 +304,7 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
 
       {/* Контент экрана внутри ScrollView, чтобы всё прокручивалось на мелких экранах */}
       <ScrollView contentContainerStyle={{ flexGrow: 1, paddingTop: 40, paddingBottom: 20 }}>
-        {!isSubcribedSuccess ? <StartModalContent /> : <SuccessModalContent />}
+        {isSubcribedSuccess ? <StartModalContent /> : <SuccessModalContent />}
       </ScrollView>
     </View>
   );
