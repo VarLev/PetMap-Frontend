@@ -20,6 +20,7 @@ import { useAlert } from "@/contexts/AlertContext";
 import AppOpenAdHandler from "@/components/ads/AppOpenAdHandler"; 
 import { IUser } from "@/dtos/Interfaces/user/IUser";
 import { UserStatus } from "@/dtos/enum/UserStatus";
+import RevenueCatService from "@/services/RevenueCatService";
 
 GoogleSignin.configure({
   webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
@@ -32,12 +33,15 @@ const App = () => {
   const { showAlert } = useAlert();
   const [adShown, setAdShown] = useState(true); // Проверка, показывали ли уже рекламу
   const [userHasSubscription, setUserHasSubscription] = useState(false); // Проверка на наличие подписки у пользователя
-  
+
   // проверка, если платформа IOS, показываем иконку регистрации через Aple
   
   useEffect(() => {
-    console.log("userStore.getUserHasSubscription()", userStore.getUserHasSubscription());
     //setAdShown(userStore.getUserHasSubscription());
+
+    (async () => {
+      await RevenueCatService.initialize( process.env.EXPO_PUBLIC_REVENUECAT_API_KEY!);
+    })();
     setUserHasSubscription(userStore.getUserHasSubscription());
 
     const checkAuthAndRedirect = async () => {
@@ -59,7 +63,7 @@ const App = () => {
         require("../assets/images/InternetError.webp")
       );
     }
-  }, [loading, isLogged, isInitialized, isError, isUserJustRegistrated]);
+  }, []);
 
    // Отображаем загрузочный экран до инициализации
   if (!isError && (loading || !isInitialized)) return <ScreenHolderLogo />;
@@ -73,9 +77,7 @@ const App = () => {
       webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com',
       offlineAccess: true,
     });
-    console.log("Google Pressed");
     const signIn = await userStore.googleSingInUser();
-    console.log(signIn);
     if (!signIn[0] && signIn[1])
       router.replace("/(auth)/onboarding");
     else if (signIn[0] && signIn[1])

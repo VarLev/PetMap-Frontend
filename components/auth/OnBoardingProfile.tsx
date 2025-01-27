@@ -153,7 +153,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   const onPetAgeChange = (event: DateTimePickerEvent, selectedDate?: Date | undefined) => {
     setShowPetAge(Platform.OS === 'ios');
     if (selectedDate) setPetAge(selectedDate);
-    console.log(selectedDate);
+
   };
 
   const showUserDatepicker = () => {
@@ -342,7 +342,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
 
       const resp = await userStore.fetchImageUrl(newAvatar);
       if (resp) {
-        console.log('resp', resp);
+
         currentUser.thumbnailUrl = resp;
       }
     } else currentUser.thumbnailUrl = userImage;

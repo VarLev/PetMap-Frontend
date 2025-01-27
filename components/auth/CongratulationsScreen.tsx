@@ -18,7 +18,7 @@ function CongratulationsScreen() {
     const fetchBonuses = async () => {
       const bonuses = await userStore.getEarnedBenefitsByJobType(userStore.currentUser?.id!, JobType.FillOnboarding);
       setBenefits(bonuses);
-      console.log(bonuses);
+
       confettiRef.current?.play(); 
     };
     fetchBonuses();

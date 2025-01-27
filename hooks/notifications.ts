@@ -46,7 +46,6 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
 
     try {
       const token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
-      console.log("Push token:", token);
       return token;
     } catch (error) {
       console.error('Failed to get Expo push token:', error);
@@ -109,8 +108,6 @@ export async function savePushTokenToServer(userId: string | undefined , token: 
       if (response.status !== 200) {
         throw new Error('Failed to save push token on server');
       }
-      
-      console.log('Push token successfully saved on server');
     }
     else{
       console.log('Error saving push token, userId is not defined');

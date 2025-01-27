@@ -86,7 +86,6 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
           )}`
         );
         const data = (await response.json()) as any[];
-        console.log('Полученные данные:', data);
 
         if (data.length > 0) uiStore.setIsSearchAddressExpanded(true);
         setSearchResults(data);

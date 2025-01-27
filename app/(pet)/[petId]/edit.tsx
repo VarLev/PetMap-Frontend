@@ -33,11 +33,11 @@ const EditPetProfile = observer(() => {
 
   const handleSave = async (updatedPet: Pet) => {
     try {
-      console.log('Profile updated successfully');
+
 
       // Возвращаемся на предыдущий экран с обновлением
       
-      console.log(`/(pet)/${updatedPet.id}`);
+   
       // Если нужно обновить экран после возвращения
       router.replace(`/(pet)/${updatedPet.id}`);
     } catch (error) {

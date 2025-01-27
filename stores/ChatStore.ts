@@ -728,9 +728,9 @@ class ChatStore {
           this.blacklist = formattedBlacklist;
         });
 
-        console.log('Blacklist loaded successfully:', this.blacklist);
+
       } else {
-        console.log('Blacklist is empty in the database.');
+
         runInAction(() => {
           this.blacklist = [];
         });
@@ -762,11 +762,11 @@ class ChatStore {
 
       // Текущий пользователь блокирует другого пользователя
       await set(ref(database, `/blacklist/${userId}/${blockUserId}`), true);
-      console.log('Пользователь заблокирован:', blockUserId);
+ 
 
       runInAction(() => {
         this.blacklist.push({ userId, blockedUserId: blockUserId });
-        console.log('blockstate state', this.blacklist);
+   
       });
     } catch (error) {
       console.error('Ошибка при добавлении пользователя в черный список:', error);
@@ -799,7 +799,7 @@ class ChatStore {
       runInAction(() => {
         // Удаляем запись из массива
         this.blacklist = this.blacklist.filter((entry) => !(entry.userId === userId && entry.blockedUserId === blockUserId));
-        console.log('Updated blacklist state:', this.blacklist);
+   
       });
     } catch (error) {
       console.error('Ошибка при удалении пользователя из черного списка:', error);
@@ -962,7 +962,7 @@ class ChatStore {
       const data = response.data
       const assistantText = data?.answer || null
 
-      console.log('Ответ AI-ассистента:', assistantText)
+
       return assistantText
     } catch (error) {
       console.error('Ошибка при отправке разговора AI-ассистенту:', error)

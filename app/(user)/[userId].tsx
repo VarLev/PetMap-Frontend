@@ -18,7 +18,6 @@ const UserProfileCommon = observer(() => {
       setEditableUser(null); // Очищаем данные предыдущего пользователя
       
       if (userId) {
-        console.log(userId);
         const user = await userStore.getUserById(userId as string); // Получаем пользователя по ID
         setEditableUser(user);
       }

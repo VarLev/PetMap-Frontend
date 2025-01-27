@@ -44,7 +44,6 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
       const availablePackages = await RevenueCatService.getOfferings();
       if (availablePackages) {
         setPackages(availablePackages);
-        console.log('availablePackages', availablePackages);
       }
     })();
   }, []);
@@ -74,7 +73,19 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
       }
 
       if (targetPackage) {
-        await RevenueCatService.purchasePackage(targetPackage);
+        const customerInfo = await RevenueCatService.purchasePackage(targetPackage);
+        // Если userCancelled == true, purchasePackage вернёт null
+        if (!customerInfo) {
+          console.log('Пользователь отменил покупку');
+          return;
+        }
+
+        // 2. Проверяем, действительно ли подписка активна. 
+        //    (например, если у вас один Entitlement с ID 'premium')
+        const hasPremium = !!customerInfo.entitlements.active['Basic'];
+        const hasMonthly = !!customerInfo.entitlements.active['premium_month'];
+        const hasYearly  = !!customerInfo.entitlements.active['premium_year'];
+
 
         // Обновляем подписку в нашем сторе
         const subscriptionTypeId =
@@ -84,12 +95,14 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
             ? SubsciptionType.Month
             : null;
 
-        if (subscriptionTypeId) {
-          await uiStore.subscribe(userId, subscriptionTypeId);
+        if (subscriptionTypeId && hasPremium) {
+          await uiStore.subscribe(userId, hasPremium);
+          setIsSubcribedSuccess(true);
+        }else{
+          setIsSubcribedSuccess(false);
         }
 
         sheetRef.current?.close();
-        setIsSubcribedSuccess(true);
         setIsFullBenefitsVisible(false);
       }
     } catch (error) {

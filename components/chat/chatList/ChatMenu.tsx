@@ -38,7 +38,7 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
   };
 
   const deleteChat = async (chatId: string) => {
-    console.log("Deleting chat", ChatStore.chats);
+   
     await ChatStore.deleteChat(chatId);
     setRequestVisibleDel(false);
     setVisible(false);
@@ -61,12 +61,12 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
     try {
       if (!isUserBlocked) {
         await ChatStore.addBlacklist(otherUserId);
-        console.log("Blocking user", otherUserId);
+       
         setIsUserBlocked(true);
         setIsBlocked(true);
       } else {
         await ChatStore.removeBlacklist(otherUserId);
-        console.log("Unblocking user", otherUserId);
+
         setIsUserBlocked(false);
         setIsBlocked(false);
       }

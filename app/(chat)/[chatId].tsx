@@ -45,7 +45,6 @@ const ChatScreen: React.FC = observer(() => {
   useEffect(() => {
     const loadData = async () => {
       try { 
-        console.log("ChatId", chatId);
         const loadedChat = await ChatStore.getChatById(chatId);
         if(loadedChat){
           // Чат уже существует в базе
@@ -60,12 +59,12 @@ const ChatScreen: React.FC = observer(() => {
         }
         else {
           // Чат не существует в базе
-          console.log("otherUserId", otherUserId);
+        
           const otherDbUser = await UserStore.getUserById(otherUserId)
           const otherUserOnlineStatus = await ChatStore.getUserStatus(otherDbUser.id);
           const lastOnliune = await UserStore.getUserLastOnline(otherDbUser.id);
           setLastOnline(lastOnliune || '');
-          console.log("Other user online status", otherUserOnlineStatus);
+    
           if(otherDbUser){
             const chatUser: IChatUser = {
               id: otherDbUser.id,
@@ -97,7 +96,7 @@ const ChatScreen: React.FC = observer(() => {
   //Загружаем сообщения + обработчик кнопки "Назад"
   useEffect(() => {
     if (chatId) {
-      console.log("Fetching messages for chat", chatId);
+     
       ChatStore.fetchMessages(chatId);
     }
 
