@@ -1,16 +1,14 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { ActivityIndicator, View, BackHandler } from "react-native";
-import { List, Switch, Button } from "react-native-paper";
+import { List, Switch} from "react-native-paper";
 import CustomSegmentedButtonsWithProps from '@/components/custom/buttons/CustomSegmentedButtonsWithProps';
 import CustomConfirmAlert from '@/components/custom/alert/CustomConfirmAlert';
 import { Language } from '@/dtos/enum/Language';
 import uiStore from '@/stores/UIStore';
 import i18n from '@/i18n';
-import { BG_COLORS } from '@/constants/Colors';
 import { router } from 'expo-router';
 import userStore from '@/stores/UserStore';
-import CustomButtonOutlined from '@/components/custom/buttons/CustomButtonOutlined';
 import CustomButtonPrimary from '@/components/custom/buttons/CustomButtonPrimary';
 
 const languageToIndex = (lang: Language): number => {
@@ -76,14 +74,13 @@ const Settings = observer(() => {
   return (
     <View className="flex-1 justify-between p-4">
       <List.Section>
-        {/* <List.Subheader>{i18n.t('settings.general')}</List.Subheader>
         <List.Item
           title={i18n.t('settings.pushNotifications')}
           right={() => (
             <Switch value={sosEnabled} onValueChange={handleToggleSos} />
           )}
           titleStyle={{ fontFamily: "NunitoSans_400Regular" }}
-        /> */}
+        />
 
         <List.Item
           title={i18n.t('settings.appLanguage')}
