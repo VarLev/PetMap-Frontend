@@ -17,7 +17,6 @@ const Map = observer (() => {
         userStore.currentUser.name === null ||
         userStore.currentUser.name === undefined
       ) {
-        console.log('Редирект на профиль:', userStore.currentUser?.name);
         router.push('/(tabs)/profile/');
       }
     }, [userStore.currentUser])

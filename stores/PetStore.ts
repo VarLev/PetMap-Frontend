@@ -45,9 +45,7 @@ class PetStore {
     try {
       if (this.currentPetProfile) {
         this.currentPetProfile = { ...this.currentPetProfile, ...pet };
-
-        await apiClient.post('/petprofiles/create', this.currentPetProfile);
-        console.log('Pet profile data updated');
+          await apiClient.post('/petprofiles/create', this.currentPetProfile);
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -142,7 +140,7 @@ class PetStore {
         this.currentPetProfile = { ...this.currentPetProfile, ...pet };
 
         await apiClient.put('/petprofiles/update', this.currentPetProfile);
-        console.log('Pet profile updated');
+
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

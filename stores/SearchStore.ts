@@ -249,7 +249,7 @@ class SearchStore {
         text,
         createdAt: new Date()
       })
-      console.log(res.data)
+
     } catch (error) {
       return handleAxiosError(error);
     } finally {

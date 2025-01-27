@@ -25,6 +25,7 @@ import i18n from '@/i18n';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
 import CustomDropDownCityList from '../custom/selectors/CustomDropDownCityList';
+import { router } from 'expo-router';
 
 const TASK_IDS = {
   userEdit: {
@@ -350,8 +351,8 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
             </View>
             <View className="p-2">
               <View className="flex-row items-center">
-              <Text className="text-lg font-nunitoSansBold text-indigo-800 pr-2 ">{i18n.t('EditProfileComponent.socialMediaTitle')}</Text>
-              <Icon size={0} source={() => <FontAwesome name="diamond" size={20} color="#8F00FF" />} />
+                <Text className="text-lg font-nunitoSansBold text-indigo-800 pr-2 ">{i18n.t('EditProfileComponent.socialMediaTitle')}</Text>
+                <IconButton className='-ml-2' size={20} icon={() => <FontAwesome name="diamond" size={20} color="#8F00FF" />} onPress={() => router.push('/(paywall)/pay')}/>
               </View>
               
 

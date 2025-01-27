@@ -91,7 +91,7 @@ class UIStore {
   }
 
   async setLanguagei18n(language: Language) {
-    console.log('Установка языка:', Language[language]);
+    
     if(language === Language.English)
       i18n.locale = 'en';
     else if(language === Language.Russian)
@@ -114,7 +114,7 @@ class UIStore {
         headers: { 'Content-Type': 'application/json' }
       });
       await AsyncStorage.setItem(process.env.EXPO_PUBLIC_SYSTEM_LANGUAGE!, language.toString());
-      console.log('Язык сохранен в AsyncStorage:', language);
+
       
       // Сначала обновляем i18n
       await this.setLanguagei18n(language);
@@ -132,7 +132,7 @@ class UIStore {
   async getSystemLanguage(): Promise<Language> {
     try {
       const stored = await AsyncStorage.getItem(process.env.EXPO_PUBLIC_SYSTEM_LANGUAGE!);
-      console.log('Загружено из AsyncStorage:', stored);
+    
       let lang = Language.Spanish;
       if (stored === '0' || stored?.toLowerCase().includes('spanish')) lang = Language.Spanish;
       if (stored === '1' || stored?.toLowerCase().includes('russian')) lang = Language.Russian;
@@ -141,7 +141,7 @@ class UIStore {
       if (!stored) {
         const response = await apiClient.get('/system/language');
         const serverLang = response.data;
-        console.log('Загружено с сервера:', serverLang);
+
         if (serverLang === Language.Russian) lang = Language.Russian;
         if (serverLang === Language.English) lang = Language.English;
       }
@@ -174,7 +174,7 @@ class UIStore {
   async translateText(text: string): Promise<string> {
     try {
       const currentLanguageIndex = await this.getSystemLanguage(); 
-      console.log('Текущий язык:', Language[currentLanguageIndex]);
+ 
       const response = await apiClient.post('chatgpt/translate', {
         Text: text,
         TargetLanguage: Language[currentLanguageIndex]  
@@ -185,9 +185,12 @@ class UIStore {
     }
   }
 
-  async subscribe(userId: string, subscriptionTypeId: number) {
+  async subscribe(userId: string, isPremium: boolean) {
     try {
-      // await apiClient.post(`/${userId}/`, subscriptionTypeId);
+      await apiClient.post('users/subscribe', {
+        userId: userId,
+        IsPremium:isPremium   
+      });
       return true;
     } catch (error) {
       return handleAxiosError(error);

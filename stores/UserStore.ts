@@ -22,6 +22,7 @@ import { Job } from '@/dtos/classes/job/Job';
 import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
 import { IUserCardDto } from '@/dtos/Interfaces/user/IUserCardDto';
 import { getUserLastOnlineStatus, getUserStatus } from '@/utils/userUtils';
+import RevenueCatService from '@/services/RevenueCatService';
 
 //fghjkl
 class UserStore {
@@ -161,12 +162,12 @@ class UserStore {
 
   async loadUsersOnce() {
     if (this.users?.length > 0) {
-      console.log('Пользователи уже загружены.');
+
       return this.users; // Возвращаем уже загруженных пользователей
     }
 
     try {
-      console.log('Загрузка пользователей');
+
       //const response = await apiClient.get('/users/all'); // Запрос к серверу
       // runInAction(() => {
       //   this.users = response.data.map((user: User) => new User(user));
@@ -181,7 +182,7 @@ class UserStore {
   async loadUser(): Promise<IUser |null> {
     try {
       const fuid = this.fUid;
-      console.log('fuid:', fuid);
+
       const response = await apiClient.get('/users/me', { params: { fuid } }); // Эндпоинт для получения текущего пользователя
       runInAction(() => {
         this.currentUser = new User({...response.data});
@@ -205,7 +206,7 @@ class UserStore {
       const fuid = this.fUid;
       const response = await apiClient.get('/users/me', { params: { fuid } }); // Эндпоинт для получения текущего пользователя
       runInAction(() => {
-        console.log('Пользователь загружен из базы:');
+     
         this.currentUser = new User(response.data);
         petStore.currentUserPets = response.data.petProfiles.map((pet: IPet) => new Pet(pet));
       });
@@ -222,7 +223,7 @@ class UserStore {
 
   async getUserById(id:string): Promise<IUser> {
     try {
-      console.log('Получение пользователя по ID:', id);
+
       const response = await apiClient.get(`/users/${id}`);
       return response.data as IUser;
     } catch (error) {
@@ -235,7 +236,7 @@ class UserStore {
     try{
       // Проверяем, есть ли пользователь уже в состоянии
       if (this.currentUser?.id) {
-        console.log('Пользователь загружен из состояния');
+
         return this.currentUser;
       }
 
@@ -259,13 +260,15 @@ class UserStore {
         // Обновляем MobX состояние и возвращаем пользователя
         runInAction(() => {
           this.currentUser = new User(user);
-          this.setUserHasSubscription(this.getUserHasSubscription()?? false);
+          //this.setUserHasSubscription(user.isPremium?? false);
+          this.checkRevenueCatSubscription();
         });
+        
         
         return this.currentUser;
       } 
 
-      console.log('Пользователь не найден');
+
       return null; // Возвращаем null, если пользователь не найден
     }catch (error) {
       //this.signOut();
@@ -274,20 +277,53 @@ class UserStore {
    
   }
 
+  async checkRevenueCatSubscription() {
+    try {
+      // Если текущего пользователя или его firebaseUid нет,
+      // то подписка по логике быть не может
+      if (!this.currentUser?.firebaseUid) {
+        this.setUserHasSubscription(false);
+        return;
+      }
+
+      const firebaseUid = this.currentUser.firebaseUid;
+
+      // Выполняем логин в RevenueCat под тем же appUserID (firebaseUid).
+      // Если подписка оформлена на другой Google-аккаунт/другой appUserID,
+      // то RevenueCat тут не покажет активный entitlement.
+      const customerInfo = await RevenueCatService.setUserId(firebaseUid);
+      console.log('customerInfo',customerInfo.entitlements.all);
+      // Проверяем, есть ли активный entitlement 'premium'
+      // (Название entitlements задаётся в вашем кабинете RevenueCat)
+      const hasPremium = !!customerInfo.entitlements.active['Basic'];
+
+      runInAction(() => {
+        this.setUserHasSubscription(hasPremium);
+      });
+
+    } catch (error) {
+      console.error('Ошибка при проверке подписки RevenueCat:', error);
+      // Если произошла ошибка, можно принудительно поставить false
+      runInAction(() => {
+        this.setUserHasSubscription(false);
+      });
+    }
+  }
+
   async singInUser(email: string, password: string) {
     this.setLoading(true);
     try {
       
       const userCred = await signInWithEmailAndPassword(email, password);
       const token = await userCred.user.getIdToken();
-      console.log('Token:', token);
+
       await AsyncStorage.setItem(process.env.EXPO_PUBLIC_F_TOKEN!, token);
 
 
       
       runInAction(() => {this.setLoginedUser(userCred);});
       await this.loadUserAfterSignIn();
-      console.log('Залогинивание');
+
       runInAction(() => {this.setLogged(true);});
       
     } catch (error) 
@@ -347,19 +383,19 @@ class UserStore {
       const token = await userCred.user.getIdToken();
       await AsyncStorage.setItem(process.env.EXPO_PUBLIC_F_TOKEN!, token);
       runInAction(() => {this.setCreatedUser(userCred);});
-      //console.log('existingUserResponse:');
+
       const existingUserResponse = await apiClient.get(`/users/exists/${userCred.user.uid}`);
-      //console.log('existingUserResponse:', existingUserResponse);
-      console.log('existingUserResponse:', existingUserResponse.status);
+
+
       if(existingUserResponse.status === 200){
 
         isUserAlreadyRegistrated = true;
         await this.loadUserAfterSignIn();
-        console.log('User already registrated', isUserAlreadyRegistrated);
+
 
       }else{
 
-        console.log('User not registrated');
+
         const userRegisterDTO : IUserRegister  = {
           email: userCred.user.email!,
           firebaseUid: userCred.user.uid,
@@ -374,7 +410,7 @@ class UserStore {
 
       }
       isSuccessful = true;
-      console.log('Залогинивание');
+
       runInAction(() => {this.setLogged(true);});
     } 
     catch (error) 
@@ -398,17 +434,16 @@ class UserStore {
         // Обновление локального состояния
         if(user.thumbnailUrl && this.currentUser?.email){
 
-          console.log('user thumbnailUrl:', user.thumbnailUrl);
+    
           const thumUrl = await this.uploadUserThumbnailImage(new User({ ...this.currentUser, ...user }));
           
-          console.log('thumbnailUrl:', thumUrl);
 
           runInAction(() => {
             this.currentUser!.thumbnailUrl = thumUrl;
           });
           
           user.thumbnailUrl = thumUrl;
-          console.log('user thumbnailUrl updated');
+
         }
         
           
@@ -425,7 +460,7 @@ class UserStore {
           }
           this.currentUser.petProfiles![0].thumbnailUrl = thumUrl;
           user.petProfiles![0].thumbnailUrl = thumUrl;
-          console.log('pet thumbnailUrl updated');
+
         }
        
           
@@ -476,14 +511,11 @@ class UserStore {
     {
       if (this.currentUser) 
       {
-        console.log('Пользователь найден');
+
         runInAction(() => {
           this.currentUser = new User({ ...this.currentUser, ...user });
         });
-        console.log('Пользователь собран');
-        //console.log(this.currentUser);
         await apiClient.put('/users/update', this.currentUser);
-        console.log('User data updated');
       }
     } catch (error) 
     {

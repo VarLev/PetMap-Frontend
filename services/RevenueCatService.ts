@@ -1,5 +1,5 @@
 import { handleAxiosError } from '@/utils/axiosUtils';
-import Purchases from 'react-native-purchases';
+import Purchases, { CustomerInfo } from 'react-native-purchases';
 
 export default class RevenueCatService {
   static async initialize(apiKey: string) {
@@ -10,6 +10,37 @@ export default class RevenueCatService {
       throw error;
     }
   }
+
+   /**
+   * Установка appUserID (логин в RevenueCat)
+   */
+   static async setUserId(appUserId: string): Promise<CustomerInfo> {
+    try {
+      const customerInfo = (await Purchases.logIn(appUserId)).customerInfo;
+      // customerInfo обновит информацию в случае успешного логина
+      return customerInfo;
+    } catch (error) {
+      console.error('Ошибка при логине (logIn) в RevenueCat:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Сброс userId. Полезно при логауте пользователя
+   * (чтобы отвязать его от RevenueCat).
+   */
+  static async logout() {
+    try {
+      const customerInfo: CustomerInfo = await Purchases.logOut();
+      return customerInfo;
+    } catch (error) {
+      console.error('Ошибка при сбросе пользователя в RevenueCat:', error);
+      throw error;
+    }
+  }
+
+
+
 
   static async getOfferings() {
     try {
@@ -40,6 +71,20 @@ export default class RevenueCatService {
     } catch (error) {
       console.error('Ошибка проверки подписки:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Универсальный метод: получить всю информацию о покупателе (CustomerInfo)
+   * пригодится, если нужно проверить детали подписок, даты, trial и т.д.
+   */
+  static async getCustomerInfo(): Promise<CustomerInfo | null> {
+    try {
+      const customerInfo = await Purchases.getCustomerInfo();
+      return customerInfo;
+    } catch (error) {
+      console.error('Ошибка при получении CustomerInfo:', error);
+      return null;
     }
   }
 

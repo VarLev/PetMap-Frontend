@@ -154,7 +154,7 @@ class MapStore {
       const response = await apiClient.post('map/walk', walk);
       let isJobAdded: boolean | undefined;
       runInAction(() => {
-        console.log('Add walk advrt', response.data);
+
         this.walkAdvrts.push(response.data.walkAdvertisement as IWalkAdvrtDto);
         isJobAdded = response.data.isJobAdded;
       });
@@ -245,7 +245,7 @@ class MapStore {
         const country = context.country?.name || '';
         const city = context.place?.name || '';
 
-        console.log('City:', city);
+     
         this.setCity(city);
         
         
@@ -277,12 +277,12 @@ class MapStore {
         type: pointTag.type?.toString() || '',
         userId: pointTag.userId?.toString() || ''
       }).toString();
-      console.log('Query params:', queryParams);
+
       
 
       const response = await apiClient.get(`filter/point/all?${queryParams}`);
       if (response.data.length === 0) {
-        console.log('No map points found');
+
         runInAction(() => {
           this.mapPoints = response.data as IPointEntityDTO[];
         });
@@ -315,7 +315,7 @@ class MapStore {
   async getFilteredWalks(filter: IWalkAdvrtFilterParams){
     try {
       filter.city = this.getCity();
-      console.log('Filter:', filter);
+    
       const response = await apiClient.post('filter/walks-filtered',filter );
 
       runInAction(() => {
@@ -409,9 +409,9 @@ class MapStore {
 
   async getAllWalkParticipants(walkId: string): Promise<IUserAdvrt[]> {
     try {
-      console.log('Get all walk participants', walkId);
+
       const response = await apiClient.get(`walkadvrt/participants/${walkId}`);
-      console.log('Participants:', response.data);
+
       return response.data as IUserAdvrt[];
     } catch (error) {
       return handleAxiosError(error);

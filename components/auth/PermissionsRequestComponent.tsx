@@ -23,7 +23,7 @@ const PermissionsRequestComponent = () => {
   useEffect(() => {
     const requestPermissions = async () => {
       try {
-        console.log("Запрашиваем все разрешения...");
+
 
         const [
           { status: locationStatus },
@@ -56,11 +56,7 @@ const PermissionsRequestComponent = () => {
           setAlertVisible(false);
         }
 
-        console.log("Результат разрешений:", {
-          location: locationGranted,
-          notifications: notificationsGranted,
-          photos: photosGranted,
-        });
+  
       } catch (error) {
         console.error("Ошибка при запросе разрешений:", error);
       }
@@ -70,7 +66,7 @@ const PermissionsRequestComponent = () => {
 
     return () => {
       // Код выполняется при размонтировании
-      console.log('Компонент размонтирован');
+      
     };
   }, []);
 

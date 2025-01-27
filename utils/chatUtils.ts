@@ -13,7 +13,7 @@ export function generateChatData(chatId: string, currentUserId: string, otherUse
         value: {
           id: currentUserId,
           name: UserStore.currentUser?.name ?? '',
-          thumbnailUrl: UserStore.currentUser?.thumbnailUrl ?? '',
+          avatar: UserStore.currentUser?.thumbnailUrl ?? '',
           isOnline: UserStore.currentUser?.isOnline ?? false,
         },
       },
@@ -22,8 +22,8 @@ export function generateChatData(chatId: string, currentUserId: string, otherUse
         value: {
           id: otherUserId,
           name: otherUser?.name ?? '',
-          thumbnailUrl: otherUser?.thumbnailUrl ?? '',
-          isOnline: otherUser?.thumbnailUrl ? true : false,
+          avatar: otherUser?.avatar ?? '',
+          isOnline: otherUser?.avatar ? true : false,
         },
       },
     ],

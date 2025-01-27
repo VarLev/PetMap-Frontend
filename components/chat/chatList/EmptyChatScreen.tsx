@@ -10,7 +10,7 @@ function EmptyChatScreen() {
   }
 
   const handleAllUsers = () => {
-   console.log('all users')
+
   }
     
 

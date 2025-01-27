@@ -81,7 +81,7 @@ const CustomDropDownCityList: React.FC<CityDropdownProps> = ({
           }
         );
 
-      console.log('cityIteфывфывms:', cityItems);
+
       setItems([...cityItems]);
       setValue(null);
     } catch (error) {

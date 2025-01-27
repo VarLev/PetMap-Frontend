@@ -16,7 +16,6 @@ const Profile = observer(() => {
       const loadedUser = await userStore.loadUser();
       setEditableUser(loadedUser as User);
       if(!loadedUser?.name || loadedUser?.name === '' || loadedUser?.name === null) {
-        console.log(editableUser);
         setIsEmpty(true);
       }
     };

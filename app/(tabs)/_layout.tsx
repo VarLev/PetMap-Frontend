@@ -18,7 +18,6 @@ const Tabslayout = () => {
   useEffect(() => {
   
     // Регистрация устройства для пуш-уведомлений
-    console.log('Регистрация устройства для пуш-уведомлений');
     if(isDevice){
       registerForPushNotificationsAsync().then(token => {
         if (token) {
@@ -27,7 +26,6 @@ const Tabslayout = () => {
         }
       });
     }else{
-      console.log('Пуш-уведомления не поддерживаются на симуляторе');
     }
     
 
