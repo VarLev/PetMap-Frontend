@@ -233,13 +233,17 @@ class UserStore {
   }
   
   async getCurrentUserForProvider(): Promise<IUser | null> {
+   
     try{
       // Проверяем, есть ли пользователь уже в состоянии
       if (this.currentUser?.id) {
-
+        runInAction(() => {
+          this.checkRevenueCatSubscription();
+        });
+        
         return this.currentUser;
       }
-
+      console.log('asddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd');
       const currentUserString = await AsyncStorage.getItem(process.env.EXPO_PUBLIC_CURRENT_USER!);
       const currentUser = currentUserString ? JSON.parse(currentUserString) : null;
 
@@ -261,6 +265,7 @@ class UserStore {
         runInAction(() => {
           this.currentUser = new User(user);
           //this.setUserHasSubscription(user.isPremium?? false);
+          console.log('asddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd');
           this.checkRevenueCatSubscription();
         });
         
