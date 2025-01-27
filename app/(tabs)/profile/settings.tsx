@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { ActivityIndicator, View, BackHandler } from "react-native";
-import { List, Switch} from "react-native-paper";
+import { ActivityIndicator, View, BackHandler, Alert } from 'react-native';
+import { List, Switch, Button } from 'react-native-paper';
 import CustomSegmentedButtonsWithProps from '@/components/custom/buttons/CustomSegmentedButtonsWithProps';
 import CustomConfirmAlert from '@/components/custom/alert/CustomConfirmAlert';
 import { Language } from '@/dtos/enum/Language';
@@ -10,6 +10,7 @@ import i18n from '@/i18n';
 import { router } from 'expo-router';
 import userStore from '@/stores/UserStore';
 import CustomButtonPrimary from '@/components/custom/buttons/CustomButtonPrimary';
+import petStore from '@/stores/PetStore';
 
 const languageToIndex = (lang: Language): number => {
   switch (lang) {
@@ -67,8 +68,23 @@ const Settings = observer(() => {
 
   const exitApp = async () => {
     userStore.signOut();
-    await router.replace("/(auth)/sign-in");
+    await router.replace('/(auth)/sign-in');
     BackHandler.exitApp();
+  };
+
+  const deleteAccount = async () => {
+    await userStore.deleteUserFromFireStore(userStore.currentUser!);
+    await petStore.deletePetsFromFireStore(userStore.currentUser!);    
+
+    const userPets = userStore.currentUser?.petProfiles?.map((pet) => pet.id);
+    if (!userPets) return;
+    for (let i of userPets) {
+      await petStore.deletePetProfile(i);
+      console.log('Питомцы удалены из Базы данных');
+    }
+    await userStore.deleteUserAccountFromStore();
+    Alert.alert(`Пользователь ${userStore.currentUser?.email} удален из приложения`);
+    await router.replace('/(auth)/sign-in');
   };
 
   return (
@@ -100,8 +116,13 @@ const Settings = observer(() => {
       </List.Section>
 
       {/* Кнопка выхода из приложения внизу и по центру */}
-      <View className="pb-20 items-center">
-        <CustomButtonPrimary handlePress={exitApp} title={i18n.t('UserProfile.logout')} containerStyles='w-full' />
+      <View>
+        <View className="items-center">
+          <CustomButtonPrimary handlePress={exitApp} title={i18n.t('UserProfile.logout')} containerStyles="w-full" />
+        </View>
+        <View className="pb-20 items-center">
+          <CustomButtonOutlined handlePress={deleteAccount} title={i18n.t('UserProfile.deleteAccount')} containerStyles="w-full" />
+        </View>
       </View>
 
       <CustomConfirmAlert
