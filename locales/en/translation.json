@@ -1532,5 +1532,13 @@
     },
     "learnMore": "Learn more about the benefits",
     "advantage": "more advantageous"
+  },
+  "support": {
+    "getSupport": "Get Help",
+    "support_title": "Technical Support",
+    "support_description": "If you have any questions, contact us in any convenient way:",
+    "telegram": "Our Telegram",
+    "email": "Send an Email",
+    "whatsapp": "Write on WhatsApp"
   }
 }

@@ -1,5 +1,4 @@
-import { observer } from 'mobx-react-lite';
-import { FC, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { Portal, Text } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -137,22 +136,21 @@ const PaywallModal = () => {
     <Portal>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <MainModalContent>
-        {isSubcribedSuccess ? (
-          <SuccessModalContent />
-          ) : (
-          <StartModalContent
-            isFullBenefitsVisible={isFullBenefitsVisible}
-            subscriptionType={subscriptionType}
-            annualPackage={annualPackage}
-            monthlyPackage={monthlyPackage}
-            setIsFullBenefitsVisible={setIsFullBenefitsVisible}
-            handleCloseModal={handleCloseModal}
-            setSubscriptionType={setSubscriptionType}
-            handleSheetOpen={handleSheetOpen}
-            handleOpenBenefits={openBenefits}
-          />
-          )
-        }
+          {isSubcribedSuccess ? (
+            <SuccessModalContent />
+            ) : (
+            <StartModalContent
+              isFullBenefitsVisible={isFullBenefitsVisible}
+              subscriptionType={subscriptionType}
+              annualPackage={annualPackage}
+              monthlyPackage={monthlyPackage}
+              setIsFullBenefitsVisible={setIsFullBenefitsVisible}
+              handleCloseModal={handleCloseModal}
+              setSubscriptionType={setSubscriptionType}
+              handleSheetOpen={handleSheetOpen}
+              handleOpenBenefits={openBenefits}
+            />
+          )}
         </MainModalContent>
 
         {/** Если открываем «шторку» с ценой — показываем BottomSheet */}
