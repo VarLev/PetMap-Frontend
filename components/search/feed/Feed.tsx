@@ -14,6 +14,7 @@ import PostItem from '@/components/search/feed/PostItem';
 import CreatePost from '@/components/search/feed/CreatePost';
 import i18n from '@/i18n';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent';
+import { Animated, Keyboard, KeyboardEvent } from 'react-native';
 
 // Если userId не передан, компонент показывает все посты.
 // Если userId передан, компонент показывает посты только указанного пользователя.
@@ -29,7 +30,8 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
   const [selectedPostId, setSelectedPostId] = useState('');
   const [userPosts, setUserPosts] = useState<IPost[]>([]);
   const sheetRef = useRef<BottomSheet>(null);
-
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const fabPosition = useRef(new Animated.Value(90)).current;
 
    /**
    * Функция, определяющая, какие посты загружать:
@@ -46,6 +48,34 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
       await searchStore.fetchPosts();
     }
   };
+
+  // Подписываемся на события клавиатуры
+  useEffect(() => {
+    const handleKeyboardShow = (e: KeyboardEvent) => {
+      setKeyboardHeight(e.endCoordinates.width);
+      Animated.timing(fabPosition, {
+        toValue: e.endCoordinates.width + 70, // Отступ от клавиатуры
+        duration: 100,
+        useNativeDriver: false,
+      }).start();
+    };
+  
+    const handleKeyboardHide = () => {
+      Animated.timing(fabPosition, {
+        toValue: 90,
+        duration: 100,
+        useNativeDriver: false,
+      }).start(() => setKeyboardHeight(0));
+    };
+  
+    const showSub = Keyboard.addListener('keyboardDidShow', handleKeyboardShow);
+    const hideSub = Keyboard.addListener('keyboardDidHide', handleKeyboardHide);
+  
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
  useEffect(() => {
     fetchPosts();
@@ -164,7 +194,11 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
         }}
       />
       {!userId &&
-        (<FAB icon="pen" size='medium' color='white' style={styles.fab} onPress={handleCreatePost}/>)
+        (
+        <Animated.View style={[styles.fabAnim, { left: fabPosition }]}>
+          <FAB icon="pen" size='medium' color='white' style={styles.fab} onPress={handleCreatePost}/>
+        </Animated.View>
+      )
       }
       {
         bottomSheetType && 
@@ -215,6 +249,11 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     borderRadius: 100,
     backgroundColor: '#2F00B6'
+  },
+  fabAnim: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
   },
   noCommentsContainer: {
     display: 'flex',
