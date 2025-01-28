@@ -33,6 +33,8 @@ const Settings = observer(() => {
   // Состояния для подтверждения смены языка
   const [alertVisible, setAlertVisible] = React.useState(false);
   const [pendingLanguageChange, setPendingLanguageChange] = React.useState<number | null>(null);
+  const [deleteAlertVisible, setDeleteAlertVisible] = React.useState(false);
+  const [loiading, setLoading] = React.useState(false);
 
   if (selectedLanguage === -1) {
     return (
@@ -41,6 +43,15 @@ const Settings = observer(() => {
       </View>
     );
   }
+  if (loiading) {
+    return (
+      <View className="h-full items-center justify-center">
+        <ActivityIndicator size="large" color="#6200ee" />
+      </View>
+    );
+  }
+
+
 
   const handleToggleSos = () => setSosEnabled(!sosEnabled);
 
@@ -73,19 +84,33 @@ const Settings = observer(() => {
     BackHandler.exitApp();
   };
 
-  const deleteAccount = async () => {
-    await userStore.deleteUserFromFireStore(userStore.currentUser!);
-    await petStore.deletePetsFromFireStore(userStore.currentUser!);    
+  const handleShowDeleteAlert = () => {
+    setDeleteAlertVisible(true);
+  };
 
-    const userPets = userStore.currentUser?.petProfiles?.map((pet) => pet.id);
-    if (!userPets) return;
-    for (let i of userPets) {
-      await petStore.deletePetProfile(i);
-      console.log('Питомцы удалены из Базы данных');
+const closeDeleteAlert = () => {
+  setDeleteAlertVisible(false);
+};
+
+  const deleteAccount = async () => {
+    setLoading(true);
+    try{
+      await userStore.deleteUserFromFireStore(userStore.currentUser!);
+      await petStore.deletePetsFromFireStore(userStore.currentUser!);      
+      const userPets = userStore.currentUser?.petProfiles?.map((pet) => pet.id);
+      if (!userPets) return;
+      for (let i of userPets) {
+        await petStore.deletePetProfile(i);
+        console.log('Питомцы удалены из Базы данных');
+      }
+      await userStore.deleteUserAccountFromStore();
+      Alert.alert(i18n.t("UserProfile.deletedProfilerAlarm", { email: userStore.currentUser?.email }));
+      await router.replace('/(auth)/sign-in');
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);      
     }
-    await userStore.deleteUserAccountFromStore();
-    Alert.alert(`Пользователь ${userStore.currentUser?.email} удален из приложения`);
-    await router.replace('/(auth)/sign-in');
   };
 
   return (
@@ -122,7 +147,7 @@ const Settings = observer(() => {
           <CustomButtonPrimary handlePress={exitApp} title={i18n.t('UserProfile.logout')} containerStyles="w-full" />
         </View>
         <View className="pb-20 items-center">
-          <CustomButtonOutlined handlePress={deleteAccount} title={i18n.t('UserProfile.deleteAccount')} containerStyles="w-full" />
+          <CustomButtonOutlined handlePress={handleShowDeleteAlert} title={i18n.t('UserProfile.deleteProfile')} containerStyles="w-full" />
         </View>
       </View>
 
@@ -131,6 +156,14 @@ const Settings = observer(() => {
         onClose={cancelLanguageChange}
         onConfirm={confirmLanguageChange}
         message={i18n.t('settings.changeLanguage')}
+        confirmText={i18n.t('ok')}
+        cancelText={i18n.t('cancel')}
+      />
+      <CustomConfirmAlert
+        isVisible={deleteAlertVisible}
+        onClose={closeDeleteAlert}
+        onConfirm={deleteAccount}
+        message={i18n.t('UserProfile.deleteProfileMessage')}
         confirmText={i18n.t('ok')}
         cancelText={i18n.t('cancel')}
       />

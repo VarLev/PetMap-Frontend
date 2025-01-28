@@ -1039,12 +1039,14 @@
   "UserProfile": {
     "edit": "Editar",
     "logout": "Cerrar Sesión",
-    "deleteAccount": "Eliminar Cuenta",
+    "deleteProfile": "Eliminar Perfil",
     "addPet": "Agregar Mascota",
     "aboutMe": "Sobre Mí",
     "interests": "Intereses",
     "mainInfo": "Información Principal",
-    "socialMedia": "Redes Sociales"
+    "socialMedia": "Redes Sociales",
+    "deleteProfileMessage": "Su perfil y todos los datos serán eliminados por completo. ¿Está seguro de que desea eliminar el perfil?",
+    "deletedProfilerAlarm": "El perfil del usuario {{email}} ha sido eliminado 😢"
   },
   "PetProfile": {
     "edit": "Editar",

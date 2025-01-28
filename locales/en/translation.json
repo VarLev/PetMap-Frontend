@@ -1039,12 +1039,14 @@
   "UserProfile": {
     "edit": "Edit",
     "logout": "Log Out",
-    "deleteAccount": "Delete Account",
+    "deleteProfile": "Delete Profile",
     "addPet": "Add Pet",
     "aboutMe": "About Me",
     "interests": "Interests",
     "mainInfo": "Main Info",
-    "socialMedia": "Social Media"
+    "socialMedia": "Social Media",
+    "deleteProfileMessage": "Your profile and all data will be completely deleted. Are you sure you want to delete the profile?",
+    "deletedProfilerAlarm": "The user's profile {{email}} has been deleted 😢"
   },
   "PetProfile": {
     "edit": "Edit",
