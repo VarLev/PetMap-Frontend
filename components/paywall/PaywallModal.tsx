@@ -304,7 +304,7 @@ const PaywallModal: FC<PaywallModalProps> = observer(({ closeModal }) => {
 
       {/* Контент экрана внутри ScrollView, чтобы всё прокручивалось на мелких экранах */}
       <ScrollView contentContainerStyle={{ flexGrow: 1, paddingTop: 40, paddingBottom: 20 }}>
-        {isSubcribedSuccess ? <StartModalContent /> : <SuccessModalContent />}
+        {!isSubcribedSuccess ? <StartModalContent /> : <SuccessModalContent />}
       </ScrollView>
     </View>
   );

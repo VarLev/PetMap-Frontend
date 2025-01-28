@@ -76,6 +76,12 @@ export default function ProfileLayout() {
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
         }} 
       />
+      <Stack.Screen 
+        name="petShelters/mascotasenadopcion" 
+        options={{ 
+          title: 'Mascotas en Adopcion',
+          headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' } ,     }} 
+      />
     </Stack>
   );
 }

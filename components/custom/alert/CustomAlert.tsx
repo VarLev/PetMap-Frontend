@@ -6,12 +6,13 @@ import Modal from 'react-native-modal';
 interface CustomAlertProps {
   isVisible: boolean;
   onClose: () => void;
-  message: string;
-  type: 'error' | 'info'; // Ошибка или Информация
+  message?: string;
+  type?: 'error' | 'info'; // Ошибка или Информация
   title?: string;
   confirmText?: string;
-  image?: ImageSourcePropType; // Добавлен новый проп для изображения
-  backgroundColor?: string; // Добавлен новый проп для цвета фона
+  image?: ImageSourcePropType;
+  backgroundColor?: string;
+  renderContent?: () => React.ReactNode; // Проп для кастомного рендера
 }
 
 const CustomAlert: React.FC<CustomAlertProps> = ({
@@ -23,27 +24,46 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   confirmText = i18n.t("ok"),
   image,
   backgroundColor = '#FFFFFF',
+  renderContent, // Получаем кастомный рендер через пропсы
 }) => {
   return (
     <Modal isVisible={isVisible} onBackdropPress={onClose} backdropOpacity={0.6}>
       <View className="p-6 px-8 rounded-2xl" style={{ backgroundColor: backgroundColor }}>
-        {/* Если изображение передано, оно отображается здесь */}
-        {image && (
-          <Image 
-            source={image} 
-            style={{ width: 250, height: 230, alignSelf: 'center', marginBottom: 10 }} 
-            resizeMode="cover"
-          />
+        {/* Если передан renderContent, используем его */}
+        {renderContent ? (
+          renderContent()
+        ) : (
+          <>
+            {/* Если изображение передано, оно отображается здесь */}
+            {image && (
+              <Image 
+                source={image} 
+                style={{ width: 250, height: 230, alignSelf: 'center', marginBottom: 10 }} 
+                resizeMode="cover"
+              />
+            )}
+            {/* Заголовок (если нужен) */}
+            {title && (
+              <Text className="text-lg font-nunitoSansBold mb-2 text-center">
+                {title}
+              </Text>
+            )}
+            {/* Основное сообщение */}
+            {message && (
+              <Text className="text-base text-center font-nunitoSansRegular mb-4">
+                {message}
+              </Text>
+            )}
+            {/* Кнопка подтверждения */}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={onClose}
+              className="py-2 px-4 rounded"
+            >
+              <Text className="font-nunitoSansBold text-center">{confirmText}</Text>
+            </TouchableOpacity>
+          </>
         )}
-        {/* <Text className="text-lg font-nunitoSansBold mb-2">
-          {title}
-        </Text> */}
-        <Text className="text-base text-center font-nunitoSansRegular mb-1">
-          {message}
-        </Text>
-        <TouchableOpacity activeOpacity={0.8} onPress={onClose} className="py-2 px-4 rounded">
-          <Text className="font-nunitoSansBold text-center">{confirmText}</Text>
-        </TouchableOpacity>
       </View>
     </Modal>
   );
