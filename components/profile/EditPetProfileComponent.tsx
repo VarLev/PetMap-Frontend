@@ -356,7 +356,17 @@ const EditPetProfileComponent = observer(
                   containerStyles="mt-2 w-1/3 flex-1"
                   label={i18n.t('EditPetProfile.weight')}
                   value={editablePet.weight || ''}
-                  handleChange={(text) => handleFieldChange('weight', text.replace(/[^0-9]/g, ''))}
+                  handleChange={(text) => {
+                    // Заменяем запятые на точки и удаляем лишние символы
+                    let processedText = text
+                      .replace(/,/g, '.')
+                      .replace(/[^0-9.]/g, '')
+                      .replace(/\.+/g, '.') // Убираем повторяющиеся точки
+                      .replace(/^\./, '')   // Удаляем точку в начале
+                      .replace(/(\..*)\./g, '$1'); // Удаляем лишние точки
+              
+                    handleFieldChange('weight', processedText);
+                  }}
                 />
               </View>
 

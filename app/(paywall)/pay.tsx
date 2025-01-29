@@ -4,7 +4,7 @@ import PaywallModal from '@/components/paywall/PaywallModal';
 import { router } from 'expo-router';
 
 const PayWallScreen = observer(() => {
-  return <PaywallModal closeModal={()=>{router.back()}} />;
+  return <PaywallModal />;
 });
 
 export default PayWallScreen;
