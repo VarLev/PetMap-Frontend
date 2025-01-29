@@ -13,12 +13,12 @@ function ArrowHelp({onPressArrow, onPressHelp}: ArrowHelpProps) {
   return (
     <View className="flex-row justify-between items-center">
       <IconButton icon="arrow-left" size={26} onPress={onPressArrow} />
-      {/* <Text
+      <Text
         onPress={onPressHelp}
         className="text-lg font-nunitoSansBold"
       >
         {i18n.t('arrowHelp.help')}
-      </Text> */}
+      </Text>
     </View>
   );
 }

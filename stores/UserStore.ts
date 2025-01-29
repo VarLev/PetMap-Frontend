@@ -243,7 +243,7 @@ class UserStore {
         
         return this.currentUser;
       }
-      console.log('asddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd');
+      
       const currentUserString = await AsyncStorage.getItem(process.env.EXPO_PUBLIC_CURRENT_USER!);
       const currentUser = currentUserString ? JSON.parse(currentUserString) : null;
 
@@ -265,7 +265,6 @@ class UserStore {
         runInAction(() => {
           this.currentUser = new User(user);
           //this.setUserHasSubscription(user.isPremium?? false);
-          console.log('asddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd');
           this.checkRevenueCatSubscription();
         });
         
@@ -302,8 +301,11 @@ class UserStore {
       // (Название entitlements задаётся в вашем кабинете RevenueCat)
       const hasPremium = !!customerInfo.entitlements.active['Basic'];
 
+      
+      console.log(this.currentUser?.firebaseUid, customerInfo.originalAppUserId);
       runInAction(() => {
-        this.setUserHasSubscription(hasPremium);
+        this.setUserHasSubscription(this.currentUser!.isPremium ?? hasPremium);
+       
       });
 
     } catch (error) {

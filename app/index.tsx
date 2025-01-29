@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TouchableOpacity, View, Image, Platform } from "react-native";
+import { TouchableOpacity, View, Image, Platform, StatusBar } from "react-native";
 import { Text } from "react-native-paper";
 import Purchases, { LOG_LEVEL } from 'react-native-purchases';
 import OnboardingCarousel from "../components/auth/OnboardingCarousel";
@@ -41,6 +41,7 @@ const App = () => {
 
     (async () => {
       await RevenueCatService.initialize( process.env.EXPO_PUBLIC_REVENUECAT_API_KEY!);
+      await RevenueCatService.setUserEmail(userStore.currentUser?.email??'');
     })();
     setUserHasSubscription(userStore.getUserHasSubscription());
 
@@ -97,6 +98,7 @@ const App = () => {
 
   return (
     <GestureHandlerRootView >
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <SafeAreaView className="bg-white h-full">
         <View className="w-full h-full px-4 justify-center ">
           <View className="flex-row mt-2 items-start justify-center">

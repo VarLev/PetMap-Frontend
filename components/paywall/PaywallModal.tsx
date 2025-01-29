@@ -35,6 +35,7 @@ const PaywallModal = () => {
       await RevenueCatService.initialize(
         process.env.EXPO_PUBLIC_REVENUECAT_API_KEY!
       );
+      await RevenueCatService.setUserEmail(userStore.currentUser?.email??'');
       const availablePackages = await RevenueCatService.getOfferings();
       if (availablePackages) {
         setPackages(availablePackages);

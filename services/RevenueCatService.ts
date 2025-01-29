@@ -5,6 +5,7 @@ export default class RevenueCatService {
   static async initialize(apiKey: string) {
     try {
       Purchases.configure({ apiKey });
+     
     } catch (error) {
       console.error('Ошибка инициализации RevenueCat:', error);
       throw error;
@@ -97,4 +98,16 @@ export default class RevenueCatService {
       throw error;
     }
   }
+
+  
+  static async setUserEmail(email: string): Promise<void> {
+    try {
+      await Purchases.setEmail(email);
+    } catch (error) {
+      console.error('Ошибка при установке email:', error);
+      throw error;
+    }
+  }
+
+  
 }

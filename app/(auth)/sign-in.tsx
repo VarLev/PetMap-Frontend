@@ -15,6 +15,7 @@ import CustomLoadingButton from "@/components/custom/buttons/CustomLoadingButton
 import ArrowHelp from "@/components/auth/arrowHelp";
 import i18n from "@/i18n"; // Импорт i18n для мультиязычности
 import { UserStatus } from "@/dtos/enum/UserStatus";
+import SupportAlert from "@/components/custom/alert/SupportAlert";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -22,6 +23,7 @@ const SignIn = () => {
   const [isValidEmail, setIsValidEmail] = useState(true);
 
   const [secureText, setSecureText] = useState(true); // состояние видимости пароля
+  const [supportAlertVisible, setSupportAlertVisible] = useState(false); // состояние видимости алерта
 
   const handleLogin = async () => {
     Keyboard.dismiss();
@@ -71,7 +73,7 @@ const SignIn = () => {
           <View>
             <ArrowHelp
               onPressArrow={() => router.replace("/")}
-              onPressHelp={tempfunc}
+              onPressHelp={()=>setSupportAlertVisible(true)}
             />
             {/* временная ссылка для отладки */}
 
@@ -163,6 +165,10 @@ const SignIn = () => {
           </View>
         </View>
       </ScrollView>
+      <SupportAlert
+        isVisible={supportAlertVisible}
+        onClose={() => setSupportAlertVisible(false)}
+      />
     </SafeAreaView>
   );
 };
