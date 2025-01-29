@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import { View, Text } from "react-native";
 import { Icon } from "react-native-paper";
+import i18n from "@/i18n";
 
 type IconProps = {
   icon: string;
@@ -14,49 +15,49 @@ const TableIcon: FC<IconProps> = ({ icon, color }) => (
 const benefits = [
   {
     key: 1,
-    name: "Нет ограничений по количеству чатов",
+    name: `${i18n.t("paywall.benefits.item1")}`,
     base: <TableIcon icon="close" color="white" />,
     premium: <TableIcon icon="check" color="#ACFFB9" />,
   },
   {
     key: 2,
-    name: "Мультиязычные подсказки (пример)",
-    base: "2 в день",
+    name: `${i18n.t("paywall.benefits.item2")}`,
+    base: `2 ${i18n.t("paywall.perDay")}`,
     premium: <TableIcon icon="all-inclusive" color="#ACFFB9" />,
   },
   {
     key: 3,
-    name: "Количество созданных меток",
-    base: "20 шт",
+    name: `${i18n.t("paywall.benefits.item3")}`,
+    base: "20",
     premium: <TableIcon icon="all-inclusive" color="#ACFFB9" />,
   },
   {
     key: 4,
-    name: "Доступ ко всем фильтрам",
+    name: `${i18n.t("paywall.benefits.item4")}`,
     base: <TableIcon icon="close" color="white" />,
     premium: <TableIcon icon="check" color="#ACFFB9" />,
   },
   {
     key: 5,
-    name: "Поиск на карте по прямому адресу",
+    name: `${i18n.t("paywall.benefits.item5")}`,
     base: <TableIcon icon="close" color="white" />,
     premium: <TableIcon icon="check" color="#ACFFB9" />,
   },
   {
     key: 6,
-    name: "Перевод всего пользовательского текста",
+    name: `${i18n.t("paywall.benefits.item6")}`,
     base: <TableIcon icon="close" color="white" />,
     premium: <TableIcon icon="check" color="#ACFFB9" />,
   },
   {
     key: 7,
-    name: "Реклама",
+    name: `${i18n.t("paywall.benefits.item7")}`,
     base: <TableIcon icon="check" color="white" />,
     premium: <TableIcon icon="close" color="#ACFFB9" />,
   },
   {
     key: 8,
-    name: "Увеличение каждого бонуса на +0.5%",
+    name: `${i18n.t("paywall.benefits.item8")}`,
     base: <TableIcon icon="close" color="white" />,
     premium: <TableIcon icon="check" color="#ACFFB9" />,
   },
@@ -66,7 +67,7 @@ const FullBenefitsTable: FC = () => {
   return (
     <View className="mb-[18px]">
       <Text className="text-[20px] text-center text-white font-nunitoSansBold mb-[16px]">
-        Что вы получите?
+        {i18n.t("paywall.whatGet")}
       </Text>
 
       {/* Обёртка для таблицы */}
@@ -74,8 +75,8 @@ const FullBenefitsTable: FC = () => {
         {/* Заголовок таблицы */}
         <View className="flex-row items-center py-[10px] mx-[16px]">
           <Text className="w-1/2 text-white" />
-          <Text className="w-1/4 text-center text-white">Обычный</Text>
-          <Text className="w-1/4 text-center text-[#ACFFB9]">Премиум</Text>
+          <Text className="w-1/4 text-center text-white">{i18n.t("paywall.standard")}</Text>
+          <Text className="w-1/4 text-center text-[#ACFFB9]">{i18n.t("paywall.premium")}</Text>
         </View>
 
         {/* Динамические строки преимуществ */}
