@@ -1497,7 +1497,8 @@
       "item7": "Advertising",
       "item8": "Increase each bonus by +0.5%"
     },
-    "perDay": "per day",
+    "perDay": "2 per day",
+    "markers": "20",
     "purchaseError": "Subscription purchase error:",
     "year": "year",
     "month": "month",
