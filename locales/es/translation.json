@@ -1499,7 +1499,8 @@
       "item7": "Publicidad",
       "item8": "Aumento de cada bono en +0.5%"
     },
-    "perDay": "por día",
+    "perDay": "2 por día",
+    "markers": "20",
     "purchaseError": "Error al comprar la suscripción:",
     "year": "año",
     "month": "mes",

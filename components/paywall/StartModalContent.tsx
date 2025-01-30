@@ -36,7 +36,7 @@ const StartModalContent: FC<StartModalContentProps> = ({
     return (
     <View className="flex-col justify-between h-full px-4">
       {/* Шапка: стрелка назад (если benefits открыты) и крестик справа */}
-      <View className="flex-row justify-between items-center mb-4">
+      <View className="flex-row justify-between items-center">
         {isFullBenefitsVisible && (
           <IconButton
             icon="arrow-left"
@@ -62,9 +62,7 @@ const StartModalContent: FC<StartModalContentProps> = ({
           style={{ height: 220 }}
         />
       ) : (
-        <View className="mt-4">
-          <FullBenefitsTable />
-        </View>
+        <FullBenefitsTable />
       )}
       {/* Заголовок и описание */}
       <Text className="text-[20px] font-nunitoSansBold text-center text-white">
