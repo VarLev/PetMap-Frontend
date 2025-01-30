@@ -680,14 +680,18 @@ class UserStore {
     return handleAxiosError(error);
   }
 }
-deleteUserAccountFromStore = async () => {
+
+
+async deleteUserAccount(id: string) {
   try {
-    this.currentUser = null;
-    await this.signOut();
-  } catch (error) {
-    console.error('Failed to delete user account from store:', error);
+    await apiClient.delete(`/users/${id}`)
+    console.log('Пользователь удален из PostgreSQL', id);
+  } 
+  catch (error) {
+    return handleAxiosError(error);
   }
-}
+  }
+
 
 }
 const userStore = new UserStore();
