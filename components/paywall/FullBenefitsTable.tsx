@@ -15,49 +15,49 @@ const TableIcon: FC<IconProps> = ({ icon, color }) => (
 const benefits = [
   {
     key: 1,
-    name: `${i18n.t("paywall.benefits.item1")}`,
+    name: "paywall.benefits.item1",
     base: <TableIcon icon="close" color="white" />,
     premium: <TableIcon icon="check" color="#ACFFB9" />,
   },
   {
     key: 2,
-    name: `${i18n.t("paywall.benefits.item2")}`,
+    name: "paywall.benefits.item2",
     base: `2 ${i18n.t("paywall.perDay")}`,
     premium: <TableIcon icon="all-inclusive" color="#ACFFB9" />,
   },
   {
     key: 3,
-    name: `${i18n.t("paywall.benefits.item3")}`,
+    name: "paywall.benefits.item3",
     base: "20",
     premium: <TableIcon icon="all-inclusive" color="#ACFFB9" />,
   },
   {
     key: 4,
-    name: `${i18n.t("paywall.benefits.item4")}`,
+    name: 'paywall.benefits.item4',
     base: <TableIcon icon="close" color="white" />,
     premium: <TableIcon icon="check" color="#ACFFB9" />,
   },
   {
     key: 5,
-    name: `${i18n.t("paywall.benefits.item5")}`,
+    name: 'paywall.benefits.item5',
     base: <TableIcon icon="close" color="white" />,
     premium: <TableIcon icon="check" color="#ACFFB9" />,
   },
   {
     key: 6,
-    name: `${i18n.t("paywall.benefits.item6")}`,
+    name: 'paywall.benefits.item6',
     base: <TableIcon icon="close" color="white" />,
     premium: <TableIcon icon="check" color="#ACFFB9" />,
   },
   {
     key: 7,
-    name: `${i18n.t("paywall.benefits.item7")}`,
+    name: 'paywall.benefits.item7',
     base: <TableIcon icon="check" color="white" />,
     premium: <TableIcon icon="close" color="#ACFFB9" />,
   },
   {
     key: 8,
-    name: `${i18n.t("paywall.benefits.item8")}`,
+    name: 'paywall.benefits.item8',
     base: <TableIcon icon="close" color="white" />,
     premium: <TableIcon icon="check" color="#ACFFB9" />,
   },
@@ -87,7 +87,7 @@ const FullBenefitsTable: FC = () => {
               idx !== 0 ? "border-t border-[#BFA8FF]" : ""
             }`}
           >
-            <Text className="w-1/2 text-white">{benefit.name}</Text>
+            <Text className="w-1/2 text-white">{i18n.t(benefit.name)}</Text>
             <Text className="w-1/4 text-center text-white">{benefit.base}</Text>
             <Text className="w-1/4 text-center text-[#ACFFB9]">
               {benefit.premium}
