@@ -148,7 +148,8 @@ const EditPetProfileComponent = observer(
     }, [editablePet]);
 
     const CheckErrors = () => {
-      if (!editablePet.petName || !birthDate || !editablePet.breed) {
+      console.log(!editablePet.breed)
+      if (!editablePet.petName || !birthDate ) {
         // Вывод ошибки, если не все обязательные поля заполнены
         alert(i18n.t('EditPetProfile.errors.missingFields'));
         return false;
@@ -343,7 +344,7 @@ const EditPetProfileComponent = observer(
                 tags={editablePet.animalType === 1 ? (i18n.t('tags.breedsCat') as string[]) : (i18n.t('tags.breedsDog') as string[])}
                 label={i18n.t('EditPetProfile.breed')}
                 placeholder={i18n.t('EditPetProfile.selectBreed')}
-                initialSelectedTag={editablePet.breed || ''}
+                initialSelectedTag={editablePet.breed || 0}
                 onChange={(text) => handleFieldChange('breed', text)}
                 searchable={true}
                 listMode="MODAL"
