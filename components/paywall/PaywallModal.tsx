@@ -150,6 +150,7 @@ const PaywallModal = () => {
               setSubscriptionType={setSubscriptionType}
               handleSheetOpen={handleSheetOpen}
               handleOpenBenefits={openBenefits}
+              handleSubmitPayment={() => handleSubmitPayment(subscriptionType)}
             />
           )}
         </MainModalContent>

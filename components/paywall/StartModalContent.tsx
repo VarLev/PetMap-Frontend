@@ -16,6 +16,7 @@ type StartModalContentProps = {
     setSubscriptionType: Dispatch<SetStateAction<string>>;
     handleSheetOpen: (subType: string) => void;
     handleOpenBenefits: () => void;
+    handleSubmitPayment: () => void;
 }
 
 // Стартовый контент (до покупки)
@@ -28,7 +29,8 @@ const StartModalContent: FC<StartModalContentProps> = ({
     handleCloseModal,
     setSubscriptionType,
     handleSheetOpen,
-    handleOpenBenefits
+    handleOpenBenefits,
+    handleSubmitPayment
 }) => {
     const marginBottom = isFullBenefitsVisible ? 96 : 0;
 
@@ -108,7 +110,7 @@ const StartModalContent: FC<StartModalContentProps> = ({
       {/* Пробная подписка */}
       <CustomButtonOutlined
         title={i18n.t("paywall.tryFree")}
-        handlePress={() => {}}
+        handlePress={handleSubmitPayment}
         containerStyles="w-full bg-[#ACFFB9] mt-6 h-[46px]"
         textStyles="text-[16px]"
         fontWeight="font-semibold"
