@@ -32,10 +32,9 @@ const StartModalContent: FC<StartModalContentProps> = ({
     handleOpenBenefits,
     handleSubmitPayment
 }) => {
-    const marginBottom = isFullBenefitsVisible ? 96 : 0;
 
     return (
-    <View className="flex-col px-4">
+    <View className="flex-col justify-between h-full px-4">
       {/* Шапка: стрелка назад (если benefits открыты) и крестик справа */}
       <View className="flex-row justify-between items-center mb-4">
         {isFullBenefitsVisible && (
@@ -51,6 +50,7 @@ const StartModalContent: FC<StartModalContentProps> = ({
           size={40}
           iconColor="white"
           onPress={handleCloseModal}
+          className={!isFullBenefitsVisible ? "absolute left-[0] top-[0] z-[1]" : ""}
         />
       </View>
       {/* Либо показываем картинку, либо таблицу */}
@@ -59,7 +59,7 @@ const StartModalContent: FC<StartModalContentProps> = ({
           source={require('@/assets/images/paywall/Placeholder.png')}
           resizeMode="contain"
           className="self-center"
-          style={{ height: 200 }}
+          style={{ height: 220 }}
         />
       ) : (
         <View className="mt-4">
@@ -75,7 +75,7 @@ const StartModalContent: FC<StartModalContentProps> = ({
       </Text>
 
       {/* Радио-кнопки выбора подписки */}
-      <View style={{marginTop: 28, marginBottom: marginBottom}}>
+      <View className={`mt-[28px] ${isFullBenefitsVisible ? 'mb-[96px]' : ''}`}>
         <RadioButton.Group
           onValueChange={(newValue) => setSubscriptionType(newValue)}
           value={subscriptionType}

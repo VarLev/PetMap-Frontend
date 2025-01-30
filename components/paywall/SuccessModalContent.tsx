@@ -20,7 +20,7 @@ const SuccessModalContent = () => {
         size={40}
         iconColor="white"
         onPress={closeModal}
-        style={{position: "absolute", right: 0, zIndex: 1}}
+        className="absolute right-[0] z-[1]"
       />
       {/* Картинка «звёздочка сверху» (опционально) */}
       <Image
