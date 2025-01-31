@@ -70,7 +70,7 @@ const SignUp = () => {
       setAlertVisible(true);
       router.replace('/onboarding');
     } catch (error: any) {
-      Alert.alert('Registration Error', error.message.replace('Firebase:', ''));
+      Alert.alert(i18n.t("signUp.registrationError"), error.message.replace('Firebase:', ''));
     }
   };
 

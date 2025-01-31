@@ -85,7 +85,8 @@
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "noAccount": "¿No tenés una cuenta?",
     "register": "¡Registrate!",
-    "invalidEmail": "Por favor, ingresá un email válido"
+    "invalidEmail": "Por favor, ingresá un email válido",
+    "loginError": "Error de inicio de sesión"
   },
   "signUpMailValidation": {
     "forgotPassword": "Uy... te olvidaste tu contraseña",
@@ -107,7 +108,9 @@
     "saveButton": "Guardar",
     "passwordMismatch": "Las contraseñas no coinciden",
     "noAccount": "¿No tenés una cuenta?",
-    "register": "Registrate"
+    "register": "Registrate",
+    "success": "Éxito",
+    "successMessage": "¡Cuenta creada con éxito! Se ha enviado un correo de verificación a tu dirección de correo electrónico. Por favor, revisa tu bandeja de entrada y verifica tu correo para completar el registro."
   },
   "signUp": {
     "title": "¡Sumate a PetMap!",
@@ -123,7 +126,8 @@
     "registerButton": "Registrarte",
     "alreadyHaveAccount": "¿Ya tenés una cuenta?",
     "login": "¡Iniciá sesión!",
-    "invalidEmail": "Por favor, ingresá un email válido"
+    "invalidEmail": "Por favor, ingresá un email válido",
+    "registrationError": "Error de registro"
   },
   "arrowHelp": {
     "help": "Ayuda"

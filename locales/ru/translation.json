@@ -85,7 +85,8 @@
     "forgotPassword": "Забыли пароль",
     "noAccount": "Нет аккаунта?",
     "register": "Зарегистрироваться!",
-    "invalidEmail": "Введите корректный email"
+    "invalidEmail": "Введите корректный email",
+    "loginError": "Ошибка входа"
   },
   "signUpMailValidation": {
     "forgotPassword": "Упс... вы забыли пароль",
@@ -107,7 +108,9 @@
     "saveButton": "Сохранить",
     "passwordMismatch": "Пароли не совпадают",
     "noAccount": "Ещё нет аккаунта?",
-    "register": "Зарегистрироваться"
+    "register": "Зарегистрироваться",
+    "success": "Успех",
+    "successMessage": "Аккаунт успешно создан! Письмо с подтверждением было отправлено на ваш адрес электронной почты. Пожалуйста, проверьте свою почту и подтвердите адрес, чтобы завершить регистрацию."
   },
   "signUp": {
     "title": "Станьте частью PetMap!",
@@ -123,7 +126,8 @@
     "registerButton": "Зарегистрироваться",
     "alreadyHaveAccount": "У вас уже есть аккаунт?",
     "login": "Войти!",
-    "invalidEmail": "Введите корректный email"
+    "invalidEmail": "Введите корректный email",
+    "registrationError": "Ошибка регистрации"
   },
   "arrowHelp": {
     "help": "Помощь"
