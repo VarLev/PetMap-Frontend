@@ -27,13 +27,10 @@ const SignUpPasswordReset = () => {
 
     try {
       await userStore.registerUser(email, password);
-      Alert.alert(
-        "Success",
-        "Account created successfully! A verification email has been sent to your email address. Please check your inbox and verify your email to complete the registration."
-      );
+      Alert.alert(i18n.t("signUpPasswordReset.success"), i18n.t("signUpPasswordReset.successMessage"));
       router.replace("/onboarding");
     } catch (error: any) {
-      Alert.alert("Registration Error", error.message.replace("Firebase:", ""));
+      Alert.alert(i18n.t("signUp.registrationError"), error.message.replace("Firebase:", ""));
     }
   };
 

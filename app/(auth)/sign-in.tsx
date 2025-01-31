@@ -42,7 +42,7 @@ const SignIn = () => {
       else
         router.replace("/screenholder");
     } catch (error: any) {
-      Alert.alert("Login Error", error.message.replace("Firebase:", ""));
+      Alert.alert(i18n.t("signIn.loginError"), error.message.replace("Firebase:", ""));
     }
   };
 

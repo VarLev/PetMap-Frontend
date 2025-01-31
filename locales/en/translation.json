@@ -85,7 +85,8 @@
     "forgotPassword": "Forgot password",
     "noAccount": "Don't have an account?",
     "register": "Sign up!",
-    "invalidEmail": "Please enter a valid email"
+    "invalidEmail": "Please enter a valid email",
+    "loginError": "Login Error"
   },
   "signUpMailValidation": {
     "forgotPassword": "Oops... you forgot your password",
@@ -107,7 +108,9 @@
     "saveButton": "Save",
     "passwordMismatch": "Passwords do not match",
     "noAccount": "Don't have an account?",
-    "register": "Sign up"
+    "register": "Sign up",
+    "success": "Success",
+    "successMessage": "Account created successfully! A verification email has been sent to your email address. Please check your inbox and verify your email to complete the registration."
   },
   "signUp": {
     "title": "Join PetMap!",
@@ -123,7 +126,8 @@
     "registerButton": "Sign Up",
     "alreadyHaveAccount": "Already have an account?",
     "login": "Log in!",
-    "invalidEmail": "Please enter a valid email"
+    "invalidEmail": "Please enter a valid email",
+    "registrationError": "Registration Error"
   },
   "arrowHelp": {
     "help": "Help"
