@@ -1,5 +1,4 @@
 import { makeAutoObservable } from 'mobx';
-import axios from 'axios';
 import apiClient from '@/hooks/axiosConfig';
 import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import { randomUUID } from 'expo-crypto';
@@ -9,8 +8,9 @@ import { IPet } from '@/dtos/Interfaces/pet/IPet';
 import { Pet } from '@/dtos/classes/pet/Pet';
 import { getDownloadURL, ref, uploadBytes, deleteObject, listAll } from 'firebase/storage';
 import { storage } from '@/firebaseConfig';
-import userStore from './UserStore';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
+import { IPhoto } from '@/dtos/Interfaces/IPhoto';
+import { handleAxiosError } from '@/utils/axiosUtils';
 
 class PetStore {
   currentPetProfile: IPet | null = null;
@@ -48,26 +48,7 @@ class PetStore {
           await apiClient.post('/petprofiles/create', this.currentPetProfile);
       }
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-          message: error.message,
-          name: error.name,
-          code: error.code,
-          config: error.config,
-          response: error.response
-            ? {
-                data: error.response.data,
-                status: error.response.status,
-                headers: error.response.headers,
-              }
-            : null,
-        });
-      } else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
-      throw error;
+      return handleAxiosError(error);
     }
   }
 
@@ -81,26 +62,7 @@ class PetStore {
         return newPet!;
       }
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-          message: error.message,
-          name: error.name,
-          code: error.code,
-          config: error.config,
-          response: error.response
-            ? {
-                data: error.response.data,
-                status: error.response.status,
-                headers: error.response.headers,
-              }
-            : null,
-        });
-      } else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
-      throw error;
+      return handleAxiosError(error);
     }
   }
 
@@ -111,26 +73,7 @@ class PetStore {
       this.setPetProfile(pet);
       return pet;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Подробная информация об ошибке Axios
-        console.error('Axios error:', {
-          message: error.message,
-          name: error.name,
-          code: error.code,
-          config: error.config,
-          response: error.response
-            ? {
-                data: error.response.data,
-                status: error.response.status,
-                headers: error.response.headers,
-              }
-            : null,
-        });
-      } else {
-        // Общая информация об ошибке
-        console.error('Error:', error);
-      }
-      throw error;
+      return handleAxiosError(error);
     }
   }
 
@@ -143,12 +86,29 @@ class PetStore {
 
       }
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Axios error:', error);
-      } else {
-        console.error('Error:', error);
-      }
-      throw error;
+      return handleAxiosError(error);
+    }
+  }
+
+  async uploadPetPhoto(photo: IPhoto) {
+    try {
+      const id = randomUUID();
+      const url = await this.uploadImage(photo.url!, `pets/${photo.petProfileId}/photos/${id}`);
+      photo.id = id;
+      photo.url = url;
+      await apiClient.post('/petprofiles/add-photo', photo);
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+   
+  }
+
+  async getPetPhotos(petId: string): Promise<IPhoto[] | undefined> {
+    try {
+      const responce = await apiClient.get(`/petprofiles/photos/${petId}`);
+      return responce.data as IPhoto[];
+    } catch (error) {
+      return handleAxiosError(error);
     }
   }
 
@@ -158,12 +118,17 @@ class PetStore {
         await apiClient.delete(`/petprofiles/delete/${petId}`);
       }
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Axios error:', error);
-      } else {
-        console.error('Error:', error);
+       return handleAxiosError(error);
+    }
+  }
+
+  async deletePetPhoto(photoId: string) {
+    try {
+      if (photoId) {
+        await apiClient.delete(`/photo/${photoId}`);
       }
-      throw error;
+    } catch (error) {
+       return handleAxiosError(error);
     }
   }
 
@@ -172,7 +137,7 @@ class PetStore {
       mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [3, 3],
-      quality: 0.8,
+      quality: 1,
     });
 
     if (!result.canceled) {
@@ -180,9 +145,11 @@ class PetStore {
     }
   }
 
-  async uploadUserThumbnailImage(pet: IPet): Promise<string | undefined> {
+  async uploadPetThumbnail(pet: IPet): Promise<string | undefined> {
     return this.uploadImage(pet.thumbnailUrl!, `pets/${pet.id}/thumbnail`);
   }
+
+
 
   async uploadImage(image: string, pathToSave: string): Promise<string | undefined> {
     if (!image) return;
@@ -200,8 +167,8 @@ class PetStore {
   async compressImage(uri: string): Promise<string> {
     const manipResult = await manipulateAsync(
       uri,
-      [{ resize: { width: 400 } }], // Изменение размера изображения
-      { compress: 0.5, format: SaveFormat.JPEG }
+      [{ resize: { width: 600 } }], // Изменение размера изображения
+      { compress:0.8, format: SaveFormat.JPEG }
     );
     return manipResult.uri;
   }
@@ -223,7 +190,7 @@ class PetStore {
         console.log('Питомцы удалены из FireStore');
       }
     } catch (error) {
-      console.error('Error:', error);
+      return handleAxiosError(error);
     }
   }
 }

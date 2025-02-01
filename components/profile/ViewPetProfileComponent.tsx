@@ -1,6 +1,6 @@
 import { Pet } from '@/dtos/classes/pet/Pet';
 import React, { useEffect, useRef, useState } from 'react';
-import { StatusBar, View, Image, StyleSheet, Platform } from 'react-native';
+import { StatusBar, View, Image, StyleSheet, Platform, Dimensions } from 'react-native';
 import { Text, IconButton, Menu, Divider } from 'react-native-paper';
 import { calculateDogAge, getTagsByIndex } from '@/utils/utils';
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -18,6 +18,9 @@ import MenuItemWrapper from '@/components/custom/menuItem/MunuItemWrapper';
 import i18n from '@/i18n';
 import { BG_COLORS } from '@/constants/Colors';
 import userStore from '@/stores/UserStore';
+import { Photo } from '@/dtos/classes/Photo';
+import Animated from 'react-native-reanimated';
+import Carousel from 'react-native-reanimated-carousel';
 
 const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: () => void }) => {
   const sheetRef = useRef<BottomSheet>(null);
@@ -25,6 +28,47 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [rightIcon, setRightIcon] = useState<string | null>();
   const [isIOS, setIsIOS] = useState(false);
+  
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const { width, height } = Dimensions.get('window');
+  const [petPhotos, setPetPhotos] = useState<Photo[]>();
+  
+  // Если фотографии загружены – используем petPhotos, иначе дефолтное изображение
+   const carouselData = petPhotos && petPhotos.length > 0 
+    ? petPhotos 
+    : [new Photo({
+        id: 'default',
+        url: pet.thumbnailUrl || (pet.animalType === 1 ? petCatUriImage : petUriImage),
+        isMain: true,
+        dateCreated: new Date(),
+        userId: pet.userId,
+        petProfileId: pet.id
+      })];
+
+  // Хук для загрузки фотографий питомца
+  useEffect(() => {
+    const fetchPhotos = async () => {
+      try {
+    
+        // Создаем объект для thumbnail, который всегда должен быть первым
+        const thumbnailPhoto = new Photo({
+          id: 'thumbnail',
+          url: pet.thumbnailUrl || (pet.animalType === 1 ? petCatUriImage : petUriImage),
+          isMain: true,
+          dateCreated: new Date(),
+          userId: pet.userId,
+          petProfileId: pet.id
+        });
+        // Обновляем состояние: первым элементом всегда идет thumbnailPhoto
+        setPetPhotos([thumbnailPhoto, ...pet.photos || []]);
+        console.log('Pet photos:', petPhotos);
+      } catch (error) {
+        console.error('Ошибка загрузки фотографий питомца: ', error);
+      }
+    };
+
+    fetchPhotos();
+  }, [pet.id, pet.thumbnailUrl, pet.animalType, pet.userId]);
 
   useEffect(() => {
     setIsIOS(Platform.OS === 'ios');
@@ -39,6 +83,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
         setRightIcon(null);
       }
     });
+
   }, [pet]);
 
   const openMenu = () => setMenuVisible(true);
@@ -59,7 +104,32 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
       <View style={{ alignItems: 'center' }}>
         <StatusBar backgroundColor="transparent" translucent />
         <View className="relative w-full aspect-square">
-          <Image source={{ uri: pet.thumbnailUrl|| (pet.animalType === 1 ? petCatUriImage : petUriImage) }} className="w-full h-full" />
+          {/* <Image source={{ uri: pet.thumbnailUrl|| (pet.animalType === 1 ? petCatUriImage : petUriImage) }} className="w-full h-full" /> */}
+          <Carousel
+            loop
+            vertical
+            autoPlay={false}
+            data={carouselData}
+            width={width} // Обязательно для вертикальной ориентации
+            height={width} // Используем ширину экрана для квадратного формата
+            style={{ width: '100%', height: '100%' }}
+            onSnapToItem={(index) => setCurrentIndex(index)}
+            renderItem={({ item }) => (
+              <Animated.View style={{ flex: 1 }}>
+                <Image 
+                  source={{ uri: item.url }} 
+                  style={[styles.carouselImage, { 
+                    width: width,
+                    height: width // Сохраняем квадратный формат
+                  }]} 
+                  resizeMode="cover"
+                />
+              </Animated.View>
+            )}
+          />
+
+          {renderPagination()}
+          
           <View style={styles.iconContainer} className={`${isIOS ? 'mt-14' : 'mt-6'} `}>
             {isCurrentUser && (
               <Menu
@@ -325,6 +395,24 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
       />
     </GestureHandlerRootView>
   );
+   // Функция для отрисовки пагинации (точек)
+   function renderPagination() {
+    return (
+      <View style={styles.paginationContainer}>
+        {carouselData.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.paginationDot,
+              currentIndex === index % carouselData.length 
+                ? styles.activeDot 
+                : styles.inactiveDot
+            ]}
+          />
+        ))}
+      </View>
+    );
+  }
 });
 
 export default ViewPetProfileComponent;
@@ -358,5 +446,28 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     marginTop:100
+  },
+  carouselImage: {
+    width: '100%',
+    height: '100%',
+  },
+  paginationContainer: {
+    position: 'absolute',
+    left: 20,
+    top: '50%',
+    transform: [{ translateY: -20 }],
+    zIndex: 1000,
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginVertical: 4,
+  },
+  activeDot: {
+    backgroundColor: BG_COLORS.indigo[700],
+  },
+  inactiveDot: {
+    backgroundColor: '#ffffff80',
   },
 });

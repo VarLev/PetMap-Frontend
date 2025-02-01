@@ -391,8 +391,8 @@ export const calculateTimeUntilNextWalk = (advrt: IWalkAdvrtDto): string | undef
 export async function compressImage(uri: string): Promise<string> {
   const manipResult = await manipulateAsync(
     uri,
-    [{ resize: { width: 400 } }], // Изменение размера изображения
-    { compress: 0.5, format: SaveFormat.JPEG }
+    [{ resize: { width: 600 } }], // Изменение размера изображения
+    { compress: 0.8, format: SaveFormat.JPEG }
   );
   return manipResult.uri;
 }

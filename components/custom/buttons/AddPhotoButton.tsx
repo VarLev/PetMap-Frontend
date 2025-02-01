@@ -17,7 +17,7 @@ const AddPhotoButton: React.FC<AddPhotoButtonProps> = ({
   buttonText,
   onImageSelected,
   compressQuality = 0.8,
-  resizeWidth = 400,
+  resizeWidth = 600,
   aspectRatio = [4, 3],
 }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);

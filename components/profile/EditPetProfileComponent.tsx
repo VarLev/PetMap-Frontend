@@ -1,10 +1,9 @@
-import React, { useState, useMemo, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Platform, Modal } from 'react-native';
 import { Button, Checkbox, Divider, IconButton } from 'react-native-paper';
 import { Pet } from '@/dtos/classes/pet/Pet';
 import CustomOutlineInputText from '../custom/inputs/CustomOutlineInputText';
 import CustomDropdownList from '../custom/selectors/CustomDropdownList';
-import PhotoSelector from '../common/PhotoSelector';
 import { observer } from 'mobx-react-lite';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { IPet } from '@/dtos/Interfaces/pet/IPet';
@@ -22,6 +21,8 @@ import i18n from '@/i18n';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
 import { petCatUriImage, petUriImage } from '@/constants/Strings';
+import PhotoSelectorCarusel from '../common/PhotoSelectorCarusel';
+import { Photo } from '@/dtos/classes/Photo';
 
 const TASK_IDS = {
   petEdit: {
@@ -47,7 +48,16 @@ const TASK_IDS = {
 const EditPetProfileComponent = observer(
   ({ pet, onSave, onCancel }: { pet: IPet; onSave: (updatedPet: Pet) => void; onCancel: () => void }) => {
     const [editablePet, setEditablePet] = useState<Pet>(new Pet({ ...pet }));
-    const [petPhoto, setPetPhoto] = useState(editablePet.thumbnailUrl);
+    const [petMainPhoto, setPetMainPhoto] = useState<Photo>(
+      new Photo({
+        url: pet.thumbnailUrl || (pet.animalType === 1 ? petCatUriImage : petUriImage)
+      })
+    );
+    const [petOthePhotos, setPetOthePhotos] = useState<Photo[]>(pet.photos || []);
+    
+    // Состояние для комбинированного массива фотографий: первым идёт petMainPhoto, далее остальные
+    const [petAllPhoto, setPetAllPhoto] = useState<Photo[]>([petMainPhoto, ...petOthePhotos]);
+
     const [birthDate, setBirthDate] = useState(parseDateToString(editablePet.birthDate || new Date()));
 
     const [temperament, setTemperament] = useState(0);
@@ -129,13 +139,7 @@ const EditPetProfileComponent = observer(
       description: 'photo',
     });
 
-    const handleFieldChange = (field: keyof Pet, value: any) => {
-      setEditablePet((prevPet) => {
-        const updatedPet = { ...prevPet, [field]: value };
-        return updatedPet;
-      });
-    };
-
+    
     // Debugging useEffect to see the changes in editablePet
     useEffect(() => {
       setFriendly(editablePet.friendliness ?? 0);
@@ -146,6 +150,19 @@ const EditPetProfileComponent = observer(
         setIsNewPet(true);
       }
     }, [editablePet]);
+
+    // Обновляем комбинированный массив фотографий, когда меняются главное фото или остальные
+    useEffect(() => {
+      setPetAllPhoto([petMainPhoto, ...petOthePhotos]);
+    }, [petMainPhoto, petOthePhotos]);
+
+    const handleFieldChange = (field: keyof Pet, value: any) => {
+      setEditablePet((prevPet) => {
+        const updatedPet = { ...prevPet, [field]: value };
+        return updatedPet;
+      });
+    };
+
 
     const CheckErrors = () => {
       console.log(!editablePet.breed)
@@ -164,17 +181,17 @@ const EditPetProfileComponent = observer(
       return true;
     };
 
-    const SetPetPhoto = async () => {
-      const image = await petStore.setPetImage();
-      if (image) {
-        setEditablePet({ ...editablePet, thumbnailUrl: image });
-        setPetPhoto(image);
-      }
-    };
+    // const SetPetPhoto = async () => {
+    //   const image = await petStore.setPetImage();
+    //   if (image) {
+    //     setEditablePet({ ...editablePet, thumbnailUrl: image });
+    //     setPetPhoto(image);
+    //   }
+    // };
 
     const handleSave = async () => {
       if (!CheckErrors()) return;
-      const resp = await petStore.uploadUserThumbnailImage(editablePet);
+      const resp = await petStore.uploadPetThumbnail(editablePet);
       editablePet.thumbnailUrl = resp;
       editablePet.birthDate = parseStringToDate(birthDate);
       try {
@@ -193,7 +210,7 @@ const EditPetProfileComponent = observer(
 
       // Преобразуем дату рождения
 
-      const resp = await petStore.uploadUserThumbnailImage(editablePet);
+      const resp = await petStore.uploadPetThumbnail(editablePet);
       editablePet.thumbnailUrl = resp;
       editablePet.birthDate = parseStringToDate(birthDate);
       editablePet.animalType = editablePet.animalType || 0;
@@ -209,11 +226,11 @@ const EditPetProfileComponent = observer(
       }
     };
 
-    const DeletePetPhoto = async () => {
-      const newAvatar = ''; // Логика для удаления фото питомца
-      setPetPhoto(newAvatar);
-      setEditablePet((prevPet) => ({ ...prevPet, thumbnailUrl: newAvatar }));
-    };
+    // const DeletePetPhoto = async () => {
+    //   const newAvatar = ''; // Логика для удаления фото питомца
+    //   setPetPhoto(newAvatar);
+    //   setEditablePet((prevPet) => ({ ...prevPet, thumbnailUrl: newAvatar }));
+    // };
 
     const handleTemperament = (rating: number) => {
       setTemperament(rating);
@@ -266,6 +283,83 @@ const EditPetProfileComponent = observer(
       }
     };
 
+   
+
+    // 1. Добавление новой фотографии
+    const handleAddPhoto = async () => {
+      try {
+        const image = await petStore.setPetImage();
+        if (image) {
+          const newPhoto = new Photo({
+            url: image,
+            userId: editablePet.userId,
+            petProfileId: editablePet.id
+          });
+          // Добавляем новую фотографию в дополнительные
+          setPetOthePhotos(prev => [...prev, newPhoto]);
+          await petStore.uploadPetPhoto(newPhoto);
+        }
+      } catch (error) {
+        console.error('Ошибка при добавлении фото:', error);
+      }
+    };
+
+
+    // 2. Замена существующей фотографии
+    const handleReplacePhoto = async (index: number) => {
+      try {
+        const image = await petStore.setPetImage();
+        if (image) {
+          if (index === 0) {
+            // Замена главного фото (thumbnail)
+            const updatedThumbnail = new Photo({ url: image });
+            setPetMainPhoto(updatedThumbnail);
+            setEditablePet(prev => ({ ...prev, thumbnailUrl: image }));
+          } else {
+            // Замена одной из дополнительных фотографий
+            const photoIndex = index - 1;
+            if (petOthePhotos.length > photoIndex) {
+              const updatedPhotos = [...petOthePhotos];
+              updatedPhotos[photoIndex] = new Photo({
+                ...updatedPhotos[photoIndex],
+                url: image
+              });
+              setPetOthePhotos(updatedPhotos);
+              setEditablePet(prev => ({ ...prev, photos: updatedPhotos }));
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Ошибка при замене фото:', error);
+      }
+    };
+
+    // ===================== Обновлённая логика удаления фотографии =====================
+    const handleDeletePhoto = async (index: number) => {
+      if (index === 0) {
+        // Если удаляется главное изображение (thumbnail),
+        // устанавливаем значение по умолчанию (например, petCatUriImage или petUriImage в зависимости от animalType)
+        const defaultUrl = editablePet.animalType === 1 ? petCatUriImage : petUriImage;
+        const defaultThumbnail = new Photo({ url: defaultUrl });
+        setPetMainPhoto(defaultThumbnail);
+        setEditablePet(prev => ({ ...prev, thumbnailUrl: defaultUrl }));
+      } else {
+        // Если удаляется фотография из дополнительных,
+        // индекс в массиве дополнительных фотографий = index - 1
+        
+        const photoIndex = index - 1;
+        await petStore.deletePetPhoto(petOthePhotos[photoIndex].id!);
+        
+        if (petOthePhotos.length > photoIndex) {
+          const updatedPhotos = [...petOthePhotos];
+          updatedPhotos.splice(photoIndex, 1);
+          setPetOthePhotos(updatedPhotos);
+          setEditablePet(prev => ({ ...prev, photos: updatedPhotos }));
+        }
+      }
+    };
+    // ============================================================================
+    
     return (
       <GestureHandlerRootView className="h-full bg-white">
         <FlatList
@@ -273,11 +367,17 @@ const EditPetProfileComponent = observer(
           renderItem={null} // Нет элементов списка для отображения
           ListHeaderComponent={
             <View className="p-4">
-              <View className="items-center">
-                <PhotoSelector
+              <View className="-mt-4 items-center">
+                {/* <PhotoSelector
                   imageUrl={petPhoto || (editablePet.animalType === 1 ? petCatUriImage : petUriImage)}
                   onReplace={SetPetPhoto}
                   onDelete={DeletePetPhoto}
+                /> */}
+                <PhotoSelectorCarusel 
+                  photos={petAllPhoto} 
+                  onReplace={(index) => handleReplacePhoto(index)}
+                  onDelete={(index) => handleDeletePhoto(index)}
+                  onAdd={handleAddPhoto}
                 />
               </View>
 
