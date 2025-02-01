@@ -11,6 +11,7 @@ const PetScreen = observer(() => {
   const [pet, setPet] = useState<IPet | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+ 
 
   useEffect(() => {
     async function fetchData() {

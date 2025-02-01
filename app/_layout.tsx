@@ -1,9 +1,9 @@
 import { useFonts } from 'expo-font';
-import { Stack, SplashScreen } from 'expo-router';
+import { Stack, SplashScreen, router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nunito-sans';
 import { AlertProvider } from '@/contexts/AlertContext';
-import { DefaultTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
+import { DefaultTheme, IconButton, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { StoreProvider } from '@/contexts/StoreProvider';
 import { AppState, AppStateStatus, Platform, StatusBar, View } from 'react-native';
 import uiStore from '@/stores/UIStore';
@@ -11,6 +11,7 @@ import { observer } from 'mobx-react-lite';
 import { setUserStatus, initOnDisconnect } from '@/firebaseConfig';
 import userStore from '@/stores/UserStore';
 import i18n from '@/i18n';
+import { Ionicons } from '@expo/vector-icons';
 
 // Создаем кастомную тему для react-native-paper
 const customTheme = {
@@ -154,13 +155,30 @@ const Layout = observer(() => {
                 headerBackTitleVisible: false,
               }} />
               <Stack.Screen name="(pet)/[petId]/index" 
-              options={{ 
-                headerShown: true,
-                headerBackButtonMenuEnabled: true,
-                headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' },
-                headerTransparent: true,
-                headerTitle: '',
-              }} />
+                options={{ 
+                  headerShown: true,
+                  headerBackButtonMenuEnabled: true,
+                  headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' },
+                  headerTransparent: true,
+                  headerTitle: '',
+                  headerLeft: () => (
+                    <View            
+                      style={{
+                        backgroundColor: 'rgba(0,0,0,0.3)', // полупрозрачный черный фон
+                        borderRadius: 30,
+                        padding: 5,
+                        marginLeft: 8,
+                        height: 45,
+                        width: 45,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <IconButton icon={() => <Ionicons name="arrow-back" size={30} color="#fff" />} onPress={router.back}/>
+                    </View>
+                  )
+                }} 
+              />
               <Stack.Screen name="(pet)/[petId]/edit" 
               options={{ 
                 headerShown: true,

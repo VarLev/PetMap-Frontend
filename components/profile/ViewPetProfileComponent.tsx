@@ -1,5 +1,5 @@
 import { Pet } from '@/dtos/classes/pet/Pet';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { StatusBar, View, Image, StyleSheet, Platform, Dimensions } from 'react-native';
 import { Text, IconButton, Menu, Divider } from 'react-native-paper';
 import { calculateDogAge, getTagsByIndex } from '@/utils/utils';
@@ -9,7 +9,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import CustomTextComponent from '../custom/text/CustomTextComponent';
 import { observer } from 'mobx-react-lite';
 import { StarRatingDisplay } from 'react-native-star-rating-widget';
-import { router } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import petStore from '@/stores/PetStore';
 import { petCatUriImage, petUriImage } from '@/constants/Strings';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
@@ -34,7 +34,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
   const [petPhotos, setPetPhotos] = useState<Photo[]>();
   
   // Если фотографии загружены – используем petPhotos, иначе дефолтное изображение
-   const carouselData = petPhotos && petPhotos.length > 0 
+    const carouselData = petPhotos && petPhotos.length > 0 
     ? petPhotos 
     : [new Photo({
         id: 'default',
@@ -44,6 +44,52 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
         userId: pet.userId,
         petProfileId: pet.id
       })];
+
+  const navigation = useNavigation();
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <>
+        {isCurrentUser && (
+          <Menu
+            style={{ marginTop: 25 }}
+            visible={menuVisible}
+            onDismiss={closeMenu}
+            contentStyle={{ backgroundColor: 'white' }}
+            anchor={
+              
+                <IconButton
+                  icon="menu"
+                  size={30}
+                  iconColor='white'
+                  style={styles.menuButton}
+                  onPress={openMenu}
+                />
+           
+            }
+          >
+            <MenuItemWrapper
+              onPress={() => {
+                onEdit();
+                closeMenu();
+              }}
+              title={i18n.t('PetProfile.edit')}
+              icon="pencil-outline"
+            />
+            <MenuItemWrapper
+              onPress={() => {
+                onDelete();
+                closeMenu();
+              }}
+              title={i18n.t('PetProfile.delete')}
+              icon="delete-outline"
+            />
+          </Menu>
+        )}
+      </>
+      ),
+    });
+  }, [isCurrentUser, isIOS, menuVisible, navigation, onEdit]);
 
   // Хук для загрузки фотографий питомца
   useEffect(() => {
@@ -130,42 +176,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
 
           {renderPagination()}
           
-          <View style={styles.iconContainer} className={`${isIOS ? 'mt-14' : 'mt-6'} `}>
-            {isCurrentUser && (
-              <Menu
-                style={{ marginTop: 25 }}
-                visible={menuVisible}
-                onDismiss={closeMenu}
-                contentStyle={{ backgroundColor: 'white' }}
-                anchor={
-                  <IconButton
-                    icon="menu"
-                    size={30}
-                    iconColor={BG_COLORS.indigo[700]}
-                    style={styles.menuButton}
-                    onPress={openMenu}
-                  />
-                }
-              >
-                <MenuItemWrapper
-                  onPress={() => {
-                    onEdit();
-                    closeMenu();
-                  }}
-                  title={i18n.t('PetProfile.edit')}
-                  icon="pencil-outline"
-                />
-                <MenuItemWrapper
-                  onPress={() => {
-                    onDelete();
-                    closeMenu();
-                  }}
-                  title={i18n.t('PetProfile.delete')}
-                  icon="delete-outline"
-                />
-              </Menu>
-            )}
-          </View>
+          
         </View>
       </View>
 
@@ -418,34 +429,17 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
 export default ViewPetProfileComponent;
 
 const styles = StyleSheet.create({
-  imageContainer: {
-    position: 'relative',
-    width: '100%',
-    aspectRatio: 1,
-  },
   image: {
     width: '100%',
     height: '100%',
   },
-  iconContainer: {
-    position: 'absolute',
-    top: StatusBar.currentHeight ? StatusBar.currentHeight + 8 : 8,
-    right: 8,
-    zIndex: 1000,
-  },
-  iconBackContainer: {
-    position: 'absolute',
-    top: StatusBar.currentHeight ? StatusBar.currentHeight + 8 : 8,
-    left: 8,
-  },
   menuButton: {
-    backgroundColor: 'white',
     elevation: 5,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    marginTop:100
+    backgroundColor: 'rgba(0,0,0,0.3)'
   },
   carouselImage: {
     width: '100%',
@@ -453,7 +447,7 @@ const styles = StyleSheet.create({
   },
   paginationContainer: {
     position: 'absolute',
-    left: 20,
+    right: 20,
     top: '50%',
     transform: [{ translateY: -20 }],
     zIndex: 1000,

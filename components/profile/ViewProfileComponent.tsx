@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { TouchableOpacity, View, Image, StatusBar, StyleSheet, Platform, Touchable } from 'react-native';
 import { Text, Card, Divider, IconButton, Menu } from 'react-native-paper';
 import { observer } from 'mobx-react-lite';
@@ -10,7 +10,7 @@ import CustomTextComponent from '../custom/text/CustomTextComponent';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import { calculateHumanAge, calculateShortDogAge, getTagsByIndex, shortenName } from '@/utils/utils';
 import CustomSocialLinkInput from '../custom/text/SocialLinkInputProps';
-import { router } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import petStore from '@/stores/PetStore';
 import { petCatUriImage, petUriImage } from '@/constants/Strings';
 import { User } from '@/dtos/classes/user/UserDTO';
@@ -35,6 +35,37 @@ const ViewProfileComponent = observer(
     const [isOnline, setIsOnline] = useState(false);
     const [lastOnline, setLastOnline] = useState<string | null>(null);
     const [hasSubscription, setHasSubscription] = useState(userStore.getUserHasSubscription() ?? false);
+
+    const navigation = useNavigation();
+    useLayoutEffect(() => {
+      navigation.setOptions({
+        headerRight: () => (
+          <>
+            {!isCurrentUser ? (
+              <IconButton icon="message-processing-outline" size={30} iconColor='white' style={styles.menuButton}  onPress={openChat} />
+            ):
+              (
+              <Menu
+                visible={menuVisible}
+                onDismiss={closeMenu}
+                contentStyle={{ backgroundColor: 'white' }}
+                style={{ paddingTop: 20 }}
+                anchor={<IconButton icon="menu" size={30} iconColor='white' style={styles.menuButton} onPress={openMenu} />}
+              >
+                <MenuItemWrapper
+                  onPress={() => {
+                    onEdit();
+                    closeMenu();
+                  } }
+                  title={i18n.t('UserProfile.edit')}
+                  icon="pencil-outline" />
+              </Menu>
+            )}
+          </>
+        ),
+      });
+    }, [isCurrentUser, menuVisible, navigation, onEdit]);
+
 
     useEffect(() => {
       setIsIOS(Platform.OS === 'ios');
@@ -114,7 +145,7 @@ const ViewProfileComponent = observer(
                
                 <Image source={{ uri: user?.thumbnailUrl! }} className="w-full h-full" />
                 
-                <View style={styles.iconContainer} className={`${isIOS ? 'mt-8' : 'mt-0'}`}>
+                {/* <View style={styles.iconContainer} className={`${isIOS ? 'mt-8' : 'mt-0'}`}>
                   {!isCurrentUser ? (
                     <View style={styles.iconContainer} className={` -mr-2`}>
                       <IconButton icon="message-processing-outline" size={30} iconColor={BG_COLORS.indigo[700]} style={styles.menuButton}  onPress={openChat} />
@@ -137,7 +168,7 @@ const ViewProfileComponent = observer(
                         icon="pencil-outline" />
                     </Menu>
                   )}
-                </View>
+                </View> */}
               </View>
             </View>
           );
@@ -341,7 +372,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   menuButton: {
-    marginTop:100,
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(0,0,0,0.3)'
   },
 });

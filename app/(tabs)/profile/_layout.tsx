@@ -1,6 +1,9 @@
 import React from 'react';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import i18n from '@/i18n';
+import { View } from 'react-native';
+import { IconButton } from 'react-native-paper';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function ProfileLayout() {
   return (
@@ -8,12 +11,33 @@ export default function ProfileLayout() {
       <Stack.Screen 
         name="index" 
         options={{ 
-          title: i18n.t('ProfileLayout.profileTitle'),
+          title: '',
           headerStyle: {
             backgroundColor: 'transparent', // Прозрачный заголовок
           },
-          headerShown: false,
+          headerShown: true,
+          headerBackButtonMenuEnabled: true,
+          headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' },
+          headerTransparent: true,
+          headerLeft: () => (
+            <View            
+              style={{
+                backgroundColor: 'rgba(0,0,0,0.3)', // полупрозрачный черный фон
+                borderRadius: 30,
+                padding: 5,
+                marginLeft: 8,
+                height: 45,
+                width: 45,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <IconButton icon={() => <Ionicons name="arrow-back" size={30} color="#fff" />} onPress={router.back}/>
+            </View>
+          )
         }} 
+
+       
       />
       <Stack.Screen 
         name="edit" 
