@@ -476,6 +476,8 @@ class MapStore {
       return handleAxiosError(error);
     }
   }
+
+  
 }
 
 const mapStore = new MapStore();

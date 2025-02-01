@@ -16,7 +16,7 @@ interface CompositeFormProps {
   onClose: () => void;
 }
 
-const EditDangerPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
+const EditDangerOnMap: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
   const [editablePoint, setEditablePoint] = useState<IPointDangerDTO>(mapPoint);
 
   const handleFieldChange = (field: keyof IPointDangerDTO, value: any) => {
@@ -86,4 +86,4 @@ const EditDangerPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) =>
   );
 };
 
-export default EditDangerPoint;
+export default EditDangerOnMap;

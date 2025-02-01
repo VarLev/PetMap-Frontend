@@ -1,3 +1,4 @@
+// CustomButtonWithIcon.tsx
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import IconSelectorComponent from '../icons/IconSelectorComponent';
@@ -11,9 +12,13 @@ interface CustomButtonProps {
   buttonStyle?: string;
   textStyle?: string;
   /**
-   * Индикатор загрузки. Когда true, иконка будет заменена на ActivityIndicator.
+   * Индикатор загрузки. Когда true, иконка заменяется на ActivityIndicator.
    */
   isLoading?: boolean;
+  /**
+   * Свойство для выделения кнопки (например, в режиме toggle).
+   */
+  selected?: boolean;
 }
 
 const CustomButtonWithIcon: React.FC<CustomButtonProps> = ({
@@ -21,24 +26,30 @@ const CustomButtonWithIcon: React.FC<CustomButtonProps> = ({
   text,
   iconName,
   iconPosition = 'left',
-  iconSet = 'MaterialIcons', // По умолчанию MaterialIcons
-  buttonStyle = '',
+  iconSet = 'MaterialIcons',
+  buttonStyle,
   textStyle = '',
-  isLoading = false, // По умолчанию выключен
+  isLoading = false,
+  selected = false,
 }) => {
+  // Определяем дефолтный стиль фона в зависимости от состояния "selected".
+  const defaultButtonStyle = selected ? 'bg-violet-200' : 'bg-white';
+  // Если передан дополнительный стиль, комбинируем его с дефолтным.
+  const combinedButtonStyle = buttonStyle
+    ? `${defaultButtonStyle} ${buttonStyle}`
+    : defaultButtonStyle;
+
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      className={`flex-row items-center justify-center p-2 m-1 rounded-full ${buttonStyle}`}
+      className={`flex-row items-center justify-center p-2 m-1 rounded-full ${combinedButtonStyle}`}
       style={[styles.shadow, { elevation: 3 }]}
     >
       {/* ЛЕВАЯ СТОРОНА */}
       {iconName && iconPosition === 'left' && !isLoading && (
         <IconSelectorComponent iconSet={iconSet} iconName={iconName} />
       )}
-
-      {/* Если isLoading == true, показываем индикатор загрузки вместо иконки */}
       {iconPosition === 'left' && isLoading && (
         <ActivityIndicator size="small" color="#000" />
       )}
@@ -60,12 +71,12 @@ const CustomButtonWithIcon: React.FC<CustomButtonProps> = ({
 
 const styles = StyleSheet.create({
   shadow: {
-    // iOS тени
+    // iOS-тень
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.3,
     shadowRadius: 1.5,
-    // Android тени через elevation
+    // Android-тень через elevation
     elevation: 3,
   },
 });

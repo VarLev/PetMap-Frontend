@@ -55,19 +55,16 @@ const ReviewComment: React.FC<ReviewCommentProps> = ({
   // };
 
   return (
-    <View className="bg-white my-[20px]">
+    <View className="bg-white my-[10px]">
       <View className="flex-row justify-between items-start">
         <View className="flex-col">
           <Text className="text-lg font-nunitoSansBold">{item.userName}</Text>
-          <Text className="text-xs font-nunitoSansRegular">
-            {i18n.t('ReviewComment.oneDayAgo')}
-          </Text>
           <StarRating
             rating={isEditing ? editedRating : item.rating}
             starSize={20}
             onChange={isEditing ? setEditedRating : () => {}}
             starStyle={{ marginHorizontal: 1}}
-            style={{ paddingVertical: 1 }}
+            
             StarIconComponent={StarSvgIcon}
             color="#2F00B6"
             emptyColor="#2F00B6"
@@ -141,7 +138,7 @@ const ReviewComment: React.FC<ReviewCommentProps> = ({
           {item.comment}
         </Text>
       )} */}
-      <Text className="pt-2 text-base font-nunitoSansRegular">
+      <Text className=" text-base font-nunitoSansRegular">
           {item.comment}
         </Text>
     </View>

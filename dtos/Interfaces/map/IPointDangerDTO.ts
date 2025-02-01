@@ -5,6 +5,7 @@ import { Photo } from "@/dtos/classes/Photo";
 
 // DTO для точки опасности, расширяет PointEntityDTO
 export interface IPointDangerDTO extends IPointEntityDTO {
+  id: string;   
   dangerLevel: DangerLevel;        // Уровень опасности (низкий, средний, высокий)
   dangerType: DangerType;          // Тип опасности (Дорожное движение, Змеи и т.д.)
   photos?: Photo[];

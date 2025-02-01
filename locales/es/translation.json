@@ -1124,7 +1124,7 @@
     "subscribe": "Suscribirse",
     "tasksAndBonuses": "Tareas y Bonos",
     "myWalks": "Mis Paseos",
-    "myLocations": "Mis Ubicaciones",
+    "myLocations": "Mis Marcadores",
     "settings": "Configuraciones",
     "support": "Soporte",
     "shelter":"Refugios para mascotas"
@@ -1344,7 +1344,10 @@
     "details": "Detalles",
     "errorOpenMap": "No se puede abrir el mapa.",
     "openMapErrorLog": "Error al intentar abrir la URL:",
-    "danger": "Peligro"
+    "danger": "Peligro",
+    "statusInMap": "Agregado al mapa",
+    "statusPending": "Pasa la verificación",
+    "statusRejected": "Rechazado"
   },
   "MyAdvrtCard": {
     "delete": "Eliminar",

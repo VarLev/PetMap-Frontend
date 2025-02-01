@@ -88,7 +88,7 @@ const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
   };
 
   return (
-    <Card className="p-2 mx-3 mt-2 bg-white rounded-2xl" elevation={1}>
+    <Card className="p-2 mx-3 mt-5 bg-white rounded-2xl" elevation={1}>
       {/* Информация о пользователе */}
       <View className="flex-row items-start">
         <Image source={{ uri: ad.userPhoto }} className="w-20 h-20 rounded-xl" />

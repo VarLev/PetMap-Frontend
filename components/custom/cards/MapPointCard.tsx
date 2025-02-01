@@ -12,16 +12,21 @@ import CustomButtonOutlined from '../buttons/CustomButtonOutlined';
 import { PARK_IMAGE } from '@/constants/Strings';
 import { MapPointType } from '@/dtos/enum/MapPointType';
 import i18n from '@/i18n';
+import { MapPointStatus } from '@/dtos/enum/MapPointStatus';
+import { set } from 'firebase/database';
 
 interface MapPointDangerCardProps {
   mapPoint: IPointEntityDTO;
   onDetailPress: (id: string, mapPointType: MapPointType) => void;
+  isMy?: boolean;
 }
 
-const MapPointCard: React.FC<MapPointDangerCardProps> = ({ mapPoint, onDetailPress }) => {
+const MapPointCard: React.FC<MapPointDangerCardProps> = ({ mapPoint, onDetailPress, isMy }) => {
   const [distance, setDistance] = React.useState(0);
   const [image, setImage] = React.useState<string>();
   const { showAlert } = useAlert();
+  const [pointStatus, setPointStatus] = React.useState<string>();
+  const [statusColor , setStatusColor] = React.useState<string>();
 
   useEffect(() => {
     getImage().then((url) => setImage(url));
@@ -32,6 +37,7 @@ const MapPointCard: React.FC<MapPointDangerCardProps> = ({ mapPoint, onDetailPre
       mapStore.currentUserCoordinates[1]
     );
     setDistance(dist);
+    setStatusChange();
   }, [mapPoint.latitude, mapPoint.longitude]);
 
   const getImage = async (): Promise<string> => {
@@ -55,10 +61,25 @@ const MapPointCard: React.FC<MapPointDangerCardProps> = ({ mapPoint, onDetailPre
     onDetailPress(mapPoint.id, MapPointType.Park);
   };
 
+  const setStatusChange = () => {
+    if (mapPoint.status === MapPointStatus.InMap) {
+      setPointStatus(i18n.t('MapPointCard.statusInMap'));
+      setStatusColor('text-green-500');
+    } else if (mapPoint.status === MapPointStatus.Pending) {
+      setPointStatus(i18n.t('MapPointCard.statusPending'));
+      setStatusColor('text-yellow-500');
+    } else if (mapPoint.status === MapPointStatus.Rejected) {
+      setPointStatus(i18n.t('MapPointCard.statusRejected'));
+      setStatusColor('text-red-500');
+    }
+  }
+
+  
+
   return (
-    <Card className="mx-4 mt-5 -mb-2 bg-white rounded-2xl" elevation={5}>
+    <Card className="mx-4 mt-5 -mb-2 bg-white rounded-2xl" elevation={2}>
       {/* Информация о точке */}
-      <View className="flex-row items-center justify-stretch">
+      <View className="flex-row items-start justify-stretch">
         <View>
           <ImageModalViewer
             images={[{ uri: image || 'https://placehold.it/100x100' }]}
@@ -69,8 +90,12 @@ const MapPointCard: React.FC<MapPointDangerCardProps> = ({ mapPoint, onDetailPre
           />
         </View>
         <View className="w-2/3">
+          {isMy && 
+          <Text className={`pt-2 text-xs font-nunitoSansBol ${statusColor}`}>
+            {pointStatus}
+          </Text>}
           <Text
-            className="pt-2 text-sm font-nunitoSansBold"
+            className="text-base font-nunitoSansBold"
             numberOfLines={1}
             ellipsizeMode="tail"
             style={{ flexShrink: 1 }}
@@ -83,14 +108,13 @@ const MapPointCard: React.FC<MapPointDangerCardProps> = ({ mapPoint, onDetailPre
             iconSet="ionicons"
             className_="p-0"
           />
-          <Text
-            className="m-1 text-sm font-nunitoSansRegular text-gray-800"
-            numberOfLines={3}
-            ellipsizeMode="tail"
-            style={{ flexShrink: 1 }}
-          >
-            {mapPoint.description}
-          </Text>
+          <CustomTextComponent
+            text={mapPoint.description}
+            enableTranslation
+            maxLines={5}
+            className_='-ml-3 p-1'
+          />
+          
         </View>
       </View>
       <View className="px-2 pb-2 -mt-1 flex-row w-full justify-between">

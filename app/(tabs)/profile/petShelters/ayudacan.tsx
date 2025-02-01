@@ -1,7 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { View, Text, Image, ScrollView, Linking } from 'react-native';
-import { Divider } from 'react-native-paper';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
 

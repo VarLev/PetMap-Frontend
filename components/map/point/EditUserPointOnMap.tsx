@@ -17,7 +17,7 @@ interface CompositeFormProps {
   onClose: () => void;
 }
 
-const EditUserPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
+const EditUserPointOnMap: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
   const [editablePoint, setEditablePoint] = useState<IPointUserDTO>(mapPoint);
 
   const handleFieldChange = (field: keyof IPointUserDTO, value: any) => {
@@ -127,4 +127,4 @@ const EditUserPoint: React.FC<CompositeFormProps> = ({ onClose, mapPoint }) => {
   );
 };
 
-export default EditUserPoint;
+export default EditUserPointOnMap;

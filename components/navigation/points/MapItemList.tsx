@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { FlatList, ActivityIndicator, View } from 'react-native';
 import AdvrtCard from '@/components/custom/cards/AdvrtCard';
-import MapPointDangerCard from '@/components/custom/cards/MapPointDangerCard';
+import DangerCard from '@/components/custom/cards/DangerCard';
 import { MapPointType } from '@/dtos/enum/MapPointType';
 import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
 import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
@@ -13,8 +13,8 @@ import { IPointEntityDTO } from '@/dtos/Interfaces/map/IPointEntityDTO';
 import MapPointCard from '@/components/custom/cards/MapPointCard';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent';
 import BottomSheet from '@gorhom/bottom-sheet';
-import ViewDangerPoint from '@/components/map/point/ViewDangerPoint';
-import ViewUserPoint from '@/components/map/point/ViewUserPoint';
+import ViewDangerOnMap from '@/components/map/point/ViewDangerOnMap';
+import ViewUserPointOnMap from '@/components/map/point/ViewUserPointOnMap';
 
 interface AdvrtsListProps {
   renderType: MapPointType;
@@ -105,13 +105,13 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
     if(mapPointType === MapPointType.Danger){
       const pointDanger = point as IPointDangerDTO;
       setRenderContent(() => (
-        <ViewDangerPoint mapPoint={pointDanger} />
+        <ViewDangerOnMap mapPoint={pointDanger} />
       ));
     }
     else {
       const pointUser = point as IPointEntityDTO;
       setRenderContent(() => (
-        <ViewUserPoint mapPoint={pointUser} />
+        <ViewUserPointOnMap mapPoint={pointUser} />
       ));
     }
 
@@ -126,11 +126,11 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
         case MapPointType.Walk:
           return <AdvrtCard ad={item as IWalkAdvrtShortDto} />;
         case MapPointType.Danger:
-          return <MapPointDangerCard mapPointDanger={item as IPointDangerDTO} />;
+          return <DangerCard mapPointDanger={item as IPointDangerDTO} onDetailPress={handleSheetOpen}/>;
         case MapPointType.Park:
           return <MapPointCard mapPoint={item as IPointEntityDTO} onDetailPress={handleSheetOpen}  />;
         default:
-          return null;
+          return <MapPointCard mapPoint={item as IPointEntityDTO} onDetailPress={handleSheetOpen}  />;
       }
     },
     [renderType]
@@ -163,7 +163,7 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
       ) : (
         <FlatList
           data={points}
-          ListHeaderComponent={<View className={`${uiStore.getIsPointSearchFilterTagSelected() ? 'h-24':'h-36'}`} />}
+          ListHeaderComponent={<View className={`${uiStore.getIsPointSearchFilterTagSelected() ? 'h-20':'h-28'}`} />}
           keyExtractor={(_, index) => index.toString()}
           renderItem={renderItem}
           initialNumToRender={10} // Количество элементов для рендеринга при старте

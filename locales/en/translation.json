@@ -1124,7 +1124,7 @@
     "subscribe": "Subscribe",
     "tasksAndBonuses": "Tasks and Bonuses",
     "myWalks": "My Walks",
-    "myLocations": "My Locations",
+    "myLocations": "My Markers",
     "settings": "Settings",
     "support": "Support",
     "shelter":"Pet Shelters"
@@ -1344,7 +1344,10 @@
     "details": "Details",
     "errorOpenMap": "Unable to open the map.",
     "openMapErrorLog": "Error while trying to open URL:",
-    "danger": "Danger"
+    "danger": "Danger",
+    "statusInMap": "Added to map",
+    "statusPending": "Passes verification",
+    "statusRejected": "Rejected"
   },
   "MyAdvrtCard": {
     "delete": "Delete",

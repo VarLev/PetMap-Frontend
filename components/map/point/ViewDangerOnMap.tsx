@@ -15,7 +15,7 @@ interface CompositeFormProps {
   mapPoint: IPointDangerDTO;
 }
 
-const ViewDangerPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
+const ViewDangerOnMap: React.FC<CompositeFormProps> = ({ mapPoint }) => {
   const [pointData, setPointData] = useState<IPointEntityDTO>(mapPoint);
   const [loading, setLoading] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
@@ -86,7 +86,7 @@ const ViewDangerPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
       ) : (
         <View>
           <Text className="text-xl font-nunitoSansBold">
-            {i18n.t('ViewDangerPoint.title')}
+          {i18n.t('ViewDangerPoint.title')}
           </Text>
           <View className="flex-col">
             {imageUrl && (
@@ -135,4 +135,4 @@ const ViewDangerPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
   );
 };
 
-export default ViewDangerPoint;
+export default ViewDangerOnMap;

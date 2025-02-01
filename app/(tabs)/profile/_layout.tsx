@@ -79,6 +79,13 @@ export default function ProfileLayout() {
           headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
         }} 
       />
+       <Stack.Screen 
+        name="mymarkers" 
+        options={{ 
+          title: i18n.t('Sidebar.myLocations'),
+          headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' }
+        }} 
+      />
       <Stack.Screen 
         name="settings" 
         options={{ 

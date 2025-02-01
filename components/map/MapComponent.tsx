@@ -17,17 +17,17 @@ import SearchAndTags from '../custom/inputs/FilterSearchAndTagsComponent';
 import FilterComponent from '../filter/FilterComponent';
 import { IPointEntityDTO } from '@/dtos/Interfaces/map/IPointEntityDTO';
 import { MapPointType } from '@/dtos/enum/MapPointType';
-import EditDangerPoint from './point/EditDangerPoint';
+import EditDangerOnMap from './point/EditDangerOnMap';
 import { IPointDangerDTO } from '@/dtos/Interfaces/map/IPointDangerDTO';
 import { DangerLevel } from '@/dtos/enum/DangerLevel';
 import { DangerType } from '@/dtos/enum/DangerType';
 import { MapPointStatus } from '@/dtos/enum/MapPointStatus';
 import { randomUUID } from 'expo-crypto';
-import ViewDangerPoint from './point/ViewDangerPoint';
-import EditUserPoint from './point/EditUserPoint';
+import ViewDangerOnMap from './point/ViewDangerOnMap';
+import EditUserPointOnMap from './point/EditUserPointOnMap';
 import { IPointUserDTO } from '@/dtos/Interfaces/map/IPointUserDTO';
 import { FeatureCollection, Point } from 'geojson';
-import ViewUserPoint from './point/ViewUserPoint';
+import ViewUserPointOnMap from './point/ViewUserPointOnMap';
 import CustomAlert from '../custom/alert/CustomAlert';
 import SlidingOverlay from '../navigation/SlidingOverlay';
 import MapItemList from '../navigation/points/MapItemList';
@@ -279,7 +279,7 @@ const MapBoxMap = observer(() => {
 
         setMarkerPointCoordinate(coordinates);
         mapStore.setMarker(coordinates);
-        setRenderContent(() => <EditDangerPoint mapPoint={mapPoint} onClose={handleSheetClose} />);
+        setRenderContent(() => <EditDangerOnMap mapPoint={mapPoint} onClose={handleSheetClose} />);
       } else if (currentPointType === MapPointType.UsersCustomPoint) {
         const mapPoint: IPointUserDTO = {
           id: randomUUID(),
@@ -294,7 +294,7 @@ const MapBoxMap = observer(() => {
         };
         setMarkerPointCoordinate(coordinates);
         mapStore.setMarker(coordinates);
-        setRenderContent(() => <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose} />);
+        setRenderContent(() => <EditUserPointOnMap mapPoint={mapPoint} onClose={handleSheetClose} />);
       } else if (currentPointType === MapPointType.Note) {
         const mapPoint: IPointUserDTO = {
           id: randomUUID(),
@@ -309,7 +309,7 @@ const MapBoxMap = observer(() => {
         };
         setMarkerPointCoordinate(coordinates);
         mapStore.setMarker(coordinates);
-        setRenderContent(() => <EditUserPoint mapPoint={mapPoint} onClose={handleSheetClose} />);
+        setRenderContent(() => <EditUserPointOnMap mapPoint={mapPoint} onClose={handleSheetClose} />);
       }
 
       if (!isSheetExpanded) {
@@ -362,11 +362,11 @@ const MapBoxMap = observer(() => {
     if (mapPoint.mapPointType === MapPointType.Danger) {
       const pointDanger = mapPoint as IPointDangerDTO;
       console.log('Danger point:', pointDanger);
-      setRenderContent(<ViewDangerPoint mapPoint={pointDanger} />);
+      setRenderContent(<ViewDangerOnMap mapPoint={pointDanger} />);
     } else {
       const pointUser = mapPoint as IPointEntityDTO;
 
-      setRenderContent(() => <ViewUserPoint mapPoint={pointUser} />);
+      setRenderContent(() => <ViewUserPointOnMap mapPoint={pointUser} />);
     }
 
     if (!isSheetExpanded) {

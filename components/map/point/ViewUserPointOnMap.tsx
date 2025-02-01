@@ -15,7 +15,7 @@ interface CompositeFormProps {
   mapPoint: IPointEntityDTO;
 }
 
-const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
+const ViewUserPointOnMap: React.FC<CompositeFormProps> = ({ mapPoint }) => {
   const [pointData, setPointData] = useState<IPointEntityDTO>(mapPoint);
   const [loading, setLoading] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
@@ -181,7 +181,7 @@ const ViewUserPoint: React.FC<CompositeFormProps> = ({ mapPoint }) => {
 };
 
 export default React.memo(
-  ViewUserPoint,
+  ViewUserPointOnMap,
   (prevProps, nextProps) =>
     prevProps.mapPoint.id === nextProps.mapPoint.id &&
     prevProps.mapPoint.mapPointType === nextProps.mapPoint.mapPointType

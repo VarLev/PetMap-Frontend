@@ -6,7 +6,7 @@ import images from "@/constants/Images";
 import userStore from "@/stores/UserStore";
 import { router } from "expo-router";
 import { useDrawer } from "@/contexts/DrawerProvider";
-import { AntDesign, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
+import { AntDesign, Feather, FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import CustomListItemWrapper from "@/components/custom/menuItem/ListItemWrapper";
 import i18n from "@/i18n";
 import DismissibleBanner from "../ads/DismissibleBanner";
@@ -50,6 +50,11 @@ const SidebarUserProfileComponent = () => {
     closeDrawer();
   };
 
+
+  const handleMarkerPress = () => {
+    router.replace("/profile/mymarkers");
+    closeDrawer();
+  }
 
   return (
     <SafeAreaView className="bg-white h-full">
@@ -183,8 +188,8 @@ const SidebarUserProfileComponent = () => {
             )}
             onPress={handleWalksPress}
           />
-          {/* <CustomListItemWrapper
-            onPress={() => console.log(i18n.t("Sidebar.myLocations"))}
+          <CustomListItemWrapper
+            onPress={handleMarkerPress}
             title={i18n.t("Sidebar.myLocations")}
             leftIcon={() => (
               <List.Icon
@@ -193,7 +198,7 @@ const SidebarUserProfileComponent = () => {
                 )}
               />
             )}
-          /> */}
+          />
           <Divider />
           <CustomListItemWrapper
             title={i18n.t("Sidebar.shelter")}
@@ -223,7 +228,7 @@ const SidebarUserProfileComponent = () => {
             leftIcon={() => (
               <List.Icon
                 icon={() => (
-                  <AntDesign name="setting" size={20} color="#474747" />
+                  <MaterialIcons name="support-agent" size={20} color="#474747" />
                 )}
               />
             )}

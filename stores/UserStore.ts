@@ -23,6 +23,8 @@ import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
 import { IUserCardDto } from '@/dtos/Interfaces/user/IUserCardDto';
 import { getUserLastOnlineStatus, getUserStatus } from '@/utils/userUtils';
 import RevenueCatService from '@/services/RevenueCatService';
+import { MapPointType } from '@/dtos/enum/MapPointType';
+import { MapPointDTO } from '@/dtos/classes/map/MapPointDTO';
 
 //fghjkl
 class UserStore {
@@ -663,33 +665,55 @@ class UserStore {
   }
 
   async deleteUserFromFireStore(user: IUser) {
-  const storageRef = ref(storage, `users/${user.email}/`);
-  try {
-    const result = await listAll(storageRef);
-    if (result.items.length === 0) {
-      console.log(`Пользователь ${user.email} не найден в FireStore`, storageRef);
-    return;
+    const storageRef = ref(storage, `users/${user.email}/`);
+    try {
+      const result = await listAll(storageRef);
+      if (result.items.length === 0) {
+        console.log(`Пользователь ${user.email} не найден в FireStore`, storageRef);
+      return;
+      }
+      for (const fileRef of result.items) {
+        await deleteObject(fileRef);
+      }
+    console.log(`Пользователь ${user.email} удален из Storage`, storageRef);
+      
     }
-    for (const fileRef of result.items) {
-      await deleteObject(fileRef);
+    catch (error) {
+      return handleAxiosError(error);
     }
-   console.log(`Пользователь ${user.email} удален из Storage`, storageRef);
-    
   }
-  catch (error) {
-    return handleAxiosError(error);
-  }
-}
 
 
-async deleteUserAccount(id: string) {
-  try {
-    await apiClient.delete(`/users/${id}`)
-    console.log('Пользователь удален из PostgreSQL', id);
-  } 
-  catch (error) {
-    return handleAxiosError(error);
+  async deleteUserAccount(id: string) {
+    try {
+      await apiClient.delete(`/users/${id}`)
+      console.log('Пользователь удален из PostgreSQL', id);
+    } 
+    catch (error) {
+      return handleAxiosError(error);
+    }
   }
+
+  async getUserMapMarkers(pointType:MapPointType, userId: string): Promise<MapPointDTO[]> {
+    try {
+      const response = await apiClient.get(`/map/points/user`, {
+        params: {
+          pointType: pointType,
+          userId: userId
+        },
+        headers: {
+          // Указываем, что ожидаем JSON
+          'Accept': 'application/json'
+        }
+      });
+      if(response.data.length > 0){
+        return response.data;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      return handleAxiosError(error);
+    }
   }
 
 

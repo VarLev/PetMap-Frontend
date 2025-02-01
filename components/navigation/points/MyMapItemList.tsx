@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { FlatList, ActivityIndicator, View, ScrollView,
   RefreshControl } from "react-native";
-import MapPointDangerCard from "@/components/custom/cards/MapPointDangerCard";
+import DangerCard from "@/components/custom/cards/DangerCard";
 import { MapPointType } from "@/dtos/enum/MapPointType";
 import { IWalkAdvrtShortDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtShortDto";
 import { IPointDangerDTO } from "@/dtos/Interfaces/map/IPointDangerDTO";
@@ -13,6 +13,8 @@ import CustomPlug from "@/components/custom/plug/CustomPlug";
 import i18n from "@/i18n";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { router } from "expo-router";
+import MapPointCard from "@/components/custom/cards/MapPointCard";
+import { IPointEntityDTO } from "@/dtos/Interfaces/map/IPointEntityDTO";
 
 interface AdvrtsListProps {
   renderType: MapPointType;
@@ -20,7 +22,7 @@ interface AdvrtsListProps {
 
 const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
   const [points, setPoints] = useState<
-    IWalkAdvrtShortDto[] | IPointDangerDTO[]
+    IWalkAdvrtShortDto[] | IPointDangerDTO[] | IPointEntityDTO[]
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -29,8 +31,14 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
     if (isLoading) return;
     setIsLoading(true);
     try {
-      const walks = await userStore.getUserWalks(userStore.currentUser!.id);
-      setPoints(walks);
+      if(renderType === MapPointType.Walk){
+        const walks = await userStore.getUserWalks(userStore.currentUser!.id);
+        setPoints(walks);
+      }
+      else {
+        const dangers = await userStore.getUserMapMarkers(renderType, userStore.currentUser!.id);
+        setPoints(dangers);
+      }
     } catch (error) {
       console.error("Ошибка при загрузке объявлений:", error);
     } finally {
@@ -47,8 +55,10 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
     if (isRefreshing || isLoading) return;
     setIsRefreshing(true);
     try {
-      const walks = await userStore.getUserWalks(userStore.currentUser!.id);
-      setPoints(walks);
+      if(renderType === MapPointType.Walk){
+        const walks = await userStore.getUserWalks(userStore.currentUser!.id);
+        setPoints(walks);
+      }
     } catch (error) {
       console.error("Ошибка при обновлении объявлений:", error);
     } finally {
@@ -95,10 +105,13 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
           );
         case MapPointType.Danger:
           return (
-            <MapPointDangerCard mapPointDanger={item as IPointDangerDTO} />
+            <DangerCard mapPointDanger={item as IPointDangerDTO} onDetailPress={()=>{}} />
           );
         default:
-          return null;
+          return (
+            <MapPointCard mapPoint={item as IPointEntityDTO} onDetailPress={()=>{}} isMy={true} />
+            
+          );
       }
     },
     [renderType]
@@ -120,7 +133,8 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
   return (
     <View>
       {isLoading ? (
-        renderSkeletons()
+        <></>
+        //renderSkeletons()
       ) : points.length === 0 ? (
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
