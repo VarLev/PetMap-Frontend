@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Image, Platform, TouchableOpacity, Linking } from "react-native";
+import { View, Text, Image, Platform } from "react-native";
 import { Divider, IconButton, List, TouchableRipple } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/Images";
@@ -11,7 +11,6 @@ import CustomListItemWrapper from "@/components/custom/menuItem/ListItemWrapper"
 import i18n from "@/i18n";
 import DismissibleBanner from "../ads/DismissibleBanner";
 import { BannerAdSize } from "react-native-google-mobile-ads";
-import CustomAlert from "../custom/alert/CustomAlert";
 import SupportAlert from "../custom/alert/SupportAlert";
 
 const SidebarUserProfileComponent = () => {
@@ -65,7 +64,7 @@ const SidebarUserProfileComponent = () => {
             source={images.logoWithName}
             style={{ width: 175, height: 43 }}
           />
-          <Text className="font-nunitoSansBold">v0.1.1</Text>
+          <Text className="font-nunitoSansBold">v0.1.2</Text>
         </View>
         <TouchableRipple
           className="w-full mt-6"
