@@ -30,7 +30,7 @@ const CustomInputText = ({
   // Функция обработки ввода
   const handleTextChange = (text: string) => {
     if (allowOnlyLetters) {
-      const filteredText = text.replace(/[^a-zA-Zа-яА-ЯёЁ]/g, ""); // Удаляем все, кроме букв
+      const filteredText = text.replace(/[^a-zA-Zа-яА-ЯёЁ\"\'\.–-\s]/g, ""); // Удаляем все, кроме букв, тире, кавычек и пробелов
       handleChange && handleChange(filteredText);
     } else {
       handleChange && handleChange(text);
