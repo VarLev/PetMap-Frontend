@@ -27,7 +27,18 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   renderContent, // Получаем кастомный рендер через пропсы
 }) => {
   return (
-    <Modal isVisible={isVisible} onBackdropPress={onClose} backdropOpacity={0.6}>
+    <Modal 
+    isVisible={isVisible} 
+    onBackdropPress={onClose} 
+    backdropOpacity={0.6}
+    useNativeDriver={true}
+    useNativeDriverForBackdrop={true}
+    hideModalContentWhileAnimating={true}
+    animationIn="zoomIn"
+  animationOut="fadeOut"
+  animationInTiming={300}
+  animationOutTiming={300}
+    >
       <View className="p-6 px-8 rounded-2xl" style={{ backgroundColor: backgroundColor }}>
         {/* Если передан renderContent, используем его */}
         {renderContent ? (

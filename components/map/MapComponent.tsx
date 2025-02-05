@@ -424,7 +424,9 @@ const MapBoxMap = observer(() => {
   };
 
   const handleSearchTextChange = () => { };
+ 
 
+  
   const tagSelected = async (type: number) => {
     setCurrentPointType(type);
     if (!isCardView) {

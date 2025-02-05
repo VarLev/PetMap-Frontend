@@ -36,16 +36,29 @@ const ArticlesList: React.FC = () => {
     const fetchArticles = async () => {
       try {
         const folderList = await getFoldersInDirectory(`WIKI/articles/${i18n.locale}`);
-
+  
         const articleData = await Promise.all(
           folderList.map(async (folder) => {
             const title = folder.name;
-            const mainImageUrl = await getFileUrl(`${folder.fullPath}/main.png`);
-            const articleUrl = await getFileUrl(`${folder.fullPath}/article.md`);
-            return { title, mainImageUrl, articleUrl };
+            let mainImageUrl: string = '';
+            let articleUrl: string = '';
+  
+            try {
+              mainImageUrl = await getFileUrl(`${folder.fullPath}/main.png`);
+            } catch (error) {
+              console.warn(`Файл main.png отсутствует в папке ${folder.fullPath}`);
+            }
+  
+            try {
+              articleUrl = await getFileUrl(`${folder.fullPath}/article.md`);
+            } catch (error) {
+              console.warn(`Файл article.md отсутствует в папке ${folder.fullPath}`);
+            }
+  
+            return { title, mainImageUrl: mainImageUrl || '', articleUrl: articleUrl || '' };
           })
         );
-
+  
         setArticles(articleData);
       } catch (error) {
         console.error('Ошибка при загрузке статей:', error);
@@ -53,7 +66,7 @@ const ArticlesList: React.FC = () => {
         setLoading(false);
       }
     };
-
+  
     fetchArticles();
   }, []);
 

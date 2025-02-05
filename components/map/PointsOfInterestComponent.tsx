@@ -96,22 +96,31 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, onR
   const imageSad = require('@/assets/images/alert-dog-sad.png');
   const [alertImage, setAlertImage] = useState<ImageSourcePropType | undefined>(imageSad);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const DEFAULT_COORDINATES: [number, number] = [-58.381592, -34.603722];
 
   useEffect(() => {
     const fetchPoints = async () => {
-      if (!isDataLoaded) {
-        if (uiStore.getLocationPermissionGranted() && await uiStore.getGpsStatus()) {
-          await mapStore.fetchUserPOIs(userLocation);
-          const generatedPoints = mapStore.getPoi();
-          setPointsOfInterest(generatedPoints);
-        }
-        setIsDataLoaded(true);
+      if (uiStore.getLocationPermissionGranted() && await uiStore.getGpsStatus()) {
+        await mapStore.fetchUserPOIs(userLocation);
+        const generatedPoints = mapStore.getPoi();
+        setPointsOfInterest(generatedPoints);
       }
+      setIsDataLoaded(true);
     };
-    console.log('fetchPoints');
-
-    fetchPoints();
-  }, [isDataLoaded, userLocation]);
+  
+    // Если текущие координаты совпадают с дефолтными, пропускаем запрос
+    if (
+      userLocation[0] === DEFAULT_COORDINATES[0] &&
+      userLocation[1] === DEFAULT_COORDINATES[1]
+    ) {
+      return;
+    }
+  
+    if (!isDataLoaded) {
+      console.log('fetchPoints with userLocation', userLocation);
+      fetchPoints();
+    }
+  }, [userLocation]);
 
   useEffect(() => {
     // Обновляем список видимых точек на основе текущего местоположения
