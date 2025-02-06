@@ -119,7 +119,7 @@ const PetsGrid = () => {
     <View className="p-2">
       {/* ManualTagSelector передает индекс выбранного тега в onToggleTag */}
       <ManualTagSelector 
-        tags={[i18n.t("petStatus.with_owner"), i18n.t("petStatus.lost"), i18n.t("petStatus.adoptable"), i18n.t("petStatus.mating"), i18n.t("petStatus.for_sale")]} 
+        tags={i18n.t("petStatus") as string[]} 
         onToggleTag={(selectedIndex) => {
           // Если тег снят (null) — можно оставить значение по умолчанию или реализовать логику "без фильтра"
           setSelectedStatus(selectedIndex !== null ? selectedIndex : 0);

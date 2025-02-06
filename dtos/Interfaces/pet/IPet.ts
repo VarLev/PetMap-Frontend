@@ -25,4 +25,6 @@ export interface IPet {
   facebook?: string | null;
   size?: number | null;
   userThumbnailUrl?: string | null;
+  petStatus?: number | null;   
+  price?: number | null;
 }

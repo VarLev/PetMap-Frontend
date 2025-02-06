@@ -1093,6 +1093,9 @@
     }
   },
   "EditPetProfile": {
+    "petStatus": "Что с питомцем?",
+    "petStatusDefault": "С хозяином",
+    "petStatusPrice": "Цена",
     "confirmationTitle": "Подтверждение",
     "confirmationMessage": "Вы уверены, что хотите выйти?",
     "cancel": "Отмена",
@@ -1567,11 +1570,5 @@
     "email": "Написать на почту",
     "whatsapp": "Написать в WhatsApp"
   },
-  "petStatus": {
-    "with_owner": "С хозяином",
-    "lost": "Потерялся",
-    "adoptable": "Пристраивается",
-    "mating": "Вяжется",
-    "for_sale": "Продается"
-  }
+  "petStatus": ["С хозяином", "Потерялся", "Пристраивается", "Вяжется", "Продается" ]
 }

@@ -1079,6 +1079,9 @@
     }
   },
   "EditPetProfile": {
+    "petStatus": "¿Qué pasa con la mascota?",
+    "petStatusDefault": "Con dueño",
+    "petStatusPrice": "Precio",
     "confirmationTitle": "Confirmación",
     "confirmationMessage": "¿Estás seguro de que querés salir?",
     "cancel": "Cancelar",
@@ -1553,11 +1556,5 @@
     "email": "Enviar un correo electrónico",
     "whatsapp": "Escribir en WhatsApp"
   },
-  "petStatus": {
-    "with_owner": "Con dueño",
-    "lost": "Perdido",
-    "adoptable": "En adopción",
-    "mating": "En celo",
-    "for_sale": "En venta"
-  }
+  "petStatus": ["Con dueño","Perdido","En adopción","En celo","En venta"]
 }

@@ -1079,6 +1079,9 @@
     }
   },
   "EditPetProfile": {
+    "petStatus": "What's going on with the pet?",
+    "petStatusDefault": "With owner",
+    "petStatusPrice": "Price",
     "confirmationTitle": "Confirmation",
     "confirmationMessage": "Are you sure you want to exit?",
     "cancel": "Cancel",
@@ -1553,11 +1556,6 @@
     "email": "Send an Email",
     "whatsapp": "Write on WhatsApp"
   },
-  "petStatus": {
-    "with_owner": "With owner",
-    "lost": "Lost",
-    "adoptable": "Adoptable",
-    "mating": "Mating",
-    "for_sale": "For sale"
-  }
+  "petStatus": ["With owner", "Lost", "Adoptable", "Mating", "For sale"]
+
 }

@@ -26,6 +26,9 @@ export class Pet implements IPet {
   instagram?: string | null;
   facebook?: string | null;
   userThumbnailUrl?: string | null;
+  petStatus?: number | null;
+  price?: number | null;
+
 
   constructor(data: Partial<IPet> = {}) {
     this.id = data.id!;
@@ -52,5 +55,7 @@ export class Pet implements IPet {
     this.instagram = data.instagram || '';
     this.facebook = data.facebook || '';
     this.userThumbnailUrl = data.userThumbnailUrl || '';
+    this.petStatus = data.petStatus || 0;
+    this.price = data.price || null
   }
 }

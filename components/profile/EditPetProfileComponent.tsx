@@ -23,6 +23,7 @@ import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
 import { petCatUriImage, petUriImage } from '@/constants/Strings';
 import PhotoSelectorCarusel from '../common/PhotoSelectorCarusel';
 import { Photo } from '@/dtos/classes/Photo';
+import CustomPriceInput from '../custom/inputs/CustomPriceInput';
 
 const TASK_IDS = {
   petEdit: {
@@ -73,6 +74,12 @@ const EditPetProfileComponent = observer(
     const initialDate =
       editablePet.birthDate instanceof Date && !isNaN(editablePet.birthDate.getTime()) ? editablePet.birthDate : new Date();
     const [age, setAge] = useState<Date>(initialDate);
+
+    // Получаем массив статусов (например, ["С хозяином", "Потерялся", "Пристраивается", "Вяжется", "Продается"])
+    const petStatusTags = i18n.t('petStatus') as string[];
+
+    // Вычисляем индекс статуса "Продается" из этого массива
+    const forSaleIndex = petStatusTags.indexOf(i18n.t('petStatus.forSale'));
 
     useControl('petName', editablePet.petName, {
       id: TASK_IDS.petEdit.dog_name,
@@ -380,6 +387,31 @@ const EditPetProfileComponent = observer(
                   onAdd={handleAddPhoto}
                 />
               </View>
+
+              <View>
+                <CustomDropdownList
+                  tags={petStatusTags}
+                  label={i18n.t('EditPetProfile.petStatus')}
+                  placeholder={i18n.t('EditPetProfile.petStatus')}
+                  // Если petStatus задан, преобразуем его в строку по индексу, иначе используем значение по умолчанию
+                  initialSelectedTag={editablePet.petStatus ?? i18n.t('EditPetProfile.petStatusDefault')}
+                  onChange={(status) => handleFieldChange('petStatus', status)}
+                  listMode="MODAL"
+                />
+              </View>
+
+              {/* Если выбран статус "Продается", отображаем дополнительное поле для ввода цены */}
+              {editablePet.petStatus === 4 && (
+                <View className="mt-4">
+                  <CustomPriceInput
+                     label={i18n.t('EditPetProfile.petStatusPrice')}
+                     value={editablePet.price || ''}
+                     handleChange={(text) => handleFieldChange('price', text)}
+                     currency={'ARS$'} // например, для аргентинского "ARS$"
+                     keyboardType="decimal-pad"
+                  />
+                </View>
+              )}
 
               <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">{i18n.t('EditPetProfile.main')}</Text>
 
