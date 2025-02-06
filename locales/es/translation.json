@@ -1051,7 +1051,7 @@
     "interests": "Intereses",
     "mainInfo": "Información Principal",
     "socialMedia": "Redes Sociales",
-    "deleteProfileMessage": "Su perfil y todos los datos serán eliminados por completo. ¿Está seguro de que desea eliminar el perfil?",
+    "deleteProfileMessage": "Tu perfil y todos los datos serán eliminados por completo en 30 días. Si vuelves a iniciar sesión en tu perfil durante este período, la eliminación será cancelada. ¿Estás seguro de que quieres comenzar el proceso de eliminación?",
     "deletedProfilerAlarm": "El perfil del usuario {{email}} ha sido eliminado 😢"
   },
   "PetProfile": {

@@ -1051,7 +1051,7 @@
     "interests": "Interests",
     "mainInfo": "Main Info",
     "socialMedia": "Social Media",
-    "deleteProfileMessage": "Your profile and all data will be completely deleted. Are you sure you want to delete the profile?",
+    "deleteProfileMessage": "Your profile and all data will be permanently deleted in 30 days. If you log into your profile during this period, the deletion will be canceled. Are you sure you want to start the deletion process?",
     "deletedProfilerAlarm": "The user's profile {{email}} has been deleted 😢"
   },
   "PetProfile": {

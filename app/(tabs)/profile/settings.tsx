@@ -97,16 +97,16 @@ const deleteAccount = async () => {
   const user = userStore.currentUser;
   if (!user) return;
   try{
-    await userStore.deleteUserAccount(user!.id);
-    await petStore.deletePetsFromFireStore(user!);      
-    await userStore.deleteUserFromFireStore(user!);
+    //await userStore.deleteUserAccount(user!.id);
+    //await petStore.deletePetsFromFireStore(user!);      
+    //await userStore.deleteUserFromFireStore(user!);
     const userPets = user?.petProfiles?.map((pet) => pet.id);
     if (!userPets) return;
     for (let i of userPets) {
-      await petStore.deletePetProfile(i);
+      //await petStore.deletePetProfile(i);
       console.log('Питомцы удалены из Базы данных');
     }
-    Alert.alert(i18n.t("UserProfile.deletedProfilerAlarm", { email: user?.email }));
+    //Alert.alert(i18n.t("UserProfile.deletedProfilerAlarm", { email: user?.email }));
     userStore.signOut();
     await router.replace('/(auth)/sign-in');
   } catch (error) {
