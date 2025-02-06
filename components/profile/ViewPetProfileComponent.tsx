@@ -197,7 +197,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
             <Pressable onPress={handlePress}>
               <Avatar.Image
                 size={60} 
-                source={{ uri: pet.userThumbnailUrl?? 'https://i.pravatar.cc/300' }} // аватарка пользователя
+                source={{ uri: pet.userThumbnailUrl?? 'https://avatar.iran.liara.run/public' }} // аватарка пользователя
               />
             </Pressable>
           </View>

@@ -45,7 +45,14 @@ const CustomConfirmAlert: React.FC<CustomConfirmAlertProps> = ({
   };
 
   return (
-    <Modal isVisible={isVisible} onBackdropPress={onClose} backdropOpacity={0.6}>
+    <Modal isVisible={isVisible} onBackdropPress={onClose} backdropOpacity={0.6}
+    useNativeDriver={true}
+    useNativeDriverForBackdrop={true}
+    hideModalContentWhileAnimating={true}
+    animationIn="zoomIn"
+  animationOut="fadeOut"
+  animationInTiming={300}
+  animationOutTiming={300}>
       <View className="p-6 px-8 rounded-2xl bg-white">
         
         {title?.length > 0 && (

@@ -47,6 +47,7 @@ const App = () => {
 
     const checkAuthAndRedirect = async () => {
       if (isInitialized && adShown && !loading && userStore.getLogged() && !isUserJustRegistrated) {
+        console.log("User is logged in");
         const currentUser = await userStore.getCurrentUser() as IUser;
         if(currentUser.userStatus === UserStatus.Onboarding)
           await router.replace("/(auth)/onboarding"); 
@@ -93,7 +94,7 @@ const App = () => {
 
   //Если пользователь авторизован и всё инициализировано, редиректим на /search/news
   if (!isError && !loading && userStore.getLogged() && isInitialized && (adShown || userHasSubscription))
-    return <Redirect href="/search/news" />;
+    return (userStore.currentUser?.userStatus === UserStatus.Onboarding ? <Redirect href="/(auth)/onboarding" />: <Redirect href="/search/news" />);
 
 
   return (

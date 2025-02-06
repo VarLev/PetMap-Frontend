@@ -12,16 +12,15 @@ const Onboarding = () => {
   const [selectedLanguage, setSelectedLanguage] = React.useState<number>(0);  
 
   const handleLanguageSelect = async (selectedLanguage: number) => {
-    userStore.updateUserOnbordingData({ 
-      userLanguages: [selectedLanguage], 
-      systemLanguage: selectedLanguage,
-    });
+    
     await uiStore.setLanguagei18n(selectedLanguage);
     setSelectedLanguage(selectedLanguage);
     //await uiStore.setSystemLanguage(selectedLanguage);
   };
 
   const handleComplete = async (user: IUser) => {
+    user.systemLanguage = selectedLanguage;
+    user.userLanguages = [selectedLanguage]; 
     await userStore.updateUserOnbordingData(user);
     router.replace('/congrats');
   };

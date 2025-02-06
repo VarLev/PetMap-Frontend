@@ -1,5 +1,5 @@
-import React, { useContext, useRef, useState } from 'react';
-import { View, Dimensions, Platform, StyleSheet, ImageSourcePropType, Image, FlatList, TouchableOpacity, Modal } from 'react-native';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { View, Dimensions, Platform, StyleSheet, ImageSourcePropType, Image, FlatList, TouchableOpacity, Modal, BackHandler } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { Avatar, Button, HelperText, Text } from 'react-native-paper';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
@@ -26,7 +26,9 @@ import CustomConfirmAlert from '../custom/alert/CustomConfirmAlert';
 import BonusSlider from '../custom/sliders/BonusSlider';
 import CustomLoadingButton from '../custom/buttons/CustomLoadingButton';
 import i18n from '@/i18n';
-import { petCatUriImage, petUriImage } from '@/constants/Strings';
+
+import { useNavigation } from 'expo-router';
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -69,6 +71,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   const [petPageBonuses, setPetPageBonuses] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [key, setKey] = useState(0);
+  const [key2, setKey2] = useState(randomUUID());
 
   const carouselRef = useRef(null);
 
@@ -92,9 +95,24 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
     0: i18n.t('tags.breedsDog') as string[], // Пример: ['Bulldog', 'Labrador']
     1: i18n.t('tags.breedsCat') as string[], // Пример: ['Persian', 'Maine Coon']
   };
-
+  const navigation = useNavigation();
+  
   const breeds = tagsByAnimalType[selectedAnimalType || 0] || [];
+  useEffect(() => {
+    // Отключаем свайп назад (iOS) и кнопку "назад" (Android)
+    navigation.setOptions({ gestureEnabled: false });
 
+    const onBackPress = () => {
+      // Возвращаем true, чтобы запретить переход назад
+      return true;
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+    return () => {
+      subscription.remove();
+    };
+  }, [navigation]);
 
   // Используем useControl для каждого поля
   useControl('user_name', interests, {
@@ -230,11 +248,10 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
         birthDate: petAge,
         gender: petGender,
         userId: currentUser!.id,
-        thumbnailUrl: petImage ?? (selectedAnimalType === 1 ? petCatUriImage : petUriImage),
+        thumbnailUrl: petImage,
         animalType: selectedAnimalType,
       };
 
-      console.log('newPetProfile', newPetProfile);
 
       currentUser!.name = name;
       currentUser!.gender = gender;
@@ -283,6 +300,8 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   const handleLanguageSelection = (language: number) => {
     onLanguageSelect(language);
     setKey((prevKey) => prevKey + 1);
+    setKey2(randomUUID());
+ 
     handleNext(); // Переключение на следующий слайд после выбора языка
   };
 
@@ -500,7 +519,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
               {i18n.t('onboardingProfile.slide4.errorName')}
             </HelperText>
           )}
-          <View className="pt-2">
+          <View key={key2} className="pt-2">
             <CustomDropdownList
               tags={i18n.t('tags.TypePet') as string[]}
               label={i18n.t('typeOfPet')}

@@ -463,9 +463,6 @@ class UserStore {
         if((user.petProfiles ?? []).length > 0 ){
           if(user.petProfiles![0].thumbnailUrl){
             thumUrl = await this.uploadImage(user.petProfiles![0].thumbnailUrl, `pets/${user.petProfiles![0].id}/thumbnail`);
-          }else{
-            const petAvatarUrl = await this.fetchImageUrl(`assets/images/pet/thumbnail.png`);
-            thumUrl = await this.uploadImage(petAvatarUrl!, `pets/${user.petProfiles![0].id}/thumbnail`);
           }
           this.currentUser.petProfiles![0].thumbnailUrl = thumUrl;
           user.petProfiles![0].thumbnailUrl = thumUrl;

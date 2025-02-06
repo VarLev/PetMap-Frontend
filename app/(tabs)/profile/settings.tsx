@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { ActivityIndicator, View, BackHandler, Alert } from 'react-native';
-import { List, Switch } from 'react-native-paper';
+import { Divider, List, Switch } from 'react-native-paper';
 import CustomSegmentedButtonsWithProps from '@/components/custom/buttons/CustomSegmentedButtonsWithProps';
 import CustomConfirmAlert from '@/components/custom/alert/CustomConfirmAlert';
 import { Language } from '@/dtos/enum/Language';
@@ -149,8 +149,9 @@ const deleteAccount = async () => {
         <View className="items-center pb-2">
           <CustomButtonPrimary handlePress={exitApp} title={i18n.t('UserProfile.logout')} containerStyles="w-full" />
         </View>
+        <Divider className='my-2' />
         <View className="pb-20 items-center">
-          <CustomButtonOutlined handlePress={handleShowDeleteAlert} title={i18n.t('UserProfile.deleteProfile')} containerStyles="w-full" />
+          <CustomButtonOutlined handlePress={handleShowDeleteAlert} title={i18n.t('UserProfile.deleteProfile')} containerStyles="w-full bg-white" textStyles='text-red-500'/>
         </View>
       </View>
 
@@ -162,6 +163,7 @@ const deleteAccount = async () => {
         confirmText={i18n.t('ok')}
         cancelText={i18n.t('cancel')}
       />
+     
       <CustomConfirmAlert
         isVisible={deleteAlertVisible}
         onClose={closeDeleteAlert}
