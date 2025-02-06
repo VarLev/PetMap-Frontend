@@ -5,7 +5,7 @@
   "ok": "OK",
   "cancel": "Cancelar",
   "search": {
-    "news": "Noticias",
+    "news": "PetSearch",
     "activitis": "Actividades"
   },
   "index": {
@@ -1552,5 +1552,12 @@
     "telegram": "Nuestro Telegram",
     "email": "Enviar un correo electrónico",
     "whatsapp": "Escribir en WhatsApp"
+  },
+  "petStatus": {
+    "with_owner": "Con dueño",
+    "lost": "Perdido",
+    "adoptable": "En adopción",
+    "mating": "En celo",
+    "for_sale": "En venta"
   }
 }

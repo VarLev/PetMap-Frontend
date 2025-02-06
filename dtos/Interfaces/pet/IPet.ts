@@ -24,4 +24,5 @@ export interface IPet {
   instagram?: string | null;
   facebook?: string | null;
   size?: number | null;
+  userThumbnailUrl?: string | null;
 }

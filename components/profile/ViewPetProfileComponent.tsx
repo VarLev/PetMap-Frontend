@@ -1,7 +1,7 @@
 import { Pet } from '@/dtos/classes/pet/Pet';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { StatusBar, View, Image, StyleSheet, Platform, Dimensions } from 'react-native';
-import { Text, IconButton, Menu, Divider } from 'react-native-paper';
+import { StatusBar, View, Image, StyleSheet, Platform, Dimensions, Pressable } from 'react-native';
+import { Text, IconButton, Menu, Divider, Avatar } from 'react-native-paper';
 import { calculateDogAge, getTagsByIndex } from '@/utils/utils';
 import BottomSheet from '@gorhom/bottom-sheet';
 import BottomSheetComponent from '../common/BottomSheetComponent';
@@ -58,13 +58,13 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
             contentStyle={{ backgroundColor: 'white' }}
             anchor={
               
-                <IconButton
-                  icon="menu"
-                  size={30}
-                  iconColor='white'
-                  style={styles.menuButton}
-                  onPress={openMenu}
-                />
+              <IconButton
+                icon="menu"
+                size={30}
+                iconColor='white'
+                style={styles.menuButton}
+                onPress={openMenu}
+              />
            
             }
           >
@@ -145,6 +145,10 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
     router.replace(`/(user)/${userStore.currentUser?.id}`);
   };
 
+  const handlePress=() => {
+    router.push(`/(user)/${pet.userId}`);
+  }
+
   return (
     <GestureHandlerRootView className="h-full">
       <View style={{ alignItems: 'center' }}>
@@ -176,7 +180,32 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
 
           {renderPagination()}
           
-          
+          <View className='absolute bottom-12 left-5 items-center'>
+          <View
+            style={{
+              zIndex: 10,
+              width: 60,           // размер контейнера равен размеру аватара
+              height: 60,
+              borderWidth: 2,      // толщина обводки
+              borderColor: 'white',// цвет обводки
+              borderRadius: 60 / 2, // чтобы контейнер был круглый
+              overflow: 'hidden',  // обрезаем содержимое по границам контейнера
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Pressable onPress={handlePress}>
+              <Avatar.Image
+                size={60} 
+                source={{ uri: pet.userThumbnailUrl?? 'https://i.pravatar.cc/300' }} // аватарка пользователя
+              />
+            </Pressable>
+          </View>
+            <Text className='font-nunitoSansBold text-white text-lg -m-2'>
+                Owner
+            </Text>
+          </View>
+         
         </View>
       </View>
 

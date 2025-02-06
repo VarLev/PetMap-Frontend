@@ -23,16 +23,16 @@ export default function Layout() {
         swipeEnabled: false,
       }}
     >
-       <TopTab.Screen
+      <TopTab.Screen
             name="news"
             options={{ title: i18n.t("search.news") }}
           >
             {() => (
               <NewsScreen setSwipeEnabled={setSwipeEnabled} />
             )}
-          </TopTab.Screen>
+      </TopTab.Screen>
       <TopTab.Screen name="activities" component={ActivitiesScreen} options={{ title: '🐾 PetShots' }} />
-      <TopTab.Screen name="wiki" component={WikiScreen} options={{ title: 'WIKI' }} />
+      <TopTab.Screen name="wiki" component={WikiScreen} options={{ title: 'PetWIKI' }} />
     </TopTab.Navigator>
     </NavigationContainer>
     </SafeAreaView>

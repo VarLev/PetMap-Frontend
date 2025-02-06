@@ -11,6 +11,7 @@ import { storage } from '@/firebaseConfig';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import { IPhoto } from '@/dtos/Interfaces/IPhoto';
 import { handleAxiosError } from '@/utils/axiosUtils';
+import { IPetShortProfileGridDTO } from '@/dtos/Interfaces/pet/IPetShortProfileGridDTO';
 
 class PetStore {
   currentPetProfile: IPet | null = null;
@@ -189,6 +190,23 @@ class PetStore {
         }
         console.log('Питомцы удалены из FireStore');
       }
+    } catch (error) {
+      return handleAxiosError(error);
+    }
+  }
+
+  async getPetsForGrid(
+    country: string,
+    city: string,
+    status: number,
+    page: number = 1,
+    pageSize: number = 20
+  ): Promise<IPetShortProfileGridDTO[] | undefined> {
+    try {
+      const response = await apiClient.get('/petprofiles/grid', {
+        params: { country, city, status, page, pageSize },
+      });
+      return response.data as IPetShortProfileGridDTO[];
     } catch (error) {
       return handleAxiosError(error);
     }
