@@ -201,6 +201,8 @@ const EditPetProfileComponent = observer(
       const resp = await petStore.uploadPetThumbnail(editablePet);
       editablePet.thumbnailUrl = resp;
       editablePet.birthDate = parseStringToDate(birthDate);
+      editablePet.price = parseFloat(editablePet.price?.toString().replace(' ','') || '0');
+      
       try {
         await petStore.updatePetProfile(editablePet);
         await userStore.updateUserJobs(currentUser.id, completedJobs);
@@ -221,6 +223,8 @@ const EditPetProfileComponent = observer(
       editablePet.thumbnailUrl = resp;
       editablePet.birthDate = parseStringToDate(birthDate);
       editablePet.animalType = editablePet.animalType || 0;
+      editablePet.price = parseFloat(editablePet.price?.toString().replace(' ','') || '0');
+      
       try {
         const pet = await petStore.createNewPetProfile(editablePet);
 
@@ -404,7 +408,7 @@ const EditPetProfileComponent = observer(
               {editablePet.petStatus === 4 && (
                 <View className="mt-4">
                   <CustomPriceInput
-                     label={i18n.t('EditPetProfile.petStatusPrice')}
+                     label={i18n.t('EditPetProfile.petStatusPrice') + ' (ARS$)'}
                      value={editablePet.price || ''}
                      handleChange={(text) => handleFieldChange('price', text)}
                      currency={'ARS$'} // например, для аргентинского "ARS$"

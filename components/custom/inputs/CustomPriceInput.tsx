@@ -36,7 +36,7 @@ const CustomPriceInput = ({
   onPress,
   editable = true,
   currency = '$',
-  precision = 2,
+  precision = 0,
 }: PriceInputProps) => {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -44,8 +44,8 @@ const CustomPriceInput = ({
   const moneyMaskOptions = {
     precision: precision,
     separator: ".",      // символ-разделитель десятичной части (можно менять в зависимости от локали)
-    delimiter: ",",      // разделитель групп разрядов (можно заменить на пробел или точку)
-    unit: currency,      // символ валюты
+    delimiter: " ",      // разделитель групп разрядов (можно заменить на пробел или точку)
+    unit: "",      // символ валюты
     suffixUnit: "",    // суффикс (если требуется)
     zeroCents: false,    // отображать ли нулевые десятые
   };
