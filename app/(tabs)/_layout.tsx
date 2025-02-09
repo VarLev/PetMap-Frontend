@@ -39,7 +39,7 @@ const Tabslayout = () => {
         const chatId = response.notification.request.content.data.chatId;
         if (chatId) {
           // Например, перейдите к нужному чату
-          router.replace(`/chat/${chatId}`);
+          router.replace(`/(chat)/${chatId}`);
         }
       }
     );

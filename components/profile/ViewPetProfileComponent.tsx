@@ -1,6 +1,6 @@
 import { Pet } from '@/dtos/classes/pet/Pet';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { StatusBar, View, Image, StyleSheet, Platform, Dimensions, Pressable } from 'react-native';
+import { StatusBar, View, Image, StyleSheet, Platform, Dimensions, Pressable, Share } from 'react-native';
 import { Text, IconButton, Menu, Divider, Avatar } from 'react-native-paper';
 import { calculateDogAge, getTagsByIndex } from '@/utils/utils';
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -21,6 +21,7 @@ import userStore from '@/stores/UserStore';
 import { Photo } from '@/dtos/classes/Photo';
 import Animated from 'react-native-reanimated';
 import Carousel from 'react-native-reanimated-carousel';
+import { Ionicons } from '@expo/vector-icons';
 
 const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: () => void }) => {
   const sheetRef = useRef<BottomSheet>(null);
@@ -149,6 +150,17 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
     router.push(`/(user)/${pet.userId}`);
   }
 
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        message: `https://us-central1-petmeetar.cloudfunctions.net/petProfile/pet/${pet.id}`,
+      });
+
+    } catch (error) {
+      console.error('Ошибка при попытке поделиться:', error);
+    }
+  };
+
   return (
     <GestureHandlerRootView className="h-full">
       <View style={{ alignItems: 'center' }}>
@@ -215,15 +227,19 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
         snapPoints={['55%', '100%']}
         renderContent={
           <View className="bg-white h-full">
-            <Text className="pl-5 text-2xl font-nunitoSansBold">
-              {pet.petName} {calculateDogAge(pet.birthDate)}
-            </Text>
+            <View className='-mt-1 flex-row items-center'>
+              <IconButton className='-mt-1' icon={() => <Ionicons name="share-outline" size={35} />} size={35}  onPress={onShare} />
+              <Text className="-ml-2 text-2xl font-nunitoSansBold">
+                {pet.petName} {calculateDogAge(pet.birthDate)}
+              </Text>
+            </View>
+            
 
             <View className="pr-3 pl-4">
 
               {/* Основное - показываем всегда, так как вид питомца, пол, породу, ДР, вес и рост скорее всего всегда заполнены */}
               <View>
-                <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">
+                <Text className="pt-0 -mb-1 text-base font-nunitoSansBold text-indigo-700">
                   {i18n.t('PetProfile.main')}
                 </Text>
                 {!!pet.petName?.trim() && (

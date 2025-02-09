@@ -120,6 +120,7 @@ const PetsGrid = () => {
       {/* ManualTagSelector передает индекс выбранного тега в onToggleTag */}
       <ManualTagSelector 
         tags={i18n.t("petStatus") as string[]} 
+        visibleIndices={[0, 1, 2]}
         onToggleTag={(selectedIndex) => {
           // Если тег снят (null) — можно оставить значение по умолчанию или реализовать логику "без фильтра"
           setSelectedStatus(selectedIndex !== null ? selectedIndex : 0);

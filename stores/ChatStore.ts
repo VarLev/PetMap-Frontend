@@ -9,6 +9,8 @@ import { ChatType, SendMessageOptions } from '@/dtos/enum/ChatType';
 import { generateChatIdForTwoUsers } from '@/utils/chatUtils';
 import { getUserStatus } from '@/utils/userUtils';
 import apiClient from '@/hooks/axiosConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import i18n from '@/i18n';
 
 
 class ChatStore {
@@ -888,87 +890,95 @@ class ChatStore {
     }
   }
 
-  async sendChatToAiAssistant(conversationHistory: IChatAIMessage[]): Promise<string | null> 
-  {
-    const userId = userStore.currentUser?.id ?? 'unknownUser'
+  async sendChatToAiAssistant(conversationHistory: IChatAIMessage[]): Promise<string | null> {
+    const userId = userStore.currentUser?.id ?? 'unknownUser';
     const chatId = process.env.EXPO_PUBLIC_AI_CHAT_ID + userId;
-
-    try {
-      // 1. Найдём последнее сообщение пользователя
-      //    Обычно это последнее по списку с role = 'user'
-      const lastUserMessage = conversationHistory[conversationHistory.length - 1]
-      if (lastUserMessage?.role !== 'user') {
-        console.warn('В конце истории нет сообщения от пользователя')
-        return null
+  
+    // Если пользователь не имеет подписку, проверяем лимит бесплатных сообщений
+    if (!userStore.getUserHasSubscription()) {
+      const freeMessagesKey = `freeMessages_${userId}`;
+      const freeMessagesStr = await AsyncStorage.getItem(freeMessagesKey);
+      // Если значение ещё не установлено – инициализируем значением 10
+      let freeMessagesCount = freeMessagesStr ? parseInt(freeMessagesStr, 100) : 100;
+      
+      if (freeMessagesCount <= 0) {
+        // Если лимит исчерпан, возвращаем сообщение об этом
+        return i18n.t("chat.aiEndFreeMessages");
       }
-
-      // 2. Сохраним это сообщение в Firebase (аналогично sendMessageUniversal)
-      const now = Date.now()
-      const newMessageKey = push(ref(database, `messages/${chatId}`)).key
-      if (!newMessageKey) {
-        console.error('Не удалось сгенерировать ключ для сообщения')
-        return null
-      }
-
-      const userMsg: MessageType.Text = {
-        id: newMessageKey,
-        type: 'text',
-        text: lastUserMessage.content,
-        createdAt: now,
-        author: {
-          id: userId,
-          firstName: userStore.currentUser?.name ?? 'Anonymous',
-          imageUrl: userStore.currentUser?.thumbnailUrl ?? '',
-        },
-      }
-
-      // Пакетное обновление
-      const updates: Record<string, unknown> = {}
-      updates[`messages/${chatId}/${newMessageKey}`] = userMsg
-      updates[`chats/${chatId}/lastMessage`] = userMsg.text
-      updates[`chats/${chatId}/lastCreatedAt`] = now
-      updates[`users/${userId}/lastSeen`] = now
-
-      await update(ref(database), updates)
-
-      // Сразу обновим локальный стор
-      runInAction(() => {
-        //this.messages.unshift(userMsg) // или push в конец, в зависимости от логики
-        this.lastMessage[chatId!] = userMsg.text
-      })
-
-      // 3. Теперь отправляем запрос на бэкенд для получения ответа ассистента
-      const requestBody = {
-        messages: conversationHistory.map((msg) => ({
-          role: msg.role,
-          content: msg.content,
-        })),
-      }
-
-      const response = await apiClient.post('/chatgpt/askai', requestBody, {
-        headers: { 'Content-Type': 'application/json' },
-      })
-
-      if (response.status !== 200) {
-        console.error(
-          'Ошибка при обращении к AI-ассистенту:',
-          response.status,
-          response.statusText
-        )
-        return null
-      }
-
-      // 4. Парсим ответ (предположим, вы возвращаете { answer: "..." })
-      const data = response.data
-      const assistantText = data?.answer || null
-
-
-      return assistantText
-    } catch (error) {
-      console.error('Ошибка при отправке разговора AI-ассистенту:', error)
-      return null
+      // Уменьшаем счётчик и сохраняем новое значение
+      freeMessagesCount--;
+      await AsyncStorage.setItem(freeMessagesKey, freeMessagesCount.toString());
     }
   
+    // 1. Находим последнее сообщение пользователя (как в вашем коде)
+    const lastUserMessage = conversationHistory[conversationHistory.length - 1];
+    if (lastUserMessage?.role !== 'user') {
+      console.warn('В конце истории нет сообщения от пользователя');
+      return null;
+    }
+  
+    // 2. Сохраняем сообщение пользователя в Firebase (аналогично вашему коду)
+    const now = Date.now();
+    const newMessageKey = push(ref(database, `messages/${chatId}`)).key;
+    if (!newMessageKey) {
+      console.error('Не удалось сгенерировать ключ для сообщения');
+      return null;
+    }
+    const userMsg: MessageType.Text = {
+      id: newMessageKey,
+      type: 'text',
+      text: lastUserMessage.content,
+      createdAt: now,
+      author: {
+        id: userId,
+        firstName: userStore.currentUser?.name ?? 'Anonymous',
+        imageUrl: userStore.currentUser?.thumbnailUrl ?? '',
+      },
+    };
+  
+    // Пакетное обновление в Firebase
+    const updates: Record<string, unknown> = {};
+    updates[`messages/${chatId}/${newMessageKey}`] = userMsg;
+    updates[`chats/${chatId}/lastMessage`] = userMsg.text;
+    updates[`chats/${chatId}/lastCreatedAt`] = now;
+    updates[`users/${userId}/lastSeen`] = now;
+    await update(ref(database), updates);
+  
+    // Обновляем локальный стор (примерно так, как у вас)
+    runInAction(() => {
+      // Например: this.lastMessage[chatId] = userMsg.text;
+    });
+  
+    // 3. Отправляем запрос на ваш бэкенд для получения ответа ассистента
+    const requestBody = {
+      messages: conversationHistory.map((msg) => ({
+        role: msg.role,
+        content: msg.content,
+      })),
+    };
+  
+    const response = await apiClient.post('/chatgpt/askai', requestBody, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  
+    if (response.status !== 200) {
+      console.error('Ошибка при обращении к AI-ассистенту:', response.status, response.statusText);
+      return null;
+    }
+  
+    // 4. Парсим ответ от сервера
+    const data = response.data;
+    let assistantText = data?.answer || null;
+  
+    // 5. Если пользователь не имеет подписку, дописываем информацию о количестве оставшихся сообщений
+    if (assistantText && !userStore.getUserHasSubscription()) {
+      const freeMessagesKey = `freeMessages_${userId}`;
+      const freeMessagesStr = await AsyncStorage.getItem(freeMessagesKey);
+      const freeMessagesCount = freeMessagesStr ? parseInt(freeMessagesStr, 10) : 0;
+      assistantText += `\n\n ${i18n.t("chat.aiFreeMessages")} ${freeMessagesCount}. ${i18n.t("chat.aiGetSubscription")}`;
+    }
+    
+    return assistantText;
   }
 
   async addAssistantMessage(chatId: string, assistantReply: string) {

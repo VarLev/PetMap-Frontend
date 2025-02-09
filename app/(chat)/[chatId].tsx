@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { observer } from "mobx-react-lite";
-import { BackHandler, Platform, Text } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import * as Clipboard from 'expo-clipboard';
+import { ActionSheetIOS, Alert, BackHandler, Platform, Text } from "react-native";
+import { useLocalSearchParams, useRouter, useSegments } from "expo-router";
 import { Chat, MessageType, defaultTheme } from "@flyerhq/react-native-chat-ui";
 import { SafeAreaView } from "react-native-safe-area-context";
 import i18n from "@/i18n";
@@ -27,6 +28,7 @@ const ChatScreen: React.FC = observer(() => {
   const [chat, setChat] = useState<IChat | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string >(UserStore.getCurrentUserId()!);
   const router = useRouter();
+  const segments = useSegments();
   
   const [isBlocked, setIsBlocked] = useState(false);
   const sheetRef = useRef<BottomSheet>(null);
@@ -102,6 +104,12 @@ const ChatScreen: React.FC = observer(() => {
     }
 
     const handleBackPress = () => {
+      
+      if (segments.length <= 1) {
+        console.log("Segments:", segments);
+        router.replace("/(chat)");
+        return false;
+      }
       router.back();
       mapStore.setBottomSheetVisible(false);
       
@@ -161,6 +169,43 @@ const ChatScreen: React.FC = observer(() => {
     [translatedMessages, loadingTranslation]
   )
 
+
+  const handleMessageLongPress = (message: MessageType.Any) => {
+    // Если сообщение не текстовое, выходим
+    if (message.type !== 'text') return;
+  
+    const copyText = () => {
+      Clipboard.setString(message.text);
+      // Здесь можно добавить уведомление пользователю (например, через Toast)
+      console.log('Текст скопирован в буфер обмена');
+    };
+  
+    if (Platform.OS === 'ios') {
+      // Для iOS используем стандартный ActionSheet
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Отмена', 'Копировать'],
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 1) {
+            copyText();
+          }
+        }
+      );
+    } else {
+      // Для Android можно использовать Alert или сторонний компонент для меню
+      Alert.alert(
+        i18n.t('chat.copyAction'),
+        '',
+        [
+          { text: i18n.t('chat.copy'), onPress: copyText },
+          { text: i18n.t('chat.cancel'), style: 'cancel' },
+        ],
+        { cancelable: true }
+      );
+    }
+  };
 
   const handleSendPress = useCallback(
     async (partialMsg: MessageType.PartialText) => {
@@ -270,7 +315,7 @@ const ChatScreen: React.FC = observer(() => {
           locale={i18n.locale as "en" | "es" | "ru" | undefined}
           sendButtonVisibilityMode="always"
          
-          onMessageLongPress={(item)=>{}}
+          onMessageLongPress={handleMessageLongPress} 
           
           theme={{
             ...defaultTheme,

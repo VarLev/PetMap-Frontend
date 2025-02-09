@@ -1428,6 +1428,9 @@
     }
   },
   "chat": {
+    "aiEndFreeMessages":"Has agotado el límite de mensajes gratuitos. Por favor, adquirí una suscripción para continuar usando el asistente de IA.",
+    "aiFreeMessages":"Mensajes gratuitos restantes:",
+    "aiGetSubscription":"Adquirí una suscripción para uso ilimitado.",
     "loading": "Cargando...",
     "messages": "Mensajes",
     "time": {
@@ -1450,7 +1453,6 @@
     "sureBlock": "¿Estás seguro de que querés bloquear a esta persona?",
     "blockUser": "Bloquear usuario",
     "ok": "OK",
-    "cancel": "Cancelar",
     "deleteChatMessage": "¿Estás seguro de que querés eliminar este chat?",
     "title": "Notificaciones",
     "noMessages": "No tenés mensajes",
@@ -1464,7 +1466,10 @@
     "accept": "Aceptar",
     "decline": "Rechazar",
     "place": "Lugar",
-    "check": "Ver"
+    "check": "Ver",
+    "copyAction": "Elige una acción",
+    "copy": "Copiar",
+    "cancel": "Cancelar"
   },
   "avatar": {
     "female": "Femenino",
@@ -1556,5 +1561,5 @@
     "email": "Enviar un correo electrónico",
     "whatsapp": "Escribir en WhatsApp"
   },
-  "petStatus": ["Con dueño","Perdido","En adopción","En celo","En venta"]
+  "petStatus": ["Con dueño","Perdido","En adopción"]
 }

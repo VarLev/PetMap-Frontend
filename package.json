@@ -36,6 +36,7 @@
     "axios": "^1.7.2",
     "base-64": "^1.0.0",
     "expo": "^51.0.39",
+    "expo-clipboard": "~6.0.3",
     "expo-constants": "~16.0.2",
     "expo-crypto": "~13.0.2",
     "expo-dev-client": "^4.0.29",
@@ -82,7 +83,7 @@
     "react-native-svg": "^15.2.0",
     "react-native-tags": "^2.2.1",
     "react-native-vector-icons": "^10.2.0",
-    "react-native-webview": "^13.12.5"
+    "expo-apple-authentication": "~6.4.2"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
