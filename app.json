@@ -2,7 +2,7 @@
   "expo": {
     "name": "PetMap",
     "slug": "PetMap",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "com.lightway.petmap",
@@ -15,8 +15,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "supportsTablet": false,
       "usesAppleSignIn": true,
-      "supportsTablet": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "We request access to your location to determine your city, set up the map, and enable bonus collection along your route.",
         "NSLocationAlwaysUsageDescription": "We request access to your location to determine your city, set up the map, and enable bonus collection along your route.",

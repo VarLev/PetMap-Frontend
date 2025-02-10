@@ -42,7 +42,7 @@ const App = () => {
     //setAdShown(userStore.getUserHasSubscription());
 
     (async () => {
-      await RevenueCatService.initialize( process.env.EXPO_PUBLIC_REVENUECAT_API_KEY!);
+      await RevenueCatService.initialize(Platform.OS === "android"? process.env.EXPO_PUBLIC_REVENUECAT_API_KEY! : process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_APPLE!);
       await RevenueCatService.setUserEmail(userStore.currentUser?.email??'');
     })();
     setUserHasSubscription(userStore.getUserHasSubscription());

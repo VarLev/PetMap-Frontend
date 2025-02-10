@@ -58,8 +58,8 @@ const benefits = [
   {
     key: 8,
     name: "paywall.benefits.item8",
-    base: <TableIcon icon="close" color="white" />,
-    premium: <TableIcon icon="check" color="#ACFFB9" />,
+    base: 10,
+    premium: <TableIcon icon="all-inclusive" color="#ACFFB9" />,
   },
 ];
 

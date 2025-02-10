@@ -1123,7 +1123,7 @@
     "anonymousUser": "Anonymous User",
     "openProfile": "Open Profile",
     "subscription": "Subscription",
-    "freeTrial": "7 Days Free",
+    "freeTrial": "3 Days Free",
     "subscribe": "Subscribe",
     "tasksAndBonuses": "Tasks and Bonuses",
     "myWalks": "My Walks",
@@ -1512,7 +1512,7 @@
       "item5": "Search on the map by direct address",
       "item6": "Translation of all user-generated text",
       "item7": "Advertising",
-      "item8": "Increase each bonus by +0.5%"
+      "item8": "Unlimited Chat with the Pet Assistant"
     },
     "perDay": "2 per day",
     "markers": "20",
@@ -1520,9 +1520,9 @@
     "year": "year",
     "month": "month",
     "loading": "Loading...",
-    "free": "7 days free",
+    "free": "3 days free",
     "subscribe": "Subscribe",
-    "tryFree": "Try 7 days for free",
+    "tryFree": "Try 3 days for free",
     "startModal": {
       "title": "Premium subscription with a discount!",
       "text": "Subscribe to unlock the full functionality of the app without limitations!"
@@ -1546,8 +1546,8 @@
         "lastWords": "AI translator"
       },
       "item4": {
-        "firstWord": "Pet-bonuses:",
-        "lastWords": "4000"
+        "firstWord": "Pet Assistant Help",
+        "lastWords": ""
       }
     },
     "learnMore": "Learn more about the benefits",

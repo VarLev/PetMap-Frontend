@@ -1123,7 +1123,7 @@
     "anonymousUser": "Usuario Anónimo",
     "openProfile": "Abrir Perfil",
     "subscription": "Suscripción",
-    "freeTrial": "7 Días Gratis",
+    "freeTrial": "3 Días Gratis",
     "subscribe": "Suscribirse",
     "tasksAndBonuses": "Tareas y Bonos",
     "myWalks": "Mis Paseos",
@@ -1512,7 +1512,7 @@
       "item5": "Búsqueda en el mapa por dirección directa",
       "item6": "Traducción de todo el texto generado por usuarios",
       "item7": "Publicidad",
-      "item8": "Aumento de cada bono en +0.5%"
+      "item8": "Chat sin límites con el Asistente de Mascotas"
     },
     "perDay": "2 por día",
     "markers": "20",
@@ -1520,9 +1520,9 @@
     "year": "año",
     "month": "mes",
     "loading": "Cargando...",
-    "free": "7 días gratis",
+    "free": "3 días gratis",
     "subscribe": "Suscribirse",
-    "tryFree": "Prueba 7 días gratis",
+    "tryFree": "Prueba 3 días gratis",
     "startModal": {
       "title": "¡Suscripción premium con descuento!",
       "text": "¡Suscríbete para desbloquear toda la funcionalidad de la aplicación sin límites!"
@@ -1546,8 +1546,8 @@
         "lastWords": "AI incorporado"
       },
       "item4": {
-        "firstWord": "Pet-bonos:",
-        "lastWords": "4000"
+        "firstWord": "Ayuda del Asistente de Mascotas",
+        "lastWords": ""
       }
     },
     "learnMore": "Más información sobre los beneficios",

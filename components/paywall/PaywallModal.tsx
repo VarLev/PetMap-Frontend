@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { Portal, Text } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SubsciptionType } from '@/dtos/enum/SubscriptionType';
@@ -33,10 +33,13 @@ const PaywallModal = () => {
     (async () => {
       // Инициализируем RevenueCat
       await RevenueCatService.initialize(
-        process.env.EXPO_PUBLIC_REVENUECAT_API_KEY!
+        Platform.OS === "android"? process.env.EXPO_PUBLIC_REVENUECAT_API_KEY! : process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_APPLE!
       );
+      
       await RevenueCatService.setUserEmail(userStore.currentUser?.email??'');
+      
       const availablePackages = await RevenueCatService.getOfferings();
+      console.log('availablePackages');
       if (availablePackages) {
         setPackages(availablePackages);
       }
