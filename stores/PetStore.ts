@@ -7,7 +7,7 @@ import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { IPet } from '@/dtos/Interfaces/pet/IPet';
 import { Pet } from '@/dtos/classes/pet/Pet';
 import { getDownloadURL, ref, uploadBytes, deleteObject, listAll } from 'firebase/storage';
-import { storage } from '@/firebaseConfig';
+import { storage, syncPetProfile } from '@/firebaseConfig';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
 import { IPhoto } from '@/dtos/Interfaces/IPhoto';
 import { handleAxiosError } from '@/utils/axiosUtils';
@@ -42,11 +42,13 @@ class PetStore {
     return newPet;
   }
 
+
   async createPetProfile(pet: Partial<IPet>) {
     try {
       if (this.currentPetProfile) {
         this.currentPetProfile = { ...this.currentPetProfile, ...pet };
           await apiClient.post('/petprofiles/create', this.currentPetProfile);
+          await syncPetProfile(this.currentPetProfile);
       }
     } catch (error) {
       return handleAxiosError(error);
@@ -60,6 +62,7 @@ class PetStore {
         this.currentPetProfile.id = randomUUID();
         const response = await apiClient.post('/petprofiles/create-new', this.currentPetProfile);
         const newPet = new Pet(response.data);
+        await syncPetProfile(newPet);
         return newPet!;
       }
     } catch (error) {
@@ -84,7 +87,7 @@ class PetStore {
         this.currentPetProfile = { ...this.currentPetProfile, ...pet };
 
         await apiClient.put('/petprofiles/update', this.currentPetProfile);
-
+        await syncPetProfile(this.currentPetProfile);
       }
     } catch (error) {
       return handleAxiosError(error);

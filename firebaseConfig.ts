@@ -7,6 +7,7 @@ import {getDatabase, onDisconnect, serverTimestamp, set, ref as refDb, update} f
 import { GoogleAuthProvider, signInWithCredential, OAuthProvider as AppleAuthProvider } from 'firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import { getFirestore, doc, setDoc } from 'firebase/firestore'; 
 
 import i18n from './i18n';
 
@@ -35,8 +36,21 @@ if (getApps().length===0) {
 }
 const database = getDatabase(app);
 const storage = getStorage(app);
+const firestore = getFirestore(app);
 
 export {database, storage };
+
+export const syncPetProfile = async (pet: any): Promise<void> => {
+  try {
+    // Преобразуем объект в "plain" объект
+    const plainPet = JSON.parse(JSON.stringify(pet));
+    const petDocRef = doc(firestore, 'petProfiles', plainPet.id);
+    await setDoc(petDocRef, plainPet, { merge: true });
+  } catch (error) {
+    console.error('Ошибка при синхронизации профиля питомца в Firestore:', error);
+    throw error;
+  }
+};
 
 export const signInWithEmailAndPassword = async (email: string, password: string) => {
   try {
