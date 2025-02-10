@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { View } from 'react-native';
 import PermissionsRequestComponent from '@/components/auth/PermissionsRequestComponent';
-import NewsWebView from '@/components/search/news/NewsWebView';
 import PetsGrid from '@/components/search/PetsGrid';
 
 // Тип пропов для NewsScreen

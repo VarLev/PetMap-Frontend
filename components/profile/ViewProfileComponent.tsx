@@ -50,7 +50,7 @@ const ViewProfileComponent = observer(
                 onDismiss={closeMenu}
                 contentStyle={{ backgroundColor: 'white' }}
                 style={{ paddingTop: 20 }}
-                anchor={<IconButton icon="menu" size={30} iconColor='white' style={styles.menuButton} onPress={openMenu} />}
+                anchor={<IconButton icon="menu" size={28} iconColor='white' style={styles.menuButton} onPress={openMenu} />}
               >
                 <MenuItemWrapper
                   onPress={() => {
@@ -372,6 +372,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   menuButton: {
-    backgroundColor: 'rgba(0,0,0,0.3)'
+    top: Platform.OS === "ios"? -6 : 0,
+    backgroundColor: 'rgba(0,0,0,0.2)'
   },
 });

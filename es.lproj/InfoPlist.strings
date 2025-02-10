@@ -1,0 +1,3 @@
+"NSPhotoLibraryUsageDescription" = "Solicitamos acceso a tu galería de fotos para que puedas añadir tus fotos y las fotos de tu mascota.";
+"NSLocationWhenInUseUsageDescription" = "Solicitamos acceso a tu ubicación para determinar la ciudad, configurar el mapa y activar la posibilidad de recoger bonificaciones en tu ruta.";
+"NSUserTrackingUsageDescription" = "Esto explica por qué necesitamos permiso de seguimiento";

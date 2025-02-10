@@ -192,7 +192,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
 
           {renderPagination()}
           
-          <View className='absolute bottom-12 left-5 items-center'>
+          <View className='absolute bottom-8 left-5 items-center'>
           <View
             style={{
               zIndex: 10,
@@ -479,12 +479,8 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   menuButton: {
-    elevation: 5,
-    shadowColor: 'black',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    backgroundColor: 'rgba(0,0,0,0.3)'
+    top:Platform.OS ==="ios"? -8 : 0,
+    backgroundColor: 'rgba(0,0,0,0.2)'
   },
   carouselImage: {
     width: '100%',

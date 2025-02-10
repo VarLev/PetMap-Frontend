@@ -5,13 +5,14 @@ import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nu
 import { AlertProvider } from '@/contexts/AlertContext';
 import { DefaultTheme, IconButton, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { StoreProvider } from '@/contexts/StoreProvider';
-import { AppState, AppStateStatus, Platform, StatusBar, View } from 'react-native';
+import { AppState, AppStateStatus, StatusBar, View } from 'react-native';
 import uiStore from '@/stores/UIStore';
 import { observer } from 'mobx-react-lite';
 import { setUserStatus, initOnDisconnect } from '@/firebaseConfig';
 import userStore from '@/stores/UserStore';
 import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
+
 
 // Создаем кастомную тему для react-native-paper
 const customTheme = {
@@ -149,10 +150,11 @@ const Layout = observer(() => {
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="(user)" 
               options={{ 
-               headerShown: Platform.OS === 'ios' , 
+               headerShown: false , 
                 headerTransparent:true, 
                 title:'', headerBackTitle:'' ,
                 headerBackTitleVisible: false,
+                
               }} />
               <Stack.Screen name="(pet)/[petId]/index" 
                 options={{ 

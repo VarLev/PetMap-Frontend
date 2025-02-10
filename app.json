@@ -15,10 +15,13 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "usesAppleSignIn": true,
       "supportsTablet": true,
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location.",
-        "NSLocationAlwaysUsageDescription": "Allow $(PRODUCT_NAME) to use your location always."
+        "NSLocationWhenInUseUsageDescription": "We request access to your location to determine your city, set up the map, and enable bonus collection along your route.",
+        "NSLocationAlwaysUsageDescription": "We request access to your location to determine your city, set up the map, and enable bonus collection along your route.",
+        "NSPhotoLibraryUsageDescription": "We request access to your photo library so you can add your photos and photos of your pet.",
+        "ITSAppUsesNonExemptEncryption": false
       },
       "bundleIdentifier": "com.lightway.petmapapp",
       "googleServicesFile": "./GoogleService-Info.plist"
@@ -32,7 +35,9 @@
       },
       "permissions": [
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
+        "ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ],
       "versionCode": 13
     },
@@ -42,6 +47,7 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "expo-apple-authentication",
       "@react-native-google-signin/google-signin",
       "expo-router",
       [
@@ -57,7 +63,7 @@
         }
       ],
       [
-        "react-native-google-mobile-ads", 
+        "react-native-google-mobile-ads",
         {
           "androidAppId": "ca-app-pub-2818079501156274~6391187566",
           "iosAppId": "ca-app-pub-2818079501156274~6785767792"

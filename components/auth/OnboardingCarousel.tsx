@@ -3,7 +3,8 @@ import {
   View,
   Dimensions,
   Image,
-  StyleSheet, 
+  StyleSheet,
+  Platform, 
 } from "react-native";
 import Carousel, {
   ICarouselInstance,
@@ -102,7 +103,7 @@ const styles = StyleSheet.create({
   image: {
     justifyContent: "flex-start",
     width: "80%",
-    height: 340, //400
+    height: Platform.OS === "ios" ? 400 : 340,
     borderStartColor: "transparent",
     top: 0,
     borderRadius: 30,

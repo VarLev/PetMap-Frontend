@@ -44,6 +44,7 @@ import { createGeoJSONFeatures } from '@/utils/mapUtils';
 import { generateChatData, generateChatIdForTwoUsers } from '@/utils/chatUtils';
 import { Easing } from 'react-native-reanimated';
 import { BG_COLORS } from '@/constants/Colors';
+import { throttle } from 'lodash';
 
 
 
@@ -88,6 +89,11 @@ const MapBoxMap = observer(() => {
 
   // Анимированное значение для плавного появления карты
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  // Функция для перевода градусов в радианы
+  const deg2rad = (deg: number) => deg * (Math.PI / 180);
+  const MIN_DISTANCE = 10;
+  const lastLocation = useRef<{ latitude: number; longitude: number } | null>(null);
 
 
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
@@ -446,15 +452,48 @@ const MapBoxMap = observer(() => {
     openDrawer(<FilterComponent onFilterChange={handleFilterChange} onFilterApply={closeDrawer} />);
   };
 
+  // Функция для расчёта расстояния между двумя точками (в метрах)
+  const calculateDistance = (coord1: { latitude: number; longitude: number; }, coord2: { latitude: number; longitude: number; }) => {
+    const R = 6371000; // Радиус Земли в метрах
+    const dLat = deg2rad(coord2.latitude - coord1.latitude);
+    const dLon = deg2rad(coord2.longitude - coord1.longitude);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(deg2rad(coord1.latitude)) *
+        Math.cos(deg2rad(coord2.latitude)) *
+        Math.sin(dLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
+  // Функция, которая будет вызываться не чаще, чем раз в секунду
+  const throttledLocationUpdate = useCallback(
+    throttle((coords) => {
+      // Если уже есть предыдущие координаты, сравниваем их
+      if (lastLocation.current) {
+        const distance = calculateDistance(lastLocation.current, coords);
+        if (distance < MIN_DISTANCE) {
+          // Если перемещение менее MIN_DISTANCE метров — не обновляем состояние
+          return;
+        }
+      }
+      // Обновляем сохранённое местоположение и состояние
+      lastLocation.current = {
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      };
+      setUserCoordinates([coords.longitude, coords.latitude]);
+      console.log('User coordinates updated:', coords.latitude, coords.longitude);
+    }, 1000),
+    []
+  );
+
+
+
   const handleUserLocationUpdate = (location: Mapbox.Location) => {
     const { coords } = location;
-    if (coords) {
-      // Сохранение координат пользователя
-      mapStore.currentUserCoordinates = [coords.latitude, coords.longitude];
-
-      setUserCoordinates([coords.longitude, coords.latitude]);
-      console.log('User coordinates:', coords.latitude, coords.longitude);
-    }
+    if (!coords) return;
+    throttledLocationUpdate(coords);
   };
 
   const hangleSetSelectedNumberPoint = (number: number) => {
@@ -520,6 +559,7 @@ const MapBoxMap = observer(() => {
                 minDisplacement={50}
                 ref={userLocationRef}
                 onUpdate={handleUserLocationUpdate}
+                
               />
             )}
 
@@ -535,7 +575,7 @@ const MapBoxMap = observer(() => {
                 ref={cameraRef}
                 centerCoordinate={userCoordinates}
                 zoomLevel={10}
-                animationDuration={1}
+                animationDuration={0}
               />
             )}
 
@@ -702,6 +742,8 @@ const MapBoxMap = observer(() => {
       )}
     </Provider>
   );
+
+  
 });
 
 
@@ -747,5 +789,7 @@ const styles = {
     fontWeight: '600',
   },
 };
+
+
 
 export default MapBoxMap;

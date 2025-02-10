@@ -25,6 +25,10 @@ import { getUserLastOnlineStatus, getUserStatus } from '@/utils/userUtils';
 import RevenueCatService from '@/services/RevenueCatService';
 import { MapPointType } from '@/dtos/enum/MapPointType';
 import { MapPointDTO } from '@/dtos/classes/map/MapPointDTO';
+import { AppleAuthenticationCredential } from 'expo-apple-authentication';
+
+
+type AuthCredential = UserCredential | AppleAuthenticationCredential;
 
 //fghjkl
 class UserStore {
@@ -91,10 +95,20 @@ class UserStore {
    
     return this.isLogged;
   }
-
-  setCreatedUser(user: UserCredential) {
-    this.fUid = user.user.uid;
+  
+  setCreatedUser(user: AuthCredential) {
+    // Если user.user является строкой, то это учётные данные от Apple
+    if (typeof user.user === 'string') {
+      this.fUid = user.user;
+    } 
+    // Если user.user является объектом, то это Firebase-учётные данные, где присутствует uid
+    else if (user.user && 'uid' in user.user) {
+      this.fUid = user.user.uid;
+    } else {
+      console.warn("Не удалось установить идентификатор пользователя");
+    }
   }
+  
 
   setCurrentUserCity(city: string) {
     this.currentCity = city;
@@ -430,6 +444,55 @@ class UserStore {
     } 
     finally 
     {
+      this.setLoading(false);
+      return [isUserAlreadyRegistrated, isSuccessful];
+    }
+  }
+
+  async appleSignInUser(
+    firebaseUserCredential: UserCredential
+  ): Promise<[isUserAlreadyRegistrated: boolean, isSuccessfulSignIn: boolean]> {
+    this.setLoading(true);
+    let isSuccessful = false;
+    let isUserAlreadyRegistrated = false;
+    try {
+      // Получаем токен из Firebase-учетных данных (это может быть ID token, полученный через Firebase)
+      const token = await firebaseUserCredential.user.getIdToken();
+      // Сохраняем токен в AsyncStorage (аналогично Google)
+      await AsyncStorage.setItem(process.env.EXPO_PUBLIC_F_TOKEN!, token);
+  
+      // Сохраняем данные о пользователе в сторе (метод setCreatedUser теперь поддерживает и Firebase UserCredential)
+      runInAction(() => {
+        this.setCreatedUser(firebaseUserCredential);
+      });
+  
+      // Проверяем, существует ли уже пользователь на сервере по уникальному идентификатору из Firebase
+      const existingUserResponse = await apiClient.get(`/users/exists/${firebaseUserCredential.user.uid}`);
+      if (existingUserResponse.status === 200) {
+        isUserAlreadyRegistrated = true;
+        await this.loadUserAfterSignIn();
+      } else {
+        // Формируем DTO для регистрации пользователя через Apple
+        // Обратите внимание: email может быть недоступен при повторном входе (он возвращается только при первой авторизации)
+        const userRegisterDTO: IUserRegister = {
+          email: firebaseUserCredential.user.email!, // здесь можно добавить проверку на null
+          firebaseUid: firebaseUserCredential.user.uid,
+          provider: 'apple'
+        };
+        const response = await apiClient.post('/users/register', userRegisterDTO);
+        const registeredUser = response.data as IUser;
+        runInAction(() => {
+          this.setUser(registeredUser);
+        });
+      }
+      isSuccessful = true;
+      runInAction(() => {
+        this.setLogged(true);
+      });
+    } catch (error) {
+      isSuccessful = false;
+      return handleAxiosError(error);
+    } finally {
       this.setLoading(false);
       return [isUserAlreadyRegistrated, isSuccessful];
     }

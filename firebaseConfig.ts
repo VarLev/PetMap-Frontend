@@ -1,11 +1,12 @@
 import { getApps , initializeApp } from 'firebase/app';
 import { getStorage, ref, listAll, getDownloadURL, StorageReference} from 'firebase/storage';
-import { signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail  } from 'firebase/auth';
+import { signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, OAuthProvider  } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getAuth, initializeAuth, getReactNativePersistence, onAuthStateChanged } from "firebase/auth";
 import {getDatabase, onDisconnect, serverTimestamp, set, ref as refDb, update} from 'firebase/database';
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithCredential, OAuthProvider as AppleAuthProvider } from 'firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import * as AppleAuthentication from 'expo-apple-authentication';
 
 import i18n from './i18n';
 
@@ -96,6 +97,41 @@ export const signInWithGoogle = async () => {
     }
     const credential = GoogleAuthProvider.credential(idToken);
     return await signInWithCredential(auth, credential);
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const signInWithApple = async () => {
+  try {
+    
+    // Если expo-apple-authentication поддерживает передачу nonce, можно его передать:
+    const appleCredential = await AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      ],
+      // nonce: rawNonce, // раскомментируйте, если библиотека поддерживает nonce
+    });
+
+    if (!appleCredential.identityToken) {
+      throw new Error('Apple Sign-In не удался: отсутствует identity token.');
+    }
+
+    const provider = new OAuthProvider('apple.com');
+
+    // Вызов метода credential на экземпляре, а не на классе!
+    const firebaseCredential = provider.credential({
+      idToken: appleCredential.identityToken,
+      // Если nonce не используется, можно передать undefined.
+      // Обычно в rawNonce следует передать сгенерированный nonce, если вы его используете.
+      rawNonce: appleCredential.authorizationCode || undefined,
+    });
+
+
+
+    return await signInWithCredential(auth, firebaseCredential);
   } catch (error) {
     throw error;
   }

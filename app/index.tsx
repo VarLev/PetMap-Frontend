@@ -9,7 +9,7 @@ import { Redirect, router } from "expo-router";
 import { useStore } from "@/contexts/StoreProvider";
 import CustomButtonOutlined from "@/components/custom/buttons/CustomButtonOutlined";
 import googleLogo from "../assets/images/google.png";
-import facebookLogo from "../assets/images/facebook.png";
+
 import appleLogo from "../assets/images/apple.png";
 import userStore from "@/stores/UserStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
@@ -21,6 +21,8 @@ import AppOpenAdHandler from "@/components/ads/AppOpenAdHandler";
 import { IUser } from "@/dtos/Interfaces/user/IUser";
 import { UserStatus } from "@/dtos/enum/UserStatus";
 import RevenueCatService from "@/services/RevenueCatService";
+import { signInWithApple } from "@/firebaseConfig";
+
 
 GoogleSignin.configure({
   webClientId: '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', // Replace with your actual web client ID
@@ -86,6 +88,27 @@ const App = () => {
       router.replace("/search/news");
   }
 
+  const handleApplePress = async () => {
+    try {
+      // Вызываем метод, который выполняет авторизацию через Apple с интеграцией Firebase
+      const firebaseUserCredential = await signInWithApple();
+      // Передаем полученные данные в логику авторизации вашего userStore
+      const signIn = await userStore.appleSignInUser(firebaseUserCredential);
+      
+      if (!signIn[0] && signIn[1])
+        router.replace("/(auth)/onboarding");
+      else if (signIn[0] && signIn[1])
+        router.replace("/search/news");
+    } catch (error: any) {
+      if (error.code === 'ERR_CANCELED') {
+        // Пользователь отменил вход
+        console.log("Пользователь отменил вход через Apple");
+      } else {
+        console.error("Ошибка Apple Sign-In: ", error);
+      }
+    }
+  };
+
   
   // Если у пользователя нет подписки и реклама еще не была показана, показываем AppOpenAdHandler
   if (!userHasSubscription && !adShown) {
@@ -127,12 +150,13 @@ const App = () => {
               {i18n.t('index.otherSignInMethods')}  
             </Text>
             <View className="flex-row justify-around mt-2 gap-x-4">
-              <TouchableOpacity onPress={handleGooglePress}>
+              {Platform.OS === 'android' &&<TouchableOpacity onPress={handleGooglePress}>
                 <Image className="w-12 h-12" source={googleLogo} />
-              </TouchableOpacity>
-              {/* {isIos && <TouchableOpacity onPress={() => console.log("Pressed Apple")}>
+              </TouchableOpacity>}
+              {Platform.OS === 'ios' && <TouchableOpacity onPress={handleApplePress}>
                 <Image className="w-12 h-12" source={appleLogo} />
               </TouchableOpacity>}
+              {/* 
               <TouchableOpacity onPress={() => console.log("Pressed Facebook")}>
                 <Image className="w-12 h-12" source={facebookLogo} />
               </TouchableOpacity> */}
