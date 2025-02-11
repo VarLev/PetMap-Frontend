@@ -4,7 +4,6 @@ import { Divider } from "react-native-paper";
 import { ReviewDTO } from "@/dtos/classes/review/Review";
 import StarRating from "react-native-star-rating-widget";
 import CustomButtonPrimary from "../custom/buttons/CustomButtonPrimary";
-import CustomButtonOutlined from "../custom/buttons/CustomButtonOutlined";
 import CustomOutlineInputText from "../custom/inputs/CustomOutlineInputText";
 import userStore from "@/stores/UserStore";
 import CustomAlert from "../custom/alert/CustomAlert";
@@ -45,7 +44,6 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
     try {
       const newReviews = await fetchReviews();
       setLocalReviews((prevReviews) => [...prevReviews, ...newReviews]);
-
       // Check if the current user has already left a review for this point
       const userReview = newReviews.find(
         (review) =>
@@ -130,7 +128,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
             );
           }}
         />
-        {localReviews.length - 1 != localReviews.indexOf(item) && <Divider />}
+        {localReviews.length - 1 !== localReviews.indexOf(item) && <Divider />}
       </View>
     );
   } 
