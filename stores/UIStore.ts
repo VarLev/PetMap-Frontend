@@ -19,6 +19,7 @@ class UIStore {
   isSearchAddressExpanded: boolean = false;
   isChatTranslatinEnabled: boolean = false;
   resetAppId: string = '';
+  isPushTurnedOn: boolean = false;
 
 
   
@@ -207,6 +208,37 @@ class UIStore {
       return true;
     } catch (error) {
       return handleAxiosError(error);
+    }
+  }
+
+  // Метод для записи состояния переключателя пуш уведомлений в AsyncStorage
+  async setPushNotificationToggleState(isEnabled: boolean) {
+    try {
+      await AsyncStorage.setItem(process.env.EXPO_PUBLIC_PUSH_NOTIFICATION_TOGGLE_KEY!, JSON.stringify(isEnabled));
+      runInAction(() => {
+        console.log('Push notification toggle state set to:', isEnabled);
+        this.isPushTurnedOn = isEnabled;
+      });
+    } catch (error) {
+      console.error('Ошибка сохранения состояния пуш уведомлений:', error);
+    }
+  }
+
+  // Метод для чтения состояния переключателя пуш уведомлений из AsyncStorage
+  async getPushNotificationToggleState(): Promise<boolean> {
+    try {
+      const stored = await AsyncStorage.getItem(process.env.EXPO_PUBLIC_PUSH_NOTIFICATION_TOGGLE_KEY!);
+      if (stored === null) {
+        return false; // значение по умолчанию
+      }
+      const parsedState = JSON.parse(stored) as boolean;
+      runInAction(() => {
+        this.isPushTurnedOn = parsedState;
+      });
+      return parsedState;
+    } catch (error) {
+      console.error('Ошибка чтения состояния пуш уведомлений:', error);
+      return false;
     }
   }
 

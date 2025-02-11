@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { ActivityIndicator, View, BackHandler, Alert } from 'react-native';
+import { ActivityIndicator, View, BackHandler } from 'react-native';
 import { Divider, List, Switch } from 'react-native-paper';
 import CustomSegmentedButtonsWithProps from '@/components/custom/buttons/CustomSegmentedButtonsWithProps';
 import CustomConfirmAlert from '@/components/custom/alert/CustomConfirmAlert';
@@ -10,8 +10,8 @@ import i18n from '@/i18n';
 import { router } from 'expo-router';
 import userStore from '@/stores/UserStore';
 import CustomButtonPrimary from '@/components/custom/buttons/CustomButtonPrimary';
-import petStore from '@/stores/PetStore';
 import CustomButtonOutlined from '@/components/custom/buttons/CustomButtonOutlined';
+import { BG_COLORS } from '@/constants/Colors';
 
 const languageToIndex = (lang: Language): number => {
   switch (lang) {
@@ -28,13 +28,19 @@ const languageToIndex = (lang: Language): number => {
 
 const Settings = observer(() => {
   const selectedLanguage = languageToIndex(uiStore.currentLanguage);
-  const [sosEnabled, setSosEnabled] = React.useState(false);
-
   // Состояния для подтверждения смены языка
   const [alertVisible, setAlertVisible] = React.useState(false);
   const [pendingLanguageChange, setPendingLanguageChange] = React.useState<number | null>(null);
   const [deleteAlertVisible, setDeleteAlertVisible] = React.useState(false);
   const [loiading, setLoading] = React.useState(false);
+  const [pushNotification, setPushNotification] = React.useState(false);
+
+  useEffect(() => {
+      (async () => {
+          const toggleState = await uiStore.getPushNotificationToggleState();
+          setPushNotification(toggleState);
+      })();
+  }, []);
 
   if (selectedLanguage === -1) {
     return (
@@ -51,9 +57,12 @@ const Settings = observer(() => {
     );
   }
 
+  const handlePushToggle = (value:boolean) => {
+    console.log(value);
+    setPushNotification(value);
+    uiStore.setPushNotificationToggleState(value);
+  };
 
-
-  const handleToggleSos = () => setSosEnabled(!sosEnabled);
 
   const confirmLanguageChange = async () => {
     if (pendingLanguageChange !== null) {
@@ -122,7 +131,11 @@ const deleteAccount = async () => {
         <List.Item
           title={i18n.t('settings.pushNotifications')}
           right={() => (
-            <Switch value={sosEnabled} onValueChange={handleToggleSos} />
+            <Switch
+              value={pushNotification}
+              onValueChange={(value) => handlePushToggle(value)}
+              color={BG_COLORS.indigo[800]}
+            />
           )}
           titleStyle={{ fontFamily: "NunitoSans_400Regular" }}
         />

@@ -140,39 +140,39 @@ const Layout = observer(() => {
   }, [fontsLoaded, error]);
 
   useEffect(() => {
-  
-    // Регистрация устройства для пуш-уведомлений
-    if(isDevice){
-      registerForPushNotificationsAsync().then(token => {
-        if (token) {
-          // Отправьте токен на сервер или сохраните локально, если это необходимо
-          savePushTokenToServer(UserStore.currentUser?.id, token);
-        }
-      });
-    }else{
-    }
-    
-
-    // Настройка слушателей уведомлений
-    const removeListeners = setupNotificationListeners(
-      notification => {
-        console.log('Получено уведомление:', notification);
-      },
-      response => {
-        console.log('Ответ на уведомление:', response);
-        const chatId = response.notification.request.content.data.chatId;
-      
-        if (chatId) {
-          // Например, перейдите к нужному чату
-          router.replace(`/(chat)/${chatId}`);
-          removeListeners();
-        }
+    let removeListeners = () => {};
+    if (uiStore.isPushTurnedOn) {
+      // Регистрируем устройство для пуш-уведомлений, если оно включено
+      if (isDevice) {
+        registerForPushNotificationsAsync().then(token => {
+          if (token) {
+            // Сохраняем токен на сервере
+            savePushTokenToServer(userStore.currentUser?.id, token);
+          }
+        });
       }
-    );
+      // Настраиваем слушателей уведомлений
+      removeListeners = setupNotificationListeners(
+        notification => {
+          console.log('Получено уведомление:', notification);
+        },
+        response => {
+          console.log('Ответ на уведомление:', response);
+          const chatId = response.notification.request.content.data.chatId;
+          if (chatId) {
+            // Например, переходим к чату
+            router.replace(`/(chat)/${chatId}`);
+            // Можно удалить слушателей, если требуется
+            removeListeners();
+          }
+        }
+      );
+    }
+    // При изменении isPushTurnedOn (или размонтировании) убираем слушателей
     return () => {
       removeListeners();
     };
-  },[]);
+  }, [uiStore.isPushTurnedOn]);
 
  
 
