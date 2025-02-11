@@ -132,7 +132,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
   }
 
   const onComplain = async (text: string) => {
-    await searchStore.complainOnPost(post.id, text)
+    await searchStore.complainOnPost(text)
       .then(() => {
         setIsComplaintDone(true);
         setIsComplaintSuccess(true);

@@ -2,7 +2,7 @@
 
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Modal, Platform, View } from 'react-native';
-import { Button, Text, Divider, IconButton, Icon } from 'react-native-paper';
+import { Button, Text, Divider, IconButton } from 'react-native-paper';
 import userStore from '@/stores/UserStore';
 import { observer } from 'mobx-react-lite';
 import { User } from '@/dtos/classes/user/UserDTO';
@@ -255,10 +255,10 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
               </View>
 
               {showUserAge && Platform.OS === 'ios' && (
-                <Modal transparent={true} animationType="slide">
+                <Modal transparent={true} >
                   <View className="flex-1 justify-center bg-black/50">
                     <View className="bg-white mx-5 p-5 rounded-3xl shadow-lg">
-                      <DateTimePicker value={age} mode="date" display="spinner" onChange={onAgeChange} maximumDate={new Date()} />
+                      <DateTimePicker value={age} mode="date" display="spinner" onChange={onAgeChange} maximumDate={new Date()} textColor='black' />
                       <Button mode="contained" onPress={() => setShowUserAge(false)}>
                         {i18n.t('ok')}
                       </Button>
