@@ -240,16 +240,14 @@ class SearchStore {
     }
   }
 
-  async complainOnPost(postId: string, text: string) {
+  async complain(text: string) {
     this.setLoading(true);
     try {
-      const res = await apiClient.post(`/post/complaint`, {
-        userId: this.getUserId(),
-        postId,
-        text,
-        createdAt: new Date()
+      const res = await apiClient.post(`/users/complaint`, text, {
+        headers: {
+          'Content-Type': 'application/json',
+        }
       })
-
     } catch (error) {
       return handleAxiosError(error);
     } finally {
