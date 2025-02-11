@@ -468,7 +468,7 @@ const MapBoxMap = observer(() => {
 
   // Функция, которая будет вызываться не чаще, чем раз в секунду
   const throttledLocationUpdate = useCallback(
-    throttle((coords) => {
+    throttle((coords: any) => {
       // Если уже есть предыдущие координаты, сравниваем их
       if (lastLocation.current) {
         const distance = calculateDistance(lastLocation.current, coords);

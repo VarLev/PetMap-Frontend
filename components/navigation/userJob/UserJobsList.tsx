@@ -2,19 +2,33 @@ import IconSelectorComponent from '@/components/custom/icons/IconSelectorCompone
 import { JobTypeDto } from '@/dtos/Interfaces/job/IJob';
 import userStore from '@/stores/UserStore';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Image } from 'react-native';
-import i18n from '@/i18n'; // <-- импорт вашего инициализированного i18n
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
+import i18n from '@/i18n'; // импорт вашего инициализированного i18n
 import { Divider } from 'react-native-paper';
 
 const UserJobsList = () => {
   const [jobTypes, setJobTypes] = useState<JobTypeDto[]>([]);
   const [expandedTypes, setExpandedTypes] = useState<{ [key: number]: boolean }>({});
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const userId = userStore.currentUser?.id!;
 
   useEffect(() => {
     const fetchJobs = async () => {
-      const data = await userStore.getUserJobs(userId);
-      setJobTypes(data);
+      try {
+        const data = await userStore.getUserJobs(userId);
+        setJobTypes(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchJobs();
@@ -96,6 +110,15 @@ const UserJobsList = () => {
       </View>
     );
   };
+
+  // Если данные ещё загружаются, отображаем лоадер
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="#6200ee" />
+      </View>
+    );
+  }
 
   return (
     <FlatList

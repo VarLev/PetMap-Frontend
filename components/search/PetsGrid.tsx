@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, View, ActivityIndicator } from 'react-native';
+import { FlatList, Image, View, ActivityIndicator, Text } from 'react-native';
 import { Card } from 'react-native-paper';
 import petStore from '@/stores/PetStore';
 import { IPetShortProfileGridDTO } from '@/dtos/Interfaces/pet/IPetShortProfileGridDTO';
@@ -82,14 +82,14 @@ const PetsGrid = () => {
 
   // Функция отрисовки элемента FlatList
   const renderItem = ({ item }: { item: IPetShortProfileGridDTO }) => {
-    const imageUri = item.thumbnailUrl;
     return (
       <View className="flex-1 p-[3px]">
         <Card className="aspect-square" onPress={() => handleOpenAccount(item)}>
           <Image
-            source={{ uri: imageUri }}
+            source={{ uri: item.thumbnailUrl }}
             className="w-full h-full rounded-lg"
           />
+          
         </Card>
       </View>
     );
@@ -103,6 +103,18 @@ const PetsGrid = () => {
       </View>
     ) : (
       <View className="h-32" />
+    );
+  };
+
+  // Компонент для отображения, если список пуст
+  const renderEmptyComponent = () => {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <Image source={require('@/assets/images/Placeholder.png')}
+          className="w-96 h-96" 
+        />
+        <Text className='text-lg font-nunitoSansBold'>{i18n.t("empty")}</Text>
+      </View>
     );
   };
 
@@ -134,6 +146,8 @@ const PetsGrid = () => {
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
         ListFooterComponent={renderFooter}
+        // Если список пуст, отобразится картинка
+        ListEmptyComponent={renderEmptyComponent}
         refreshing={refreshing}
         onRefresh={onRefresh}
       />

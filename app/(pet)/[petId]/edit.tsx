@@ -30,6 +30,8 @@ const EditPetProfile = observer(() => {
     loadPet();
   }, [petId]);
 
+  
+
 
   const handleSave = async (updatedPet: Pet) => {
     try {
@@ -40,6 +42,7 @@ const EditPetProfile = observer(() => {
    
       // Если нужно обновить экран после возвращения
       router.replace(`/(pet)/${updatedPet.id}`);
+      //router.back();
     } catch (error) {
       console.error('Error updating profile:', error);
     }

@@ -10,7 +10,6 @@ import { IPet } from '@/dtos/Interfaces/pet/IPet';
 import StarRating from 'react-native-star-rating-widget';
 import petStore from '@/stores/PetStore';
 import { parseDateToString, parseStringToDate } from '@/utils/utils';
-import { router } from 'expo-router';
 import CustomTagsSelector from '../custom/selectors/CustomTagsSelector';
 import CustomLoadingButton from '../custom/buttons/CustomLoadingButton';
 import { BonusContex } from '@/contexts/BonusContex';
@@ -228,9 +227,9 @@ const EditPetProfileComponent = observer(
       try {
         const pet = await petStore.createNewPetProfile(editablePet);
 
-        if (pet) {
-          router.replace(`/(pet)/${pet.id}`); // Перенаправление на профиль после добавления питомца
-        }
+        // if (pet) {
+        //   router.replace(`/(pet)/${pet.id}`); // Перенаправление на профиль после добавления питомца
+        // }
       } catch (error) {
         console.error('Ошибка при создании профиля питомца:', error);
         alert(i18n.t('EditPetProfile.errors.addErrorMessage'));
@@ -489,19 +488,16 @@ const EditPetProfileComponent = observer(
               <View className="flex-row justify-between w-auto">
                 <CustomOutlineInputText
                   keyboardType="numeric"
-                  maxLength={2}
+                  maxLength={3}
                   containerStyles="mt-2 w-1/3 flex-1"
-                  label={i18n.t('EditPetProfile.weight')}
+                  label={i18n.t('EditPetProfile.weight')+ ' (kg)'}
                   value={editablePet.weight || ''}
                   handleChange={(text) => {
                     // Заменяем запятые на точки и удаляем лишние символы
                     let processedText = text
-                      .replace(/,/g, '.')
-                      .replace(/[^0-9.]/g, '')
-                      .replace(/\.+/g, '.') // Убираем повторяющиеся точки
-                      .replace(/^\./, '')   // Удаляем точку в начале
-                      .replace(/(\..*)\./g, '$1'); // Удаляем лишние точки
-              
+                      .replace(/[^0-9,]/g, '') // Разрешаем только цифры и запятую
+                      .replace(/(,.*),/g, '$1'); // Убираем лишние запятые, если их больше одной
+                
                     handleFieldChange('weight', processedText);
                   }}
                 />

@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { TouchableOpacity, View, Image, StatusBar, StyleSheet, Platform, Touchable } from 'react-native';
+import { TouchableOpacity, View, Image, StatusBar, StyleSheet, Platform } from 'react-native';
 import { Text, Card, Divider, IconButton, Menu } from 'react-native-paper';
 import { observer } from 'mobx-react-lite';
 import userStore from '@/stores/UserStore';
@@ -23,6 +23,8 @@ import { RefreshControl } from 'react-native';
 import { BG_COLORS } from '@/constants/Colors';
 import Feed from '../search/feed/Feed';
 
+import Comment from './comment/Comment';
+
 const ViewProfileComponent = observer(
   ({ onEdit, onPetOpen, loadedUser }: { onEdit: () => void; onPetOpen: (petId: string) => void; loadedUser: IUser }) => {
     const [user, setUser] = useState<IUser>(loadedUser);
@@ -35,6 +37,7 @@ const ViewProfileComponent = observer(
     const [isOnline, setIsOnline] = useState(false);
     const [lastOnline, setLastOnline] = useState<string | null>(null);
     const [hasSubscription, setHasSubscription] = useState(userStore.getUserHasSubscription() ?? false);
+    const [activeSection, setActiveSection] = useState<'petshots' | 'comments'>('petshots');
 
     const navigation = useNavigation();
     useLayoutEffect(() => {
@@ -334,10 +337,50 @@ const ViewProfileComponent = observer(
                     <Divider className="mt-3" />
                   </View>
                 )}
-                 <View className='-mx-3'>
-                <Text className="pl-3 pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">🐾 PetShots</Text>
-                  <Feed userId={user.id} />
+                <View className="-mx-3">
+                {/* Панель переключения секций */}
+                <View style={styles.tabContainer}>
+                  <TouchableOpacity
+                    style={[styles.tabButton, activeSection === 'petshots' && styles.activeTabButton]}
+                    onPress={() => setActiveSection('petshots')}
+                  >
+                    <Text className='font-nunitoSansBold text-gray-500' >
+                      🐾 PetShots
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.tabButton, activeSection === 'comments' && styles.activeTabButton]}
+                    onPress={() => setActiveSection('comments')}
+                  >
+                    <Text className='font-nunitoSansBold text-gray-500' >
+                    {i18n.t('UserProfile.reviews')}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
+
+                {/* Условный рендер контента */}
+                {activeSection === 'petshots' ? (
+                  <View>
+                    <Feed userId={user.id} />
+                    <Text className="text-center text-xs font-nunitoSansBold text-gray-500">{i18n.t('UserProfile.feedEmpty')}</Text>
+                  </View>
+                ) : (
+                  !isCurrentUser ? (
+                    <Text className="pt-10 px-4 text-center text-xs font-nunitoSansBold text-gray-500">
+                      {i18n.t('UserProfile.commentsOpen')}
+                    </Text>
+                  ):(
+                    <View>
+                      {/* <CreateProfileComment onClose={()=>{}} /> */}
+                      <Text className="px-4 text-center text-xs font-nunitoSansBold text-gray-500">
+                        {i18n.t('UserProfile.commentsOpenOther')}
+                      </Text>
+                      <Comment postId={user.id}/>
+                  
+                    </View>
+                  )
+                )}
+              </View>
               </View>
              
               <View className="h-28" />
@@ -374,5 +417,24 @@ const styles = StyleSheet.create({
   menuButton: {
     top: Platform.OS === "ios"? -6 : 0,
     backgroundColor: 'rgba(0,0,0,0.2)'
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginHorizontal: 10,
+    marginVertical: 10,
+  
+  },
+  tabButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
+  activeTabButton: {
+    borderBottomWidth: 2,
+    borderBottomColor: 'indigo',
+  },
+  activeTabText: {
+    color: 'indigo',
+    fontWeight: 'bold',
   },
 });

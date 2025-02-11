@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { TouchableOpacity, View, Image, Platform, StatusBar } from "react-native";
 import { Text } from "react-native-paper";
-import Purchases, { LOG_LEVEL } from 'react-native-purchases';
 import OnboardingCarousel from "../components/auth/OnboardingCarousel";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButtonPrimary from "@/components/custom/buttons/CustomButtonPrimary";

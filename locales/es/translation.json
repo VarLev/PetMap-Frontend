@@ -1052,7 +1052,13 @@
     "mainInfo": "Información Principal",
     "socialMedia": "Redes Sociales",
     "deleteProfileMessage": "Tu perfil y todos los datos serán eliminados por completo en 30 días. Si vuelves a iniciar sesión en tu perfil durante este período, la eliminación será cancelada. ¿Estás seguro de que quieres comenzar el proceso de eliminación?",
-    "deletedProfilerAlarm": "El perfil del usuario {{email}} ha sido eliminado 😢"
+    "deletedProfilerAlarm": "El perfil del usuario {{email}} ha sido eliminado 😢",
+    "feedEmpty": "Acá se muestran las publicaciones del usuario publicadas en el feed de PetShots.",
+    "commentsOpen":"En PetMap, cualquiera puede dejar una reseña, haciendo la comunidad más segura y abierta. Creamos un espacio amigable para los amantes de las mascotas.",
+    "commentsOpenOther":"Deja una reseña en el perfil del usuario: esto ayuda a aumentar la seguridad y a crear un ambiente cómodo para todos. Por favor, sé respetuoso y amable con los demás miembros de la comunidad. Revisamos todas las reseñas.",
+    "reviews": "Reseñas",
+    "writeReview": "Escribir una reseña",
+    "deleteReview": "Eliminar reseña"
   },
   "PetProfile": {
     "edit": "Editar",
@@ -1561,5 +1567,6 @@
     "email": "Enviar un correo electrónico",
     "whatsapp": "Escribir en WhatsApp"
   },
-  "petStatus": ["Con dueño","Perdido","En adopción"]
+  "petStatus": ["Con dueño","Perdido","En adopción"],
+  "empty":"¡Uy, parece que acá está vacío!"
 }

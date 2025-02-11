@@ -1052,7 +1052,13 @@
     "mainInfo": "Main Info",
     "socialMedia": "Social Media",
     "deleteProfileMessage": "Your profile and all data will be permanently deleted in 30 days. If you log into your profile during this period, the deletion will be canceled. Are you sure you want to start the deletion process?",
-    "deletedProfilerAlarm": "The user's profile {{email}} has been deleted 😢"
+    "deletedProfilerAlarm": "The user's profile {{email}} has been deleted 😢",
+    "feedEmpty": "Here, the posts left by the user in the PetShots feed are displayed.",
+    "commentsOpen":"On PetMap, anyone can leave a review, making our community safer and more open. We create a friendly space for pet lovers.",
+    "commentsOpenOther":"Leave a review on the user's profile—this helps increase safety and create a comfortable atmosphere for everyone. Please be polite and respect other community members. We review all feedback.",
+    "reviews": "Reviews",
+    "writeReview": "Write a Review",
+    "deleteReview": "Delete Review"
   },
   "PetProfile": {
     "edit": "Edit",
@@ -1561,6 +1567,7 @@
     "email": "Send an Email",
     "whatsapp": "Write on WhatsApp"
   },
-  "petStatus": ["With owner", "Lost", "Adoptable"]
+  "petStatus": ["With owner", "Lost", "Adoptable"],
+   "empty":"Oh, it seems it's empty here."
 
 }
