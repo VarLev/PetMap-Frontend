@@ -104,15 +104,12 @@ const ChatScreen: React.FC = observer(() => {
     }
 
     const handleBackPress = () => {
-      
-      if (segments.length <= 1) {
-        console.log("Segments:", segments);
-        router.replace("/(chat)");
-        return false;
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace("/chat");
       }
-      router.back();
       mapStore.setBottomSheetVisible(false);
-      
       return true;
     };
 

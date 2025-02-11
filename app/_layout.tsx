@@ -5,13 +5,16 @@ import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nu
 import { AlertProvider } from '@/contexts/AlertContext';
 import { DefaultTheme, IconButton, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { StoreProvider } from '@/contexts/StoreProvider';
-import { AppState, AppStateStatus, StatusBar, View } from 'react-native';
+import { AppState, AppStateStatus, Keyboard, StatusBar, View } from 'react-native';
 import uiStore from '@/stores/UIStore';
 import { observer } from 'mobx-react-lite';
 import { setUserStatus, initOnDisconnect } from '@/firebaseConfig';
 import userStore from '@/stores/UserStore';
 import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
+import { registerForPushNotificationsAsync, savePushTokenToServer, setupNotificationListeners } from '@/hooks/notifications';
+import { isDevice } from 'expo-device';
+import UserStore from '@/stores/UserStore';
 
 
 // Создаем кастомную тему для react-native-paper
@@ -135,6 +138,43 @@ const Layout = observer(() => {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, error]);
+
+  useEffect(() => {
+  
+    // Регистрация устройства для пуш-уведомлений
+    if(isDevice){
+      registerForPushNotificationsAsync().then(token => {
+        if (token) {
+          // Отправьте токен на сервер или сохраните локально, если это необходимо
+          savePushTokenToServer(UserStore.currentUser?.id, token);
+        }
+      });
+    }else{
+    }
+    
+
+    // Настройка слушателей уведомлений
+    const removeListeners = setupNotificationListeners(
+      notification => {
+        console.log('Получено уведомление:', notification);
+      },
+      response => {
+        console.log('Ответ на уведомление:', response);
+        const chatId = response.notification.request.content.data.chatId;
+      
+        if (chatId) {
+          // Например, перейдите к нужному чату
+          router.replace(`/(chat)/${chatId}`);
+          removeListeners();
+        }
+      }
+    );
+    return () => {
+      removeListeners();
+    };
+  },[]);
+
+ 
 
   if (!fontsLoaded && !error) return null;
 

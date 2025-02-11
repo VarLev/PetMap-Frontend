@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Text, View, Switch, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text, View, Switch, Alert, BackHandler } from "react-native";
 import { Divider, IconButton } from "react-native-paper";
 import { router } from "expo-router";
 import { shortenName } from "@/utils/utils";
@@ -22,10 +22,16 @@ interface ChatHeaderProps {
 const ChatHeader: React.FC<ChatHeaderProps> = ({ userName, avatarUrl, onPressAvatar, isOnline, lastOnline, hasSubscription }) => {
   const [isTranslationEnabled, setIsTranslationEnabled] = useState(false);
   
-  
-
   // Обработчик нажатия кнопки "Назад"
-  const handleBack = () => router.back();
+  const handleBack = () =>{
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace("/(tabs)/chat");
+    }
+  
+    return true;
+  }
 
   // Переключение перевода с проверкой подписки
   const toggleTranslation = () => {
