@@ -9,6 +9,7 @@ import userStore from "@/stores/UserStore";
 import i18n from "@/i18n";
 import ComplaintModal from "@/components/custom/complaint/ComplaintModal";
 import TranslatableText from "@/components/custom/text/CustomTranslatableText";
+import searchStore from "@/stores/SearchStore";
 
 type PostCommentProps = {
   comment: ICommentWithUser;
@@ -37,8 +38,6 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
     }
     
   }, [isPremium])
-
-
 
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
@@ -83,15 +82,15 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
   }
 
   const onComplain = async (text: string) => {
-    // await searchStore.complainOnPost(post.id, text)
-    //   .then(() => {
-    //     setIsComplaintDone(true);
-    //     setIsComplaintSuccess(true);
-    //   })
-    //   .catch(() => {
-    //     setIsComplaintDone(true);
-    //     setIsComplaintSuccess(false);
-    //   })
+    await searchStore.complain(text)
+      .then(() => {
+        setIsComplaintDone(true);
+        setIsComplaintSuccess(true);
+      })
+      .catch(() => {
+        setIsComplaintDone(true);
+        setIsComplaintSuccess(false);
+      })
   } 
  
   return (
@@ -130,6 +129,9 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
             handleComplain={(text) => onComplain(text)}
             isComplaintDone={isComplaintDone}
             isComplaintSuccess={isComplaintSuccess}
+            contentId={comment.id}
+            contentUserId={comment.userId}
+            contentType="comment"
           />
         </View>
       }
