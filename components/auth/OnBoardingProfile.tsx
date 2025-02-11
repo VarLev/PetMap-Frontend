@@ -559,7 +559,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
               <Modal transparent={true} animationType="slide">
                 <View className="flex-1 justify-center bg-black/50">
                   <View className="bg-white mx-5 p-5 rounded-3xl shadow-lg">
-                    <DateTimePicker value={petAge} mode="date" display="spinner" onChange={onPetAgeChange} />
+                    <DateTimePicker value={petAge} mode="date" display="spinner" onChange={onPetAgeChange} textColor='black' />
                     <Button mode="contained" onPress={() => setShowPetAge(false)}>
                       Готово
                     </Button>

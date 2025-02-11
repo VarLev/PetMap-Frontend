@@ -442,7 +442,7 @@ const EditPetProfileComponent = observer(
                 <Modal transparent={true} animationType="fade">
                   <View className="flex-1 justify-center bg-black/50">
                     <View className="bg-white mx-5 p-5 rounded-3xl shadow-lg">
-                      <DateTimePicker style={{width:'100%'}} value={age} mode="date" display="spinner" onChange={onAgeChange} maximumDate={new Date()} />
+                      <DateTimePicker style={{width:'100%'}} value={age} mode="date" display="spinner" onChange={onAgeChange} maximumDate={new Date()} textColor='black' />
                       <Button mode="contained" onPress={() => setShowPetAge(false)}>
                         {i18n.t('ok')}
                       </Button>
