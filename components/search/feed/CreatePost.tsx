@@ -5,6 +5,7 @@ import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import searchStore from '@/stores/SearchStore';
 import CustomLoadingButton from '@/components/custom/buttons/CustomLoadingButton';
 import i18n from '@/i18n';
+import CustomInputText from '@/components/custom/inputs/CustomInputText';
 
 interface CreatePostProps {
   onClose: () => void; // Метод для закрытия нижнего листа
@@ -57,13 +58,13 @@ const CreatePost: FC<CreatePostProps> = ({ onClose }) => {
       {/* Контейнер для текстового поля и иконки камеры */}
       <View className="relative mb-2">
         <TextInput
-          className="border border-gray-300 rounded-lg p-3 pr-12 min-h-[150px] text-sm"
+          className="border border-gray-300 rounded-lg p-3 pr-12 min-h-[150px] text-sm flex items-start"
           placeholder={i18n.t("feedPosts.createPostInput")}
           value={content}
           onChangeText={setContent}
           multiline
           maxLength={250}
-          
+          textAlignVertical='top'
         />
         <IconButton
           icon="camera"
