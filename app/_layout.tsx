@@ -5,7 +5,7 @@ import { NunitoSans_400Regular, NunitoSans_700Bold } from '@expo-google-fonts/nu
 import { AlertProvider } from '@/contexts/AlertContext';
 import { DefaultTheme, IconButton, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { StoreProvider } from '@/contexts/StoreProvider';
-import { AppState, AppStateStatus, Keyboard, StatusBar, View } from 'react-native';
+import { AppState, AppStateStatus, StatusBar, View } from 'react-native';
 import uiStore from '@/stores/UIStore';
 import { observer } from 'mobx-react-lite';
 import { setUserStatus, initOnDisconnect } from '@/firebaseConfig';
@@ -14,7 +14,7 @@ import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { registerForPushNotificationsAsync, savePushTokenToServer, setupNotificationListeners } from '@/hooks/notifications';
 import { isDevice } from 'expo-device';
-import UserStore from '@/stores/UserStore';
+
 
 
 // Создаем кастомную тему для react-native-paper

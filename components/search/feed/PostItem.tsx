@@ -132,7 +132,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
   }
 
   const onComplain = async (text: string) => {
-    await searchStore.complainOnPost(text)
+    await searchStore.complain(text)
       .then(() => {
         setIsComplaintDone(true);
         setIsComplaintSuccess(true);
@@ -209,8 +209,10 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
               handleCloseModal={closeComplaintModal}
               handleComplain={(text) => onComplain(text)}
               isComplaintDone={isComplaintDone}
-              isComplaintSuccess={isComplaintSuccess}
-            />
+              isComplaintSuccess={isComplaintSuccess} 
+              contentId={post.id} 
+              contentUserId={post.userId} 
+              contentType={'post'} />
           </View>
           <CustomTextComponent text={post.content} maxLines={10} enableTranslation/>
           {post.postPhotos.length > 0 && (

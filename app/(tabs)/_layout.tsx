@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { router, Tabs, usePathname } from 'expo-router';
+import { Tabs, usePathname } from 'expo-router';
 import TabBar from '@/components/navigation/TabBar';
 import { DrawerProvider } from '@/contexts/DrawerProvider';
-import { registerForPushNotificationsAsync, setupNotificationListeners, savePushTokenToServer } from '@/hooks/notifications';
-import UserStore from '@/stores/UserStore';
 import { Keyboard } from 'react-native';
-import {isDevice} from 'expo-device';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DismissibleBanner from '@/components/ads/DismissibleBanner';
 import userStore from '@/stores/UserStore';

@@ -14,7 +14,7 @@ import PostItem from '@/components/search/feed/PostItem';
 import CreatePost from '@/components/search/feed/CreatePost';
 import i18n from '@/i18n';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent';
-import { Animated, Keyboard, KeyboardEvent } from 'react-native';
+import { Keyboard } from 'react-native';
 
 // Если userId не передан, компонент показывает все посты.
 // Если userId передан, компонент показывает посты только указанного пользователя.
@@ -23,26 +23,27 @@ interface FeedProps {
 }
 
 const Feed: FC<FeedProps> = observer(({ userId }) => {
-  const [bottomSheetType, setBottomSheetType ] = useState<'create-post' | 'comments' | ''>('')
+  const [bottomSheetType, setBottomSheetType] = useState<'create-post' | 'comments' | ''>('')
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [postComments, setPostComments] = useState<ICommentWithUser[]>();
   const [isPostRefresh, setIsPostRefresh] = useState<boolean>(false);
   const [selectedPostId, setSelectedPostId] = useState('');
   const [userPosts, setUserPosts] = useState<IPost[]>([]);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const sheetRef = useRef<BottomSheet>(null);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const fabPosition = useRef(new Animated.Value(90)).current;
 
-   /**
-   * Функция, определяющая, какие посты загружать:
-   * - Все общие посты, если userId не задан;
-   * - Посты конкретного пользователя, если userId задан.
-   */
-   const fetchPosts = async () => {
+
+
+  /**
+  * Функция, определяющая, какие посты загружать:
+  * - Все общие посты, если userId не задан;
+  * - Посты конкретного пользователя, если userId задан.
+  */
+  const fetchPosts = async () => {
     searchStore.resetPage();
     if (userId) {
       const posts = await searchStore.getUserPosts(userId);
-      if(posts)
+      if (posts)
         setUserPosts(posts);
     } else {
       await searchStore.fetchPosts();
@@ -51,33 +52,6 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
 
   // Подписываемся на события клавиатуры
   useEffect(() => {
-    const handleKeyboardShow = (e: KeyboardEvent) => {
-      setKeyboardHeight(e.endCoordinates.width);
-      Animated.timing(fabPosition, {
-        toValue: e.endCoordinates.width + 70, // Отступ от клавиатуры
-        duration: 100,
-        useNativeDriver: false,
-      }).start();
-    };
-  
-    const handleKeyboardHide = () => {
-      Animated.timing(fabPosition, {
-        toValue: 90,
-        duration: 100,
-        useNativeDriver: false,
-      }).start(() => setKeyboardHeight(0));
-    };
-  
-    const showSub = Keyboard.addListener('keyboardDidShow', handleKeyboardShow);
-    const hideSub = Keyboard.addListener('keyboardDidHide', handleKeyboardHide);
-  
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
-
- useEffect(() => {
     fetchPosts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
@@ -132,7 +106,7 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
       if (commentText.trim()) {
         await searchStore.addComment(selectedPostId, commentText.trim());
         setCommentText("");
-        runInAction( async () => {
+        runInAction(async () => {
           const comments = await searchStore.fetchGetComments(selectedPostId);
           setPostComments(comments);
           searchStore.fetchPosts();
@@ -146,12 +120,12 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
         <View style={styles.footer} className="flex-row items-center flex-1">
           <TextInput
             multiline
-            style={{maxHeight: 60}}
+            style={{ maxHeight: 60 }}
             placeholder={i18n.t("feedPosts.commentInput")}
             className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-sm"
             onChangeText={(text) => setCommentText(text)}
             value={commentText}
-          /> 
+          />
           <IconButton
             icon="send"
             iconColor={BG_COLORS.purple[400]}
@@ -175,7 +149,7 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
             </View>
           ) : null
         }
-        data={userId? userPosts : searchStore.posts}
+        data={userId ? userPosts : searchStore.posts}
         keyExtractor={(_, index) => index.toString()}
         onEndReached={loadMorePosts}
         onEndReachedThreshold={0.5}
@@ -193,17 +167,11 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
           )
         }}
       />
-      {!userId &&
-        (
-        <Animated.View style={[styles.fabAnim, { left: fabPosition }]}>
-          <FAB icon="pen" size='medium' color='white' style={styles.fab} onPress={handleCreatePost}/>
-        </Animated.View>
-      )
-      }
+      {!userId && <FAB icon="pen" size='medium' color='white' style={styles.fab} onPress={handleCreatePost} />}
       {
-        bottomSheetType && 
+        bottomSheetType &&
         <BottomSheetComponent
-          contentStyle={{paddingHorizontal: 12}}
+          contentStyle={{ paddingHorizontal: 12 }}
           ref={sheetRef}
           snapPoints={['60%', '100%']}
           onClose={handleSheetClose}
@@ -222,7 +190,7 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
           flatListData={bottomSheetType === "comments" ? postComments : null}
           flatListRenderItem={bottomSheetType === "comments" ? ({ item }) => {
             return (
-              <PostComment comment={item} handleDeleteComment={(commentId) => deleteComment(commentId)}/>
+              <PostComment comment={item} handleDeleteComment={(commentId) => deleteComment(commentId)} />
             )
           } : null}
         />
@@ -257,7 +225,7 @@ const styles = StyleSheet.create({
   },
   noCommentsContainer: {
     display: 'flex',
-    justifyContent: 'center', 
+    justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 12
   }
