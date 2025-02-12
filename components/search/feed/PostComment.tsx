@@ -100,25 +100,26 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
       contentStyle={styles.menu}
       anchor={
         <View style={styles.comment}>
-          <TouchableRipple onLongPress={openMenu} >
-            <View className="flex-row items-start gap-x-1 my-1.5">
+          <TouchableRipple onLongPress={openMenu}>
+            <View className="flex-row items-start gap-x-2 my-1.5">
               <TouchableRipple onPress={() => openUserProfile(comment.userId)}>
-                <Avatar.Image size={28} source={{ uri: `${comment.userAvatar}` }} />
+                <Avatar.Image size={32} source={{ uri: `${comment.userAvatar}` }} />
               </TouchableRipple>
-              <View className="flex-column">
-                <View className="flex-row gap-1">
+              <View className="flex-column mt-[-4px]">
+                <View className="flex-row gap-2">
                   <TouchableRipple onPress={() => openUserProfile(comment.userId)}>
-                    <Text className="font-bold text-gray-500 text-xs">{comment.userName}</Text>
+                    <Text className="font-bold text-gray-500 text-s">{comment.userName}</Text>
                   </TouchableRipple>
-                  <Text className="text-gray-500 text-xs">
+                  <Text className="text-gray-500 text-s">
                     {timeSince(comment.createdAt)}
                   </Text>
                 </View>
                 <TranslatableText
                   text={comment.content}
-                  _className="flex-row justify-between items-center content-center w-[94%]"
-                  textClassName="text-sm"
+                  _className="flex-row justify-between items-start w-[94%]"
+                  textClassName="text-m w-[92%]"
                   iconSize={20}
+                  iconContainerClassName="mt-[2px] h-6"
                 />
               </View>
             </View>
