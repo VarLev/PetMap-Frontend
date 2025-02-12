@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Button, Surface } from "react-native-paper";
+import { Button, Surface, Menu, IconButton } from "react-native-paper";
 import { IWalkAdvrtDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtDto";
 import { StarRatingDisplay } from "react-native-star-rating-widget";
 import userStore from "@/stores/UserStore";
@@ -21,6 +21,8 @@ import CircleIcon from "../custom/icons/CircleIcon";
 //import  { renderWalkDetails } from "@/utils/utils";
 import i18n from "@/i18n";
 import { getPushTokenFromServer } from "@/hooks/notifications";
+import ComplaintModal from "../custom/complaint/ComplaintModal";
+import searchStore from "@/stores/SearchStore";
 
 interface AdvtProps {
   advrt: IWalkAdvrtDto;
@@ -37,6 +39,10 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
     const [userIsOwner, setUserIsOwner] = React.useState(false);
     const [distance, setDistance] = React.useState(0);
     const [showAllPets, setShowAllPets] = useState(false);
+    const [menuVisible, setMenuVisible] = useState(false);
+    const [isComplaintModal, setIsComplaintModal] = useState<boolean>(false);
+    const [isComplaintDone, setIsComplaintDone] = useState(false);
+    const [isComplaintSuccess, setIsComplaintSuccess] = useState(false);
 
     useEffect(() => {
       
@@ -111,7 +117,29 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
 
     //const walkDetails = renderWalkDetails(advrt);
 
-       
+    const openMenu = () => setMenuVisible(true);
+    const closeMenu = () => setMenuVisible(false);
+
+    const handleComplain = () => {
+      setMenuVisible(false);
+      setIsComplaintModal(true);
+    }
+
+    const closeComplaintModal = () => {
+      setIsComplaintModal(false);
+    }
+
+    const onComplain = async (text: string) => {
+      await searchStore.complain(text)
+        .then(() => {
+          setIsComplaintDone(true);
+          setIsComplaintSuccess(true);
+        })
+        .catch(() => {
+          setIsComplaintDone(true);
+          setIsComplaintSuccess(false);
+        })
+    } 
 
     return (
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="px-4">
@@ -128,10 +156,29 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
               )}
             </TouchableOpacity>
             <View className="flex-1 ml-2 justify-between">
-              <View className="flex-1 justify-center">
-                <Text className="w-full text-xl font-nunitoSansBold max-h-14">
+              <View className="w-full flex-row justify-between items-center">
+                <Text className="text-xl font-nunitoSansBold max-h-14">
                   {advrt.userName || i18n.t("FabGroup.walk")}
                 </Text>
+                {!userIsOwner &&
+                  <Menu
+                    contentStyle={{
+                      backgroundColor: "white",
+                      borderRadius: 10,
+                      top: 40
+                    }}
+                    visible={menuVisible}
+                    onDismiss={closeMenu}
+                    anchor={<IconButton
+                      icon="dots-vertical"
+                      style={{ margin: 0 }}
+                      onPress={openMenu}
+                      size={20}
+                    />}
+                  >
+                    <Menu.Item onPress={handleComplain} title="Пожаловаться на прогулку" />
+                  </Menu>
+                }
               </View>
               {/* <View className="flex-1 justify-center">
                 <CustomTextComponent
@@ -316,6 +363,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
               <Text className="mt-2 text-justify text-base text-indigo-800 font-nunitoSansBold">
                 {i18n.t("WalkDetails.walkDetails")}
               </Text>
+              
               <CustomTextComponent
                 text={advrt.description?.trim()}
                 enableTranslation={true}
@@ -347,6 +395,19 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
           confirmText={i18n.t("WalkDetails.confirm")}
           cancelText={i18n.t("WalkDetails.cancel")}
         />
+
+        {advrt.id && advrt.userId &&
+          <ComplaintModal
+            isVisible={isComplaintModal}
+            handleCloseModal={closeComplaintModal}
+            handleComplain={(text) => onComplain(text)}
+            isComplaintDone={isComplaintDone}
+            isComplaintSuccess={isComplaintSuccess} 
+            contentId={advrt.id} 
+            contentUserId={advrt.userId} 
+            contentType={'walk'}
+          />
+        }
       </ScrollView>
     );
   }
