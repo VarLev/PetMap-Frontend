@@ -27,7 +27,6 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [isLoadingDeletingPost, setIsLoadingDeletingPost] = useState(false);
   const [likesCounter, setLikesCounter] = useState<number>(post.likesCount);
-  const [comments, setComments] = useState<ICommentWithUser[]>(post.comments);
   const [commentsCounter, setCommentsCounter] = useState(post.comments.length);
   const [isComplaintModal, setIsComplaintModal] = useState<boolean>(false);
   const [isComplaintDone, setIsComplaintDone] = useState(false);
@@ -39,14 +38,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
       const hasLiked = await searchStore.hasUserLiked(post.id);
       updateLikes();
       setHasLiked(hasLiked);
-      setComments(postComments);
       setCommentsCounter(postComments.length);
-
-      if (post.userId === userStore.currentUser?.id) {
-        setIsCurrentUser(true);
-      } else {
-        setIsCurrentUser(false);
-      }
     })();
 
   }, [refresh]);
@@ -54,7 +46,6 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
   const memoDepends = [
     post,
     likesCounter,
-    comments,
     commentText,
     menuVisible,
     hasLiked,
@@ -89,7 +80,15 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
     }
   };
 
-  const openMenu = () => setMenuVisible(true);
+  const openMenu = () => {
+    if (post.userId === userStore.currentUser?.id) {
+      setIsCurrentUser(true);
+    } else {
+      setIsCurrentUser(false);
+    }
+    setMenuVisible(true);
+  }
+  
   const closeMenu = () => setMenuVisible(false);
 
   const deletePost = async (postId: string) => {
@@ -123,7 +122,6 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
       await searchStore.addComment(post.id, commentText.trim());
       setCommentsCounter(commentsCounter + 1);
       setCommentText("");
-      // await searchStore.fetchPosts();
     }
   }
 
@@ -145,130 +143,135 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
 
   const CardItem = useMemo(() => (
     <Card className="mx-2 mt-2 bg-white rounded-2xl">
-        <Card.Content>
-          <View className="flex-row items-center justify-between mb-1">
-          {isProfileView &&
-           (
-            <Text className="text-gray-500 text-xs">
-              {new Date(post.createdAt).toLocaleDateString()}
-            </Text>
-          )}
-            {!isProfileView && (
-              <>
-                <View className="flex-row items-center">
+      <Card.Content>
+        <View className="flex-row items-center justify-between mb-1">
+        {isProfileView &&
+          (
+          <Text className="text-gray-500 text-xs">
+            {new Date(post.createdAt).toLocaleDateString()}
+          </Text>
+        )}
+          {!isProfileView && (
+            <>
+              <View className="flex-row items-center">
+                <TouchableRipple onPress={() => openUserProfile(post.userId)}>
+                  <Avatar.Image size={36} source={{ uri: `${post.userAvatar}` }} />
+                </TouchableRipple>
+                <View className="ml-2">
                   <TouchableRipple onPress={() => openUserProfile(post.userId)}>
-                    <Avatar.Image size={36} source={{ uri: `${post.userAvatar}` }} />
+                    <Text className="font-bold text-sm">{post.userName}</Text>
                   </TouchableRipple>
-                  <View className="ml-2">
-                    <TouchableRipple onPress={() => openUserProfile(post.userId)}>
-                      <Text className="font-bold text-sm">{post.userName}</Text>
-                    </TouchableRipple>
-                    <Text className="text-gray-500 text-xs">
-                      {new Date(post.createdAt).toLocaleDateString()}
-                    </Text>
-                  </View>
+                  <Text className="text-gray-500 text-xs">
+                    {new Date(post.createdAt).toLocaleDateString()}
+                  </Text>
                 </View>
-                <View>
-                <Menu
-                  contentStyle={{
-                    backgroundColor: "white",
-                    borderRadius: 10,
-                    top: 40
-                  }}
-                  visible={menuVisible}
-                  onDismiss={closeMenu}
-                  anchor={<IconButton
-                    icon="dots-vertical"
-                    style={{ margin: 0 }}
-                    onPress={openMenu}
-                    size={20}
-                  />}
-                >
-                  {isCurrentUser ?
-                  <Menu.Item
-                    contentStyle={{
-                      display: "flex"
-                    }}
-                    onPress={() => deletePost(post.id)}
-                    title={isLoadingDeletingPost ?
-                      <ActivityIndicator
-                        size="small"
-                        color="#6200ee"
-                      /> : 
-                      i18n.t("feedPosts.deletePost")}
-                  /> :
-                  <Menu.Item onPress={handleComplain} title={i18n.t("feedPosts.complainOnPost")} />}
-                </Menu>
               </View>
-            </>
-            )}
-            
-
-            <ComplaintModal
-              isVisible={isComplaintModal}
-              handleCloseModal={closeComplaintModal}
-              handleComplain={(text) => onComplain(text)}
-              isComplaintDone={isComplaintDone}
-              isComplaintSuccess={isComplaintSuccess} 
-              contentId={post.id} 
-              contentUserId={post.userId} 
-              contentType={'post'} />
-          </View>
-          <CustomTextComponent text={post.content} maxLines={10} enableTranslation/>
-          {post.postPhotos.length > 0 && (
-            <View className="rounded-md overflow-hidden">
-              {post.postPhotos.map((image) => (
-                <Image
-                  key={image.id}
-                  source={{ uri: image.url }}
-                  className="w-full aspect-square"
-                  resizeMode="cover"
-                />
-              ))}
+              <View>
+              <Menu
+                contentStyle={{
+                  backgroundColor: "white",
+                  borderRadius: 10,
+                  top: 40
+                }}
+                visible={menuVisible}
+                onDismiss={closeMenu}
+                anchor={<IconButton
+                  icon="dots-vertical"
+                  style={{ margin: 0 }}
+                  onPress={openMenu}
+                  size={20}
+                />}
+              >
+                {isCurrentUser ? (
+                  <Menu.Item
+                    contentStyle={{ display: "flex" }}
+                    onPress={() => deletePost(post.id)}
+                    title={
+                      isLoadingDeletingPost ? (
+                        <ActivityIndicator
+                          size="small"
+                          color="#6200ee"
+                        />
+                      ) : (
+                        i18n.t("feedPosts.deletePost")
+                      )
+                    }
+                  />
+                  ) : (
+                    <Menu.Item onPress={handleComplain} title={i18n.t("feedPosts.complainOnPost")} />
+                  )
+                }
+              </Menu>
             </View>
+          </>
           )}
-        </Card.Content>
-        <Card.Actions>
-          <View className="flex-row items-center w-full">
-            {/* Кнопки лайка и комментариев (слева) */}
-            <View className="-ml-2 flex-row items-center mr-2">
-              <IconButton
-                icon={hasLiked ? "heart" : "heart-outline"}
-                iconColor={hasLiked ? BG_COLORS.purple[400] : "gray"}
-                onPress={toggleLike}
-                size={20}
+          
+          <ComplaintModal
+            isVisible={isComplaintModal}
+            handleCloseModal={closeComplaintModal}
+            handleComplain={(text) => onComplain(text)}
+            isComplaintDone={isComplaintDone}
+            isComplaintSuccess={isComplaintSuccess} 
+            contentId={post.id} 
+            contentUserId={post.userId} 
+            contentType={'post'}
+          />
+        </View>
+        <CustomTextComponent text={post.content} maxLines={10} enableTranslation/>
+        {post.postPhotos.length > 0 && (
+          <View className="rounded-md overflow-hidden">
+            {post.postPhotos.map((image) => (
+              <Image
+                key={image.id}
+                source={{ uri: image.url }}
+                className="w-full aspect-square"
+                resizeMode="cover"
               />
-              <Text className="-ml-2 text-sm text-gray-500 font-medium">{likesCounter}</Text>
-              <IconButton
-                icon="comment-outline"
-                className='-ml-0'
-                iconColor="gray"
-                size={20}
-                onPress={() => handleSheetCommentsOpen(post.id)}/>
-              <Text className="-ml-2 text-sm text-gray-500 font-medium">{commentsCounter}</Text>
-            </View>
-  
-            {/* Поле ввода текста и кнопка отправки (справа) */}
-            <View className="flex-row items-center flex-1 -mr-1">
-              <TextInput
-                multiline
-                style={{maxHeight: 60}}
-                placeholder={i18n.t("feedPosts.commentInput")}
-                className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-sm"
-                onChangeText={(text) => setCommentText(text)}
-                value={commentText}
-              />
-              <IconButton
-                icon="send"
-                iconColor={BG_COLORS.purple[400]}
-                onPress={addComment}
-                size={20}
-                style={{ marginLeft: 4 }}
-              />
-            </View>
+            ))}
           </View>
-        </Card.Actions>
-      </Card>
+        )}
+      </Card.Content>
+      <Card.Actions>
+        <View className="flex-row items-center w-full">
+          {/* Кнопки лайка и комментариев (слева) */}
+          <View className="-ml-2 flex-row items-center mr-2">
+            <IconButton
+              icon={hasLiked ? "heart" : "heart-outline"}
+              iconColor={hasLiked ? BG_COLORS.purple[400] : "gray"}
+              onPress={toggleLike}
+              size={20}
+            />
+            <Text className="-ml-2 text-sm text-gray-500 font-medium">{likesCounter}</Text>
+            <IconButton
+              icon="comment-outline"
+              className='-ml-0'
+              iconColor="gray"
+              size={20}
+              onPress={() => handleSheetCommentsOpen(post.id)}/>
+            <Text className="-ml-2 text-sm text-gray-500 font-medium">{commentsCounter}</Text>
+          </View>
+
+          {/* Поле ввода текста и кнопка отправки (справа) */}
+          <View className="flex-row items-center flex-1 -mr-1">
+            <TextInput
+              multiline
+              style={{maxHeight: 60}}
+              placeholder={i18n.t("feedPosts.commentInput")}
+              className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-sm"
+              onChangeText={(text) => setCommentText(text)}
+              value={commentText}
+            />
+            <IconButton
+              icon="send"
+              iconColor={BG_COLORS.purple[400]}
+              onPress={addComment}
+              size={20}
+              style={{ marginLeft: 4 }}
+            />
+          </View>
+        </View>
+      </Card.Actions>
+    </Card>
   ), [...memoDepends])
 
   return CardItem;
