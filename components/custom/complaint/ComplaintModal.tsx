@@ -3,6 +3,7 @@ import { Button, Modal, Portal } from "react-native-paper";
 import { FC, useEffect, useState } from "react";
 import CustomOutlineInputText from "../inputs/CustomOutlineInputText";
 import userStore from "@/stores/UserStore";
+import i18n from "@/i18n";
 
 type ComplaintModalProps = {
     isVisible: boolean;
@@ -65,12 +66,12 @@ const ComplaintModal: FC<ComplaintModalProps> = ({
                 {!isComplaintDone ?
                 <View style={styles.complaint}>
                     <Text className="text-base font-nunitoSansBold text-indigo-700">
-                        Опишите причину жалобы
+                        {i18n.t("complaint.reason")}
                     </Text>
                     <CustomOutlineInputText
                         containerStyles="py-4"
                         numberOfLines={5}
-                        placeholder="оскорбления, разжигание ненависти, сексизм, дескриминация, спам и тд."
+                        placeholder={i18n.t("complaint.placeholder")}
                         value={inputValue}
                         handleChange={(text) => handleChangeComplaint(text)}
                         maxLength={360}
@@ -82,7 +83,7 @@ const ComplaintModal: FC<ComplaintModalProps> = ({
                             style={{marginHorizontal: 0}}
                         >
                             <Text className="text-base font-nunitoSansBold text-gray-500">
-                                Отменить
+                                {i18n.t("complaint.cancel")}
                             </Text>
                         </Button>
                         <Button
@@ -91,14 +92,14 @@ const ComplaintModal: FC<ComplaintModalProps> = ({
                             disabled={!inputValue}
                         >
                             <Text className={"text-base font-nunitoSansBold " + textButtonColor}>
-                                Отправить
+                                {i18n.t("complaint.submit")}
                             </Text>
                         </Button>
                     </View>
                 </View> :
                 <View style={styles.complaint}>
                     <Text className="text-base font-nunitoSansBold text-indigo-700 text-center">
-                        {isComplaintSuccess ? "Жалоба успешно отправлена!" : "К сожалению, произошла ошибка. Попробуйте позже."}
+                        {isComplaintSuccess ? i18n.t("complaint.success") : i18n.t("complaint.error")}
                     </Text>
                     <Button
                         mode="text"
@@ -106,7 +107,7 @@ const ComplaintModal: FC<ComplaintModalProps> = ({
                         labelStyle={{marginVertical: 0}}
                     >
                         <Text className="text-base font-nunitoSansBold text-gray-500">
-                            Закрыть
+                            {i18n.t("complaint.close")}
                         </Text>
                     </Button>
                 </View>

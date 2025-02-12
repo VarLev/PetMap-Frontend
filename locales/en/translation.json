@@ -1568,6 +1568,15 @@
     "whatsapp": "Write on WhatsApp"
   },
   "petStatus": ["With owner", "Lost", "Adoptable"],
-   "empty":"Oh, it seems it's empty here."
+  "empty":"Oh, it seems it's empty here.",
+  "complaint": {
+    "reason": "Please describe the reason for your report",
+    "placeholder": "insults, hate speech, discrimination, spam or another reason",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "success": "Your report has been successfully submitted",
+    "error": "Unfortunately, an error has occurred. Please try again later.",
+    "close": "Close"
+  }
 
 }
