@@ -106,6 +106,7 @@ class ChatStore {
         lastCreatedAt: chatData.lastCreatedAt || 0,
         participants: this.transformParticipants(chatData.participants), 
         lastSeen: chatData.lastSeen,
+        lastMessageAuthor: chatData.lastMessageAuthor,
       });
     }
     return result;
@@ -193,6 +194,7 @@ class ChatStore {
         lastCreatedAt: chatData.lastCreatedAt || 0,
         participants: participantsArray,
         lastSeen: chatData.lastSeen || 0,
+        lastMessageAuthor: chatData.lastMessageAuthor || '',
       };
   
       chatsList.push(chatObj);
@@ -498,15 +500,11 @@ class ChatStore {
     
     // Для удобства: если это текстовое сообщение, запишем в lastMessage,
     // если "invite" (custom), можно записывать другое поле или и вовсе пусто
-    if (!options?.isInvite) {
-      // если обычное сообщение
-      updates[`chats/${chatId}/lastMessage`] = (newMessage as MessageType.Text).text;
-    } else {
-      // Можно сохранить "Приглашение" как lastMessage или вообще не трогать.
-      updates[`chats/${chatId}/lastMessage`] = 'Приглашение на прогулку';
-    }
-  
+    updates[`chats/${chatId}/lastMessage`] = !options?.isInvite 
+      ? (newMessage as MessageType.Text).text 
+      : 'Приглашение на прогулку';
     updates[`chats/${chatId}/lastCreatedAt`] = now;
+    updates[`chats/${chatId}/lastMessageAuthor`] = userId;
     updates[`users/${userId}/lastSeen`] = now;
   
     try {
@@ -1027,6 +1025,23 @@ class ChatStore {
   
     } catch (error) {
       console.error('Ошибка при добавлении бот-сообщения:', error)
+    }
+  }
+
+  async markChatAsRead(chatId: string) {
+    const now = Date.now();
+    try {
+      // Обновляем данные в Firebase
+      await update(ref(database, `chats/${chatId}`), { lastSeen: now });
+      // Обновляем локальный стор
+      runInAction(() => {
+        const chatIndex = this.chats.findIndex((chat) => chat.id === chatId);
+        if (chatIndex !== -1) {
+          this.chats[chatIndex].lastSeen = now;
+        }
+      });
+    } catch (error) {
+      console.error('Ошибка при обновлении статуса прочтения чата:', error);
     }
   }
   

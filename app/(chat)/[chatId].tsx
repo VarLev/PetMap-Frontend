@@ -49,6 +49,7 @@ const ChatScreen: React.FC = observer(() => {
     const loadData = async () => {
       try { 
         const loadedChat = await ChatStore.getChatById(chatId);
+        
         if(loadedChat){
           // Чат уже существует в базе
           const otherUser = loadedChat?.participants?.find((p) => p.key !== currentUserId)?.value
@@ -59,6 +60,7 @@ const ChatScreen: React.FC = observer(() => {
             setLastOnline(lastOnliune || '');
           }
           setChat(loadedChat);
+         
         }
         else {
           // Чат не существует в базе
@@ -117,6 +119,10 @@ const ChatScreen: React.FC = observer(() => {
     return () => backHandler.remove();
   }, [chatId, router]);
 
+
+
+
+  
   // ---------------------------
   // Функции для перевода
   // ---------------------------

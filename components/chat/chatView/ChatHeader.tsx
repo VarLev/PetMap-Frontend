@@ -55,7 +55,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ userName, avatarUrl, onPressAva
 
   return (
     <>
-      <View className="flex-row items-center justify-between py-2 shadow-md">
+      <View className="flex-row items-center justify-between py-2 ">
         <View className="flex-row items-center gap-2">
           <IconButton icon="arrow-left" size={24} onPress={handleBack} />
           <AvatarWithStatus onPress={onPressAvatar || (() => {})} imageUrl={avatarUrl} isOnline={isOnline} />

@@ -18,7 +18,6 @@ const ChatListView: React.FC = observer(() => {
       setIsLoading(true);
       await ChatStore.ensureAssistantChatExists(currentUserId);
       await ChatStore.fetchChats();
-      //setChats(ChatStore.chats);
     } catch (err) {
       setError('');
       console.error(err);
@@ -38,6 +37,14 @@ const ChatListView: React.FC = observer(() => {
     // Возвращаем функцию, которая "отпишется" при размонтиовании
     return () => unsubscribe && unsubscribe();
   }, []);
+
+  const sortedChats = ChatStore.chats.slice().sort((a, b) => {
+    // Если у вас есть "пин" чат — он всегда наверху
+    const pinnedChatId = process.env.EXPO_PUBLIC_AI_CHAT_ID + currentUserId;
+    if (a.id === pinnedChatId) return -1;
+    if (b.id === pinnedChatId) return 1;
+    return b.lastCreatedAt - a.lastCreatedAt;
+  });
 
   const onRefresh = async () => {
     setIsRefreshing(true);
@@ -70,7 +77,7 @@ const ChatListView: React.FC = observer(() => {
   return (
     <View className="h-full bg-white">
       <FlatList
-        data={ChatStore.chats}
+        data={sortedChats}
         ListEmptyComponent={
           <View className="h-full">
             <EmptyChatScreen />

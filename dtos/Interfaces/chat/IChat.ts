@@ -4,6 +4,7 @@ interface IChat {
   lastMessage?: string;
   lastCreatedAt: number;
   participants: {key: string, value: IChatUser}[];
+  lastMessageAuthor?: string;
   lastSeen?: number;
 }
 
