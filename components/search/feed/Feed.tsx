@@ -7,7 +7,7 @@ import { FAB } from 'react-native-paper';
 import { ICommentWithUser, IPost } from '@/dtos/Interfaces/feed/IPost';
 import { BG_COLORS } from '@/constants/Colors';
 import { runInAction } from 'mobx';
-import BottomSheet, { BottomSheetFooter, BottomSheetFooterProps } from '@gorhom/bottom-sheet';
+import BottomSheet from '@gorhom/bottom-sheet';
 import PostComment from './PostComment';
 import searchStore from '@/stores/SearchStore';
 import PostItem from '@/components/search/feed/PostItem';
@@ -182,10 +182,10 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
       {bottomSheetType === 'comments' && (
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 20 :0}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
           style={styles.commentInputContainer}
         >
-          <View style={[styles.footer, { paddingBottom: isKeyboardVisible ? 0 : 90 }]}>
+          <View style={[styles.footer, Platform.OS === 'android' ? { paddingBottom: isKeyboardVisible ? 0 : 90 } : {paddingBottom: 90}]}>
             <TextInput
               multiline
               style={{ maxHeight:180, borderBlockColor: '#c0c0c0', borderWidth: 1, borderColor: '#c0c0c0', borderRadius: 5, padding: 5, flex: 1}}
