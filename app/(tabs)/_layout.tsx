@@ -12,6 +12,7 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
+import uiStore from '@/stores/UIStore';
 
 const Tabslayout = () => {
   const pathname = usePathname();
@@ -25,9 +26,11 @@ const Tabslayout = () => {
 
     const keyboardShowListener = Keyboard.addListener(showEvent, () => {
       tabBarVisibility.value = withTiming(0, { duration: 200 });
+      uiStore.setKeyboardVisible(true);
     });
     const keyboardHideListener = Keyboard.addListener(hideEvent, () => {
       tabBarVisibility.value = withTiming(1, { duration: 200 });
+      uiStore.setKeyboardVisible(false);
     });
 
     return () => {

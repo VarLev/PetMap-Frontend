@@ -1,7 +1,7 @@
 // Feed.tsx
 import { FC, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { FlatList, View, ActivityIndicator, StyleSheet, TextInput } from 'react-native';
+import { FlatList, View, ActivityIndicator, StyleSheet, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { Text, IconButton } from 'react-native-paper';
 import { FAB } from 'react-native-paper';
 import { ICommentWithUser, IPost } from '@/dtos/Interfaces/feed/IPost';
@@ -14,13 +14,15 @@ import PostItem from '@/components/search/feed/PostItem';
 import CreatePost from '@/components/search/feed/CreatePost';
 import i18n from '@/i18n';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent';
-import { Keyboard } from 'react-native';
+
 
 // Если userId не передан, компонент показывает все посты.
 // Если userId передан, компонент показывает посты только указанного пользователя.
 interface FeedProps {
   userId?: string;
 }
+
+
 
 const Feed: FC<FeedProps> = observer(({ userId }) => {
   const [bottomSheetType, setBottomSheetType] = useState<'create-post' | 'comments' | ''>('')
@@ -29,8 +31,23 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
   const [isPostRefresh, setIsPostRefresh] = useState<boolean>(false);
   const [selectedPostId, setSelectedPostId] = useState('');
   const [userPosts, setUserPosts] = useState<IPost[]>([]);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
   const sheetRef = useRef<BottomSheet>(null);
+
+  const [commentText, setCommentText] = useState('');
+  const addComment = async () => {
+    if (commentText.trim()) {
+      await searchStore.addComment(selectedPostId, commentText.trim());
+      setCommentText("");
+      runInAction(async () => {
+        const comments = await searchStore.fetchGetComments(selectedPostId);
+        setPostComments(comments);
+        searchStore.fetchPosts();
+        setIsPostRefresh(true);
+      });
+    }
+  };
 
 
 
@@ -99,45 +116,6 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
     sheetRef.current?.expand();
   };
 
-  const BottomSheetCommentsFooter = ({ animatedFooterPosition }: BottomSheetFooterProps) => {
-    const [commentText, setCommentText] = useState('');
-
-    const addComment = async () => {
-      if (commentText.trim()) {
-        await searchStore.addComment(selectedPostId, commentText.trim());
-        setCommentText("");
-        runInAction(async () => {
-          const comments = await searchStore.fetchGetComments(selectedPostId);
-          setPostComments(comments);
-          searchStore.fetchPosts();
-          setIsPostRefresh(true);
-        })
-      }
-    }
-
-    return (
-      <BottomSheetFooter animatedFooterPosition={animatedFooterPosition}>
-        <View style={styles.footer} className="flex-row items-center flex-1">
-          <TextInput
-            multiline
-            style={{ maxHeight: 60 }}
-            placeholder={i18n.t("feedPosts.commentInput")}
-            className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-sm"
-            onChangeText={(text) => setCommentText(text)}
-            value={commentText}
-          />
-          <IconButton
-            icon="send"
-            iconColor={BG_COLORS.purple[400]}
-            onPress={addComment}
-            size={20}
-            style={{ marginLeft: 4, marginRight: -6 }}
-          />
-        </View>
-      </BottomSheetFooter>
-    )
-  }
-
   return (
     <View className='flex-1' >
       <FlatList
@@ -156,20 +134,17 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
         refreshing={isRefreshing}
         onRefresh={handleRefresh}
         ListFooterComponent={searchStore.loading ? <ActivityIndicator size="large" color="#6200ee" /> : <View className='h-20' />}
-        renderItem={({ item }) => {
-          return (
-            <PostItem
-              post={item}
-              handleSheetCommentsOpenById={(postId) => handleSheetCommentsOpen(postId)}
-              refresh={isPostRefresh}
-              isProfileView={!!userId}
-            />
-          )
-        }}
+        renderItem={({ item }) => (
+          <PostItem
+            post={item}
+            handleSheetCommentsOpenById={(postId) => handleSheetCommentsOpen(postId)}
+            refresh={isPostRefresh}
+            isProfileView={!!userId}
+          />
+        )}
       />
       {!userId && <FAB icon="pen" size='medium' color='white' style={styles.fab} onPress={handleCreatePost} />}
-      {
-        bottomSheetType &&
+      {bottomSheetType && (
         <BottomSheetComponent
           contentStyle={{ paddingHorizontal: 12 }}
           ref={sheetRef}
@@ -178,23 +153,59 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
           enablePanDownToClose
           handleHeight={0}
           enableFooterMarginAdjustment
-          footerComponent={bottomSheetType === "comments" ? BottomSheetCommentsFooter : undefined}
-          renderContent={bottomSheetType === "create-post"
-            ? <CreatePost onClose={handleSheetClose} />
-            : bottomSheetType === "comments" && postComments?.length === 0 ? (
-              <View style={styles.noCommentsContainer}>
-                <Text>{i18n.t("feedPosts.noCommentsText")}</Text>
-              </View>
-            ) : null
+          // Убираем footerComponent!
+          renderContent={
+            bottomSheetType === 'create-post'
+              ? <CreatePost onClose={handleSheetClose} />
+              : bottomSheetType === 'comments' && postComments?.length === 0
+                ? (
+                  <View style={styles.noCommentsContainer}>
+                    <Text>{i18n.t('feedPosts.noCommentsText')}</Text>
+                  </View>
+                )
+                : null
           }
-          flatListData={bottomSheetType === "comments" ? postComments : null}
-          flatListRenderItem={bottomSheetType === "comments" ? ({ item }) => {
-            return (
-              <PostComment comment={item} handleDeleteComment={(commentId) => deleteComment(commentId)} />
-            )
-          } : null}
+          flatListData={bottomSheetType === 'comments' ? postComments : null}
+          flatListRenderItem={
+            bottomSheetType === 'comments'
+              ? ({ item }) => (
+                <PostComment
+                  comment={item}
+                  handleDeleteComment={(commentId) => deleteComment(commentId)}
+                />
+              )
+              : null
+          }
         />
-      }
+      )}
+      {/* Если открыт режим комментариев, отрисовываем поле ввода отдельно */}
+      {bottomSheetType === 'comments' && (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 20 :0}
+          style={styles.commentInputContainer}
+        >
+          <View style={[styles.footer, { paddingBottom: isKeyboardVisible ? 0 : 90 }]}>
+            <TextInput
+              multiline
+              style={{ maxHeight:180, borderBlockColor: '#c0c0c0', borderWidth: 1, borderColor: '#c0c0c0', borderRadius: 5, padding: 5, flex: 1}}
+              placeholder={i18n.t('feedPosts.commentInput')}
+              className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-base"
+              onChangeText={(text) => setCommentText(text)}
+              value={commentText}
+              onFocus={() =>setKeyboardVisible(true)}
+              onBlur={() => setKeyboardVisible(false)}
+            />
+            <IconButton
+              icon="send"
+              iconColor={BG_COLORS.purple[400]}
+              onPress={addComment}
+              size={20}
+              style={{ marginLeft: 4, marginRight: -6 }}
+            />
+          </View>
+        </KeyboardAvoidingView>
+      )}
     </View>
   );
 });
@@ -202,11 +213,12 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
 const styles = StyleSheet.create({
   footer: {
     backgroundColor: 'white',
-    height: 148,
-    paddingBottom: 80,
+    maxHeight: 248,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 12
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+
   },
   fab: {
     position: 'absolute',
@@ -228,7 +240,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 12
-  }
+  },
+  commentInputContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'white',
+    paddingHorizontal: 12,
+    paddingBottom: 8, // можно подогнать отступ под свои нужды
+  },
+
 })
 
 export default Feed;

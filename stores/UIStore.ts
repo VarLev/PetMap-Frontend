@@ -6,7 +6,6 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLocales } from 'expo-localization';
 import * as Location from 'expo-location';
-import { G } from 'react-native-svg';
 import { randomUUID } from 'expo-crypto';
 
 class UIStore {
@@ -20,6 +19,7 @@ class UIStore {
   isChatTranslatinEnabled: boolean = false;
   resetAppId: string = '';
   isPushTurnedOn: boolean = false;
+  isKeyboardVisible: boolean = false;
 
 
   
@@ -100,6 +100,14 @@ class UIStore {
 
   getIsChatTranslatinEnabled() {
     return this.isChatTranslatinEnabled;
+  }
+
+  setKeyboardVisible(isVisible: boolean) {
+    this.isKeyboardVisible = isVisible;
+  }
+
+  getKeyboardVisible() {
+    return this.isKeyboardVisible;
   }
 
   

@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text } from 'react-native';
 import { IconButton, Menu } from 'react-native-paper';
 import { ReviewDTO } from '@/dtos/classes/review/Review';
 import StarRating from 'react-native-star-rating-widget';
-import CustomButtonPrimary from '../custom/buttons/CustomButtonPrimary';
-import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
 import userStore from '@/stores/UserStore';
 import StarSvgIcon from '../custom/icons/StarSvgIcon';
 import i18n from '@/i18n';
