@@ -222,7 +222,7 @@ class MapStore {
         this.setAdvrtAddress(address);
         this.isAvaliableToCreateWalk = true;
       } else {
-        console.error("No address found for the provided coordinates.");
+        
         this.setAdvrtAddress(this.city??'');
         this.isAvaliableToCreateWalk = false;
       }
@@ -251,7 +251,7 @@ class MapStore {
         
         return [country, city];
       } else {
-        console.error("No address found for the provided coordinates.");
+       
       }
     } catch (error) {
       return handleAxiosError(error);

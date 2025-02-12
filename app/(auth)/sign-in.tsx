@@ -140,10 +140,7 @@ const SignIn = () => {
             
 
               <View className="items-center pt-5">
-                <Link
-                  href="/sign-up.mailvalidation"
-                  className="pt-4 text-base text-indigo-800 font-nunitoSansBold"
-                >
+                <Link href="/sign-up.mailvalidation" className="pt-4 text-base text-indigo-800 font-nunitoSansBold">
                   {i18n.t("signIn.forgotPassword")}
                 </Link>
               </View>

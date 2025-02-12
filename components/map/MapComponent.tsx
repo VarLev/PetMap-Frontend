@@ -1,6 +1,6 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, BackHandler, ImageSourcePropType, Animated, ActivityIndicator, TouchableOpacity, Keyboard } from 'react-native';
+import { View, BackHandler, ImageSourcePropType, Animated, ActivityIndicator, TouchableOpacity, Keyboard, Dimensions } from 'react-native';
 import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer, LineLayer } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
 import { IconButton, Provider } from 'react-native-paper';
@@ -45,6 +45,7 @@ import { generateChatData, generateChatIdForTwoUsers } from '@/utils/chatUtils';
 import { Easing } from 'react-native-reanimated';
 import { BG_COLORS } from '@/constants/Colors';
 import { throttle } from 'lodash';
+
 
 
 
@@ -232,7 +233,7 @@ const MapBoxMap = observer(() => {
 
 
   const handlePress = (event: any ) => {
-    Keyboard.dismiss();
+    Keyboard.dismiss()
     if (uiStore.getIsSearchAddressExpanded())
       return;
     console.log('Press detected');
@@ -515,9 +516,10 @@ const MapBoxMap = observer(() => {
     }
   };
 
-
   return (
-    <Provider>
+    <View style={{ flex: 1, bottom: 70 }}>
+      
+      <Provider>
       {/* Компонент, проверяющий и запрашивающий разрешения */}
       <PermissionsRequestComponent />
 
@@ -529,7 +531,7 @@ const MapBoxMap = observer(() => {
 
       ) : (
         // После окончания загрузки используем анимированный контейнер, чтобы карта появилась плавно
-        <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+        <Animated.View style={{ flex: 1, top:70, opacity: fadeAnim }} >
           {/* Если у нас есть режим карточного вида, отображаем SlidingOverlay */}
           {isCardView && (
             <SlidingOverlay visible={isCardView}>
@@ -550,7 +552,7 @@ const MapBoxMap = observer(() => {
             scrollEnabled={!isCardView}
             pitchEnabled={!isCardView}
             zoomEnabled={!isCardView}
-            rotateEnabled={!isCardView}
+            rotateEnabled={!isCardView}  
           >
 
 
@@ -738,9 +740,16 @@ const MapBoxMap = observer(() => {
             title={alertType === 'error' ? 'Error' : ''}
             image={alertImage}
           />
+          
         </Animated.View>
+        
       )}
+      
+      
     </Provider>
+    
+    </View>
+    
   );
 
   

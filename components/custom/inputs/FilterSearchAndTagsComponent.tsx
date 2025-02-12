@@ -38,8 +38,8 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
   onAddressSelected,
 }) => {
   // Проверяем, есть ли подписка
-  const hasSubscription = userStore.getUserHasSubscription();
-
+  //const hasSubscription = userStore.getUserHasSubscription();
+  const hasSubscription = true;
   // Модальное окно для призыва к подписке
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 

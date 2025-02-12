@@ -52,7 +52,7 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
         handleStyle={styles.handleStyle}
         footerComponent={footerComponent}
         handleHeight={handleHeight}
-        
+      
       >
         <BottomSheetFlatList
           style={contentStyle}
