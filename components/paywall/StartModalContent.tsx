@@ -36,7 +36,7 @@ const StartModalContent: FC<StartModalContentProps> = ({
     return (
     <View className="flex-col justify-between h-full px-4">
       {/* Шапка: стрелка назад (если benefits открыты) и крестик справа */}
-      <View className="flex-row justify-between items-center">
+      <View className="flex-row justify-between items-center z-[1]">
         {isFullBenefitsVisible && (
           <IconButton
             icon="arrow-left"
@@ -50,7 +50,7 @@ const StartModalContent: FC<StartModalContentProps> = ({
           size={40}
           iconColor="white"
           onPress={handleCloseModal}
-          className={!isFullBenefitsVisible ? "absolute left-[0] top-[0] z-[1]" : ""}
+          className={!isFullBenefitsVisible ? "absolute left-[0] top-[0] z-[2]" : ""}
         />
       </View>
       {/* Либо показываем картинку, либо таблицу */}
