@@ -1568,5 +1568,14 @@
     "whatsapp": "Escribir en WhatsApp"
   },
   "petStatus": ["Con dueño","Perdido","En adopción"],
-  "empty":"¡Uy, parece que acá está vacío!"
+  "empty":"¡Uy, parece que acá está vacío!",
+  "complaint": {
+    "reason": "Describa el motivo de su denuncia",
+    "placeholder": "insultos, incitación al odio, discriminación, spam u otro motivo",
+    "cancel": "Cancelar",
+    "submit": "Enviar",
+    "success": "Su denuncia se ha enviado con éxito",
+    "error": "Lamentablemente, ha ocurrido un error. Inténtelo más tarde.",
+    "close": "Cerrar"
+  }
 }
