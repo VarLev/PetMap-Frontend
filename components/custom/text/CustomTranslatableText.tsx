@@ -12,13 +12,15 @@ interface TranslatableTextProps {
   textClassName?: string;
   _className?: string;
   iconSize?: number;
+  iconContainerClassName: string;
 }
 
 const TranslatableText: FC<TranslatableTextProps> = ({
   text,
   _className = '', // Указываем пустую строку как значение по умолчанию
   textClassName,
-  iconSize = 24
+  iconSize = 24,
+  iconContainerClassName
 }) => {
   const [translatedText, setTranslatedText] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -57,7 +59,7 @@ const TranslatableText: FC<TranslatableTextProps> = ({
           activeOpacity={0.8}
           onPress={handleTranslate}
           disabled={loading}
-          className="h-6 justify-start items-start"
+          className={"justify-start items-start " + iconContainerClassName}
         >
           {!loading ? (
             <IconSelectorComponent
@@ -74,7 +76,7 @@ const TranslatableText: FC<TranslatableTextProps> = ({
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleCancelTranslation}
-          className="h-6 justify-start items-start"
+          className={"justify-start items-start " + iconContainerClassName}
         >
           <IconSelectorComponent
             iconSet="Ionicons"
