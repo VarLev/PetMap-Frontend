@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 
 interface DismissibleBannerProps {
   adSize: BannerAdSize;
+  uId: string;
 }
 
-const DismissibleBanner: React.FC<DismissibleBannerProps> = ({ adSize }) => {
+const DismissibleBanner: React.FC<DismissibleBannerProps> = ({ adSize, uId }) => {
   const [isVisible, setIsVisible] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
-  if (!isVisible) {
-    return null; // Если баннер скрыт, ничего не рендерим
+  // Если баннер был закрыт или произошла ошибка загрузки, не рендерим его
+  if (!isVisible || hasError) {
+    return null;
   }
 
   return (
@@ -23,15 +26,20 @@ const DismissibleBanner: React.FC<DismissibleBannerProps> = ({ adSize }) => {
         <Text className="text-3xl text-black">✕</Text>
       </TouchableOpacity>
       
-      {/* Сам баннер */}
+      {/* Баннер */}
       <BannerAd
-        unitId={TestIds.BANNER} // Замените на ваш реальный ID рекламного блока
+        unitId={uId} // Используйте ваш реальный ID рекламного блока
         size={adSize}
         requestOptions={{
           requestNonPersonalizedAdsOnly: true,
         }}
+        onAdLoaded={() => {
+          // Если баннер загрузился успешно, можно сбросить флаг ошибки (на случай повторной загрузки)
+          setHasError(false);
+        }}
         onAdFailedToLoad={(error) => {
           console.log('Ошибка загрузки баннера:', error);
+          setHasError(true);
         }}
       />
     </View>

@@ -250,7 +250,7 @@ const SidebarUserProfileComponent = () => {
           onClose={() => setAlertVisible(false)}
         />
 
-        {!userStore.getUserHasSubscription() && <DismissibleBanner adSize={BannerAdSize.LARGE_BANNER} />}
+        {!userStore.getUserHasSubscription() && <DismissibleBanner adSize={BannerAdSize.LARGE_BANNER} uId="ca-app-pub-2818079501156274/2800677323" />}
       </View>
     </SafeAreaView>
   );

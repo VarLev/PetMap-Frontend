@@ -113,7 +113,7 @@ const Tabslayout = () => {
           />
         </Tabs>
         {!userStore.getUserHasSubscription() && (
-          <DismissibleBanner adSize={BannerAdSize.BANNER} />
+          <DismissibleBanner adSize={BannerAdSize.BANNER} uId='ca-app-pub-2818079501156274/2800677323' />
         )}
       </DrawerProvider>
     </GestureHandlerRootView>

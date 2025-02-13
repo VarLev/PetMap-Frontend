@@ -1,4 +1,4 @@
-import { View, ScrollView, Alert, TouchableOpacity, Linking } from 'react-native';
+import { View, ScrollView, Alert, TouchableOpacity, Linking, Platform } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TextInput, Text, Checkbox } from 'react-native-paper';
@@ -19,10 +19,12 @@ const SignUp = () => {
   const [isSecure, setIsSecure] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
   const [isChildChecked, setIsChildChecked] = useState(false);
+  const [isEulaChecked, setIsEulaChecked] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isSamePassword, setIsSamePassword] = useState(true);
   const [checkBoxAlert, setCheckBoxAlert] = useState(true);
   const [checkBoxChildAlert, setCheckBoxChildAlert] = useState(true);
+  const [checkBoxEulaAlert, setCheckBoxEulaAlert] = useState(true);
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [strength, setStrength] = useState(0);
   const [alertVisible, setAlertVisible] = useState(false);
@@ -38,8 +40,13 @@ const SignUp = () => {
     setIsSamePassword(true);
 
     // 2. Проверка галочки «Согласен с политикой...»
-    if (!isChecked ) {
+    if (!isChecked) {
       setCheckBoxAlert(false);
+      return;
+    }
+
+    if (!isEulaChecked) {
+      setCheckBoxEulaAlert(false);
       return;
     }
 
@@ -207,6 +214,34 @@ const SignUp = () => {
                   {i18n.t('signUp.policyAlert')}
                 </Text>
               )}
+              {Platform.OS === 'ios' && (
+                <>
+                  <View className="flex-row items-center justify-start gap-2 -mt-4 px-0">
+                    <Checkbox.Android
+                      color={BG_COLORS.indigo[700]}
+                      uncheckedColor="gray"
+                      status={isEulaChecked ? 'checked' : 'unchecked'}
+                      onPress={() => {
+                        setIsEulaChecked(!isEulaChecked);
+                        setCheckBoxAlert(true);
+                      }}
+                    />
+                    <TouchableOpacity
+                      onPress={() => Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')}
+                    >
+                      <Text variant="titleSmall" className="mb-2 p-0 w-64 font-nunitoSansRegular text-sm underline text-blue-500">
+                        {i18n.t('signUp.eulaPolicy')}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  {!checkBoxEulaAlert && (
+                    <Text style={{ marginTop: -10 }} className="text-red-500 mb-2">
+                      {i18n.t('signUp.policyEulaAlert')}
+                    </Text>
+                  )}
+                </>
+              )}
+
               <View className="flex-row items-center justify-start gap-2 -mt-4 px-0">
                 <Checkbox.Android
                   color={BG_COLORS.indigo[700]}
