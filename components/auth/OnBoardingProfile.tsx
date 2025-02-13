@@ -108,7 +108,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
     };
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-
+    setName(userStore.currentUser?.name??'');
     return () => {
       subscription.remove();
     };

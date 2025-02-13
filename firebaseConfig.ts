@@ -1,9 +1,9 @@
 import { getApps , initializeApp } from 'firebase/app';
 import { getStorage, ref, listAll, getDownloadURL, StorageReference} from 'firebase/storage';
-import { signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, OAuthProvider  } from 'firebase/auth';
+import { signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, OAuthProvider, UserCredential  } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getAuth, initializeAuth, getReactNativePersistence, onAuthStateChanged } from "firebase/auth";
-import {getDatabase, onDisconnect, serverTimestamp, set, ref as refDb, update} from 'firebase/database';
+import {getDatabase, onDisconnect, serverTimestamp, ref as refDb, update} from 'firebase/database';
 import { GoogleAuthProvider, signInWithCredential, OAuthProvider as AppleAuthProvider } from 'firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as AppleAuthentication from 'expo-apple-authentication';
@@ -117,17 +117,25 @@ export const signInWithGoogle = async () => {
 };
 
 
-export const signInWithApple = async () => {
+export const signInWithApple = async ():Promise<{name:string, firebCreds: UserCredential}> => {
   try {
     
     // Если expo-apple-authentication поддерживает передачу nonce, можно его передать:
-    const appleCredential = await AppleAuthentication.signInAsync({
-      requestedScopes: [
-        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-        AppleAuthentication.AppleAuthenticationScope.EMAIL,
-      ],
-      // nonce: rawNonce, // раскомментируйте, если библиотека поддерживает nonce
-    });
+  const appleCredential = await AppleAuthentication.signInAsync({
+    requestedScopes: [
+      AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+      AppleAuthentication.AppleAuthenticationScope.EMAIL,
+    ],
+    // nonce: rawNonce, // раскомментируйте, если библиотека поддерживает nonce
+  });
+
+  console.log(appleCredential);
+  const givenName = appleCredential.fullName?.givenName ?? '';
+  const familyName = appleCredential.fullName?.familyName ?? '';
+
+     
+      // Сохраните fullName в своей базе данных или state для дальнейшего использования
+   
 
     if (!appleCredential.identityToken) {
       throw new Error('Apple Sign-In не удался: отсутствует identity token.');
@@ -143,9 +151,9 @@ export const signInWithApple = async () => {
       rawNonce: appleCredential.authorizationCode || undefined,
     });
 
+    const creds = await signInWithCredential(auth, firebaseCredential);
 
-
-    return await signInWithCredential(auth, firebaseCredential);
+    return { name: givenName, firebCreds: creds };
   } catch (error) {
     throw error;
   }

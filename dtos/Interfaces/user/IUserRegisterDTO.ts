@@ -3,4 +3,5 @@ export interface IUserRegister {
   password?: string;
   firebaseUid: string;
   provider: string;
+  name?: string;
 }
