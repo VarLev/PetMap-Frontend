@@ -43,7 +43,6 @@ class UserStore {
   currentCountry: string = '';
   userHasSubscription = false;
   isUserJustRegistrated = false;
-  appleUserName: string = '';
 
 
   constructor() {
@@ -448,9 +447,7 @@ class UserStore {
     }
   }
 
-  async appleSignInUser(
-    firebaseUserCredential: UserCredential
-  ): Promise<[isUserAlreadyRegistrated: boolean, isSuccessfulSignIn: boolean]> {
+  async appleSignInUser(userName:string, firebaseUserCredential: UserCredential): Promise<[isUserAlreadyRegistrated: boolean, isSuccessfulSignIn: boolean]> {
     this.setLoading(true);
     let isSuccessful = false;
     let isUserAlreadyRegistrated = false;
@@ -477,7 +474,7 @@ class UserStore {
           email: firebaseUserCredential.user.email!, // здесь можно добавить проверку на null
           firebaseUid: firebaseUserCredential.user.uid,
           provider: 'apple',
-          name: this.appleUserName,
+          name: userName
         };
         const response = await apiClient.post('/users/register', userRegisterDTO);
         const registeredUser = response.data as IUser;

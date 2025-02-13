@@ -255,7 +255,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
           <View className="flex-row items-center flex-1 -mr-1">
             <TextInput
               multiline
-              style={{maxHeight: 60}}
+              style={{ maxHeight:180, borderBlockColor: '#E4E4E4', borderWidth: 1, borderColor: '#E4E4E4', borderRadius: 5, padding: 5, flex: 1}}
               placeholder={i18n.t("feedPosts.commentInput")}
               className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-sm"
               onChangeText={(text) => setCommentText(text)}

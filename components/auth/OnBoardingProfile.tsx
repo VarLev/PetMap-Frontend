@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { View, Dimensions, Platform, StyleSheet, ImageSourcePropType, Image, FlatList, TouchableOpacity, Modal, BackHandler } from 'react-native';
+import { View, Dimensions, Platform, StyleSheet, ImageSourcePropType, Image, FlatList, Modal, BackHandler } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { Avatar, Button, HelperText, Text } from 'react-native-paper';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
@@ -28,6 +28,7 @@ import CustomLoadingButton from '../custom/buttons/CustomLoadingButton';
 import i18n from '@/i18n';
 
 import { useNavigation } from 'expo-router';
+import { BG_COLORS } from '@/constants/Colors';
 
 
 const { width, height } = Dimensions.get('window');
@@ -108,7 +109,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
     };
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    setName(userStore.currentUser?.name??'');
+    setName(userStore.currentUser?.name??'')
     return () => {
       subscription.remove();
     };
@@ -456,8 +457,8 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
               <Modal transparent={true} animationType="slide">
                 <View className="flex-1 justify-center bg-black/50">
                   <View className="bg-white mx-5 p-5 rounded-3xl shadow-lg">
-                    <DateTimePicker value={age} mode="date" display="spinner" onChange={onAgeChange} />
-                    <Button mode="contained" onPress={() => setShowUserAge(false)}>
+                    <DateTimePicker value={age} mode="date" display="spinner" onChange={onAgeChange} textColor='black'/>
+                    <Button mode="contained" onPress={() => setShowUserAge(false)} buttonColor={BG_COLORS.indigo[800]}>
                       OK
                     </Button>
                   </View>
@@ -475,8 +476,9 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
             <CustomButtonOutlined
               title={i18n.t('onboardingProfile.slide3.uploadPhotoButton')}
               handlePress={SetUserImage}
-              containerStyles="mr-1 w-1/2 bg-indigo-700 text-white"
+              containerStyles="mr-1 w-1/2 bg-indigo-800 text-white"
               textStyles="text-white"
+              
             />
             <CustomButtonOutlined
               title={i18n.t('onboardingProfile.slide3.chooseAvatarButton')}
@@ -560,8 +562,8 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
                 <View className="flex-1 justify-center bg-black/50">
                   <View className="bg-white mx-5 p-5 rounded-3xl shadow-lg">
                     <DateTimePicker value={petAge} mode="date" display="spinner" onChange={onPetAgeChange} textColor='black' />
-                    <Button mode="contained" onPress={() => setShowPetAge(false)}>
-                      Готово
+                    <Button mode="contained" buttonColor={BG_COLORS.indigo[800]} onPress={() => setShowPetAge(false)}>
+                      OK
                     </Button>
                   </View>
                 </View>
@@ -581,7 +583,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
           <CustomButtonOutlined
             title={i18n.t('onboardingProfile.slide4.uploadPhotoButton')}
             handlePress={SetPetImage}
-            containerStyles="w-full bg-[#2F00B6]"
+            containerStyles="w-full bg-indigo-800"
             textStyles="text-white"
           />
         </View>
@@ -705,7 +707,7 @@ const styles = StyleSheet.create({
   bottomNavigationContainer: {
     flexDirection: 'row',
     marginBottom: Platform.OS === 'ios' ? 0 : 24,
-    
+    justifyContent: 'space-between',
   },
   navigationButton: {
     width: 130,

@@ -1,13 +1,13 @@
-import { getApps , initializeApp } from 'firebase/app';
-import { getStorage, ref, listAll, getDownloadURL, StorageReference} from 'firebase/storage';
-import { signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, OAuthProvider, UserCredential  } from 'firebase/auth';
+import { getApps, initializeApp } from 'firebase/app';
+import { getStorage, ref, listAll, getDownloadURL, StorageReference } from 'firebase/storage';
+import { signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, OAuthProvider, UserCredential } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getAuth, initializeAuth, getReactNativePersistence, onAuthStateChanged } from "firebase/auth";
-import {getDatabase, onDisconnect, serverTimestamp, ref as refDb, update} from 'firebase/database';
+import { getAuth, initializeAuth, getReactNativePersistence, onAuthStateChanged } from "firebase/auth";
+import { getDatabase, onDisconnect, serverTimestamp, ref as refDb, update } from 'firebase/database';
 import { GoogleAuthProvider, signInWithCredential, OAuthProvider as AppleAuthProvider } from 'firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { getFirestore, doc, setDoc } from 'firebase/firestore'; 
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 
 import i18n from './i18n';
 
@@ -25,7 +25,7 @@ const firebaseConfig = {
 let app;
 let auth;
 
-if (getApps().length===0) {
+if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);
   auth = initializeAuth(app, {
     persistence: getReactNativePersistence(AsyncStorage)
@@ -38,7 +38,7 @@ const database = getDatabase(app);
 const storage = getStorage(app);
 const firestore = getFirestore(app);
 
-export {database, storage };
+export { database, storage };
 
 export const syncPetProfile = async (pet: any): Promise<void> => {
   try {
@@ -57,11 +57,11 @@ export const signInWithEmailAndPassword = async (email: string, password: string
     const userCredential = await firebaseSignInWithEmailAndPassword(auth, email, password);
     // После входа можно проверить подтверждена ли почта:
     if (!userCredential.user.emailVerified) {
-     // Повторно отправляем письмо для подтверждения
-     await resendVerificationEmail();
+      // Повторно отправляем письмо для подтверждения
+      await resendVerificationEmail();
 
-     // Выбрасываем ошибку, которую можно перехватить в UI и показать сообщение пользователю
-     throw new Error( i18n.t('verification')  );
+      // Выбрасываем ошибку, которую можно перехватить в UI и показать сообщение пользователю
+      throw new Error(i18n.t('verification'));
     }
     return userCredential;
   } catch (error) {
@@ -117,25 +117,25 @@ export const signInWithGoogle = async () => {
 };
 
 
-export const signInWithApple = async ():Promise<{name:string, firebCreds: UserCredential}> => {
+export const signInWithApple = async (): Promise<{ name: string, firebCreds: UserCredential }> => {
   try {
-    
+
     // Если expo-apple-authentication поддерживает передачу nonce, можно его передать:
-  const appleCredential = await AppleAuthentication.signInAsync({
-    requestedScopes: [
-      AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-      AppleAuthentication.AppleAuthenticationScope.EMAIL,
-    ],
-    // nonce: rawNonce, // раскомментируйте, если библиотека поддерживает nonce
-  });
+    const appleCredential = await AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      ],
+      // nonce: rawNonce, // раскомментируйте, если библиотека поддерживает nonce
+    });
 
-  console.log(appleCredential);
-  const givenName = appleCredential.fullName?.givenName ?? '';
-  const familyName = appleCredential.fullName?.familyName ?? '';
+    console.log(appleCredential);
+    const fullName = appleCredential.fullName?.givenName ?? '';
 
-     
-      // Сохраните fullName в своей базе данных или state для дальнейшего использования
-   
+
+
+    // Сохраните fullName в своей базе данных или state для дальнейшего использования
+
 
     if (!appleCredential.identityToken) {
       throw new Error('Apple Sign-In не удался: отсутствует identity token.');
@@ -153,7 +153,7 @@ export const signInWithApple = async ():Promise<{name:string, firebCreds: UserCr
 
     const creds = await signInWithCredential(auth, firebaseCredential);
 
-    return { name: givenName, firebCreds: creds };
+    return { name: fullName, firebCreds: creds };
   } catch (error) {
     throw error;
   }

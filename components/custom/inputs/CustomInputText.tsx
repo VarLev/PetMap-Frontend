@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, KeyboardAvoidingView, Platform } from "react-native";
 import { TextInput } from "react-native-paper";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type InputTextProps = {
   value?: string;
@@ -36,9 +37,21 @@ const CustomInputText = ({
       handleChange && handleChange(text);
     }
   };
+  const insets = useSafeAreaInsets();
+  // Если у вас есть фиксированный заголовок, можно прибавить его высоту
+  const headerOffset = 60; // Замените на фактическую высоту вашего заголовка, если требуется
+
+  // Вычисляем отступ для клавиатуры (для iOS учитываем безопасную зону сверху)
+  const keyboardOffset = Platform.OS === "ios" ? insets.top + headerOffset : 0;
+
 
   return (
-    <View className={`w-full ${containerStyles}`}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ?"position" : undefined}
+      keyboardVerticalOffset={keyboardOffset} // настройте отступ по необходимости
+      className={`w-full ${containerStyles}`}
+    >
+    <View className={`w-full`}>
       {label && (
         <Text className={` text-base font-nunitoSansRegular ${labelStyles}`}>
           {label}
@@ -63,6 +76,7 @@ const CustomInputText = ({
         className={`text-base font-nunitoSansRegular ${inputStyles}`}
       />
     </View>
+    </KeyboardAvoidingView>
   );
 };
 

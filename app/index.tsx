@@ -91,9 +91,8 @@ const App = () => {
     try {
       // Вызываем метод, который выполняет авторизацию через Apple с интеграцией Firebase
       const firebaseUserCredential = await signInWithApple();
-      userStore.appleUserName = firebaseUserCredential.name;
       // Передаем полученные данные в логику авторизации вашего userStore
-      const signIn = await userStore.appleSignInUser(firebaseUserCredential.firebCreds);
+      const signIn = await userStore.appleSignInUser(firebaseUserCredential.name, firebaseUserCredential.firebCreds);
       
       if (!signIn[0] && signIn[1])
         router.replace("/(auth)/onboarding");
