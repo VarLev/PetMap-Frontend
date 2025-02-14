@@ -262,6 +262,7 @@ const Layout = observer(() => {
                   headerShown: true,
                   title: i18n.t('ProfileLayout.editUserTitle'),
                   headerTitleStyle: { fontFamily: 'NunitoSans_400Regular' },
+                  headerBackTitle: i18n.t('onboardingProfile.back'),
                 }}
               />
               <Stack.Screen name="(chat)" options={{ headerShown: false }} />

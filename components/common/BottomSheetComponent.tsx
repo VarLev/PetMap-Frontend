@@ -52,7 +52,8 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
         handleStyle={styles.handleStyle}
         footerComponent={footerComponent}
         handleHeight={handleHeight}
-      
+    
+        
       >
         <BottomSheetFlatList
           style={contentStyle}
@@ -63,6 +64,7 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetComponentProps>(
           ListHeaderComponent={renderContent}
           contentContainerStyle={styles.contentContainer}
           refreshControl={refreshControl}
+          
         />
         <View className='' />
       </BottomSheet>

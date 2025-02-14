@@ -487,7 +487,7 @@ const EditPetProfileComponent = observer(
               <View className="flex-row justify-between w-auto">
                 <CustomOutlineInputText
                   keyboardType="numeric"
-                  maxLength={3}
+                  maxLength={4}
                   containerStyles="mt-2 w-1/3 flex-1"
                   label={i18n.t('EditPetProfile.weight')+ ' (kg)'}
                   value={editablePet.weight || ''}

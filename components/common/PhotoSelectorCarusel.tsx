@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Image, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Carousel from 'react-native-reanimated-carousel';
-import type { Photo } from '@/dtos/classes/Photo'; // Убедитесь в правильности пути
+import type { Photo } from '@/dtos/classes/Photo'; // Проверьте корректность пути
 import { LinearGradient } from 'expo-linear-gradient';
 import { IconButton } from 'react-native-paper';
 
@@ -13,7 +13,7 @@ interface ImageWithActionsProps {
   imageUrl?: string;        // Для обратной совместимости
   onReplace: (index: number) => void;
   onDelete: (index: number) => void;
-  onAdd: () => void;        // Новая функция для добавления фото
+  onAdd: () => void;        // Функция для добавления фото
   onChooseAvatar?: () => void;
 }
 
@@ -27,22 +27,29 @@ const PhotoSelector: React.FC<ImageWithActionsProps> = ({
   onAdd,
   onChooseAvatar,
 }) => {
-  // Формируем данные для карусели
-  const carouselData: CarouselItem[] = [
-    ...(photos || []),
-    { id: 'add-button', isAddButton: true } as const
-  ];
+  // Получаем список фотографий
+  let photoList: Photo[] = photos || [];
 
-  // Для обратной совместимости с imageUrl
+  // Обратная совместимость с imageUrl
   if (!photos?.length && imageUrl) {
-    carouselData.unshift({
+    photoList = [{
       id: 'single-photo',
       url: imageUrl,
       isMain: true,
       dateCreated: new Date(),
       userId: '',
       petProfileId: ''
-    });
+    }];
+  }
+
+  // Формируем данные для карусели
+  const carouselData: CarouselItem[] = [
+    ...photoList,
+  ];
+
+  // Если фотографий меньше 5, добавляем кнопку для добавления
+  if (photoList.length < 5) {
+    carouselData.push({ id: 'add-button', isAddButton: true } as const);
   }
 
   return (
@@ -61,9 +68,8 @@ const PhotoSelector: React.FC<ImageWithActionsProps> = ({
         renderItem={({ item, index }) => {
           if ('isAddButton' in item) {
             return (
-              
               <TouchableOpacity 
-                className=' h-[180px] m-2 p-2 border-3 border-dashed rounded-2xl shadow items-center justify-center'
+                className='h-[180px] m-2 p-2 border-3 border-dashed rounded-2xl shadow items-center justify-center'
                 onPress={onAdd}
                 style={{ borderWidth: 3, borderColor: '#D9CBFF' }}
               >
@@ -103,24 +109,25 @@ const PhotoSelector: React.FC<ImageWithActionsProps> = ({
         }}
       />
 
-        <LinearGradient
-          colors={['rgba(255,255,255,1)', 'rgba(255,255,255,0.6)', 'transparent']}
-          locations={[0, 0.4, 1]} // Контроль точек перехода
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={styles.edgeFadeLeft}
-        />
+      <LinearGradient
+        colors={['rgba(255,255,255,1)', 'rgba(255,255,255,0.6)', 'rgba(255,255,255,0)']}
+        locations={[0, 0.4, 1]} // Контроль точек перехода
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        style={styles.edgeFadeLeft}
+      />
 
-        <LinearGradient
-          colors={['transparent', 'rgba(255,255,255,0.6)', 'rgba(255,255,255,1)']}
-          locations={[0, 0.6, 1]}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={styles.edgeFadeRight}
-        />
-      </View>
-    );
-  };
+      <LinearGradient
+        colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.6)', 'rgba(255,255,255,1)']}
+        locations={[0, 0.6, 1]}
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        style={styles.edgeFadeRight}
+        shouldRasterizeIOS={true}
+      />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   imageContainer: {
@@ -131,13 +138,13 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 200,
-    height:200,
+    height: 200,
     borderRadius: 16,
   },
   actionsContainer: {
     position: 'absolute',
     bottom: 0,
-    right:70,
+    right: 70,
     flexDirection: 'row',
     gap: 8,
   },
@@ -159,7 +166,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(191, 168, 255, 0.1)',
-    
   },
   edgeFadeLeft: {
     position: 'absolute',

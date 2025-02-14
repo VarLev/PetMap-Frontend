@@ -2,7 +2,7 @@
 
 import { makeAutoObservable, runInAction } from "mobx";
 import apiClient from "@/hooks/axiosConfig";
-import { IPostPhotos, IPost, INews } from "@/dtos/Interfaces/feed/IPost";
+import { IPostPhotos, IPost } from "@/dtos/Interfaces/feed/IPost";
 import { Post, CommentWithUser } from "@/dtos/classes/feed/Post";
 import { handleAxiosError } from "@/utils/axiosUtils";
 import { getFilesInDirectory, storage } from "@/firebaseConfig";
@@ -16,7 +16,9 @@ class SearchStore {
   posts: IPost[] = [];
   news: string[] = [];
   loading: boolean = false;
-  page: number = 1;
+  postPageSize: number = 20; // размер страницы
+  postHasMore: boolean = true; // флаг, что ещё есть данные
+  postPage : number = 1;
   
 
   constructor() {
@@ -40,37 +42,42 @@ class SearchStore {
   }
 
   incrementPage() {
-    this.page += 1;
+    this.postPage += 1;
   }
 
   resetPage() {
-    this.page = 1;
+    this.postPage = 1;
   }
 
   getUserId() {
     return userStore.currentUser?.id;
   }
 
+  
+
   async fetchPosts() {
     if (this.loading) return;
     this.setLoading(true);
     try {
-      const response = await apiClient.get(`/post` );
+      const response = await apiClient.get(`/post?page=${this.postPage}&pageSize=${this.postPageSize}`);
       
       const fetchedPosts = response.data.map((postData: any) => new Post(postData));
-      if (fetchedPosts.length === 0) {
-        this.setPosts(fetchedPosts);
-        return;
-      }
-      if (this.page === 1) {
-        this.setPosts(fetchedPosts);
-      } else {
-        this.addPosts(fetchedPosts);
-      }
+      runInAction(() => {
+        if (this.postPage === 1) {
+          this.posts = fetchedPosts;
+        } else {
+          this.posts = [...this.posts, ...fetchedPosts];
+        }
+        if (fetchedPosts.length < this.postPageSize) {
+          this.postHasMore = false;
+        }
+      });
     } catch (error) {
       return handleAxiosError(error);
     } finally {
-      this.setLoading(false);
+      runInAction(() => {
+        this.loading = false;
+      });
     }
   }
 

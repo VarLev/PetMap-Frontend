@@ -5,7 +5,6 @@ import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import searchStore from '@/stores/SearchStore';
 import CustomLoadingButton from '@/components/custom/buttons/CustomLoadingButton';
 import i18n from '@/i18n';
-import CustomInputText from '@/components/custom/inputs/CustomInputText';
 
 interface CreatePostProps {
   onClose: () => void; // Метод для закрытия нижнего листа
@@ -18,17 +17,32 @@ const CreatePost: FC<CreatePostProps> = ({ onClose }) => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const handleSelectImage = async () => {
+    // Проверяем, не достигнуто ли максимальное количество изображений
+    if (images.length >= 3) {
+      setSnackbarMessage("Можно загрузить максимум 3 фотографии.");
+      setSnackbarVisible(true);
+      return;
+    }
+
+    // Вычисляем, сколько изображений ещё можно добавить
+    const remaining = 3 - images.length;
+
     let result = await launchImageLibraryAsync({
       mediaTypes: MediaTypeOptions.Images,
       allowsMultipleSelection: true,
-      selectionLimit: 1,
+      selectionLimit: remaining, // Ограничиваем выбор оставшимся количеством
       quality: 0.8,
     });
 
     if (!result.canceled) {
       const selectedImages = result.assets.map(asset => asset.uri);
-      setImages(selectedImages);
+      // Добавляем выбранные изображения и обрезаем массив до 3-х элементов
+      setImages(prevImages => [...prevImages, ...selectedImages].slice(0, 3));
     }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setImages(prevImages => prevImages.filter((_, i) => i !== index));
   };
 
   const handleCreatePost = async () => {
@@ -51,7 +65,7 @@ const CreatePost: FC<CreatePostProps> = ({ onClose }) => {
     setContent('');
     setImages([]);
     setSnackbarVisible(true);
-  }
+  };
 
   return (
     <ScrollView className="flex-1 py-4">
@@ -76,11 +90,18 @@ const CreatePost: FC<CreatePostProps> = ({ onClose }) => {
       {images.length > 0 && (
         <View className="flex-row flex-wrap">
           {images.map((uri, index) => (
-            <Image
-              key={index}
-              source={{ uri }}
-              className="w-24 h-24 mr-2 mb-2"
-            />
+            <View key={index} className="relative mr-2 mb-2">
+              <Image
+                source={{ uri }}
+                className="w-24 h-24"
+              />
+              <IconButton
+                icon="close"
+                size={16}
+                onPress={() => handleRemoveImage(index)}
+                style={{ position: 'absolute', top: 0, right: 0, backgroundColor: 'rgba(255,255,255,0.7)' }}
+              />
+            </View>
           ))}
         </View>
       )}

@@ -722,7 +722,7 @@ const MapBoxMap = observer(() => {
           {isSheetVisible && (
             <BottomSheetComponent
               ref={sheetRef}
-              snapPoints={renderAdvrtForm ? ['60%', '100%'] : ['60%', '100%']}
+              snapPoints={renderAdvrtForm ? ['45%', '100%'] : ['45%', '100%']}
               renderContent={renderContent as any}
               onClose={handleSheetClose}
               enablePanDownToClose={true}

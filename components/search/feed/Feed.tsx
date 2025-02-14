@@ -73,12 +73,16 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  const loadMorePosts = () => {
+  const loadMorePosts = async () => {
     // if (userId) {
     //   searchStore.fetchUserPosts(userId);
     // } else {
     //   searchStore.fetchPosts();
     // }
+    // Если идёт загрузка или данные закончились, запрос не отправляется
+    if (searchStore.loading || !searchStore.postHasMore) return;
+    searchStore.incrementPage();
+    await searchStore.fetchPosts();
   };
 
   const handleSheetClose = async () => {

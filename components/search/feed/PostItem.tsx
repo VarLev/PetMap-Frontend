@@ -12,6 +12,8 @@ import i18n from '@/i18n';
 import ComplaintModal from '@/components/custom/complaint/ComplaintModal';
 import CustomTextComponent from '@/components/custom/text/CustomTextComponent';
 import { fontConfig } from 'react-native-paper/lib/typescript/styles/fonts';
+import ImageModalViewer from '@/components/common/ImageModalViewer';
+import PhotoCarusel from '@/components/common/PhotoCarusel';
 
 type PostCardProps = {
   post: IPost;
@@ -20,7 +22,7 @@ type PostCardProps = {
   isProfileView?: boolean;
 }
 
-const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenById, refresh, isProfileView}) => {
+const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenById, refresh, isProfileView }) => {
   const [hasLiked, setHasLiked] = useState<boolean>(post.hasLiked);
   const [commentText, setCommentText] = useState<string>('');
   const [menuVisible, setMenuVisible] = useState(false);
@@ -88,7 +90,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
     }
     setMenuVisible(true);
   }
-  
+
   const closeMenu = () => setMenuVisible(false);
 
   const deletePost = async (postId: string) => {
@@ -139,18 +141,18 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
         setIsComplaintDone(true);
         setIsComplaintSuccess(false);
       })
-  } 
+  }
 
   const CardItem = useMemo(() => (
     <Card className="mx-2 mt-2 bg-white rounded-2xl">
       <Card.Content>
         <View className="flex-row items-center justify-between mb-1">
-        {isProfileView &&
-          (
-          <Text className="text-gray-500 text-xs">
-            {new Date(post.createdAt).toLocaleDateString()}
-          </Text>
-        )}
+          {isProfileView &&
+            (
+              <Text className="text-gray-500 text-xs">
+                {new Date(post.createdAt).toLocaleDateString()}
+              </Text>
+            )}
           {!isProfileView && (
             <>
               <View className="flex-row items-center">
@@ -167,68 +169,65 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
                 </View>
               </View>
               <View>
-              <Menu
-                contentStyle={{
-                  backgroundColor: "white",
-                  borderRadius: 10,
-                  top: 40
-                }}
-                visible={menuVisible}
-                onDismiss={closeMenu}
-                anchor={<IconButton
-                  icon="dots-vertical"
-                  style={{ margin: 0 }}
-                  onPress={openMenu}
-                  size={20}
-                />}
-              >
-                {isCurrentUser ? (
-                  <Menu.Item
-                    contentStyle={{ display: "flex" }}
-                    onPress={() => deletePost(post.id)}
-                    title={
-                      isLoadingDeletingPost ? (
-                        <ActivityIndicator
-                          size="small"
-                          color="#6200ee"
-                        />
-                      ) : (
-                        i18n.t("feedPosts.deletePost")
-                      )
-                    }
-                  />
+                <Menu
+                  contentStyle={{
+                    backgroundColor: "white",
+                    borderRadius: 10,
+                    top: 40
+                  }}
+                  visible={menuVisible}
+                  onDismiss={closeMenu}
+                  anchor={<IconButton
+                    icon="dots-vertical"
+                    style={{ margin: 0 }}
+                    onPress={openMenu}
+                    size={20}
+                  />}
+                >
+                  {isCurrentUser ? (
+                    <Menu.Item
+                      contentStyle={{ display: "flex" }}
+                      onPress={() => deletePost(post.id)}
+                      title={
+                        isLoadingDeletingPost ? (
+                          <ActivityIndicator
+                            size="small"
+                            color="#6200ee"
+                          />
+                        ) : (
+                          i18n.t("feedPosts.deletePost")
+                        )
+                      }
+                    />
                   ) : (
                     <Menu.Item onPress={handleComplain} title={i18n.t("feedPosts.complainOnPost")} />
                   )
-                }
-              </Menu>
-            </View>
-          </>
+                  }
+                </Menu>
+              </View>
+            </>
           )}
-          
+
           <ComplaintModal
             isVisible={isComplaintModal}
             handleCloseModal={closeComplaintModal}
             handleComplain={(text) => onComplain(text)}
             isComplaintDone={isComplaintDone}
-            isComplaintSuccess={isComplaintSuccess} 
-            contentId={post.id} 
-            contentUserId={post.userId} 
+            isComplaintSuccess={isComplaintSuccess}
+            contentId={post.id}
+            contentUserId={post.userId}
             contentType={'post'}
           />
         </View>
-        <CustomTextComponent text={post.content} maxLines={10} enableTranslation/>
+        <CustomTextComponent text={post.content} maxLines={10} enableTranslation />
         {post.postPhotos.length > 0 && (
-          <View className="rounded-md overflow-hidden">
-            {post.postPhotos.map((image) => (
-              <Image
-                key={image.id}
-                source={{ uri: image.url }}
-                className="w-full aspect-square"
-                resizeMode="cover"
-              />
-            ))}
-          </View>
+          <View className="rounded-2xl overflow-hidden">
+          <PhotoCarusel
+            images={post.postPhotos.map((image) => ({ uri: image.url }))}
+            imageWidth={325}
+            imageHeight={300}
+          />
+        </View>
         )}
       </Card.Content>
       <Card.Actions>
@@ -247,7 +246,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
               className='-ml-0'
               iconColor="gray"
               size={20}
-              onPress={() => handleSheetCommentsOpen(post.id)}/>
+              onPress={() => handleSheetCommentsOpen(post.id)} />
             <Text className="-ml-2 text-sm text-gray-500 font-medium">{commentsCounter}</Text>
           </View>
 
@@ -255,7 +254,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
           <View className="flex-row items-center flex-1 -mr-1">
             <TextInput
               multiline
-              style={{ maxHeight:180, borderBlockColor: '#E4E4E4', borderWidth: 1, borderColor: '#E4E4E4', borderRadius: 5, padding: 5, flex: 1}}
+              style={{ maxHeight: 180, borderBlockColor: '#E4E4E4', borderWidth: 1, borderColor: '#E4E4E4', borderRadius: 5, padding: 5, flex: 1 }}
               placeholder={i18n.t("feedPosts.commentInput")}
               className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-sm"
               onChangeText={(text) => setCommentText(text)}

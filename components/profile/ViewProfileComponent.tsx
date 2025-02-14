@@ -348,14 +348,14 @@ const ViewProfileComponent = observer(
                       🐾 PetShots
                     </Text>
                   </TouchableOpacity>
-                  <TouchableOpacity
+                  {/* <TouchableOpacity
                     style={[styles.tabButton, activeSection === 'comments' && styles.activeTabButton]}
                     onPress={() => setActiveSection('comments')}
                   >
                     <Text className='font-nunitoSansBold text-gray-500' >
                     {i18n.t('UserProfile.reviews')}
                     </Text>
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                 </View>
 
                 {/* Условный рендер контента */}
