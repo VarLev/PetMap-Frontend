@@ -28,7 +28,7 @@ const EditUserPointOnMap: React.FC<CompositeFormProps> = ({ onClose, mapPoint })
   };
 
   const checkErrors = () => {
-    console.log(editablePoint.userPointType);
+
     if (!editablePoint.userPointType || !editablePoint.description) {
       alert(i18n.t('EditUserPoint.errors.missingFields'));
       return false;

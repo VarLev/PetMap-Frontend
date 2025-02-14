@@ -15,8 +15,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { registerForPushNotificationsAsync, savePushTokenToServer, setupNotificationListeners } from '@/hooks/notifications';
 import { isDevice } from 'expo-device';
 
-
-
 // Создаем кастомную тему для react-native-paper
 const customTheme = {
   ...DefaultTheme,
@@ -72,6 +70,7 @@ const customTheme = {
   },
 };
 
+console.log('[Layout] Предотвращаем автоматическое скрытие SplashScreen');
 SplashScreen.preventAutoHideAsync();
 
 const Layout = observer(() => {
@@ -80,103 +79,133 @@ const Layout = observer(() => {
     NunitoSans_700Bold,
   });
 
-  // Для отслеживания AppState
+  // Отслеживание состояния приложения
   const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
   const appStateRef = useRef<AppStateStatus>(AppState.currentState);
 
-  // ========= ОБРАБОТЧИК СМЕНЫ СОСТОЯНИЯ =========
+  // Обработчик изменения состояния приложения
   const handleAppStateChange = (nextAppState: AppStateStatus) => {
-    // Было background → стало active
+    console.log(`[Layout] Смена AppState с ${appStateRef.current} на ${nextAppState}`);
+    const currentUserId = userStore.getCurrentUserId();
+
     if (nextAppState === 'active') {
-      const currentUserId = userStore.getCurrentUserId();
-      // Ставим онлайн
+      console.log('[Layout] Приложение активно. Если есть пользователь, устанавливаем статус online.');
       if (currentUserId) {
-        setUserStatus(currentUserId, true).catch(console.error);
+        setUserStatus(currentUserId, true).catch((err) =>
+          console.error('[Layout] Ошибка при установке статуса online:', err)
+        );
       }
-    }
-    // Было active → стало background
-    else if (appStateRef.current === 'active' && nextAppState.match(/inactive|background/)) {
-      const currentUserId = userStore.getCurrentUserId();
-      // Ставим офлайн
+    } else if (appStateRef.current === 'active' && nextAppState.match(/inactive|background/)) {
+      console.log('[Layout] Приложение переходит в фон. Если есть пользователь, устанавливаем статус offline.');
       if (currentUserId) {
-        setUserStatus(currentUserId, false).catch(console.error);
+        setUserStatus(currentUserId, false).catch((err) =>
+          console.error('[Layout] Ошибка при установке статуса offline:', err)
+        );
       }
     } else if (appStateRef.current === 'active') {
-      const currentUserId = userStore.getCurrentUserId();
-      // Ставим онлайн
+      console.log('[Layout] AppState остается активным. Устанавливаем статус online для пользователя.');
       if (currentUserId) {
-        setUserStatus(currentUserId, true).catch(console.error);
+        setUserStatus(currentUserId, true).catch((err) =>
+          console.error('[Layout] Ошибка при установке статуса online:', err)
+        );
       }
     }
+
     setAppState(nextAppState);
     appStateRef.current = nextAppState;
   };
 
-  // 1) Подписка на AppState (один раз), не зависящая от userId
+  // Подписка на изменения AppState
   useEffect(() => {
+    console.log('[Layout] Подписка на изменения AppState');
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => {
+      console.log('[Layout] Удаление подписки на AppState');
       subscription.remove();
     };
   }, []);
 
-  // 2) Отдельный эффект для onDisconnect, который вызывается при изменении userId
+  // Инициализация onDisconnect при наличии текущего пользователя
   useEffect(() => {
     const currentUserId = userStore.getCurrentUserId();
     if (currentUserId) {
+      console.log('[Layout] Инициализация onDisconnect для пользователя:', currentUserId);
       initOnDisconnect(currentUserId)
-        .then(() => setUserStatus(currentUserId, true)) // При «подключении» ставим онлайн
-        .catch(console.error);
+        .then(() => {
+          console.log('[Layout] onDisconnect и установка статуса online для пользователя:', currentUserId);
+          return setUserStatus(currentUserId, true);
+        })
+        .catch((err) => console.error('[Layout] Ошибка при инициализации onDisconnect:', err));
+    } else {
+      console.log('[Layout] Нет текущего пользователя для инициализации onDisconnect');
     }
   }, [userStore.getCurrentUserId()]);
 
+  // Отслеживание загрузки шрифтов и возможных ошибок
   useEffect(() => {
     if (error) {
-      console.error(error);
+      console.error('[Layout] Ошибка загрузки шрифтов:', error);
     }
     if (fontsLoaded) {
+      console.log('[Layout] Шрифты загружены, скрываем SplashScreen');
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, error]);
 
+  // Настройка пуш-уведомлений и слушателей
   useEffect(() => {
-    let removeListeners = () => {};
-    if (uiStore.isPushTurnedOn) {
-      // Регистрируем устройство для пуш-уведомлений, если оно включено
-      if (isDevice) {
-        registerForPushNotificationsAsync().then(token => {
-          if (token) {
-            // Сохраняем токен на сервере
-            savePushTokenToServer(userStore.currentUser?.id, token);
-          }
-        });
-      }
-      // Настраиваем слушателей уведомлений
-      removeListeners = setupNotificationListeners(
-        notification => {
-          console.log('Получено уведомление:', notification);
-        },
-        response => {
-          console.log('Ответ на уведомление:', response);
-          const chatId = response.notification.request.content.data.chatId;
-          if (chatId) {
-            // Например, переходим к чату
-            router.replace(`/(chat)/${chatId}`);
-            // Можно удалить слушателей, если требуется
-            removeListeners();
-          }
-        }
-      );
+    // Если пользователь не определён, не пытаемся регистрировать пуш-уведомления
+    if (!userStore.currentUser?.id) {
+      console.log('[Layout] Пользователь не определён, пуш-уведомления не регистрируются');
+      return;
     }
-    // При изменении isPushTurnedOn (или размонтировании) убираем слушателей
+  
+    let removeListeners = () => {};
+    console.log('[Layout] Текущий пользователь для пуш-уведомлений:', userStore.currentUser?.id);
+  
+    if (isDevice) {
+      console.log('[Layout] Определено устройство, регистрируем пуш-уведомления');
+      registerForPushNotificationsAsync()
+        .then((token) => {
+          if (token) {
+            console.log('[Layout] Получен push-токен:', token);
+            savePushTokenToServer(userStore.currentUser?.id, token);
+          } else {
+            console.log('[Layout] Push-токен не получен');
+          }
+        })
+        .catch((err) => console.error('[Layout] Ошибка регистрации пуш-уведомлений:', err));
+    } else {
+      console.log('[Layout] Это не устройство, регистрация пуш-уведомлений пропущена');
+    }
+  
+    removeListeners = setupNotificationListeners(
+      (notification) => {
+        console.log('[Layout] Получено уведомление:', notification);
+      },
+      (response) => {
+        console.log('[Layout] Ответ на уведомление:', response);
+        const chatId = response.notification.request.content.data.chatId;
+        if (chatId) {
+          console.log(`[Layout] Переход к чату с id: ${chatId}`);
+          router.replace(`/(chat)/${chatId}`);
+          removeListeners();
+        }
+      }
+    );
+  
     return () => {
+      console.log('[Layout] Удаление слушателей пуш-уведомлений');
       removeListeners();
     };
-  }, [uiStore.isPushTurnedOn]);
+  }, [userStore.currentUser?.id]);
 
- 
+  if (!fontsLoaded && !error) {
+    console.log('[Layout] Шрифты еще не загружены, возвращаем null');
+    return null;
+  }
 
-  if (!fontsLoaded && !error) return null;
+  console.log('[Layout] Рендеринг Layout с resetAppId:', uiStore.resetAppId);
 
   return (
     <View key={uiStore.resetAppId} style={{ flex: 1 }}>
@@ -188,25 +217,28 @@ const Layout = observer(() => {
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
               <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(user)" 
-              options={{ 
-               headerShown: false , 
-                headerTransparent:true, 
-                title:'', headerBackTitle:'' ,
-                headerBackTitleVisible: false,
-                
-              }} />
-              <Stack.Screen name="(pet)/[petId]/index" 
-                options={{ 
+              <Stack.Screen
+                name="(user)"
+                options={{
+                  headerShown: false,
+                  headerTransparent: true,
+                  title: '',
+                  headerBackTitle: '',
+                  headerBackTitleVisible: false,
+                }}
+              />
+              <Stack.Screen
+                name="(pet)/[petId]/index"
+                options={{
                   headerShown: true,
                   headerBackButtonMenuEnabled: true,
-                  headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' },
+                  headerTitleStyle: { fontFamily: 'NunitoSans_400Regular' },
                   headerTransparent: true,
                   headerTitle: '',
                   headerLeft: () => (
-                    <View            
+                    <View
                       style={{
-                        backgroundColor: 'rgba(0,0,0,0.3)', // полупрозрачный черный фон
+                        backgroundColor: 'rgba(0,0,0,0.3)',
                         borderRadius: 30,
                         padding: 5,
                         marginLeft: 8,
@@ -216,17 +248,22 @@ const Layout = observer(() => {
                         justifyContent: 'center',
                       }}
                     >
-                      <IconButton icon={() => <Ionicons name="arrow-back" size={30} color="#fff" />} onPress={router.back}/>
+                      <IconButton
+                        icon={() => <Ionicons name="arrow-back" size={30} color="#fff" />}
+                        onPress={router.back}
+                      />
                     </View>
-                  )
-                }} 
+                  ),
+                }}
               />
-              <Stack.Screen name="(pet)/[petId]/edit" 
-              options={{ 
-                headerShown: true,
-                title: i18n.t('ProfileLayout.editUserTitle'),
-                headerTitleStyle: {fontFamily: 'NunitoSans_400Regular' },
-              }} />
+              <Stack.Screen
+                name="(pet)/[petId]/edit"
+                options={{
+                  headerShown: true,
+                  title: i18n.t('ProfileLayout.editUserTitle'),
+                  headerTitleStyle: { fontFamily: 'NunitoSans_400Regular' },
+                }}
+              />
               <Stack.Screen name="(chat)" options={{ headerShown: false }} />
               <Stack.Screen name="(paywall)/pay" options={{ headerShown: false }} />
             </Stack>

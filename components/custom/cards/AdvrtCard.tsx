@@ -30,12 +30,14 @@ const AdvrtCard: React.FC<AdCardProps> = React.memo(({ ad }) => {
 
   useEffect(() => {
     getPetImage().then((url) => setPetImage(url));
+    ;
     const dist = calculateDistance(
       ad.latitude!,
       ad.longitude!,
       mapStore.currentUserCoordinates[0],
       mapStore.currentUserCoordinates[1]
     );
+    console.log(dist);
     setDistance(dist);
 
     setUserIsOwner(ad.userId === userStore.currentUser?.id);

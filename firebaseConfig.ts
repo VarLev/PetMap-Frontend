@@ -129,7 +129,7 @@ export const signInWithApple = async (): Promise<{ name: string, firebCreds: Use
       // nonce: rawNonce, // раскомментируйте, если библиотека поддерживает nonce
     });
 
-    console.log(appleCredential);
+    
     const fullName = appleCredential.fullName?.givenName ?? '';
 
 

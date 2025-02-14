@@ -84,7 +84,7 @@ const AdvtEditComponent: React.FC<AdvtEditProps> = observer(
     };
 
     const handleSave = async () => {
-      console.log("handleSave");
+
       // if (selectedPets.length === 0) {
       //   showAlert(i18n.t("WalkEditDetails.error"), i18n.t("WalkEditDetails.selectAtLeastOnePet"));
       //   return;

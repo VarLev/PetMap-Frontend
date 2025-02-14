@@ -39,7 +39,7 @@ const PaywallModal = () => {
       await RevenueCatService.setUserEmail(userStore.currentUser?.email??'');
       
       const availablePackages = await RevenueCatService.getOfferings();
-      console.log('availablePackages');
+
       if (availablePackages) {
         setPackages(availablePackages);
       }

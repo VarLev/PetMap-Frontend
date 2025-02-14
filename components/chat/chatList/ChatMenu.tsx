@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { Menu, Button, Switch, TouchableRipple } from "react-native-paper";
-import { FontAwesome6 } from "@expo/vector-icons";
+import { Menu, Button, Switch } from "react-native-paper";
+import { SimpleLineIcons } from "@expo/vector-icons";
 import ChatStore from "@/stores/ChatStore";
 import CustomConfirmAlert from "../../custom/alert/CustomConfirmAlert";
 import MenuItemWrapper from "@/components/custom/menuItem/MunuItemWrapper";
@@ -91,7 +91,7 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
           <View className="overflow-hidden rounded-full">
             <TouchableWithoutFeedback onPress={openMenu} >
               <Button>
-                <FontAwesome6 name="bars-staggered" size={20} color="#212121" />
+                <SimpleLineIcons name='options-vertical' size={20} color="#212121" />
               </Button>
             </TouchableWithoutFeedback>
           </View>
@@ -106,7 +106,7 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
           <MySwitch value={isSwitchOn} />
         </View> */}
   
-        <MenuItemWrapper
+        {/* <MenuItemWrapper
           icon={isBlocked ? "lock-outline" : "lock-open-outline"}
           onPress={() => {
             handleBlock();
@@ -116,7 +116,7 @@ const ChatMenu = ({ chatId, otherUserId }: IChatMenuProps) => {
               ? i18n.t("chat.unblock") 
               : i18n.t("chat.block") 
           }
-        />
+        /> */}
         <MenuItemWrapper
           icon="delete-outline"
           onPress={() => {

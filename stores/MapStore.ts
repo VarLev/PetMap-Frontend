@@ -93,6 +93,11 @@ class MapStore {
     return this.pois;
   }
 
+  setCurrentUserCoordinates(coordinates: [number, number]) {
+    this.currentUserCoordinates = coordinates;
+  }
+  
+
   async fetchUserPOIs([latitude, longitude]: [number, number]): Promise<IPOI[]> {  
     try {
       const response = await apiClient.get('poi', {
@@ -142,7 +147,7 @@ class MapStore {
   async getWalkAdvrtById(walkId: string): Promise<IWalkAdvrtDto> {
     try {
       const response = await apiClient.get(`walkadvrt/walk/${walkId}`);
-      console.log('Get walk advrt by id', response.data);
+
       return response.data as IWalkAdvrtDto;
     } catch (error) {
       return handleAxiosError(error);

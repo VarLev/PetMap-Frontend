@@ -5,7 +5,8 @@ import {Avatar,
   IconButton,
   Menu,
   ActivityIndicator,
-  TouchableRipple
+  TouchableRipple,
+  Divider
 } from 'react-native-paper';
 import { router } from 'expo-router';
 import searchStore from '@/stores/SearchStore';
@@ -81,9 +82,9 @@ const CommentItem: FC<CommentItemProps> = ({ comment, onDelete }) => {
         </TouchableRipple>
         <View style={styles.userDetails}>
           <TouchableRipple onPress={openUserProfile}>
-            <Text style={styles.userName}>{comment.userName}</Text>
+            <Text style={styles.userName} className='font-nunitoSansRegular'>{comment.userName}</Text>
           </TouchableRipple>
-          <Text style={styles.dateText}>
+          <Text style={styles.dateText} className='font-nunitoSansRegular'>
             {new Date(comment.createdAt).toLocaleDateString()}
           </Text>
         </View>
@@ -96,7 +97,8 @@ const CommentItem: FC<CommentItemProps> = ({ comment, onDelete }) => {
     <View className='px-4'>
       
         {commentHeader}
-        <Text style={styles.commentText}>{comment.content}</Text>
+        <Text style={styles.commentText} className='font-nunitoSansRegular'>{comment.content}</Text>
+        <Divider className='mt-2'   />
 
     </View>
   );
@@ -190,6 +192,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   commentHeader: {
+    paddingTop: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -209,7 +212,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   commentText: {
-    marginTop: 8,
+    marginTop: 2,
+    marginLeft: 44,
   },
   inputContainer: {
     paddingHorizontal: 16,

@@ -66,7 +66,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
 
     const handleConfirmInvite = async () => {
       const fmcToken = await getPushTokenFromServer(advrt.userId!);
-      console.log("fmc",fmcToken);
+
       const user: IChatUser = {
         id: advrt.userId!,
         name: advrt.userName!,

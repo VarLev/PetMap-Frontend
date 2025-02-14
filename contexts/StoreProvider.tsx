@@ -49,7 +49,7 @@ export const StoreProvider = ({ children }: StoreProviderProps) => {
       {
        
         userStore.setUser(null);
-        console.log(e);
+
       }
       finally{
       

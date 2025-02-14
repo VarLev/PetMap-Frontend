@@ -45,10 +45,13 @@ const SignUp = () => {
       return;
     }
 
-    if (!isEulaChecked) {
-      setCheckBoxEulaAlert(false);
-      return;
+    if(Platform.OS === 'ios'){
+      if (!isEulaChecked) {
+        setCheckBoxEulaAlert(false);
+        return;
+      }
     }
+    
 
     if (!isChildChecked) {
       setCheckBoxChildAlert(false);

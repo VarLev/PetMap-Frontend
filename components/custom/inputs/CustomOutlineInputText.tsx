@@ -4,6 +4,7 @@ import { TextInputMask } from 'react-native-masked-text';
 import { View, Text } from 'react-native';
 import { BG_COLORS } from '@/constants/Colors';
 
+type AllowedSymbol = 'latin' | 'spanish' | 'cyrillic';
 
 type InputTextProps = {
   value?: string | number;
@@ -17,7 +18,13 @@ type InputTextProps = {
   maxLength?: number;
   onPress?: () => void;
   editable?: boolean;
-  allowOnlyLetters?: boolean; // Новый проп
+  allowOnlyLetters?: boolean; // Флаг для разрешения только букв
+  /** Массив наборов разрешённых символов. Возможные варианты:
+   * - 'latin' — базовая латиница (a-zA-Z)
+   * - 'spanish' — испанские диакритические символы (áéíóúÁÉÍÓÚüÜñÑ)
+   * - 'cyrillic' — кириллица (а-яА-Я)
+   */
+  allowedSymbols?: AllowedSymbol[];
 };
 
 const CustomOutlineInputText = ({
@@ -32,14 +39,35 @@ const CustomOutlineInputText = ({
   maxLength,
   onPress,
   editable = true,
-  allowOnlyLetters = false, // Новый проп со значением по умолчанию
+  allowOnlyLetters = false,
+  // Если не передали массив, по умолчанию разрешаем латиницу, испанские символы и кириллицу
+  allowedSymbols,
 }: InputTextProps) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const handleTextChange = (text: string) => {
     let processedText = text;
     if (allowOnlyLetters) {
-      processedText = text.replace(/[^a-zA-ZА-Яа-я\s]/g, ''); // Удаляем всё, кроме букв и пробелов
+      // Если массив не передан или пустой, используем значение по умолчанию
+      const allowedSet: AllowedSymbol[] =
+        allowedSymbols && allowedSymbols.length ? allowedSymbols : ['latin', 'spanish', 'cyrillic'];
+
+      let allowedChars = '';
+
+      if (allowedSet.includes('latin')) {
+        allowedChars += 'a-zA-Z';
+      }
+      if (allowedSet.includes('spanish')) {
+        // Добавляем испанские символы: áéíóúÁÉÍÓÚüÜñÑ
+        allowedChars += 'áéíóúÁÉÍÓÚüÜñÑ';
+      }
+      if (allowedSet.includes('cyrillic')) {
+        allowedChars += 'а-яА-Я';
+      }
+
+      // Создаём регулярное выражение, которое удаляет всё, что не входит в разрешённый набор и не является пробелом
+      const regex = new RegExp(`[^${allowedChars}\\s]`, 'g');
+      processedText = text.replace(regex, '');
     }
     if (handleChange) {
       handleChange(processedText);
@@ -51,17 +79,20 @@ const CustomOutlineInputText = ({
       {mask ? (
         <View>
           {label && (
-            <Text className='font-nunitoSansRegular' style={{
-              color: BG_COLORS.gray[700],
-              fontFamily: 'NunitoSans_400Regular',
-              fontSize: 12,
-              position: 'absolute',
-              top: 9,
-              left: 8,
-              backgroundColor: '#fff',
-              paddingHorizontal: 4,
-              zIndex: 3001,
-            }}>
+            <Text
+              className="font-nunitoSansRegular"
+              style={{
+                color: BG_COLORS.gray[700],
+                fontFamily: 'NunitoSans_400Regular',
+                fontSize: 12,
+                position: 'absolute',
+                top: 9,
+                left: 8,
+                backgroundColor: '#fff',
+                paddingHorizontal: 4,
+                zIndex: 3001,
+              }}
+            >
               {label}
             </Text>
           )}

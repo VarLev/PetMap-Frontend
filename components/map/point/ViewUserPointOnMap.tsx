@@ -21,7 +21,7 @@ const ViewUserPointOnMap: React.FC<CompositeFormProps> = ({ mapPoint }) => {
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    console.log(i18n.t('ViewUserPoint.loading'));
+
     const fetchData = async () => {
       if (!mapPoint) return;
 

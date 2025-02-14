@@ -180,13 +180,12 @@ class PetStore {
   async deletePetsFromFireStore(user: IUser) {
     try {
       const userPets = user?.petProfiles?.map((pet) => pet.id);
-      console.log('userPets:', userPets);
       if (!userPets || userPets.length === 0) return;
       for (let i of userPets) {
         const folderRef = ref(storage, `pets/${i}/`);
         const result = await listAll(folderRef);
         if (result.items.length === 0) {
-          console.log(`Питомцы ${i} не найдены в FireStore`, folderRef);
+
         }
         for (const fileRef of result.items) {
           await deleteObject(fileRef);

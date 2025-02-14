@@ -110,11 +110,13 @@ class UserStore {
     }
   }
   
-
   setCurrentUserCity(city: string) {
     this.currentCity = city;
   }
 
+  getCurrentUserCity() {
+    return this.currentCity;
+  }
 
   setCurrentUserCountry(country: string) {
     this.currentCountry = country;
@@ -204,7 +206,7 @@ class UserStore {
       });
 
       AsyncStorage.setItem('currentUser', JSON.stringify(this.currentUser))
-        .then(() => console.log('Пользователь сохранен в AsyncStorage'))
+        .then(() => {})
         .catch((error) => console.error('Ошибка сохранения пользователя в AsyncStorage', error));
       
         return this.currentUser;
@@ -226,7 +228,7 @@ class UserStore {
       });
       
       AsyncStorage.setItem('currentUser', JSON.stringify(this.currentUser))
-        .then(() => console.log('Пользователь сохранен в AsyncStorage'))
+        .then(() => {})
         .catch((error) => console.error('Ошибка сохранения пользователя в AsyncStorage', error));
 
 
@@ -310,13 +312,13 @@ class UserStore {
       // Если подписка оформлена на другой Google-аккаунт/другой appUserID,
       // то RevenueCat тут не покажет активный entitlement.
       const customerInfo = await RevenueCatService.setUserId(firebaseUid);
-      console.log('customerInfo',customerInfo.entitlements.all);
+     
       // Проверяем, есть ли активный entitlement 'premium'
       // (Название entitlements задаётся в вашем кабинете RevenueCat)
       const hasPremium = !!customerInfo.entitlements.active['Basic'];
 
       
-      console.log(this.currentUser?.firebaseUid, customerInfo.originalAppUserId);
+    
       runInAction(() => {
         this.setUserHasSubscription(this.currentUser!.isPremium ?? hasPremium);
        
@@ -423,7 +425,7 @@ class UserStore {
           provider: 'google'
         };
       
-        const response = await apiClient.post('/users/register', userRegisterDTO);
+        const response = await apiClient.post('/auth/register', userRegisterDTO);
         const registeredUser = response.data as IUser;
         runInAction(() => {
           this.setUser(registeredUser);
@@ -476,7 +478,7 @@ class UserStore {
           provider: 'apple',
           name: userName
         };
-        const response = await apiClient.post('/users/register', userRegisterDTO);
+        const response = await apiClient.post('/auth/register', userRegisterDTO);
         const registeredUser = response.data as IUser;
         runInAction(() => {
           this.setUser(registeredUser);
@@ -726,13 +728,13 @@ class UserStore {
     try {
       const result = await listAll(storageRef);
       if (result.items.length === 0) {
-        console.log(`Пользователь ${user.email} не найден в FireStore`, storageRef);
+       
       return;
       }
       for (const fileRef of result.items) {
         await deleteObject(fileRef);
       }
-    console.log(`Пользователь ${user.email} удален из Storage`, storageRef);
+ 
       
     }
     catch (error) {
@@ -744,7 +746,7 @@ class UserStore {
   async deleteUserAccount(id: string) {
     try {
       await apiClient.delete(`/users/${id}`)
-      console.log('Пользователь удален из PostgreSQL', id);
+
     } 
     catch (error) {
       return handleAxiosError(error);

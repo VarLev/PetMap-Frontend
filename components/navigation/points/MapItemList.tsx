@@ -100,7 +100,7 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
   };
 
   const handleSheetOpen = async (id:string, mapPointType: MapPointType) => {
-    console.log('Detail press', id);
+
     const point = await mapStore.getMapPointById(id, mapPointType);
     if(mapPointType === MapPointType.Danger){
       const pointDanger = point as IPointDangerDTO;

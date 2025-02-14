@@ -117,7 +117,6 @@ const PointsOfInterestComponent: React.FC<Props> = observer(({ userLocation, onR
     }
   
     if (!isDataLoaded) {
-      console.log('fetchPoints with userLocation', userLocation);
       fetchPoints();
     }
   }, [userLocation]);

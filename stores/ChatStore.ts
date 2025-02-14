@@ -11,6 +11,7 @@ import { getUserStatus } from '@/utils/userUtils';
 import apiClient from '@/hooks/axiosConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from '@/i18n';
+import uiStore from './UIStore';
 
 
 class ChatStore {
@@ -157,11 +158,9 @@ class ChatStore {
       const chatData = data[chatId]; // сырые данные чата
       if (!chatData?.participants) continue;
       const participantIds = Object.keys(chatData.participants);
-      //console.log('Пользователь', userId);
-      //console.log('Участники чата', chatId, participantIds);
+
       if (!participantIds.includes(userId)) {
-        //console.log('Пропускаем чат, так как текущий пользователь не участвует');
-        // пропускаем чат, если этот юзер не участвует
+    
         continue;
       }
   
@@ -229,7 +228,7 @@ class ChatStore {
     const snapshot = await get(chatRef);
     if (snapshot.exists()) {
       // Чат уже есть, возвращаем его
-      console.log(`Чат ${chatId} уже существует`);
+
       return chatId;
     }
   
@@ -267,8 +266,7 @@ class ChatStore {
       // ...
     };
 
-    console.log('currentUserUpdates:', currentUserUpdates);
-    console.log('otherUserUpdates:', otherUserUpdates);
+
   
     // Подготавливаем объект для пакетного обновления
     const updates: Record<string, unknown> = {};
@@ -445,7 +443,6 @@ class ChatStore {
       return;
     }
     const otherUser = otherParticipant.value;
-    console.log('otherParticipant:', otherParticipant);
     // 4. Генерируем ключ сообщения
     const newMessageKey = push(ref(database, `messages/${chatId}`)).key;
     if (!newMessageKey) {
@@ -525,8 +522,6 @@ class ChatStore {
     }
   
     const fcmToken = await this.getOtherUserFmcTokenByUserId(otherUser.id!);
-    console.log('otherUser.id:', otherUser.id);
-    console.log('fcmToken:', fcmToken);
     if (fcmToken) {
       try {
         await sendPushNotification(
@@ -684,7 +679,7 @@ class ChatStore {
       console.error('User is not defined');
       return;
     }
-    console.log('chatId:', chatId);
+
     const chatRef = ref(database, `chats/${chatId}`);
     const messagesRef = ref(database, `messages/${chatId}`);
 

@@ -236,7 +236,6 @@ const MapBoxMap = observer(() => {
     Keyboard.dismiss()
     if (uiStore.getIsSearchAddressExpanded())
       return;
-    console.log('Press detected');
     if (
       currentPointType === MapPointType.Walk ||
       currentPointType === MapPointType.Danger ||
@@ -244,7 +243,7 @@ const MapBoxMap = observer(() => {
       currentPointType === MapPointType.Note
     ) {
       setScrollEnabled(false);
-      console.log(currentPointType);
+
       const coordinates = event.geometry.coordinates;
 
       cameraRef.current?.setCamera({
@@ -353,7 +352,6 @@ const MapBoxMap = observer(() => {
 
   const onMapPointPress = async (mapPoint: IPointEntityDTO) => {
     setSelectedPointId(mapPoint.id);
-    console.log('Map point press:', mapPoint.id);
 
     cameraRef.current?.setCamera({
       centerCoordinate: [mapPoint.longitude!, mapPoint.latitude!],
@@ -368,7 +366,7 @@ const MapBoxMap = observer(() => {
 
     if (mapPoint.mapPointType === MapPointType.Danger) {
       const pointDanger = mapPoint as IPointDangerDTO;
-      console.log('Danger point:', pointDanger);
+
       setRenderContent(<ViewDangerOnMap mapPoint={pointDanger} />);
     } else {
       const pointUser = mapPoint as IPointEntityDTO;
@@ -470,6 +468,7 @@ const MapBoxMap = observer(() => {
   // Функция, которая будет вызываться не чаще, чем раз в секунду
   const throttledLocationUpdate = useCallback(
     throttle((coords: any) => {
+      mapStore.setCurrentUserCoordinates([coords.longitude, coords.latitude]);
       // Если уже есть предыдущие координаты, сравниваем их
       if (lastLocation.current) {
         const distance = calculateDistance(lastLocation.current, coords);
@@ -484,7 +483,8 @@ const MapBoxMap = observer(() => {
         longitude: coords.longitude,
       };
       setUserCoordinates([coords.longitude, coords.latitude]);
-      console.log('User coordinates updated:', coords.latitude, coords.longitude);
+      
+
     }, 1000),
     []
   );

@@ -32,7 +32,6 @@ const DangerCard: React.FC<MapPointDangerCardProps> = ({ mapPointDanger, onDetai
   };
 
   function handleDetailPress(): void {
-    console.log('DangerCard handleDetailPress', mapPointDanger.id);
      onDetailPress(mapPointDanger.id, MapPointType.Danger);
   }
 

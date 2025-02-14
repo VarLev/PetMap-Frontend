@@ -94,7 +94,7 @@ const ViewProfileComponent = observer(
         setRightIcon(null);
         const onlineStatus = await userStore.getUserStatus(otherUser.id);
         const lastOnlineTime = await userStore.getUserLastOnline(otherUser.id);
-        console.log('Статус пользователя:', onlineStatus);
+
         setIsOnline(isCurrentUser || (onlineStatus ?? false));
         setLastOnline(lastOnlineTime || null);
       }
@@ -365,7 +365,7 @@ const ViewProfileComponent = observer(
                     <Text className="text-center text-xs font-nunitoSansBold text-gray-500">{i18n.t('UserProfile.feedEmpty')}</Text>
                   </View>
                 ) : (
-                  !isCurrentUser ? (
+                  isCurrentUser ? (
                     <Text className="pt-10 px-4 text-center text-xs font-nunitoSansBold text-gray-500">
                       {i18n.t('UserProfile.commentsOpen')}
                     </Text>

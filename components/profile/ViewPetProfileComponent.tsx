@@ -108,7 +108,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
         });
         // Обновляем состояние: первым элементом всегда идет thumbnailPhoto
         setPetPhotos([thumbnailPhoto, ...pet.photos || []]);
-        console.log('Pet photos:', petPhotos);
+
       } catch (error) {
         console.error('Ошибка загрузки фотографий питомца: ', error);
       }
@@ -141,7 +141,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
 
   const onDelete = async () => {
     setMenuVisible(false);
-    console.log('Delete pet', pet.id);
+
     await petStore.deletePetProfile(pet.id);
     router.replace(`/(user)/${userStore.currentUser?.id}`);
   };

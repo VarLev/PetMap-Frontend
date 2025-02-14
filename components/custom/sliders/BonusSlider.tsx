@@ -46,7 +46,6 @@ const BonusSlider: React.FC<CustomSliderProps> = ({ min, max, value }) => {
       })
     ).start();
 
-    console.log("Bonuses", value);
 
   }, [value]);
 

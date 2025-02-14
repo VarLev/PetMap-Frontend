@@ -241,6 +241,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 value={editableUser.name || ''}
                 handleChange={(text) => handleChange('name', text)}
                 allowOnlyLetters = {true}
+                allowedSymbols={['spanish', 'latin']}
               />
 
               <View className=" flex-row w-full">

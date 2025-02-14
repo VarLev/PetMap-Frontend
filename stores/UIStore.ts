@@ -224,7 +224,7 @@ class UIStore {
     try {
       await AsyncStorage.setItem(process.env.EXPO_PUBLIC_PUSH_NOTIFICATION_TOGGLE_KEY!, JSON.stringify(isEnabled));
       runInAction(() => {
-        console.log('Push notification toggle state set to:', isEnabled);
+       
         this.isPushTurnedOn = isEnabled;
       });
     } catch (error) {

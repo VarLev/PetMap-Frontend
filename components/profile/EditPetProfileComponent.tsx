@@ -171,7 +171,6 @@ const EditPetProfileComponent = observer(
 
 
     const CheckErrors = () => {
-      console.log(!editablePet.breed)
       if (!editablePet.petName || !birthDate ) {
         // Вывод ошибки, если не все обязательные поля заполнены
         alert(i18n.t('EditPetProfile.errors.missingFields'));

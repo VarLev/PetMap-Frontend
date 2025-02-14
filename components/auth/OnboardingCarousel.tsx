@@ -64,7 +64,7 @@ const OnboardingCarousel: React.FC = () => {
         autoPlay={true}
         data={data}
         onProgressChange={progress}
-        scrollAnimationDuration={2500}
+        scrollAnimationDuration={1000}
         autoPlayInterval={2500}
         renderItem={({ item }) => (
           <View className="items-center h-full flex-col">

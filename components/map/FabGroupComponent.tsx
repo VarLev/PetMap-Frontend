@@ -39,7 +39,7 @@ const FabGroupComponent: React.FC<FabGroupProps> = ({ selectedNumber, setSelecte
 
   const handleActionPress = (action: MapPointType) => {
     setSelectedNumber(action);
-    console.log(`Pressed ${action}`);
+
   };
 
   return (

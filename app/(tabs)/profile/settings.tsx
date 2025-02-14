@@ -58,7 +58,7 @@ const Settings = observer(() => {
   }
 
   const handlePushToggle = (value:boolean) => {
-    console.log(value);
+ 
     setPushNotification(value);
     uiStore.setPushNotificationToggleState(value);
   };
@@ -128,7 +128,7 @@ const deleteAccount = async () => {
   return (
     <View className="flex-1 justify-between p-4">
       <List.Section>
-        <List.Item
+        {/* <List.Item
           title={i18n.t('settings.pushNotifications')}
           right={() => (
             <Switch
@@ -138,7 +138,7 @@ const deleteAccount = async () => {
             />
           )}
           titleStyle={{ fontFamily: "NunitoSans_400Regular" }}
-        />
+        /> */}
 
         <List.Item
           title={i18n.t('settings.appLanguage')}

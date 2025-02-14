@@ -29,9 +29,8 @@ const ChatListItem: React.FC<ChatListItemProps> = ({ item, currentUserId }) => {
   const handleOpenChat = async () => {
     if (!recipient) return;
     router.push(`(chat)/${item.id}`);
-    console.log('item.lastMessageAuthor', item.lastMessageAuthor);
-    console.log('currentUserId', currentUserId);
-    if(item.lastMessageAuthor !== currentUserId)
+  
+    if (item.lastMessageAuthor !== currentUserId)
       await ChatStore.markChatAsRead(item.id);
   };
 
@@ -47,36 +46,37 @@ const ChatListItem: React.FC<ChatListItemProps> = ({ item, currentUserId }) => {
     item.lastCreatedAt > (item.lastSeen || 0);
 
   // Выбираем стили контейнера в зависимости от статуса непрочитанности
-  const containerStyle = `flex-row justify-between p-1 ml-4 items-center h-17 ${
-    isUnread ? 'bg-blue-100' : 'bg-gray-100'
-  } rounded-l-xl`;
+  const containerStyle = `flex-row justify-between p-1 ml-4 items-center h-17 ${isUnread ? 'bg-blue-100' : 'bg-gray-100'
+    } rounded-l-xl`;
 
   return (
-    <TouchableOpacity activeOpacity={0.8} onPress={handleOpenChat}>
+    <>
       <View className={containerStyle}>
-        <View className="flex-row items-center">
-          {/* Аватар с индикатором статуса */}
-          <AvatarWithStatus
-            onPress={handleOpenChat}
-            imageUrl={recipient.avatar}
-            isOnline={recipient.isOnline}
-          />
-          {/* Имя пользователя и последнее сообщение */}
-          <View className="flex-col pl-4">
-            <Text className={`text-[16px] ${isUnread ? 'font-nunitoSansBold' : 'font-nunitoSansRegular'} text-black`}>
-              {shortenName(recipient.name ?? 'PetOwner')}
-            </Text>
-            <Text className={`text-gray-600 ${isUnread ? 'font-nunitoSansBold' : 'font-nunitoSansRegular'}`}>
-              {shortenName(item.lastMessage) || '...'}
-            </Text>
+        <TouchableOpacity activeOpacity={0.8} onPress={handleOpenChat}>
+          <View className="flex-row items-center w-80">
+            {/* Аватар с индикатором статуса */}
+            <AvatarWithStatus
+              onPress={handleOpenChat}
+              imageUrl={recipient.avatar}
+              isOnline={recipient.isOnline}
+            />
+            {/* Имя пользователя и последнее сообщение */}
+            <View className="flex-col pl-4  w-80">
+              <Text className={`text-[16px] ${isUnread ? 'font-nunitoSansBold' : 'font-nunitoSansRegular'} text-black`}>
+                {shortenName(recipient.name ?? 'PetOwner')}
+              </Text>
+              <Text className={`text-gray-600  w-80 ${isUnread ? 'font-nunitoSansBold' : 'font-nunitoSansRegular'}`}>
+                {shortenName(item.lastMessage,35) || '...'}
+              </Text>
+            </View>
           </View>
-        </View>
+        </TouchableOpacity>
         {item.id !== (process.env.EXPO_PUBLIC_AI_CHAT_ID + currentUserId) && (
           <ChatMenu chatId={item.id} otherUserId={recipient.id} />
         )}
       </View>
       <Divider bold className="bg-gray-400" />
-    </TouchableOpacity>
+    </>
   );
 };
 
