@@ -146,7 +146,7 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
             />
           }
         >
-          <CustomPlug text={i18n.t("myWalks.noWalks")} />
+          <CustomPlug text={i18n.t("empty")} />
         </ScrollView>
       ) : (
         <FlatList

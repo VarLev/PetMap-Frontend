@@ -45,7 +45,7 @@ const FabGroupComponent: React.FC<FabGroupProps> = ({ selectedNumber, setSelecte
   return (
     <Portal>
       <FAB.Group
-        style={{ paddingBottom: 90 }}
+        style={{ paddingBottom:20 }}
         open={fabOpen}
         visible={isVisible}
         icon={fabOpen ? 'close' : () => fabIcon} // Используем кастомную иконку или иконку "close" при открытии

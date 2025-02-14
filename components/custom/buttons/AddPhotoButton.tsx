@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, Text, Image, Alert, View } from 'react-native';
+import { TouchableOpacity, Text, Image, Alert, View, Platform } from 'react-native';
 import { Card, IconButton } from 'react-native-paper';
 import { launchCameraAsync, launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
@@ -45,7 +45,7 @@ const AddPhotoButton: React.FC<AddPhotoButtonProps> = ({
               mediaTypes: MediaTypeOptions.Images,
               allowsEditing: true,
               quality: 1,
-              aspect: aspectRatio,
+              aspect: Platform.OS === 'android' ? aspectRatio : undefined,
             });
             if (!result.canceled && result.assets && result.assets.length > 0) {
               const compressedUri = await compressImage(result.assets[0].uri);
@@ -59,9 +59,9 @@ const AddPhotoButton: React.FC<AddPhotoButtonProps> = ({
           onPress: async () => {
             const result = await launchImageLibraryAsync({
               mediaTypes: MediaTypeOptions.Images,
-              allowsEditing: true,
+              allowsEditing:true, // отключаем редактирование на iOS
               quality: 1,
-              aspect: aspectRatio,
+              aspect: Platform.OS === 'android' ? aspectRatio : undefined,
             });
             if (!result.canceled && result.assets && result.assets.length > 0) {
               const compressedUri = await compressImage(result.assets[0].uri);
@@ -80,23 +80,30 @@ const AddPhotoButton: React.FC<AddPhotoButtonProps> = ({
   };
 
   return (
-    <Card
-      className="h-40 border-3 border-dashed bg-white rounded-2xl items-center justify-center"
-      style={{ borderWidth: 1, borderColor: '#bababa' }}
-    >
+    <View className="h-64 w-full border border-dashed border-gray-400 bg-white rounded-2xl items-center justify-center">
       {selectedImage ? (
-        <View>
-          <TouchableOpacity activeOpacity={0.8} className="items-center" onPress={handleAddPhoto}>
-            <Image source={{ uri: selectedImage }} className="w-80 h-40 rounded-2xl" />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          className="w-full h-full items-center"
+          onPress={handleAddPhoto}
+        >
+          <Image
+            source={{ uri: selectedImage }}
+            className="w-full h-full rounded-2xl"
+            resizeMode="cover"
+          />
+        </TouchableOpacity>
       ) : (
-        <TouchableOpacity activeOpacity={0.8} className="items-center" onPress={handleAddPhoto}>
-         <IconButton icon="camera" size={30} className="bg-slate-100 rounded-full" />
-        <Text className="font-nunitoSansRegular">{buttonText}</Text>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          className="items-center"
+          onPress={handleAddPhoto}
+        >
+          <IconButton icon="camera" size={30} className="bg-slate-100 rounded-full" />
+          <Text className="font-nunitoSansRegular">{buttonText}</Text>
         </TouchableOpacity>
       )}
-    </Card>
+    </View>
   );
 };
 

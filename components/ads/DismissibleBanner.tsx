@@ -19,12 +19,12 @@ const DismissibleBanner: React.FC<DismissibleBannerProps> = ({ adSize, uId }) =>
   return (
     <View className="relative items-center justify-center bg-white py-2">
       {/* Кнопка закрытия */}
-      <TouchableOpacity
+      {/* <TouchableOpacity
         className="absolute top-0 right-0 p-1 z-10"
         onPress={() => setIsVisible(false)}
       >
         <Text className="text-3xl text-black">✕</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       
       {/* Баннер */}
       <BannerAd
