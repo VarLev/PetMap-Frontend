@@ -468,6 +468,7 @@ const MapBoxMap = observer(() => {
   // Функция, которая будет вызываться не чаще, чем раз в секунду
   const throttledLocationUpdate = useCallback(
     throttle((coords: any) => {
+      console.log('User location updated:', coords);
       mapStore.setCurrentUserCoordinates([coords.longitude, coords.latitude]);
       // Если уже есть предыдущие координаты, сравниваем их
       if (lastLocation.current) {
@@ -535,7 +536,7 @@ const MapBoxMap = observer(() => {
           {/* Если у нас есть режим карточного вида, отображаем SlidingOverlay */}
           {isCardView && (
             <SlidingOverlay visible={isCardView}>
-              <MapItemList renderType={currentPointType} />
+              <MapItemList renderType={currentPointType} setSnackbarVisible={setSnackbarVisible} />
             </SlidingOverlay>
           )}
 

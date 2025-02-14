@@ -94,7 +94,11 @@ class MapStore {
   }
 
   setCurrentUserCoordinates(coordinates: [number, number]) {
-    this.currentUserCoordinates = coordinates;
+    runInAction(() => {
+      this.currentUserCoordinates = coordinates;
+      console.log('Current user coordinates:', this.currentUserCoordinates);
+    });
+    
   }
   
 
@@ -331,9 +335,16 @@ class MapStore {
     }
   }
 
-  async getPagenatedPointItems(type: MapPointType,page: number, pageSize: number): Promise<IPagedAdvrtDto | IPagedPointDangerDTO | IPagetPointUserDTO> {
+  async getPagenatedPointItems(
+    type: MapPointType,
+    page: number, 
+    pageSize: number
+  ): Promise<IPagedAdvrtDto | IPagedPointDangerDTO | IPagetPointUserDTO> {
     try {
-      const response = await apiClient.get(`map/get-points-paginated?type=${type}&city=${this.getCity()}&page=${page}&pageSize=${pageSize}`);
+      console.log('Cudddddddddddddddrrent user coordinates:', this.currentUserCoordinates);
+      const response = await apiClient.get(
+        `map/get-points-paginated?type=${type}&city=${this.getCity()}&page=${page}&pageSize=${pageSize}&userLatitude=${this.currentUserCoordinates[1]}&userLongitude=${this.currentUserCoordinates[0]}`
+      );
       return response.data;
     } catch (error) {
       return handleAxiosError(error);

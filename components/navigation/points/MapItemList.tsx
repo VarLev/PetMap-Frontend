@@ -18,9 +18,11 @@ import ViewUserPointOnMap from '@/components/map/point/ViewUserPointOnMap';
 
 interface AdvrtsListProps {
   renderType: MapPointType;
+  setSnackbarVisible: (visible: boolean) => void;
+
 }
 
-const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
+const MapItemList: React.FC<AdvrtsListProps> = ({ renderType, setSnackbarVisible}) => {
   const [points, setPoints] = useState<IWalkAdvrtShortDto[] | IPointDangerDTO[]>([]);
   const [page, setPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -39,7 +41,13 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType}) => {
 
     try {
       const newAds = await mapStore.getPagenatedPointItems(renderType, pageNumber, pageSize);
+      if(newAds.data.length === 0){
+        setSnackbarVisible(true);
+      }
+        
+      
       const items = newAds.data;
+      
 
       if (items.length < pageSize) {
         setHasMoreData(false);
