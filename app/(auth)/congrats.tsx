@@ -3,9 +3,7 @@ import React from "react";
 
 function Congratulations() {
   return (
-    <>
-      <CongratulationsScreen />
-    </>
+    <CongratulationsScreen />
   );
 }
 

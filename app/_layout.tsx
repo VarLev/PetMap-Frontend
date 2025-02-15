@@ -70,7 +70,7 @@ const customTheme = {
   },
 };
 
-console.log('[Layout] Предотвращаем автоматическое скрытие SplashScreen');
+
 SplashScreen.preventAutoHideAsync();
 
 const Layout = observer(() => {
@@ -85,25 +85,25 @@ const Layout = observer(() => {
 
   // Обработчик изменения состояния приложения
   const handleAppStateChange = (nextAppState: AppStateStatus) => {
-    console.log(`[Layout] Смена AppState с ${appStateRef.current} на ${nextAppState}`);
+    
     const currentUserId = userStore.getCurrentUserId();
 
     if (nextAppState === 'active') {
-      console.log('[Layout] Приложение активно. Если есть пользователь, устанавливаем статус online.');
+      
       if (currentUserId) {
         setUserStatus(currentUserId, true).catch((err) =>
           console.error('[Layout] Ошибка при установке статуса online:', err)
         );
       }
     } else if (appStateRef.current === 'active' && nextAppState.match(/inactive|background/)) {
-      console.log('[Layout] Приложение переходит в фон. Если есть пользователь, устанавливаем статус offline.');
+      
       if (currentUserId) {
         setUserStatus(currentUserId, false).catch((err) =>
           console.error('[Layout] Ошибка при установке статуса offline:', err)
         );
       }
     } else if (appStateRef.current === 'active') {
-      console.log('[Layout] AppState остается активным. Устанавливаем статус online для пользователя.');
+      
       if (currentUserId) {
         setUserStatus(currentUserId, true).catch((err) =>
           console.error('[Layout] Ошибка при установке статуса online:', err)
@@ -117,7 +117,7 @@ const Layout = observer(() => {
 
   // Подписка на изменения AppState
   useEffect(() => {
-    console.log('[Layout] Подписка на изменения AppState');
+    
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => {
       console.log('[Layout] Удаление подписки на AppState');
@@ -129,10 +129,10 @@ const Layout = observer(() => {
   useEffect(() => {
     const currentUserId = userStore.getCurrentUserId();
     if (currentUserId) {
-      console.log('[Layout] Инициализация onDisconnect для пользователя:', currentUserId);
+      
       initOnDisconnect(currentUserId)
         .then(() => {
-          console.log('[Layout] onDisconnect и установка статуса online для пользователя:', currentUserId);
+          
           return setUserStatus(currentUserId, true);
         })
         .catch((err) => console.error('[Layout] Ошибка при инициализации onDisconnect:', err));
@@ -147,7 +147,7 @@ const Layout = observer(() => {
       console.error('[Layout] Ошибка загрузки шрифтов:', error);
     }
     if (fontsLoaded) {
-      console.log('[Layout] Шрифты загружены, скрываем SplashScreen');
+      
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, error]);
@@ -161,14 +161,13 @@ const Layout = observer(() => {
     }
   
     let removeListeners = () => {};
-    console.log('[Layout] Текущий пользователь для пуш-уведомлений:', userStore.currentUser?.id);
-  
+    
     if (isDevice) {
-      console.log('[Layout] Определено устройство, регистрируем пуш-уведомления');
+      
       registerForPushNotificationsAsync()
         .then((token) => {
           if (token) {
-            console.log('[Layout] Получен push-токен:', token);
+            
             savePushTokenToServer(userStore.currentUser?.id, token);
           } else {
             console.log('[Layout] Push-токен не получен');
@@ -184,10 +183,10 @@ const Layout = observer(() => {
         console.log('[Layout] Получено уведомление:', notification);
       },
       (response) => {
-        console.log('[Layout] Ответ на уведомление:', response);
+        
         const chatId = response.notification.request.content.data.chatId;
         if (chatId) {
-          console.log(`[Layout] Переход к чату с id: ${chatId}`);
+          
           router.replace(`/(chat)/${chatId}`);
           removeListeners();
         }
@@ -195,17 +194,17 @@ const Layout = observer(() => {
     );
   
     return () => {
-      console.log('[Layout] Удаление слушателей пуш-уведомлений');
+      
       removeListeners();
     };
   }, [userStore.currentUser?.id]);
 
   if (!fontsLoaded && !error) {
-    console.log('[Layout] Шрифты еще не загружены, возвращаем null');
+    
     return null;
   }
 
-  console.log('[Layout] Рендеринг Layout с resetAppId:', uiStore.resetAppId);
+ 
 
   return (
     <View key={uiStore.resetAppId} style={{ flex: 1 }}>

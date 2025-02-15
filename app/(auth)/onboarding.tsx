@@ -9,41 +9,28 @@ import PermissionsRequestComponent from '@/components/auth/PermissionsRequestCom
 import uiStore from '@/stores/UIStore';
 
 const Onboarding = () => {
-  const [selectedLanguage, setSelectedLanguage] = React.useState<number>(0);  
+  const [selectedLanguage, setSelectedLanguage] = React.useState<number>(0);
 
   const handleLanguageSelect = async (selectedLanguage: number) => {
-    
     await uiStore.setLanguagei18n(selectedLanguage);
     setSelectedLanguage(selectedLanguage);
-    //await uiStore.setSystemLanguage(selectedLanguage);
   };
 
   const handleComplete = async (user: IUser) => {
     user.systemLanguage = selectedLanguage;
-    user.userLanguages = [selectedLanguage]; 
+    user.userLanguages = [selectedLanguage];
     await userStore.updateUserOnbordingData(user);
     router.replace('/congrats');
   };
 
-  // const handleEscape = async (user: IUser) => {
-  //   await userStore.updateUserOnbordingData(user);
-  //   router.replace('/map');
-  // };
-
   return (
     <BonusProvider>
-      <SafeAreaView className='bg-white h-full'>
-        <PermissionsRequestComponent/>
-          <OnboardingProfile 
-            onLanguageSelect={handleLanguageSelect}
-            onComplete={handleComplete}  
-            onEscape={()=>{}}/>      
+      <SafeAreaView className="bg-white h-full">
+        <PermissionsRequestComponent />
+        <OnboardingProfile onLanguageSelect={handleLanguageSelect} onComplete={handleComplete} onEscape={() => {}} />
       </SafeAreaView>
     </BonusProvider>
   );
 };
 
 export default Onboarding;
-
-
-

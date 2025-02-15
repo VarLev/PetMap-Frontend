@@ -11,6 +11,7 @@ import i18n from '@/i18n'; // Импорт i18n для мультиязычно�
 import { BG_COLORS } from '@/constants/Colors';
 import CustomAlert from '@/components/custom/alert/CustomAlert';
 import SupportAlert from '@/components/custom/alert/SupportAlert';
+import { logSignUp } from '@/services/AnalyticsService';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -45,20 +46,17 @@ const SignUp = () => {
       return;
     }
 
-    if(Platform.OS === 'ios'){
+    if (Platform.OS === 'ios') {
       if (!isEulaChecked) {
         setCheckBoxEulaAlert(false);
         return;
       }
     }
-    
 
     if (!isChildChecked) {
       setCheckBoxChildAlert(false);
       return;
     }
-
-
 
     // 3. Проверка e-mail по регулярному выражению
     const validEmail = validateEmail(email);
@@ -76,11 +74,14 @@ const SignUp = () => {
 
     // 5. Если всё ок — регистрируем
     try {
-      await userStore.registerUser(email, password);
-      setAlertVisible(true);
-      router.replace('/onboarding');
+      const creds = await userStore.registerUser(email, password);
+      if (creds) {
+        logSignUp('email');
+        setAlertVisible(true);
+        router.replace('/onboarding');
+      }
     } catch (error: any) {
-      Alert.alert(i18n.t("signUp.registrationError"), error.message.replace('Firebase:', ''));
+      Alert.alert(i18n.t('signUp.registrationError'), error.message.replace('Firebase:', ''));
     }
   };
 
@@ -229,9 +230,7 @@ const SignUp = () => {
                         setCheckBoxAlert(true);
                       }}
                     />
-                    <TouchableOpacity
-                      onPress={() => Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')}
-                    >
+                    <TouchableOpacity onPress={() => Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')}>
                       <Text variant="titleSmall" className="mb-2 p-0 w-64 font-nunitoSansRegular text-sm underline text-blue-500">
                         {i18n.t('signUp.eulaPolicy')}
                       </Text>
@@ -256,7 +255,11 @@ const SignUp = () => {
                   }}
                 />
                 <TouchableOpacity
-                  onPress={() => Linking.openURL('https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/docs%2FChild%20Safety%20Standards%20Policy.html?alt=media&token=63b78eb6-d952-4234-aaf3-7abd573ed4dc')}
+                  onPress={() =>
+                    Linking.openURL(
+                      'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/docs%2FChild%20Safety%20Standards%20Policy.html?alt=media&token=63b78eb6-d952-4234-aaf3-7abd573ed4dc'
+                    )
+                  }
                 >
                   <Text variant="titleSmall" className="mb-2 p-0 w-64 font-nunitoSansRegular text-sm underline text-blue-500">
                     {i18n.t('signUp.childPolicy')}
@@ -297,11 +300,7 @@ const SignUp = () => {
         image={require('@/assets/images/registration.png')}
         backgroundColor="#E8DFFF"
       />
-      <SupportAlert
-        isVisible={supportAlertVisible}
-        onClose={() => setSupportAlertVisible(false)}
-      />
-
+      <SupportAlert isVisible={supportAlertVisible} onClose={() => setSupportAlertVisible(false)} />
     </SafeAreaView>
   );
 };
