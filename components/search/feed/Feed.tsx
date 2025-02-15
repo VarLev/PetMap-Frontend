@@ -132,7 +132,7 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
           ) : null
         }
         data={userId ? userPosts : searchStore.posts}
-        keyExtractor={(_, index) => index.toString()}
+        keyExtractor={(item) => item.id}
         onEndReached={loadMorePosts}
         onEndReachedThreshold={0.5}
         refreshing={isRefreshing}

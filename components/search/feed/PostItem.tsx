@@ -1,9 +1,9 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import { View, Image, TextInput } from 'react-native';
+import { View, TextInput } from 'react-native';
 import { Text, Menu, ActivityIndicator, TouchableRipple } from 'react-native-paper';
 import { Card, Avatar, IconButton } from 'react-native-paper';
 import { observer } from 'mobx-react-lite';
-import { ICommentWithUser, IPost } from '@/dtos/Interfaces/feed/IPost';
+import { IPost } from '@/dtos/Interfaces/feed/IPost';
 import { BG_COLORS } from '@/constants/Colors';
 import { router } from "expo-router";
 import searchStore from '@/stores/SearchStore';
@@ -11,8 +11,6 @@ import userStore from "@/stores/UserStore";
 import i18n from '@/i18n';
 import ComplaintModal from '@/components/custom/complaint/ComplaintModal';
 import CustomTextComponent from '@/components/custom/text/CustomTextComponent';
-import { fontConfig } from 'react-native-paper/lib/typescript/styles/fonts';
-import ImageModalViewer from '@/components/common/ImageModalViewer';
 import PhotoCarusel from '@/components/common/PhotoCarusel';
 
 type PostCardProps = {
