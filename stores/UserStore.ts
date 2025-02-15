@@ -348,7 +348,7 @@ class UserStore {
       await this.loadUserAfterSignIn();
 
       runInAction(() => {this.setLogged(true);});
-      
+      return userCred;
     } catch (error) 
     {
       return handleAxiosError(error);

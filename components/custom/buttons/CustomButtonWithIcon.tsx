@@ -54,7 +54,8 @@ const CustomButtonWithIcon: React.FC<CustomButtonProps> = ({
         <ActivityIndicator size="small" color="#000" />
       )}
 
-      <Text className={`text-base font-nunitoSansRegular ml-1 ${textStyle}`}>
+      <Text className={`text-base font-nunitoSansRegular h-6 ml-1 ${textStyle}`} style={{ textAlignVertical: 'center', includeFontPadding: false }}
+      >
         {text}
       </Text>
 

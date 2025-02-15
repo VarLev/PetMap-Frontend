@@ -21,8 +21,8 @@ export default function AnimationScreenHolder() {
         source={require('@/assets/animations/screensaver.json')}
         imageAssetsFolder={'assets/animations/images'}
         loop = {false}
-        onAnimationFinish={()=>{router.replace('/map')}}
-        speed={2}
+        onAnimationFinish={()=>{router.replace('/search/news')}}
+        speed={1.5}
       />
       
     </View>
