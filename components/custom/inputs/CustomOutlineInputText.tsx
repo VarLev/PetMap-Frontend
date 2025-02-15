@@ -4,7 +4,7 @@ import { TextInputMask } from 'react-native-masked-text';
 import { View, Text } from 'react-native';
 import { BG_COLORS } from '@/constants/Colors';
 
-type AllowedSymbol = 'latin' | 'spanish' | 'cyrillic';
+type AllowedSymbol = 'latin' | 'spanish' | 'cyrillic' | 'social';
 
 type InputTextProps = {
   value?: string | number;
@@ -50,7 +50,7 @@ const CustomOutlineInputText = ({
     if (allowOnlyLetters) {
       // Если массив не передан или пустой, используем значение по умолчанию
       const allowedSet: AllowedSymbol[] =
-        allowedSymbols && allowedSymbols.length ? allowedSymbols : ['latin', 'spanish', 'cyrillic'];
+        allowedSymbols && allowedSymbols.length ? allowedSymbols : ['latin', 'spanish', 'cyrillic', 'social'];
 
       let allowedChars = '';
 
@@ -64,9 +64,13 @@ const CustomOutlineInputText = ({
       if (allowedSet.includes('cyrillic')) {
         allowedChars += 'а-яА-Я';
       }
+      if (allowedSet.includes('social')) {
+        // Добавляем символы для социальных сетей: @#_-
+        allowedChars += '._-';
+      }
 
       // Создаём регулярное выражение, которое удаляет всё, что не входит в разрешённый набор и не является пробелом
-      const regex = new RegExp(`[^${allowedChars}\\s]`, 'g');
+      const regex = new RegExp(`[^${allowedChars}\\s-]`, 'g');
       processedText = text.replace(regex, '');
     }
     if (handleChange) {

@@ -145,33 +145,7 @@ const ViewProfileComponent = observer(
             <View style={{ alignItems: 'center' }}>
               <StatusBar backgroundColor="transparent" translucent />
               <View className="relative w-full aspect-square">
-               
                 <Image source={{ uri: user?.thumbnailUrl! }} className="w-full h-full" />
-                
-                {/* <View style={styles.iconContainer} className={`${isIOS ? 'mt-8' : 'mt-0'}`}>
-                  {!isCurrentUser ? (
-                    <View style={styles.iconContainer} className={` -mr-2`}>
-                      <IconButton icon="message-processing-outline" size={30} iconColor={BG_COLORS.indigo[700]} style={styles.menuButton}  onPress={openChat} />
-                    </View>
-                  ):
-                   (
-                    <Menu
-                      style={{ paddingTop: 100 }}
-                      visible={menuVisible}
-                      onDismiss={closeMenu}
-                      contentStyle={{ backgroundColor: 'white' }}
-                      anchor={<IconButton icon="menu" size={30} iconColor={BG_COLORS.indigo[700]} style={styles.menuButton} onPress={openMenu} />}
-                    >
-                      <MenuItemWrapper
-                        onPress={() => {
-                          onEdit();
-                          closeMenu();
-                        } }
-                        title={i18n.t('UserProfile.edit')}
-                        icon="pencil-outline" />
-                    </Menu>
-                  )}
-                </View> */}
               </View>
             </View>
           );

@@ -23,6 +23,8 @@ import { petCatUriImage, petUriImage } from '@/constants/Strings';
 import PhotoSelectorCarusel from '../common/PhotoSelectorCarusel';
 import { Photo } from '@/dtos/classes/Photo';
 import CustomPriceInput from '../custom/inputs/CustomPriceInput';
+import { FontAwesome } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 const TASK_IDS = {
   petEdit: {
@@ -50,11 +52,11 @@ const EditPetProfileComponent = observer(
     const [editablePet, setEditablePet] = useState<Pet>(new Pet({ ...pet }));
     const [petMainPhoto, setPetMainPhoto] = useState<Photo>(
       new Photo({
-        url: pet.thumbnailUrl || (pet.animalType === 1 ? petCatUriImage : petUriImage)
+        url: pet.thumbnailUrl || (pet.animalType === 1 ? petCatUriImage : petUriImage),
       })
     );
     const [petOthePhotos, setPetOthePhotos] = useState<Photo[]>(pet.photos || []);
-    
+
     // Состояние для комбинированного массива фотографий: первым идёт petMainPhoto, далее остальные
     const [petAllPhoto, setPetAllPhoto] = useState<Photo[]>([petMainPhoto, ...petOthePhotos]);
 
@@ -73,6 +75,7 @@ const EditPetProfileComponent = observer(
     const initialDate =
       editablePet.birthDate instanceof Date && !isNaN(editablePet.birthDate.getTime()) ? editablePet.birthDate : new Date();
     const [age, setAge] = useState<Date>(initialDate);
+    const [hasSubscription, setHasSubscription] = useState(userStore.getUserHasSubscription() ?? false);
 
     // Получаем массив статусов (например, ["С хозяином", "Потерялся", "Пристраивается", "Вяжется", "Продается"])
     const petStatusTags = i18n.t('petStatus') as string[];
@@ -145,7 +148,6 @@ const EditPetProfileComponent = observer(
       description: 'photo',
     });
 
-    
     // Debugging useEffect to see the changes in editablePet
     useEffect(() => {
       setFriendly(editablePet.friendliness ?? 0);
@@ -169,9 +171,8 @@ const EditPetProfileComponent = observer(
       });
     };
 
-
     const CheckErrors = () => {
-      if (!editablePet.petName || !birthDate ) {
+      if (!editablePet.petName || !birthDate) {
         // Вывод ошибки, если не все обязательные поля заполнены
         alert(i18n.t('EditPetProfile.errors.missingFields'));
         return false;
@@ -199,8 +200,8 @@ const EditPetProfileComponent = observer(
       const resp = await petStore.uploadPetThumbnail(editablePet);
       editablePet.thumbnailUrl = resp;
       editablePet.birthDate = parseStringToDate(birthDate);
-      editablePet.price = parseFloat(editablePet.price?.toString().replace(' ','') || '0');
-      
+      editablePet.price = parseFloat(editablePet.price?.toString().replace(' ', '') || '0');
+
       try {
         await petStore.updatePetProfile(editablePet);
         await userStore.updateUserJobs(currentUser.id, completedJobs);
@@ -221,8 +222,8 @@ const EditPetProfileComponent = observer(
       editablePet.thumbnailUrl = resp;
       editablePet.birthDate = parseStringToDate(birthDate);
       editablePet.animalType = editablePet.animalType || 0;
-      editablePet.price = parseFloat(editablePet.price?.toString().replace(' ','') || '0');
-      
+      editablePet.price = parseFloat(editablePet.price?.toString().replace(' ', '') || '0');
+
       try {
         const pet = await petStore.createNewPetProfile(editablePet);
 
@@ -292,8 +293,6 @@ const EditPetProfileComponent = observer(
       }
     };
 
-   
-
     // 1. Добавление новой фотографии
     const handleAddPhoto = async () => {
       try {
@@ -302,17 +301,16 @@ const EditPetProfileComponent = observer(
           const newPhoto = new Photo({
             url: image,
             userId: editablePet.userId,
-            petProfileId: editablePet.id
+            petProfileId: editablePet.id,
           });
           // Добавляем новую фотографию в дополнительные
-          setPetOthePhotos(prev => [...prev, newPhoto]);
+          setPetOthePhotos((prev) => [...prev, newPhoto]);
           await petStore.uploadPetPhoto(newPhoto);
         }
       } catch (error) {
         console.error('Ошибка при добавлении фото:', error);
       }
     };
-
 
     // 2. Замена существующей фотографии
     const handleReplacePhoto = async (index: number) => {
@@ -323,7 +321,7 @@ const EditPetProfileComponent = observer(
             // Замена главного фото (thumbnail)
             const updatedThumbnail = new Photo({ url: image });
             setPetMainPhoto(updatedThumbnail);
-            setEditablePet(prev => ({ ...prev, thumbnailUrl: image }));
+            setEditablePet((prev) => ({ ...prev, thumbnailUrl: image }));
           } else {
             // Замена одной из дополнительных фотографий
             const photoIndex = index - 1;
@@ -331,10 +329,10 @@ const EditPetProfileComponent = observer(
               const updatedPhotos = [...petOthePhotos];
               updatedPhotos[photoIndex] = new Photo({
                 ...updatedPhotos[photoIndex],
-                url: image
+                url: image,
               });
               setPetOthePhotos(updatedPhotos);
-              setEditablePet(prev => ({ ...prev, photos: updatedPhotos }));
+              setEditablePet((prev) => ({ ...prev, photos: updatedPhotos }));
             }
           }
         }
@@ -351,24 +349,24 @@ const EditPetProfileComponent = observer(
         const defaultUrl = editablePet.animalType === 1 ? petCatUriImage : petUriImage;
         const defaultThumbnail = new Photo({ url: defaultUrl });
         setPetMainPhoto(defaultThumbnail);
-        setEditablePet(prev => ({ ...prev, thumbnailUrl: defaultUrl }));
+        setEditablePet((prev) => ({ ...prev, thumbnailUrl: defaultUrl }));
       } else {
         // Если удаляется фотография из дополнительных,
         // индекс в массиве дополнительных фотографий = index - 1
-        
+
         const photoIndex = index - 1;
         await petStore.deletePetPhoto(petOthePhotos[photoIndex].id!);
-        
+
         if (petOthePhotos.length > photoIndex) {
           const updatedPhotos = [...petOthePhotos];
           updatedPhotos.splice(photoIndex, 1);
           setPetOthePhotos(updatedPhotos);
-          setEditablePet(prev => ({ ...prev, photos: updatedPhotos }));
+          setEditablePet((prev) => ({ ...prev, photos: updatedPhotos }));
         }
       }
     };
     // ============================================================================
-    
+
     return (
       <GestureHandlerRootView className="h-full bg-white">
         <FlatList
@@ -382,8 +380,8 @@ const EditPetProfileComponent = observer(
                   onReplace={SetPetPhoto}
                   onDelete={DeletePetPhoto}
                 /> */}
-                <PhotoSelectorCarusel 
-                  photos={petAllPhoto} 
+                <PhotoSelectorCarusel
+                  photos={petAllPhoto}
                   onReplace={(index) => handleReplacePhoto(index)}
                   onDelete={(index) => handleDeletePhoto(index)}
                   onAdd={handleAddPhoto}
@@ -406,11 +404,11 @@ const EditPetProfileComponent = observer(
               {editablePet.petStatus === 4 && (
                 <View className="mt-4">
                   <CustomPriceInput
-                     label={i18n.t('EditPetProfile.petStatusPrice') + ' (ARS$)'}
-                     value={editablePet.price || ''}
-                     handleChange={(text) => handleFieldChange('price', text)}
-                     currency={'ARS$'} // например, для аргентинского "ARS$"
-                     keyboardType="decimal-pad"
+                    label={i18n.t('EditPetProfile.petStatusPrice') + ' (ARS$)'}
+                    value={editablePet.price || ''}
+                    handleChange={(text) => handleFieldChange('price', text)}
+                    currency={'ARS$'} // например, для аргентинского "ARS$"
+                    keyboardType="decimal-pad"
                   />
                 </View>
               )}
@@ -441,7 +439,15 @@ const EditPetProfileComponent = observer(
                 <Modal transparent={true} animationType="fade">
                   <View className="flex-1 justify-center bg-black/50">
                     <View className="bg-white mx-5 p-5 rounded-3xl shadow-lg">
-                      <DateTimePicker style={{width:'100%'}} value={age} mode="date" display="spinner" onChange={onAgeChange} maximumDate={new Date()} textColor='black' />
+                      <DateTimePicker
+                        style={{ width: '100%' }}
+                        value={age}
+                        mode="date"
+                        display="spinner"
+                        onChange={onAgeChange}
+                        maximumDate={new Date()}
+                        textColor="black"
+                      />
                       <Button mode="contained" onPress={() => setShowPetAge(false)}>
                         {i18n.t('ok')}
                       </Button>
@@ -474,7 +480,8 @@ const EditPetProfileComponent = observer(
                 listMode="MODAL"
               />
 
-              <CustomDropdownList key={editablePet.animalType}
+              <CustomDropdownList
+                key={editablePet.animalType}
                 tags={editablePet.animalType === 1 ? (i18n.t('tags.breedsCat') as string[]) : (i18n.t('tags.breedsDog') as string[])}
                 label={i18n.t('EditPetProfile.breed')}
                 placeholder={i18n.t('EditPetProfile.selectBreed')}
@@ -489,14 +496,14 @@ const EditPetProfileComponent = observer(
                   keyboardType="numeric"
                   maxLength={4}
                   containerStyles="mt-2 w-1/3 flex-1"
-                  label={i18n.t('EditPetProfile.weight')+ ' (kg)'}
+                  label={i18n.t('EditPetProfile.weight') + ' (kg)'}
                   value={editablePet.weight || ''}
                   handleChange={(text) => {
                     // Заменяем запятые на точки и удаляем лишние символы
                     let processedText = text
                       .replace(/[^0-9,]/g, '') // Разрешаем только цифры и запятую
                       .replace(/(,.*),/g, '$1'); // Убираем лишние запятые, если их больше одной
-                
+
                     handleFieldChange('weight', processedText);
                   }}
                 />
@@ -586,22 +593,38 @@ const EditPetProfileComponent = observer(
                 />
               </View>
 
-              {/* <View>
+              <View>
                 <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">{i18n.t('EditPetProfile.socialMedia')}</Text>
+                {!hasSubscription && (
+                  <IconButton
+                    className="-ml-2"
+                    size={20}
+                    icon={() => <FontAwesome name="diamond" size={20} color="#8F00FF" />}
+                    onPress={() => router.push('/(paywall)/pay')}
+                  />
+                )}
                 <CustomOutlineInputText
-                  containerStyles="mt-4"
+                  containerStyles={`mt-4 ${hasSubscription ? 'bg-white' : 'bg-gray-200'}`}
                   label="Instagram"
+                  placeholder='username'
                   value={editablePet.instagram || ''}
                   handleChange={(text) => handleFieldChange('instagram', text)}
+                  editable={hasSubscription}
+                  maxLength={30}
+                  allowedSymbols={['social']}
                 />
                 <CustomOutlineInputText
-                  containerStyles="mt-4"
+                  containerStyles={`mt-4 ${hasSubscription ? 'bg-white' : 'bg-gray-200'}`}
                   label="Facebook"
+                  placeholder='username'
                   value={editablePet.facebook || ''}
                   handleChange={(text) => handleFieldChange('facebook', text)}
+                  editable={hasSubscription}
+                  maxLength={50}
+                  allowedSymbols={['social']}
                 />
                 <Divider className="mt-6" />
-              </View> */}
+              </View>
 
               <View className="mt-4">
                 {isNewPet ? (

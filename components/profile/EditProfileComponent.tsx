@@ -55,6 +55,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
   const initialDate =
     editableUser.birthDate instanceof Date && !isNaN(editableUser.birthDate.getTime()) ? editableUser.birthDate : new Date();
   const [age, setAge] = useState<Date>(initialDate);
+  const [hasSubscription, setHasSubscription] = useState(userStore.getUserHasSubscription() ?? false);
 
   const { completedJobs } = useContext(BonusContex)!;
 
@@ -240,7 +241,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 label={i18n.t('EditProfileComponent.nameLabel')}
                 value={editableUser.name || ''}
                 handleChange={(text) => handleChange('name', text)}
-                allowOnlyLetters = {true}
+                allowOnlyLetters={true}
                 allowedSymbols={['spanish', 'latin']}
               />
 
@@ -256,10 +257,17 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
               </View>
 
               {showUserAge && Platform.OS === 'ios' && (
-                <Modal transparent={true} >
+                <Modal transparent={true}>
                   <View className="flex-1 justify-center bg-black/50">
                     <View className="bg-white mx-5 p-5 rounded-3xl shadow-lg">
-                      <DateTimePicker value={age} mode="date" display="spinner" onChange={onAgeChange} maximumDate={new Date()} textColor='black' />
+                      <DateTimePicker
+                        value={age}
+                        mode="date"
+                        display="spinner"
+                        onChange={onAgeChange}
+                        maximumDate={new Date()}
+                        textColor="black"
+                      />
                       <Button mode="contained" onPress={() => setShowUserAge(false)}>
                         {i18n.t('ok')}
                       </Button>
@@ -289,7 +297,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 onChange={(text) => handleChange('gender', text)}
                 listMode="MODAL"
               />
-             
+
               <CustomOutlineInputText
                 containerStyles="mt-4"
                 label={i18n.t('EditProfileComponent.descriptionLabel')}
@@ -313,8 +321,8 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
             <Divider className="mt-4" />
             <View className="p-2">
               <Text className="text-lg font-nunitoSansBold text-indigo-800">{i18n.t('EditProfileComponent.mainInfoTitle')}</Text>
-              <CustomDropDownCityList 
-                initialSelectedTag={editableUser.location || ''} 
+              <CustomDropDownCityList
+                initialSelectedTag={editableUser.location || ''}
                 label={i18n.t('EditProfileComponent.locationLabel')}
                 onChange={(text) => handleChange('location', text)}
               />
@@ -353,31 +361,43 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
             <View className="p-2">
               <View className="flex-row items-center">
                 <Text className="text-lg font-nunitoSansBold text-indigo-800 pr-2 ">{i18n.t('EditProfileComponent.socialMediaTitle')}</Text>
-                <IconButton className='-ml-2' size={20} icon={() => <FontAwesome name="diamond" size={20} color="#8F00FF" />} onPress={() => router.push('/(paywall)/pay')}/>
+                {!hasSubscription && (
+                  <IconButton
+                    className="-ml-2"
+                    size={20}
+                    icon={() => <FontAwesome name="diamond" size={20} color="#8F00FF" />}
+                    onPress={() => router.push('/(paywall)/pay')}
+                  />
+                )}
               </View>
-              
 
               <CustomOutlineInputText
-                containerStyles="mt-4 bg-gray-200"
+                containerStyles={`mt-4 ${hasSubscription ? 'bg-white' : 'bg-gray-200'}`}
                 label={i18n.t('EditProfileComponent.instagramLabel')}
+                placeholder='username'
                 value={editableUser.instagram || ''}
                 handleChange={(text) => handleChange('instagram', text)}
-                editable={false}
+                editable={hasSubscription}
+                maxLength={30}
+                allowOnlyLetters={true}
+                allowedSymbols={['social']}
               />
               <CustomOutlineInputText
-                containerStyles="mt-4 bg-gray-200"
+                containerStyles={`mt-4 ${hasSubscription ? 'bg-white' : 'bg-gray-200'}`}
                 label={i18n.t('EditProfileComponent.facebookLabel')}
+                placeholder='username'
                 value={editableUser.facebook || ''}
                 handleChange={(text) => handleChange('facebook', text)}
-                editable={false}
+                editable={hasSubscription}
+                maxLength={50}
+                allowedSymbols={['social']}
               />
             </View>
             <View className="p-2">
               <CustomLoadingButton title={i18n.t('EditProfileComponent.saveButton')} handlePress={handleSave} />
               <CustomButtonOutlined title={i18n.t('EditProfileComponent.cancelButton')} handlePress={onCancel} />
-
             </View>
-            
+
             <View className="h-32" />
           </View>
         }
