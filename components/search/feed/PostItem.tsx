@@ -12,15 +12,19 @@ import i18n from '@/i18n';
 import ComplaintModal from '@/components/custom/complaint/ComplaintModal';
 import CustomTextComponent from '@/components/custom/text/CustomTextComponent';
 import PhotoCarusel from '@/components/common/PhotoCarusel';
+import WebView from 'react-native-webview';
+import { randomUUID } from 'expo-crypto';
 
 type PostCardProps = {
   post: IPost;
   handleSheetCommentsOpenById: (postId: string) => void;
   refresh: boolean;
   isProfileView?: boolean;
+  setCurrentPlayingVideo: (videoId: string) => void;
+  currentPlayingVideo: string;
 }
 
-const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenById, refresh, isProfileView }) => {
+const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenById, refresh, isProfileView,currentPlayingVideo, setCurrentPlayingVideo }) => {
   const [hasLiked, setHasLiked] = useState<boolean>(post.hasLiked);
   const [commentText, setCommentText] = useState<string>('');
   const [menuVisible, setMenuVisible] = useState(false);
@@ -32,6 +36,8 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
   const [isComplaintDone, setIsComplaintDone] = useState(false);
   const [isComplaintSuccess, setIsComplaintSuccess] = useState(false);
 
+  const [webViewRefresherKey, setWebViewRefresherKey] = useState<string>('');
+
   useEffect(() => {
     (async () => {
       const postComments = await searchStore.fetchGetComments(post.id);
@@ -40,7 +46,6 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
       setHasLiked(hasLiked);
       setCommentsCounter(postComments.length);
     })();
-
   }, [refresh]);
 
   const memoDepends = [
@@ -54,13 +59,16 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
     isComplaintModal,
     isComplaintDone,
     isComplaintSuccess,
-    commentsCounter
-  ]
+    commentsCounter,
+    currentPlayingVideo
+  ];
 
   const updateLikes = async () => {
     const updatedLikesCount = await searchStore.fetchLikesCount(post.id);
     setLikesCounter(updatedLikesCount);
   }
+
+  
 
   const toggleLike = async () => {
     try {
@@ -141,6 +149,13 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
       })
   }
 
+  const onVideoPress = () => {
+    // Обновляем глобальное состояние
+    setCurrentPlayingVideo(post.id);
+    // Обновляем ключ WebView для перерендеривания, если необходимо
+    setWebViewRefresherKey(randomUUID());
+  };
+
   const CardItem = useMemo(() => (
     <Card className="mx-2 mt-2 bg-white rounded-2xl">
       <Card.Content>
@@ -217,15 +232,27 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
             contentType={'post'}
           />
         </View>
-        <CustomTextComponent text={post.content} maxLines={10} enableTranslation />
+        {post.content.length>0 && (<CustomTextComponent text={post.content} maxLines={10} enableTranslation />)}
         {post.postPhotos.length > 0 && (
-          <View className="rounded-2xl overflow-hidden">
-          <PhotoCarusel
-            images={post.postPhotos.map((image) => ({ uri: image.url }))}
-            imageWidth={325}
-            imageHeight={300}
-          />
-        </View>
+          <View className="rounded-2xl">
+            {post.postPhotos.length === 1 && post.postPhotos[0].url.includes('iframe.mediadelivery.net') ? (
+              <WebView
+               key={webViewRefresherKey}
+                source={{ uri: currentPlayingVideo === post.id ? post.postPhotos[0].url : `https://vz-cb33998c-f18.b-cdn.net/${post.postPhotos[0].id}/preview.webp` }}
+                style={{ width: 320, height: 180 }}
+                allowsFullscreenVideo={true}
+                className='bg-white rounded-2xl overflow-hidden'
+                refresherKey={webViewRefresherKey}
+                onTouchEndCapture={() =>{ onVideoPress()} }
+                />
+            ) : (
+              <PhotoCarusel
+                images={post.postPhotos.map((image) => ({ uri: image.url }))}
+                imageWidth={325}
+                imageHeight={300}
+              />
+            )}
+          </View>
         )}
       </Card.Content>
       <Card.Actions>
@@ -269,7 +296,7 @@ const PostCard: FC<PostCardProps> = observer(({ post, handleSheetCommentsOpenByI
         </View>
       </Card.Actions>
     </Card>
-  ), [...memoDepends])
+  ), [...memoDepends]);
 
   return CardItem;
 });

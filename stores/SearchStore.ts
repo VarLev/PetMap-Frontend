@@ -1,16 +1,17 @@
 // FeedStore.ts
 
-import { makeAutoObservable, runInAction } from "mobx";
-import apiClient from "@/hooks/axiosConfig";
-import { IPostPhotos, IPost } from "@/dtos/Interfaces/feed/IPost";
-import { Post, CommentWithUser } from "@/dtos/classes/feed/Post";
-import { handleAxiosError } from "@/utils/axiosUtils";
-import { getFilesInDirectory, storage } from "@/firebaseConfig";
-import { randomUUID } from "expo-crypto";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { compressImage } from "@/utils/utils";
-import userStore from "./UserStore";
-import i18n from "@/i18n";
+import { makeAutoObservable, runInAction } from 'mobx';
+import apiClient from '@/hooks/axiosConfig';
+import { IPostPhotos, IPost } from '@/dtos/Interfaces/feed/IPost';
+import { Post, CommentWithUser } from '@/dtos/classes/feed/Post';
+import { handleAxiosError } from '@/utils/axiosUtils';
+import { getFilesInDirectory, storage } from '@/firebaseConfig';
+import { randomUUID } from 'expo-crypto';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { compressImage } from '@/utils/utils';
+import userStore from './UserStore';
+import i18n from '@/i18n';
+import axios from 'axios';
 
 class SearchStore {
   posts: IPost[] = [];
@@ -18,8 +19,7 @@ class SearchStore {
   loading: boolean = false;
   postPageSize: number = 20; // размер страницы
   postHasMore: boolean = true; // флаг, что ещё есть данные
-  postPage : number = 1;
-  
+  postPage: number = 1;
 
   constructor() {
     makeAutoObservable(this);
@@ -53,14 +53,12 @@ class SearchStore {
     return userStore.currentUser?.id;
   }
 
-  
-
   async fetchPosts() {
     if (this.loading) return;
     this.setLoading(true);
     try {
       const response = await apiClient.get(`/post?page=${this.postPage}&pageSize=${this.postPageSize}`);
-      
+
       const fetchedPosts = response.data.map((postData: any) => new Post(postData));
       runInAction(() => {
         if (this.postPage === 1) {
@@ -83,8 +81,8 @@ class SearchStore {
 
   async getUserPosts(userId: string): Promise<Post[] | [] | void> {
     try {
-      const response = await apiClient.get(`/post/owner/${userId}` );
-      
+      const response = await apiClient.get(`/post/owner/${userId}`);
+
       const fetchedPosts = response.data.map((postData: any) => new Post(postData));
       if (fetchedPosts.length === 0) {
         return [];
@@ -92,7 +90,7 @@ class SearchStore {
       return fetchedPosts;
     } catch (error) {
       return handleAxiosError(error);
-    } 
+    }
   }
 
   async likePost(postId: string): Promise<boolean> {
@@ -143,9 +141,8 @@ class SearchStore {
       runInAction(() => {
         if (post) {
           post.comments.push(newComment);
-        }; // Обновление в рамках действия
+        } // Обновление в рамках действия
       });
-
     } catch (error) {
       return handleAxiosError(error);
     } finally {
@@ -163,27 +160,47 @@ class SearchStore {
     }
   }
 
-  async createPost(content: string, images: string[]) {
+  async createPost(content: string, items: string[], isVideo: boolean) {
     this.setLoading(true);
     try {
-      const uploadedImages = await this.uploadPostImages(images);
-      const response = await apiClient.post('/post', {
-        userId: this.getUserId(),
-        content,
-        postPhotos: uploadedImages.map(image => ({
-          id: image.id, // ID изображения
-          url: image.url, // URL загруженного изображения
-        })),
-      });
-      const newPost = new Post(response.data);
-      newPost.userAvatar = userStore.currentUser?.thumbnailUrl!;
-      newPost.userName = userStore.currentUser?.name!;
-      newPost.createdAt = new Date();
-      runInAction(() => {
-        this.posts.unshift(newPost); // Обновление в рамках действия
-      });
+      if (!isVideo) {
+        const uploadedImages = await this.uploadPostImages(items);
+        const response = await apiClient.post('/post', {
+          userId: this.getUserId(),
+          content,
+          postPhotos: uploadedImages.map((image) => ({
+            id: image.id, // ID изображения
+            url: image.url, // URL загруженного изображения
+          })),
+        });
+        const newPost = new Post(response.data);
+        newPost.userAvatar = userStore.currentUser?.thumbnailUrl!;
+        newPost.userName = userStore.currentUser?.name!;
+        newPost.createdAt = new Date();
+        runInAction(() => {
+          this.posts.unshift(newPost); // Обновление в рамках действия
+        });
+      } else {
+        // Предполагается, что видео хранится в массиве videos, и вы разрешаете только одно видео
+        const videoUri = items[0];
+        // Метод uploadPostVideo должен реализовывать загрузку видео в Bunny Stream
+        const uploadedVideo = await this.uploadPostVideo(videoUri);
+        const response = await apiClient.post('/post', {
+          userId: this.getUserId(),
+          content,
+          postPhotos: [{ id: uploadedVideo.id, url: uploadedVideo.url }]
+          ,
+        });
+        const newPost = new Post(response.data);
+        newPost.userAvatar = userStore.currentUser?.thumbnailUrl!;
+        newPost.userName = userStore.currentUser?.name!;
+        newPost.createdAt = new Date();
+        runInAction(() => {
+          this.posts.unshift(newPost);
+        });
+      }
     } catch (error) {
-    return handleAxiosError(error);
+      return handleAxiosError(error);
     } finally {
       this.setLoading(false);
     }
@@ -191,27 +208,27 @@ class SearchStore {
 
   async uploadPostImages(images: string[]): Promise<IPostPhotos[]> {
     const uploadedImages: IPostPhotos[] = [];
-  
+
     for (const imageUri of images) {
       const compressedImage = await compressImage(imageUri);
       const response = await fetch(compressedImage);
       const blob = await response.blob();
       const imageId = randomUUID();
       const storageRef = ref(storage, `post/${imageId}`);
-  
+
       await uploadBytes(storageRef, blob);
-  
+
       const downloadURL = await getDownloadURL(storageRef);
       uploadedImages.push({ id: imageId, url: downloadURL });
     }
-  
+
     return uploadedImages;
   }
 
   async fetchLikesCount(postId: string): Promise<number> {
     try {
       const response = await apiClient.get(`/post/${postId}/likes/count`);
-      
+
       return response.data;
     } catch (error) {
       handleAxiosError(error);
@@ -223,20 +240,20 @@ class SearchStore {
     try {
       const userId = this.getUserId(); // Получаем ID текущего пользователя
       if (!userId) {
-        throw new Error("User not authenticated");
+        throw new Error('User not authenticated');
       }
-  
+
       const response = await apiClient.get(`/post/${postId}/likes/hasLiked`, {
         params: { userId },
       });
-  
-      return response.data ?? false;;
+
+      return response.data ?? false;
     } catch (error) {
       handleAxiosError(error);
       return false; // Если ошибка, возвращаем, что лайк отсутствует
     }
   }
-  
+
   async deletePost(postId: string) {
     try {
       if (postId) {
@@ -253,8 +270,8 @@ class SearchStore {
       const res = await apiClient.post(`/users/complaint`, text, {
         headers: {
           'Content-Type': 'application/json',
-        }
-      })
+        },
+      });
     } catch (error) {
       return handleAxiosError(error);
     } finally {
@@ -275,8 +292,76 @@ class SearchStore {
     }
   }
 
+  async uploadPostVideo(videoUri: string) {
+    const libraryId = '384458'; // ID вашей видео-библиотеки в Bunny Stream
+    const apiKey = 'fce3e49f-804f-4c62-9a6ed8a2269d-d76b-4c11'; // Ваш API-ключ Bunny Stream
 
+    // 1. Создаем объект видео (Create Video)
+    const createUrl = `https://video.bunnycdn.com/library/${libraryId}/videos`;
+
+    let videoId: string;
+    try {
+      const createResponse = await axios.post(
+        createUrl,
+        { title: 'My Video' }, // Здесь можно задать название видео; можно использовать и другой параметр, если требуется
+        {
+          headers: {
+            Accept: 'application/json',
+            AccessKey: apiKey,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      // Предполагается, что ответ содержит поле guid с идентификатором видео
+      videoId = createResponse.data.guid;
+    } catch (error) {
+      // handleAxiosError – ваша функция обработки ошибок
+      handleAxiosError(error);
+      throw error;
+    }
+
+    // 2. Загрузка видеофайла (Upload Video)
+    const uploadUrl = `https://video.bunnycdn.com/library/${libraryId}/videos/${videoId}`;
+    console.log('uploadPostVideo: uploadUrl =', uploadUrl);
+
+    // const fileInfo = await FileSystem.getInfoAsync(videoUri);
+    // console.log('File info:', fileInfo);
+
+    // const base64Data = await FileSystem.readAsStringAsync(videoUri, { encoding: FileSystem.EncodingType.Base64 });
+    // console.log('Base64 snippet:', base64Data.slice(0, 100));
+
+    const response = await fetch(videoUri);
+    const videoBlob = await response.blob();
+
+    const formData = new FormData();
+    formData.append('file', {
+      uri: videoUri,
+      name: 'video.mp4',
+      type: 'video/mp4',
+    } as any);
+    console.log('uploadPostVideo: formData =', videoUri);
+
+    try {
+      const response = await fetch(uploadUrl, {
+        method: 'PUT', // согласно документации используется PUT
+        headers: {
+          Accept: 'application/json',
+          AccessKey: apiKey,
+          // Не указываем 'Content-Type', чтобы fetch сам установил multipart/form-data с boundary
+        },
+        body: videoBlob,
+      });
+      
+      const data = await response.json();
+      console.log('uploadPostVideo: data =', data);
+      return { id: videoId, url: `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?autoplay=true&loop=true&muted=true&preload=true&responsive=true` };
+    } catch (error) {
+      console.error('uploadPostVideo: ошибка загрузки видео:', error);
+      //handleAxiosError(error);
+      throw error;
+    }
+  }
 }
-
 const searchStore = new SearchStore();
 export default searchStore;

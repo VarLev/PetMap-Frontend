@@ -59,7 +59,7 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+          "locationAlwaysAndWhenInUsePermission": "We request access to your location to determine your city, set up the map, and enable bonus collection along your route."
         }
       ],
       [
@@ -67,6 +67,12 @@
         {
           "androidAppId": "ca-app-pub-2818079501156274~6391187566",
           "iosAppId": "ca-app-pub-2818079501156274~6785767792"
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "We request access to your microphone so you can record videos with sound and share them in the app."
         }
       ]
     ],

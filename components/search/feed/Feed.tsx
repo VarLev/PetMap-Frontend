@@ -14,6 +14,7 @@ import PostItem from '@/components/search/feed/PostItem';
 import CreatePost from '@/components/search/feed/CreatePost';
 import i18n from '@/i18n';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent';
+import { set } from 'lodash';
 
 
 // Если userId не передан, компонент показывает все посты.
@@ -32,6 +33,7 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
   const [selectedPostId, setSelectedPostId] = useState('');
   const [userPosts, setUserPosts] = useState<IPost[]>([]);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [playingVideo, setPlayingVideo] = useState<string | null>(null);
 
   const sheetRef = useRef<BottomSheet>(null);
 
@@ -144,6 +146,8 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
             handleSheetCommentsOpenById={(postId) => handleSheetCommentsOpen(postId)}
             refresh={isPostRefresh}
             isProfileView={!!userId}
+            setCurrentPlayingVideo={setPlayingVideo}
+            currentPlayingVideo={playingVideo??''}
           />
         )}
       />
