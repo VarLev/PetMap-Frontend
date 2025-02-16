@@ -47,6 +47,16 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+     
+      "@react-native-firebase/app",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
       "expo-apple-authentication",
       "@react-native-google-signin/google-signin",
       "expo-router",
