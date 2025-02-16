@@ -37,6 +37,7 @@ const ViewProfileComponent = observer(
     const [isOnline, setIsOnline] = useState(false);
     const [lastOnline, setLastOnline] = useState<string | null>(null);
     const [hasSubscription, setHasSubscription] = useState(userStore.getUserHasSubscription() ?? false);
+    const [hasSubscriptionOtherUser, setHasSubscriptionOtherUser] = useState(false);
     const [activeSection, setActiveSection] = useState<'petshots' | 'comments'>('petshots');
 
     const navigation = useNavigation();
@@ -67,7 +68,7 @@ const ViewProfileComponent = observer(
           </>
         ),
       });
-    }, [isCurrentUser, menuVisible, navigation, onEdit]);
+    }, [isCurrentUser, hasSubscriptionOtherUser, menuVisible, navigation, onEdit]);
 
 
     useEffect(() => {
@@ -92,6 +93,7 @@ const ViewProfileComponent = observer(
         setUser(otherUser as User);
         setIsCurrentUser(false);
         setRightIcon(null);
+        setHasSubscriptionOtherUser(otherUser.isPremium ?? false);
         const onlineStatus = await userStore.getUserStatus(otherUser.id);
         const lastOnlineTime = await userStore.getUserLastOnline(otherUser.id);
 
@@ -159,7 +161,7 @@ const ViewProfileComponent = observer(
             <View className="bg-white h-full">
               <View className='flex-row items-center pl-4'>
                 <View className="relative">
-                  {hasSubscription && (<Image source={require('@/assets/images/subscription-marker.png')} className={`h-[34px] w-[27px] absolute ${Platform.OS === 'android' ? '-top-[5px]' : '-top-[4.6px]'} -right-[6px]`} />)}
+                  {((hasSubscription && isCurrentUser) || (hasSubscriptionOtherUser)) &&(<Image source={require('@/assets/images/subscription-marker.png')} className={`h-[34px] w-[27px] absolute ${Platform.OS === 'android' ? '-top-[5px]' : '-top-[4.6px]'} -right-[6px]`} />)}
                   <View className={`w-4 h-4 rounded-full ${isOnline ? 'bg-emerald-400' : 'bg-gray-400'}`} />
                 </View>
                 <View className='flex-col'>
