@@ -1,5 +1,4 @@
 import { Text, View, Image, SafeAreaView, Dimensions } from "react-native";
-import { IconButton } from "react-native-paper";
 import { router } from "expo-router";
 import i18n from "@/i18n";
 

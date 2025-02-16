@@ -17,25 +17,41 @@ interface UserCardProps {
 const UserCard: React.FC<UserCardProps> = React.memo(({ user }) => {
   const [petImage, setPetImage] = React.useState<string>();
   const [userImage, setUserImage] = React.useState<string>();
+  const [hasSubscription, seHasSubscription] = React.useState<boolean>(false);
   
   useEffect(() => {
-    getPetImage().then((url) => setPetImage(url));
-    if(user.thumbnailUrl) 
-      setUserImage(user.thumbnailUrl);
-    else
-      setUserImage('https://placehold.it/100x100');
-
+    (async () => {
+      const petUrl = await getPetImage();
+      setPetImage(petUrl);
+      if(await checkImageExists(user.thumbnailUrl ?? '') && user.thumbnailUrl !== '' && user.thumbnailUrl !== 'null' && user.thumbnailUrl !== 'undefined') {
+        setUserImage(user.thumbnailUrl!);
+      } else {
+        setUserImage(`https://avatar.iran.liara.run/username?username=${user.name}`);
+      }
+      seHasSubscription(user.isPremium ?? false);
+    })();
   }, []);
+
+  const checkImageExists = async (url: string) => {
+    try {
+      await Image.prefetch(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
   const getPetImage = async () : Promise<string> => {
     if (user.petProfiles && user.petProfiles.length > 0 && user.petProfiles[0].thumbnailUrl ) {
       const petImage = await userStore.fetchImageUrl(PET_IMAGE);
-      return petImage || 'https://placehold.it/100x100';
+      return petImage || petUriImage;
     }else{
-      return 'https://placehold.it/100x100';
+      return petUriImage;
     }
 
   }
+
+
 
   const handleUserProfileOpen = () => {
     router.push(`(user)/${user.id}`);
@@ -46,7 +62,10 @@ const UserCard: React.FC<UserCardProps> = React.memo(({ user }) => {
       {/* Информация о пользователе */}
       <View className="flex-row items-start">
         <TouchableOpacity activeOpacity={0.8} onPress={handleUserProfileOpen}>
-          <Image source={{ uri: user.thumbnailUrl || userImage || 'https://placehold.it/100x100' }} className="w-20 h-20 rounded-xl" />
+          <View className="relative">
+            {hasSubscription &&(<Image source={require('@/assets/images/subscription-marker.png')}/>)}                       
+          </View>
+          <Image source={{ uri: userImage || `https://avatar.iran.liara.run/username?username=${user.name}` }} className="w-20 h-20 rounded-xl" />
         </TouchableOpacity>
        
         {user.petProfiles && user.petProfiles.length > 0 && (

@@ -7,4 +7,5 @@ export interface IUserCardDto {
   thumbnailUrl?: string | null;
   petProfiles?: IPetForUserCardDto[] | null;
   balance?: number | null;
+  isPremium?: boolean | null;
 }

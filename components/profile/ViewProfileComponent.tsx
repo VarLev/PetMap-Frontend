@@ -39,6 +39,7 @@ const ViewProfileComponent = observer(
     const [hasSubscription, setHasSubscription] = useState(userStore.getUserHasSubscription() ?? false);
     const [hasSubscriptionOtherUser, setHasSubscriptionOtherUser] = useState(false);
     const [activeSection, setActiveSection] = useState<'petshots' | 'comments'>('petshots');
+    const [userAvatar, setUserAvatar] = useState<string | null>(null);
 
     const navigation = useNavigation();
     useLayoutEffect(() => {
@@ -100,6 +101,11 @@ const ViewProfileComponent = observer(
         setIsOnline(isCurrentUser || (onlineStatus ?? false));
         setLastOnline(lastOnlineTime || null);
       }
+      if( !await checkImageExists(user.thumbnailUrl ?? '') && user.thumbnailUrl !== '' && user.thumbnailUrl !== 'null' && user.thumbnailUrl !== 'undefined') {
+        setUserAvatar (`https://avatar.iran.liara.run/username?username=${user.name}`);
+      }else{
+        setUserAvatar(user.thumbnailUrl!);
+      }
     };
 
     useEffect(() => {
@@ -137,6 +143,16 @@ const ViewProfileComponent = observer(
       });
     };
 
+    const checkImageExists = async (url: string) => {
+      try {
+        await Image.prefetch(url);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+    
+
     return (
       <GestureHandlerRootView className="h-full">
         <FlatList
@@ -146,8 +162,8 @@ const ViewProfileComponent = observer(
             return (
             <View style={{ alignItems: 'center' }}>
               <StatusBar backgroundColor="transparent" translucent />
-              <View className="relative w-full aspect-square">
-                <Image source={{ uri: user?.thumbnailUrl! }} className="w-full h-full" />
+              <View className="relative w-full aspect-square bg-white">
+                <Image source={{ uri: userAvatar?? `https://avatar.iran.liara.run/username?username=${user.name}`  }} className="w-full h-full" />
               </View>
             </View>
           );

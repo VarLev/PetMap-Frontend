@@ -707,11 +707,11 @@ const MapBoxMap = observer(() => {
               snackbarVisible={snackbarVisible}
               onAddressSelected={(coordinates) => {
                 cameraRef.current?.flyTo(coordinates, 500);
-                setTimeout(() => {
-                  uiStore.setIsSearchAddressExpanded(false);
-                  handlePress({ geometry: { coordinates: coordinates } });
-                }
-                  , 600);
+                // setTimeout(() => {
+                //   uiStore.setIsSearchAddressExpanded(false);
+                //   handlePress({ geometry: { coordinates: coordinates } });
+                // }
+                //   , 600);
 
               }}
             />

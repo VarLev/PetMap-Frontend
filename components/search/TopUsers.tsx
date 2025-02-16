@@ -181,7 +181,7 @@ const TopUsers = () => {
                   <View className="border-2 rounded-full bg-white border-white">
                     <Avatar.Image
                       size={60}
-                      source={{ uri: topUsers[1]?.thumbnailUrl ?? 'https://placehold.it/100x100' }}
+                      source={{ uri: topUsers[1]?.thumbnailUrl ?? `https://avatar.iran.liara.run/username?username=${topUsers[1].name}` }}
                     />
                     <View style={{ position: 'absolute', top: -3, right: -3 }}>
                       <StarIcon />
@@ -212,7 +212,7 @@ const TopUsers = () => {
                     <View className="border-2 rounded-full bg-white border-white">
                       <Avatar.Image
                         size={80}
-                        source={{ uri: topUsers[0]?.thumbnailUrl ?? 'https://placehold.it/100x100' }}
+                        source={{ uri: topUsers[0]?.thumbnailUrl ?? `https://avatar.iran.liara.run/username?username=${topUsers[0].name}` }}
                       />
                       <View style={{ position: 'absolute', top: -15, right: -15 }}>
                         <LottieView
@@ -248,7 +248,7 @@ const TopUsers = () => {
                   <View className="border-2 rounded-full bg-white border-white">
                     <Avatar.Image
                       size={60}
-                      source={{ uri: topUsers[2]?.thumbnailUrl ?? 'https://placehold.it/100x100' }}
+                      source={{ uri: topUsers[2]?.thumbnailUrl ??  `https://avatar.iran.liara.run/username?username=${topUsers[2].name}` }}
                     />
                     <View style={{ position: 'absolute', top: -3, right: -3 }}>
                       <StarIcon />
