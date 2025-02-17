@@ -595,15 +595,18 @@ const EditPetProfileComponent = observer(
               </View>
 
               <View>
-                <Text className="pt-4 -mb-1 text-base font-nunitoSansBold text-indigo-700">{i18n.t('EditPetProfile.socialMedia')}</Text>
+                <View className="mt-2 -mb-2 flex-row  items-center">
                 {!hasSubscription && (
                   <IconButton
-                    className="-ml-2"
+                    className="-ml-1"
                     size={20}
                     icon={() => <FontAwesome name="diamond" size={20} color="#8F00FF" />}
                     onPress={() => router.push('/(paywall)/pay')}
                   />
                 )}
+                <Text className="text-base font-nunitoSansBold text-indigo-700">{i18n.t('EditPetProfile.socialMedia')}</Text>
+                
+                </View>
                 <CustomOutlineInputText
                   containerStyles={`mt-4 ${hasSubscription ? 'bg-white' : 'bg-gray-200'}`}
                   label="Instagram"
@@ -629,7 +632,7 @@ const EditPetProfileComponent = observer(
               </View>
 
 
-              <View className='h-48'/>
+              <View className='h-80'/>
 
             </View>
           }

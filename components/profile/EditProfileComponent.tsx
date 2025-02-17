@@ -360,8 +360,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
             </View>
             <View className="p-2">
               <View className="flex-row items-center">
-                <Text className="text-lg font-nunitoSansBold text-indigo-800 pr-2 ">{i18n.t('EditProfileComponent.socialMediaTitle')}</Text>
-                {!hasSubscription && (
+              {!hasSubscription && (
                   <IconButton
                     className="-ml-2"
                     size={20}
@@ -369,6 +368,8 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                     onPress={() => router.push('/(paywall)/pay')}
                   />
                 )}
+                <Text className="text-lg font-nunitoSansBold text-indigo-800 pr-2 ">{i18n.t('EditProfileComponent.socialMediaTitle')}</Text>
+                
               </View>
 
               <CustomOutlineInputText
@@ -395,7 +396,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
             </View>
 
 
-            <View className="h-48" />
+            <View className="h-80" />
           </View>
         }
       />
