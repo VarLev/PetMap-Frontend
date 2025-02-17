@@ -612,7 +612,8 @@ const EditPetProfileComponent = observer(
                   handleChange={(text) => handleFieldChange('instagram', text)}
                   editable={hasSubscription}
                   maxLength={30}
-                  allowedSymbols={['social']}
+                  allowOnlyLetters={true}
+                  allowedSymbols={['latin', 'social']}
                 />
                 <CustomOutlineInputText
                   containerStyles={`mt-4 ${hasSubscription ? 'bg-white' : 'bg-gray-200'}`}

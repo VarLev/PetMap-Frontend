@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, ReactNode } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FlatList, ActivityIndicator, View } from 'react-native';
 import AdvrtCard from '@/components/custom/cards/AdvrtCard';
 import DangerCard from '@/components/custom/cards/DangerCard';
@@ -22,7 +22,7 @@ interface AdvrtsListProps {
 
 }
 
-const MapItemList: React.FC<AdvrtsListProps> = ({ renderType, setSnackbarVisible}) => {
+const MapItemList: React.FC<AdvrtsListProps> = ({ renderType, setSnackbarVisible }) => {
   const [points, setPoints] = useState<IWalkAdvrtShortDto[] | IPointDangerDTO[]>([]);
   const [page, setPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -41,13 +41,13 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType, setSnackbarVisible
 
     try {
       const newAds = await mapStore.getPagenatedPointItems(renderType, pageNumber, pageSize);
-      if(newAds.data.length === 0){
+      if (newAds.data.length === 0) {
         setSnackbarVisible(true);
       }
-        
-      
+
+
       const items = newAds.data;
-      
+
 
       if (items.length < pageSize) {
         setHasMoreData(false);
@@ -99,7 +99,7 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType, setSnackbarVisible
 
   const renderFooter = () => {
     if (!isLoading) return <View className="h-24" />;
-    return <ActivityIndicator className="h-32" size="large" color="#6200ee"  />;
+    return <ActivityIndicator className="h-32" size="large" color="#6200ee" />;
   };
 
   const handleSheetClose = async () => {
@@ -107,10 +107,10 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType, setSnackbarVisible
     setIsSheetVisible(false);
   };
 
-  const handleSheetOpen = async (id:string, mapPointType: MapPointType) => {
+  const handleSheetOpen = async (id: string, mapPointType: MapPointType) => {
 
     const point = await mapStore.getMapPointById(id, mapPointType);
-    if(mapPointType === MapPointType.Danger){
+    if (mapPointType === MapPointType.Danger) {
       const pointDanger = point as IPointDangerDTO;
       setRenderContent(() => (
         <ViewDangerOnMap mapPoint={pointDanger} />
@@ -129,16 +129,16 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType, setSnackbarVisible
 
   // Рендеринг элемента списка в зависимости от типа
   const renderItem = useCallback(
-    ({ item }: { item: IWalkAdvrtShortDto | IPointDangerDTO | IPointEntityDTO}) => {
+    ({ item }: { item: IWalkAdvrtShortDto | IPointDangerDTO | IPointEntityDTO }) => {
       switch (renderType) {
         case MapPointType.Walk:
           return <AdvrtCard ad={item as IWalkAdvrtShortDto} />;
         case MapPointType.Danger:
-          return <DangerCard mapPointDanger={item as IPointDangerDTO} onDetailPress={handleSheetOpen}/>;
+          return <DangerCard mapPointDanger={item as IPointDangerDTO} onDetailPress={handleSheetOpen} />;
         case MapPointType.Park:
-          return <MapPointCard mapPoint={item as IPointEntityDTO} onDetailPress={handleSheetOpen}  />;
+          return <MapPointCard mapPoint={item as IPointEntityDTO} onDetailPress={handleSheetOpen} />;
         default:
-          return <MapPointCard mapPoint={item as IPointEntityDTO} onDetailPress={handleSheetOpen}  />;
+          return <MapPointCard mapPoint={item as IPointEntityDTO} onDetailPress={handleSheetOpen} />;
       }
     },
     [renderType]
@@ -151,7 +151,7 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType, setSnackbarVisible
       keyExtractor={(item) => item.toString()}
       renderItem={() => (
         <View className="items-center ">
-          <SkeletonCard/> 
+          <SkeletonCard />
         </View>
       )}
     />
@@ -163,7 +163,7 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType, setSnackbarVisible
     <View className="flex-1">
       <LinearGradient
         colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0)']}
-        className={`absolute top-0 left-0 right-0 ${uiStore.getIsPointSearchFilterTagSelected() ? 'h-40':'h-48'} z-10`}
+        className={`absolute top-0 left-0 right-0 ${uiStore.getIsPointSearchFilterTagSelected() ? 'h-40' : 'h-48'} z-10`}
       />
       {isLoading && page === 1 ? (
         // Показываем скелетоны только если загружается первая страница
@@ -171,7 +171,7 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType, setSnackbarVisible
       ) : (
         <FlatList
           data={points}
-          ListHeaderComponent={<View className={`${uiStore.getIsPointSearchFilterTagSelected() ? 'h-20':'h-28'}`} />}
+          ListHeaderComponent={<View className={`${uiStore.getIsPointSearchFilterTagSelected() ? 'h-20' : 'h-28'}`} />}
           keyExtractor={(_, index) => index.toString()}
           renderItem={renderItem}
           initialNumToRender={10} // Количество элементов для рендеринга при старте
@@ -184,14 +184,14 @@ const MapItemList: React.FC<AdvrtsListProps> = ({ renderType, setSnackbarVisible
           ListFooterComponent={renderFooter}
         />
       )}
-     {isSheetVisible && ( <BottomSheetComponent
-            ref={sheetRef}
-            snapPoints={['85%']}
-            renderContent={renderContent}
-            onClose={handleSheetClose} 
-            enablePanDownToClose={true}
-            initialIndex={0}
-          />)}
+      {isSheetVisible && (<BottomSheetComponent
+        ref={sheetRef}
+        snapPoints={['85%']}
+        renderContent={renderContent}
+        onClose={handleSheetClose}
+        enablePanDownToClose={true}
+        initialIndex={0}
+      />)}
     </View>
   );
 };

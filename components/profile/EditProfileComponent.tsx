@@ -380,7 +380,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 editable={hasSubscription}
                 maxLength={30}
                 allowOnlyLetters={true}
-                allowedSymbols={['social']}
+                allowedSymbols={['latin', 'social']}
               />
               <CustomOutlineInputText
                 containerStyles={`mt-4 ${hasSubscription ? 'bg-white' : 'bg-gray-200'}`}

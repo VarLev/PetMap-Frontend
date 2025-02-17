@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, TouchableWithoutFeedback } from 'react-native';
 import { Card } from 'react-native-paper';
 import { IWalkAdvrtShortDto } from '@/dtos/Interfaces/advrt/IWalkAdvrtShortDto';
 import CustomTextComponent from '../text/CustomTextComponent';
@@ -17,7 +17,7 @@ interface AdCardProps {
 
 const MyAdvrtCard: React.FC<AdCardProps> = ({ ad, pressDelete }) => {
   const [petImage, setPetImage] = React.useState<string>();
-  
+
   useEffect(() => {
     getPetImage().then((url) => setPetImage(url));
   }, []);
@@ -76,11 +76,14 @@ const MyAdvrtCard: React.FC<AdCardProps> = ({ ad, pressDelete }) => {
         <Text className="m-2 text-sm text-gray-800">{ad.description}</Text>
       )}
       <View className="flex-row w-full justify-between px-1">
-        <CustomButtonPrimary
-          title={i18n.t('MyAdvrtCard.delete')}
-          containerStyles="w-full"
-          handlePress={() => pressDelete(ad.id!)}
-        />
+        <TouchableWithoutFeedback onPress={(event) => event.stopPropagation()}>
+          <CustomButtonPrimary
+            title={i18n.t('MyAdvrtCard.delete')}
+            containerStyles="w-full"
+            handlePress={() => pressDelete(ad.id!)}
+          />
+        </TouchableWithoutFeedback>
+
       </View>
     </Card>
   );

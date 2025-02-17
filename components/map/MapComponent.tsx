@@ -46,6 +46,7 @@ import { generateChatData, generateChatIdForTwoUsers } from '@/utils/chatUtils';
 import { BG_COLORS } from '@/constants/Colors';
 import { throttle } from 'lodash';
 import CustomSnackBar from '../custom/alert/CustomSnackBar';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 
 
@@ -88,7 +89,7 @@ const MapBoxMap = observer(() => {
 
   // Снэкбар при отсутствии точек
   const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
-
+  const [rightListAnimation, setRightListAnimation] = useState<boolean>(false);
   // Анимированное значение для плавного появления карты
 
   // Функция для перевода градусов в радианы
@@ -205,7 +206,7 @@ const MapBoxMap = observer(() => {
   };
 
 
-  const handlePress = (event: any ) => {
+  const handlePress = (event: any) => {
 
     Keyboard.dismiss()
     if (uiStore.getIsSearchAddressExpanded())
@@ -303,17 +304,17 @@ const MapBoxMap = observer(() => {
     }
   };
 
-  const onPinPress = async (advrt: IWalkAdvrtDto, zoomLevelx?:number) => {
+  const onPinPress = async (advrt: IWalkAdvrtDto, zoomLevelx?: number) => {
     Keyboard.dismiss();
     cameraRef.current?.setCamera({
       centerCoordinate: [advrt.longitude!, advrt.latitude!],
       animationDuration: 300,
       ...(zoomLevelx !== undefined && { zoomLevel: zoomLevelx }), // Only set zoomLevel if zoomLevelx is defined
       padding: {
-      paddingLeft: 0,
-      paddingRight: 0,
-      paddingTop: 0,
-      paddingBottom: 300,
+        paddingLeft: 0,
+        paddingRight: 0,
+        paddingTop: 0,
+        paddingBottom: 300,
       },
     });
     setRenderContent(() => <AdvtComponent advrt={advrt} onInvite={handleChatInvite} onClose={handleSheetClose} />);
@@ -404,9 +405,9 @@ const MapBoxMap = observer(() => {
   };
 
   const handleSearchTextChange = () => { };
- 
 
-  
+
+
   const tagSelected = async (type: number) => {
     setCurrentPointType(type);
     if (!isCardView) {
@@ -422,9 +423,9 @@ const MapBoxMap = observer(() => {
     }
   };
 
-  const filterApply = (filtredCount:number) => {
+  const filterApply = (filtredCount: number) => {
     closeDrawer();
-    if(filtredCount === 0) 
+    if (filtredCount === 0)
       setSnackbarVisible(true);
 
   };
@@ -441,8 +442,8 @@ const MapBoxMap = observer(() => {
     const a =
       Math.sin(dLat / 2) ** 2 +
       Math.cos(deg2rad(coord1.latitude)) *
-        Math.cos(deg2rad(coord2.latitude)) *
-        Math.sin(dLon / 2) ** 2;
+      Math.cos(deg2rad(coord2.latitude)) *
+      Math.sin(dLon / 2) ** 2;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   };
@@ -465,9 +466,9 @@ const MapBoxMap = observer(() => {
         longitude: coords.longitude,
       };
       setUserCoordinates([coords.longitude, coords.latitude]);
-      
 
-    },5000),
+
+    }, 5000),
     []
   );
 
@@ -498,236 +499,254 @@ const MapBoxMap = observer(() => {
     }
   };
 
+  const handleRightListOpen = () => {
+    setRightListAnimation(!rightListAnimation);
+    
+    if(!isCardView) 
+      setisCardView(true);
+    else
+      setTimeout(() => {
+        setisCardView(false)
+      }, 1000); // 300ms delay
+  }
+
+
+  const offsetY = useSharedValue(0);
+
+  // При изменении isSheetVisible изменяем смещение
+  useEffect(() => {
+    // Если лист открыт, поднимаем компонент вверх (например, на -100)
+    // Если лист закрыт, возвращаем на исходное положение (0)
+    offsetY.value = withTiming(isSheetVisible ? -120 : 0, { duration: 300 });
+  }, [isSheetVisible]);
+
+  // Анимированный стиль для компонента
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: offsetY.value }],
+    };
+  });
+
   return (
-    <View style={{ flex: 1, bottom:isSheetVisible?0: 70 }}>
-      
+    <View style={{ flex: 1, bottom: isSheetVisible ? 0 : 70 }}>
+
       <Provider>
-      {/* Компонент, проверяющий и запрашивающий разрешения */}
-      <PermissionsRequestComponent />
+        {/* Компонент, проверяющий и запрашивающий разрешения */}
+        <PermissionsRequestComponent />
 
-      {/* Пока идёт загрузка, карту не отображаем. Можно вставить лоадер, если нужно. */}
-      {isLoading ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color="#6200ee" />
-        </View>
+        {/* Пока идёт загрузка, карту не отображаем. Можно вставить лоадер, если нужно. */}
+        {isLoading ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" color="#6200ee" />
+          </View>
 
-      ) : (
-        // После окончания загрузки используем анимированный контейнер, чтобы карта появилась плавно
-        <View style={{ flex: 1, top: isSheetVisible?0: 70}} >
-          {/* Если у нас есть режим карточного вида, отображаем SlidingOverlay */}
-          {isCardView && (
-            <SlidingOverlay visible={isCardView}>
-              <MapItemList renderType={currentPointType} setSnackbarVisible={setSnackbarVisible} />
-            </SlidingOverlay>
-          )}
-
-
-          {/* Собственно карта */}
-          <MapView
-            ref={mapRef}
-            style={{ flex: 1 }}
-            onPress={handlePress}
-            styleURL={Mapbox.StyleURL.Light}
-            logoEnabled={false}
-            attributionEnabled={false}
-            scaleBarEnabled={false}
-            scrollEnabled={!isCardView}
-            pitchEnabled={!isCardView}
-            zoomEnabled={!isCardView}
-            rotateEnabled={!isCardView}  
-          >
+        ) : (
+          // После окончания загрузки используем анимированный контейнер, чтобы карта появилась плавно
+          <View style={{ flex: 1, top: isSheetVisible ? 0 : 70 }} >
+            {/* Если у нас есть режим карточного вида, отображаем SlidingOverlay */}
+            {isCardView && (
+              <SlidingOverlay visible={rightListAnimation}>
+                <MapItemList renderType={currentPointType} setSnackbarVisible={setSnackbarVisible} />
+              </SlidingOverlay>
+            )}
 
 
-            {hasPermission && (
-              <UserLocation
-                minDisplacement={50}
-                ref={userLocationRef}
-                onUpdate={handleUserLocationUpdate}
-                
+            {/* Собственно карта */}
+            <MapView
+              ref={mapRef}
+              style={{ flex: 1 }}
+              onPress={handlePress}
+              styleURL={Mapbox.StyleURL.Light}
+              logoEnabled={false}
+              attributionEnabled={false}
+              scaleBarEnabled={false}
+              scrollEnabled={!isCardView}
+              pitchEnabled={!isCardView}
+              zoomEnabled={!isCardView}
+              rotateEnabled={!isCardView}
+            >
+
+
+              {hasPermission && (
+                <UserLocation
+                  minDisplacement={50}
+                  ref={userLocationRef}
+                  onUpdate={handleUserLocationUpdate}
+
+                />
+              )}
+
+              {routeData && (
+                <ShapeSource id="routeSource" shape={routeData}>
+                  <LineLayer id="routeLine" style={{ lineColor: 'blue', lineWidth: 5 }} />
+                </ShapeSource>
+              )}
+
+              {/* Начальная позиция камеры (если есть координаты пользователя) */}
+              {userCoordinates && (
+                <Camera
+                  ref={cameraRef}
+                  centerCoordinate={userCoordinates}
+                  zoomLevel={10}
+                  animationDuration={0}
+                />
+              )}
+
+
+
+
+
+              {/* Кластеризация меток (если используем ShapeSource / SymbolLayer) */}
+              {!isCardView && geoJSONData && (
+                <ShapeSource id="points" shape={geoJSONData} cluster clusterRadius={38}>
+                  <SymbolLayer id="clusteredPoints" filter={['has', 'point_count']} style={styles.clusterStyle} />
+                </ShapeSource>
+              )}
+
+              {/* Маркеры объявлений о прогулках */}
+              <WalkMarker
+                isCardView={isCardView}
+                walkAdvrts={mapStore.walkAdvrts}
+                selectedWalkMarker={selectedWalkMarker}
+                onPinPress={onPinPress}
+                setSelectedWalkMarker={setSelectedWalkMarker}
+                markerCoordinate={markerCoordinate}
+                isSheetVisible={isSheetVisible}
+                currentUser={currentUser}
+                pointAnnotationCurrentUser={pointAnnotationCurrentUser}
               />
-            )}
 
-            {routeData && (
-              <ShapeSource id="routeSource" shape={routeData}>
-                <LineLayer id="routeLine" style={{ lineColor: 'blue', lineWidth: 5 }} />
-              </ShapeSource>
-            )}
-
-            {/* Начальная позиция камеры (если есть координаты пользователя) */}
-            {userCoordinates && (
-              <Camera
-                ref={cameraRef}
-                centerCoordinate={userCoordinates}
-                zoomLevel={10}
-                animationDuration={0}
+              {/* Маркеры пользовательских точек (Danger, Custom, Note и т.п.) */}
+              <PointMarker
+                isCardView={isCardView}
+                mapPoints={mapStore.mapPoints}
+                selectedPointId={selectedPointId}
+                onMapPointPress={onMapPointPress}
+                markerPointCoordinate={markerPointCoordinate}
+                isSheetVisible={isSheetVisible}
+                currentPointType={currentPointType}
+                pointAnnotationCurrentUser={pointAnnotationCurrentUser}
               />
-            )}
 
-
-          
-
-
-            {/* Кластеризация меток (если используем ShapeSource / SymbolLayer) */}
-            {!isCardView && geoJSONData && (
-              <ShapeSource id="points" shape={geoJSONData} cluster clusterRadius={38}>
-                <SymbolLayer id="clusteredPoints" filter={['has', 'point_count']} style={styles.clusterStyle} />
-              </ShapeSource>
-            )}
-
-            {/* Маркеры объявлений о прогулках */}
-            <WalkMarker
-              isCardView={isCardView}
-              walkAdvrts={mapStore.walkAdvrts}
-              selectedWalkMarker={selectedWalkMarker}
-              onPinPress={onPinPress}
-              setSelectedWalkMarker={setSelectedWalkMarker}
-              markerCoordinate={markerCoordinate}
-              isSheetVisible={isSheetVisible}
-              currentUser={currentUser}
-              pointAnnotationCurrentUser={pointAnnotationCurrentUser}
-            />
-
-            {/* Маркеры пользовательских точек (Danger, Custom, Note и т.п.) */}
-            <PointMarker
-              isCardView={isCardView}
-              mapPoints={mapStore.mapPoints}
-              selectedPointId={selectedPointId}
-              onMapPointPress={onMapPointPress}
-              markerPointCoordinate={markerPointCoordinate}
-              isSheetVisible={isSheetVisible}
-              currentPointType={currentPointType}
-              pointAnnotationCurrentUser={pointAnnotationCurrentUser}
-            />
-
-            {/* 
+              {/* 
               Рендерим PointsOfInterestComponent ТОЛЬКО если:
                1) есть разрешение (hasPermission)
                2) есть реальные координаты пользователя (userCoordinates !== null)
                3) не идёт загрузка (isLoading === false)
             */}
-            {!isCardView && hasPermission && userCoordinates && !isLoading && (
-              <PointsOfInterestComponent
-                userLocation={userCoordinates}
-                onRouteReady={handleRouteReady}
-              />
-            )}
-
-            {/* Кнопка FAB (добавление меток и т.п.), если шторка BottomSheet не открыта */}
-            {!isSheetVisible && (
-              <FabGroupComponent
-                selectedNumber={currentPointType}
-                setSelectedNumber={hangleSetSelectedNumberPoint}
-                isVisible={!isCardView}
-              />
-            )}
-          </MapView>
-          {/* === Кнопка "Моя локация" поверх карты === */}
-          {hasPermission && userCoordinates && (
-            <TouchableOpacity activeOpacity={0.8} className='absolute bottom-[180px] right-[25px]' onPress={handleRecenter}>
-              <View style={{
-                backgroundColor: '#fff',
-                borderRadius: 25,
-                height: 45,
-                width: 45,
-                // Тень на Android
-                elevation: 3,
-                // Тень на iOS
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.3,
-                shadowRadius: 3,
-
-              }}>
-                <IconButton
-                  icon="crosshairs-gps"
-                  size={25}
-                  className='bg-white -left-1 -top-1'
-                  iconColor={BG_COLORS.indigo[700]}
+              {!isCardView && hasPermission && userCoordinates && !isLoading && (
+                <PointsOfInterestComponent
+                  userLocation={userCoordinates}
+                  onRouteReady={handleRouteReady}
                 />
-              </View>
-            </TouchableOpacity>
-          )}
+              )}
 
-          {/* Блок с поиском, фильтрами и переключателем карточного вида */}
-          <View
-            style={{
-              position: 'absolute',
-              top: 20,
-              left: 0,
-              right: 0,
-              zIndex: 10,
-            }}
-          >
+              {/* Кнопка FAB (добавление меток и т.п.), если шторка BottomSheet не открыта */}
+              {!isSheetVisible && (
+                <FabGroupComponent
+                  selectedNumber={currentPointType}
+                  setSelectedNumber={hangleSetSelectedNumberPoint}
+                  isVisible={!isCardView}
+                />
+              )}
+            </MapView>
+            {/* === Кнопка "Моя локация" поверх карты === */}
+            {hasPermission && userCoordinates && (
+              <TouchableOpacity activeOpacity={0.8} className='absolute bottom-[180px] right-[25px]' onPress={handleRecenter}>
+                <View style={{
+                  backgroundColor: '#fff',
+                  borderRadius: 25,
+                  height: 45,
+                  width: 45,
+                  // Тень на Android
+                  elevation: 3,
+                  // Тень на iOS
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 3,
 
-            <SearchAndTags
-              selectedTag={selectedTag}
-              setSelectedTag={setSelectedTag}
-              onSearchTextChange={handleSearchTextChange}
-              onTagSelected={tagSelected}
-              onOpenFilter={handleOpenFilter}
-              onOpenCardView={() => setisCardView(!isCardView)}
-              badgeCount={modifiedFieldsCount}
-              setSnackbarVisible={setSnackbarVisible}
-              snackbarVisible={snackbarVisible}
-              onAddressSelected={(coordinates) => {
-                
-                cameraRef.current?.setCamera({
-                  centerCoordinate: coordinates,
-                  zoomLevel: 15,
-                  animationDuration: 1000,
-                })
-                //cameraRef.current?.zoomTo(14, 1000);
-                // setTimeout(() => {
-                //   uiStore.setIsSearchAddressExpanded(false);
-                //   handlePress({ geometry: { coordinates: coordinates } });
-                // }
-                //   , 600);
+                }}>
+                  <IconButton
+                    icon="crosshairs-gps"
+                    size={25}
+                    className='bg-white -left-1 -top-1'
+                    iconColor={BG_COLORS.indigo[700]}
+                  />
+                </View>
+              </TouchableOpacity>
+            )}
+            <Animated.View
+      style={[
+        {
+          position: 'absolute',
+          top: 20,
+          left: 0,
+          right: 0,
+          zIndex: 10,
+        },
+        animatedStyle,
+      ]}
+    >
+      <SearchAndTags
+        selectedTag={selectedTag}
+        setSelectedTag={setSelectedTag}
+        onSearchTextChange={handleSearchTextChange}
+        onTagSelected={tagSelected}
+        onOpenFilter={handleOpenFilter}
+        onOpenCardView={() => handleRightListOpen()}
+        badgeCount={modifiedFieldsCount}
+        setSnackbarVisible={setSnackbarVisible}
+        snackbarVisible={snackbarVisible}
+        onAddressSelected={(coordinates) => {
+          cameraRef.current?.setCamera({
+            centerCoordinate: coordinates,
+            zoomLevel: 15,
+            animationDuration: 1000,
+          });
+        }}
+      />
 
-              }}
-            />
-  
       <CustomSnackBar
         visible={snackbarVisible}
         setVisible={setSnackbarVisible}
       />
+    </Animated.View>
+            {/* BottomSheet для отображения деталей выбранной точки/объявления */}
+            {isSheetVisible && (
+              <BottomSheetComponent
+                ref={sheetRef}
+                snapPoints={renderAdvrtForm ? ['55%', '100%'] : ['55%', '100%']}
+                renderContent={renderContent as any}
+                onClose={handleSheetClose}
+                enablePanDownToClose={true}
+                initialIndex={0}
+                usePortal={true}
+              />
+            )}
+
+            {/* Кастомный Alert */}
+            <CustomAlert
+              isVisible={isModalVisible}
+              onClose={() => setModalVisible(false)}
+              message={alertText}
+              type={alertType}
+              title={alertType === 'error' ? 'Error' : ''}
+              image={alertImage}
+            />
 
           </View>
 
-          {/* BottomSheet для отображения деталей выбранной точки/объявления */}
-          {isSheetVisible && (
-            <BottomSheetComponent
-              ref={sheetRef}
-              snapPoints={renderAdvrtForm ? ['55%', '100%'] : ['55%', '100%']}
-              renderContent={renderContent as any}
-              onClose={handleSheetClose}
-              enablePanDownToClose={true}
-              initialIndex={0}
-              usePortal={true}
-            />
-          )}
+        )}
 
-          {/* Кастомный Alert */}
-          <CustomAlert
-            isVisible={isModalVisible}
-            onClose={() => setModalVisible(false)}
-            message={alertText}
-            type={alertType}
-            title={alertType === 'error' ? 'Error' : ''}
-            image={alertImage}
-          />
-          
-        </View>
-        
-      )}
-      
-      
-    </Provider>
-    
+
+      </Provider>
+
     </View>
-    
+
   );
 
-  
+
 });
 
 

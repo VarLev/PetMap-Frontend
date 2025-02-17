@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { FlatList, ActivityIndicator, View, ScrollView,
-  RefreshControl } from "react-native";
+import {
+  FlatList, ActivityIndicator, View, ScrollView,
+  RefreshControl
+} from "react-native";
 import DangerCard from "@/components/custom/cards/DangerCard";
 import { MapPointType } from "@/dtos/enum/MapPointType";
 import { IWalkAdvrtShortDto } from "@/dtos/Interfaces/advrt/IWalkAdvrtShortDto";
@@ -31,7 +33,7 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
     if (isLoading) return;
     setIsLoading(true);
     try {
-      if(renderType === MapPointType.Walk){
+      if (renderType === MapPointType.Walk) {
         const walks = await userStore.getUserWalks(userStore.currentUser!.id);
         setPoints(walks);
       }
@@ -55,7 +57,7 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
     if (isRefreshing || isLoading) return;
     setIsRefreshing(true);
     try {
-      if(renderType === MapPointType.Walk){
+      if (renderType === MapPointType.Walk) {
         const walks = await userStore.getUserWalks(userStore.currentUser!.id);
         setPoints(walks);
       }
@@ -92,25 +94,25 @@ const MyMapItemList: React.FC<AdvrtsListProps> = ({ renderType }) => {
           return (
             <TouchableOpacity activeOpacity={0.85} onPress={() => {
               if (item.id) {
-                mapStore.setMyPointToNavigateOnMap({pointId: item.id, pointType: MapPointType.Walk});
+                mapStore.setMyPointToNavigateOnMap({ pointId: item.id, pointType: MapPointType.Walk });
                 router.push('(tabs)/map');
               }
-              }}>
+            }}>
               <MyAdvrtCard
                 ad={item as IWalkAdvrtShortDto}
                 pressDelete={handleDelete}
               />
             </TouchableOpacity>
-            
+
           );
         case MapPointType.Danger:
           return (
-            <DangerCard mapPointDanger={item as IPointDangerDTO} onDetailPress={()=>{}} />
+            <DangerCard mapPointDanger={item as IPointDangerDTO} onDetailPress={() => { }} />
           );
         default:
           return (
-            <MapPointCard mapPoint={item as IPointEntityDTO} onDetailPress={()=>{}} isMy={true} />
-            
+            <MapPointCard mapPoint={item as IPointEntityDTO} onDetailPress={() => { }} isMy={true} />
+
           );
       }
     },
