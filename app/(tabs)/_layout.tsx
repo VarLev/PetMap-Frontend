@@ -13,7 +13,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import uiStore from '@/stores/UIStore';
-import mapStore from '@/stores/MapStore';
 
 const Tabslayout = () => {
   const pathname = usePathname();
