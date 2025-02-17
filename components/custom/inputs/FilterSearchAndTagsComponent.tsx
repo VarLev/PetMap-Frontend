@@ -259,13 +259,13 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
       </View>
 
       {/* Если тег выбран — SnackBar, иначе — горизонтальный список тегов */}
-      <TagSelector
+      {!isTagSelected && <TagSelector
         isTagSelected={isTagSelected}
         snackbarVisible={snackbarVisible}
         setSnackbarVisible={setSnackbarVisible}
         loadingTag={loadingTag}
         handleSelectTag={handleSelectTag}
-      />
+      />}
     </View>
   );
 };
