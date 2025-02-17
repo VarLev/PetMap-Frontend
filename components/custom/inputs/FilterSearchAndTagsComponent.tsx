@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, Platform, Text, Pressable, Modal, Button, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, StyleSheet, Platform, Text, Pressable, Modal, Button, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import IconSelectorComponent from '../icons/IconSelectorComponent';
-import CustomButtonWithIcon from '../buttons/CustomButtonWithIcon';
+import IconSelectorComponent from '../icons/IconSelectorComponent'
 import CustomBudgeButton from '../buttons/CustomBudgeButton';
-import CustomSnackBar from '../alert/CustomSnackBar';
 import uiStore from '@/stores/UIStore';
 import i18n from '@/i18n';
 import { MapPointType } from '@/dtos/enum/MapPointType';

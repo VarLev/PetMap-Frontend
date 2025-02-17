@@ -135,7 +135,8 @@ const ViewDangerOnMap: React.FC<CompositeFormProps> = ({ mapPoint }) => {
               </Text>
             </View>
             <Divider className="mt-2 bg-slate-400" />
-            <View className="h-60">
+            <View style={{ flex: 1, minHeight: 500 }}>
+              
               <TextReviewSection
                 key={mapPoint.id}
                 mapPointId={mapPoint.id}

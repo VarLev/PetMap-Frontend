@@ -3,7 +3,6 @@ import { View, FlatList, Text } from "react-native";
 import { Divider } from "react-native-paper";
 import { ReviewDTO } from "@/dtos/classes/review/Review";
 import StarRating from "react-native-star-rating-widget";
-import CustomButtonPrimary from "../custom/buttons/CustomButtonPrimary";
 import CustomOutlineInputText from "../custom/inputs/CustomOutlineInputText";
 import userStore from "@/stores/UserStore";
 import CustomAlert from "../custom/alert/CustomAlert";
@@ -11,46 +10,43 @@ import ReviewComment from "./ReviewComment";
 import mapStore from "@/stores/MapStore";
 import StarSvgIcon from "../custom/icons/StarSvgIcon";
 import i18n from "@/i18n";
+import CustomLoadingButton from "../custom/buttons/CustomLoadingButton";
 
 interface ReviewSectionProps {
   mapPointId: string;
   fetchReviews: () => Promise<ReviewDTO[]>;
 }
 
-const ReviewSection: React.FC<ReviewSectionProps> = ({
-  mapPointId,
-  fetchReviews
-}) => {
+const ReviewSection: React.FC<ReviewSectionProps> = ({ mapPointId, fetchReviews }) => {
   const [reviewText, setReviewText] = useState("");
   const [rating, setRating] = useState(0);
-  const [localReviews, setLocalReviews] = useState<ReviewDTO[]>(
-    new Array<ReviewDTO>()
-  );
+  const [localReviews, setLocalReviews] = useState<ReviewDTO[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [existingReview, setExistingReview] = useState<ReviewDTO | null>(null);
 
-  const hasLoadedInitialReviews = useRef(false); // Use ref to track if initial load has occurred
+  const hasLoadedInitialReviews = useRef(false);
 
   useEffect(() => {
     if (!hasLoadedInitialReviews.current) {
       loadReviews();
       hasLoadedInitialReviews.current = true;
     }
-  }, [existingReview]);
+  }, []);
 
   const loadReviews = async () => {
     setIsLoading(true);
     try {
       const newReviews = await fetchReviews();
-      setLocalReviews((prevReviews) => [...prevReviews, ...newReviews]);
-      // Check if the current user has already left a review for this point
+      setLocalReviews(newReviews);
+      // Определяем, есть ли отзыв текущего пользователя
       const userReview = newReviews.find(
         (review) =>
           userStore.currentUser && review.userId === userStore.currentUser.id
       );
       if (userReview) {
         setExistingReview(userReview);
+        // Если необходимо, можно установить данные отзыва для редактирования
         setReviewText(userReview.comment);
         setRating(userReview.rating);
       }
@@ -68,14 +64,16 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
     }
 
     try {
+      setIsLoading(true);
       if (
         !userStore.currentUser ||
         !userStore.currentUser.id ||
         !userStore.currentUser.name
       ) {
-        console.error("User ID or name is missing");
+        console.error("User ID или имя отсутствуют");
         return;
       }
+      // Если отзыв существует, обновляем его, иначе создаём новый
       const review = new ReviewDTO(
         existingReview ? existingReview.id : "",
         rating,
@@ -94,31 +92,36 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
           return [review, ...prevReviews];
         }
       });
+      // После создания или обновления отзыва скрываем блок создания, устанавливая существующий отзыв
+      setExistingReview(review);
+      // Сброс полей ввода (хотя блок больше не отображается)
       setReviewText("");
       setRating(0);
-      setExistingReview(null);
     } catch (error) {
       console.error("Ошибка при отправке отзыва:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const deleteReview = async (reviewId: string) => {
-    await mapStore.deleteReview(reviewId)
+    await mapStore
+      .deleteReview(reviewId)
       .then(() => {
-        setLocalReviews([]);
+        setLocalReviews((prevReviews) => prevReviews.filter((r) => r.id !== reviewId));
+        // После удаления отзыва разрешаем создание нового
         setExistingReview(null);
         setReviewText("");
         setRating(0);
       })
-      .then(() => loadReviews())
-  }
-  
+      .then(() => loadReviews());
+  };
+
   const renderReview = ({ item }: { item: ReviewDTO }) => {
     return (
       <View>
         <ReviewComment
           item={item}
-          // onUpdateReview={handleUpdateReview}
           handleDeleteReview={(reviewId) => deleteReview(reviewId)}
           refreshReviews={(updatedReview: ReviewDTO) => {
             setLocalReviews((prevReviews) =>
@@ -131,13 +134,14 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
         {localReviews.length - 1 !== localReviews.indexOf(item) && <Divider />}
       </View>
     );
-  } 
+  };
 
   return (
     <View className="pt-2">
       <Text className="text-base font-nunitoSansBold text-indigo-700">
         {i18n.t("ReviewsSection.title")}
       </Text>
+      {/* Если у пользователя уже есть отзыв (или он только что создан), блок ввода не отображается */}
       {!existingReview && (
         <View>
           <CustomOutlineInputText
@@ -157,9 +161,10 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
             starStyle={{ marginHorizontal: 10 }}
             StarIconComponent={StarSvgIcon}
           />
-          <CustomButtonPrimary
+          <CustomLoadingButton
             title={i18n.t("ReviewsSection.submitButton")}
             handlePress={handleSubmitReview}
+            isLoading={isLoading}
           />
         </View>
       )}

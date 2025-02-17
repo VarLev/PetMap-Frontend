@@ -81,21 +81,21 @@ const PointMarker: React.FC<PointMarkerProps> = ({
         >
           {currentPointType === MapPointType.Danger ? (
             // Отрисовка, если пользователь добавляет опасность (Danger)
-            <View className="bg-indigo-700 rounded-full h-6 w-6">
+            <View className="bg-indigo-700 rounded-full h-7 w-7">
               <IconSelectorComponent
                 iconName="alert-circle-outline"
                 iconSet="MaterialCommunityIcons"
-                size={24}
+                size={28}
                 color="white"
               />
             </View>
           ) : (
             // Отрисовка, если пользователь добавляет пользовательский поинт (UsersCustomPoint, Note и т.д.)
-            <View className="bg-indigo-700 rounded-full h-6 w-6">
+            <View className="bg-indigo-700 rounded-full h-7 w-7">
               <IconSelectorComponent
                 iconName="help-circle-outline"
                 iconSet="Ionicons"
-                size={24}
+                size={28}
                 color="white"
               />
             </View>

@@ -13,10 +13,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import uiStore from '@/stores/UIStore';
+import mapStore from '@/stores/MapStore';
 
 const Tabslayout = () => {
   const pathname = usePathname();
-  const hideTabBar = pathname.includes('/chat/');
+  const hideTabBar = pathname.includes('/chat/')|| pathname.includes('/edit') ;
   // Используем shared value для управления видимостью таббара (1 - виден, 0 - скрыт)
   const tabBarVisibility = useSharedValue(1);
 
@@ -34,6 +35,7 @@ const Tabslayout = () => {
     });
 
     return () => {
+
       keyboardShowListener.remove();
       keyboardHideListener.remove();
     };
@@ -58,7 +60,7 @@ const Tabslayout = () => {
         <Tabs
           tabBar={(props: any) =>
             // Если страница не содержит "/chat/", показываем анимированный таббар
-            !hideTabBar && (
+            !hideTabBar  && (
               <Animated.View style={animatedStyle}>
                 <TabBar {...props} />
               </Animated.View>

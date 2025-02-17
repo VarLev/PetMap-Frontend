@@ -218,7 +218,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
     }
   };
 
-  const shouldShowChooseAvatar = userPhoto && userPhoto.includes('userAvatars');
+  const shouldShowChooseAvatar = userPhoto ;
 
   return (
     <GestureHandlerRootView className="h-full bg-white">
@@ -393,15 +393,16 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
                 allowedSymbols={['social']}
               />
             </View>
-            <View className="p-2">
-              <CustomLoadingButton title={i18n.t('EditProfileComponent.saveButton')} handlePress={handleSave} />
-              <CustomButtonOutlined title={i18n.t('EditProfileComponent.cancelButton')} handlePress={onCancel} />
-            </View>
 
-            <View className="h-32" />
+
+            <View className="h-48" />
           </View>
         }
       />
+       <View className="absolute bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200">
+        <CustomLoadingButton title={i18n.t('EditProfileComponent.saveButton')} handlePress={handleSave} />
+        <CustomButtonOutlined title={i18n.t('EditProfileComponent.cancelButton')} handlePress={onCancel} />
+      </View>
       {isSheetVisible && (
         <BottomSheetComponent
           ref={sheetRef}
@@ -411,6 +412,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
           enablePanDownToClose={true}
         />
       )}
+     
     </GestureHandlerRootView>
   );
 });

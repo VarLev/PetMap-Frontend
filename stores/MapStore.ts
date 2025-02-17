@@ -57,6 +57,10 @@ class MapStore {
     this.bottomSheetVisible = visible;
   }
 
+  getBottomSheetVisible() {
+    return this.bottomSheetVisible ;
+  }
+
   setSuggestions(suggestions: any[]) {
     this.suggestions = suggestions;
   }
@@ -321,7 +325,7 @@ class MapStore {
     }
   }
 
-  async getFilteredWalks(filter: IWalkAdvrtFilterParams){
+  async getFilteredWalks(filter: IWalkAdvrtFilterParams): Promise<number> {
     try {
       filter.city = this.getCity();
     
@@ -330,6 +334,7 @@ class MapStore {
       runInAction(() => {
         this.walkAdvrts = response.data as IWalkAdvrtDto[]; 
       });
+      return response.data.length;
     } catch (error) {
       return handleAxiosError(error);
     }
@@ -341,7 +346,7 @@ class MapStore {
     pageSize: number
   ): Promise<IPagedAdvrtDto | IPagedPointDangerDTO | IPagetPointUserDTO> {
     try {
-      console.log('Cudddddddddddddddrrent user coordinates:', this.currentUserCoordinates);
+    
       const response = await apiClient.get(
         `map/get-points-paginated?type=${type}&city=${this.getCity()}&page=${page}&pageSize=${pageSize}&userLatitude=${this.currentUserCoordinates[1]}&userLongitude=${this.currentUserCoordinates[0]}`
       );

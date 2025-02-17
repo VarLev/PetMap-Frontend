@@ -9,6 +9,8 @@ import CustomAlert from "../custom/alert/CustomAlert";
 import TextComment from "./TextComment";
 import mapStore from "@/stores/MapStore";
 import i18n from "@/i18n";
+import CustomLoadingButton from "../custom/buttons/CustomLoadingButton";
+import { set } from "lodash";
 
 interface CommentSectionProps {
   mapPointId: string;
@@ -42,6 +44,8 @@ const TextReviewSection: React.FC<CommentSectionProps> = ({ mapPointId, fetchRev
     }
   };
 
+  
+
   const handleSubmitComment = async () => {
     if (!commentText) {
       setModalVisible(true);
@@ -49,6 +53,7 @@ const TextReviewSection: React.FC<CommentSectionProps> = ({ mapPointId, fetchRev
     }
 
     try {
+      setIsLoading(true);
       if (
         !userStore.currentUser ||
         !userStore.currentUser.id ||
@@ -74,6 +79,9 @@ const TextReviewSection: React.FC<CommentSectionProps> = ({ mapPointId, fetchRev
       setCommentText("");
     } catch (error) {
       console.error("Ошибка при отправке комментария:", error);
+      
+    }finally{
+      setIsLoading(false);
     }
   };
 
@@ -118,9 +126,10 @@ const TextReviewSection: React.FC<CommentSectionProps> = ({ mapPointId, fetchRev
           value={commentText}
           handleChange={setCommentText}
         />
-        <CustomButtonPrimary
+        <CustomLoadingButton
           title={i18n.t("ReviewsSection.submitButton")}
           handlePress={handleSubmitComment}
+          isLoading={isLoading}
         />
         
       </View>

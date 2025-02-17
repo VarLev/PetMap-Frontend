@@ -1,6 +1,6 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { View, BackHandler, ImageSourcePropType, Animated, ActivityIndicator, TouchableOpacity, Keyboard, Dimensions } from 'react-native';
+import { View, BackHandler, ImageSourcePropType, ActivityIndicator, TouchableOpacity, Keyboard } from 'react-native';
 import Mapbox, { MapView, UserLocation, Camera, PointAnnotation, ShapeSource, SymbolLayer, LineLayer } from '@rnmapbox/maps';
 import mapStore from '@/stores/MapStore';
 import { IconButton, Provider } from 'react-native-paper';
@@ -42,9 +42,10 @@ import WalkMarker from './markers/WalkMarker';
 import PointMarker from './markers/PointMarker';
 import { createGeoJSONFeatures } from '@/utils/mapUtils';
 import { generateChatData, generateChatIdForTwoUsers } from '@/utils/chatUtils';
-import { Easing } from 'react-native-reanimated';
+
 import { BG_COLORS } from '@/constants/Colors';
 import { throttle } from 'lodash';
+import CustomSnackBar from '../custom/alert/CustomSnackBar';
 
 
 
@@ -89,27 +90,15 @@ const MapBoxMap = observer(() => {
   const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
 
   // Анимированное значение для плавного появления карты
-  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   // Функция для перевода градусов в радианы
   const deg2rad = (deg: number) => deg * (Math.PI / 180);
   const MIN_DISTANCE = 10;
   const lastLocation = useRef<{ latitude: number; longitude: number } | null>(null);
 
-
   Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!);
 
-  // Когда isLoading меняется на false, запускаем анимацию плавного появления
-  useEffect(() => {
-    if (!isLoading) {
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 1000,        // Длительность анимации (миллисекунды)
-        easing: Easing.ease,  // Можно использовать разные типы Easing
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [isLoading, fadeAnim]);
+
 
   useEffect(() => {
     if (!userCoordinates) return; // Если координаты ещё null, выходим
@@ -168,38 +157,22 @@ const MapBoxMap = observer(() => {
     }
   }, [userCoordinates, didLoad]);
 
-  // --- Периодический опрос при фокусе экрана ---
-  useFocusEffect(
-    useCallback(() => {
-      if (mapStore.getMyPointToNavigateOnMap()) {
-        if (mapStore.getMyPointToNavigateOnMap()?.pointType === MapPointType.Walk) {
-          const advrt = mapStore.walkAdvrts.find((advrt: IWalkAdvrtDto) => advrt.id === mapStore.getMyPointToNavigateOnMap()?.pointId);
-          if (advrt) {
-            onPinPress(advrt,14);
-          }
-        }
-        mapStore.setMyPointToNavigateOnMap(null);
+  // // --- Периодический опрос при фокусе экрана ---
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     if (mapStore.getMyPointToNavigateOnMap()) {
+  //       if (mapStore.getMyPointToNavigateOnMap()?.pointType === MapPointType.Walk) {
+  //         const advrt = mapStore.walkAdvrts.find((advrt: IWalkAdvrtDto) => advrt.id === mapStore.getMyPointToNavigateOnMap()?.pointId);
+  //         if (advrt) {
+  //           onPinPress(advrt,14);
+  //         }
+  //       }
+  //       mapStore.setMyPointToNavigateOnMap(null);
 
-      }
+  //     }
 
-    }, [])
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        // Если пользователь авторизован и нажимает "Назад", блокируем переход на экран авторизации
-        handleSheetClose();
-        return true;
-      };
-
-      BackHandler.addEventListener('hardwareBackPress', onBackPress);
-
-      return () => {
-        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-      };
-    }, [])
-  );
+  //   }, [])
+  // );
 
 
   // Обработка системной кнопки "Назад" на Android
@@ -233,6 +206,7 @@ const MapBoxMap = observer(() => {
 
 
   const handlePress = (event: any ) => {
+
     Keyboard.dismiss()
     if (uiStore.getIsSearchAddressExpanded())
       return;
@@ -330,6 +304,7 @@ const MapBoxMap = observer(() => {
   };
 
   const onPinPress = async (advrt: IWalkAdvrtDto, zoomLevelx?:number) => {
+    Keyboard.dismiss();
     cameraRef.current?.setCamera({
       centerCoordinate: [advrt.longitude!, advrt.latitude!],
       animationDuration: 300,
@@ -338,7 +313,7 @@ const MapBoxMap = observer(() => {
       paddingLeft: 0,
       paddingRight: 0,
       paddingTop: 0,
-      paddingBottom: 400,
+      paddingBottom: 300,
       },
     });
     setRenderContent(() => <AdvtComponent advrt={advrt} onInvite={handleChatInvite} onClose={handleSheetClose} />);
@@ -447,8 +422,15 @@ const MapBoxMap = observer(() => {
     }
   };
 
+  const filterApply = (filtredCount:number) => {
+    closeDrawer();
+    if(filtredCount === 0) 
+      setSnackbarVisible(true);
+
+  };
+
   const handleOpenFilter = () => {
-    openDrawer(<FilterComponent onFilterChange={handleFilterChange} onFilterApply={closeDrawer} />);
+    openDrawer(<FilterComponent onFilterChange={handleFilterChange} onFilterApply={filterApply} />);
   };
 
   // Функция для расчёта расстояния между двумя точками (в метрах)
@@ -468,7 +450,6 @@ const MapBoxMap = observer(() => {
   // Функция, которая будет вызываться не чаще, чем раз в секунду
   const throttledLocationUpdate = useCallback(
     throttle((coords: any) => {
-      console.log('User location updated:', coords);
       mapStore.setCurrentUserCoordinates([coords.longitude, coords.latitude]);
       // Если уже есть предыдущие координаты, сравниваем их
       if (lastLocation.current) {
@@ -486,7 +467,7 @@ const MapBoxMap = observer(() => {
       setUserCoordinates([coords.longitude, coords.latitude]);
       
 
-    }, 1000),
+    },5000),
     []
   );
 
@@ -518,7 +499,7 @@ const MapBoxMap = observer(() => {
   };
 
   return (
-    <View style={{ flex: 1, bottom: 70 }}>
+    <View style={{ flex: 1, bottom:isSheetVisible?0: 70 }}>
       
       <Provider>
       {/* Компонент, проверяющий и запрашивающий разрешения */}
@@ -532,7 +513,7 @@ const MapBoxMap = observer(() => {
 
       ) : (
         // После окончания загрузки используем анимированный контейнер, чтобы карта появилась плавно
-        <Animated.View style={{ flex: 1, top:70, opacity: fadeAnim }} >
+        <View style={{ flex: 1, top: isSheetVisible?0: 70}} >
           {/* Если у нас есть режим карточного вида, отображаем SlidingOverlay */}
           {isCardView && (
             <SlidingOverlay visible={isCardView}>
@@ -583,30 +564,13 @@ const MapBoxMap = observer(() => {
             )}
 
 
-            {/* Простейший pin через PointAnnotation */}
-            <PointAnnotation
-              id="my-marker"
-              coordinate={[10, 10]}
-            >
-              {/* Сам вид маркера. Можно поставить свою иконку */}
-              <View>
-                <View style={{
-                  width: 20,
-                  height: 20,
-                  borderRadius: 10,
-                  backgroundColor: BG_COLORS.indigo[700],
-                  borderWidth: 2,
-                  borderColor: 'white'
-                }} />
-              </View>
-            </PointAnnotation>
+          
 
 
             {/* Кластеризация меток (если используем ShapeSource / SymbolLayer) */}
             {!isCardView && geoJSONData && (
               <ShapeSource id="points" shape={geoJSONData} cluster clusterRadius={38}>
                 <SymbolLayer id="clusteredPoints" filter={['has', 'point_count']} style={styles.clusterStyle} />
-
               </ShapeSource>
             )}
 
@@ -706,7 +670,13 @@ const MapBoxMap = observer(() => {
               setSnackbarVisible={setSnackbarVisible}
               snackbarVisible={snackbarVisible}
               onAddressSelected={(coordinates) => {
-                cameraRef.current?.flyTo(coordinates, 500);
+                
+                cameraRef.current?.setCamera({
+                  centerCoordinate: coordinates,
+                  zoomLevel: 15,
+                  animationDuration: 1000,
+                })
+                //cameraRef.current?.zoomTo(14, 1000);
                 // setTimeout(() => {
                 //   uiStore.setIsSearchAddressExpanded(false);
                 //   handlePress({ geometry: { coordinates: coordinates } });
@@ -715,7 +685,11 @@ const MapBoxMap = observer(() => {
 
               }}
             />
-
+  
+      <CustomSnackBar
+        visible={snackbarVisible}
+        setVisible={setSnackbarVisible}
+      />
 
           </View>
 
@@ -723,7 +697,7 @@ const MapBoxMap = observer(() => {
           {isSheetVisible && (
             <BottomSheetComponent
               ref={sheetRef}
-              snapPoints={renderAdvrtForm ? ['45%', '100%'] : ['45%', '100%']}
+              snapPoints={renderAdvrtForm ? ['55%', '100%'] : ['55%', '100%']}
               renderContent={renderContent as any}
               onClose={handleSheetClose}
               enablePanDownToClose={true}
@@ -742,7 +716,7 @@ const MapBoxMap = observer(() => {
             image={alertImage}
           />
           
-        </Animated.View>
+        </View>
         
       )}
       

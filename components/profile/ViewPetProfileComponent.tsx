@@ -274,7 +274,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
 
                 {!!pet.birthDate && (
                   <CustomTextComponent
-                    text={pet?.birthDate?.toLocaleDateString()}
+                    text={new Date(new Date(pet?.birthDate).getTime() + new Date().getTimezoneOffset() * 60000).toLocaleDateString()}
                     rightIcon={rightIcon}
                     onRightIconPress={onEdit}
                     leftIcon="cake-variant-outline"

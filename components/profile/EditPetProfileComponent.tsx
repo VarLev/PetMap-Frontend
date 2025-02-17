@@ -499,11 +499,12 @@ const EditPetProfileComponent = observer(
                   label={i18n.t('EditPetProfile.weight') + ' (kg)'}
                   value={editablePet.weight || ''}
                   handleChange={(text) => {
-                    // Заменяем запятые на точки и удаляем лишние символы
+                    // Разрешаем только цифры и одну точку
                     let processedText = text
-                      .replace(/[^0-9,]/g, '') // Разрешаем только цифры и запятую
-                      .replace(/(,.*),/g, '$1'); // Убираем лишние запятые, если их больше одной
-
+                      .replace(/[^0-9.]/g, '') // Убираем всё, кроме цифр и точки
+                      .replace(/^(\.)/, '0.') // Если ввод начинается с точки, заменяем на "0."
+                      .replace(/(\..*)\./g, '$1'); // Убираем лишние точки, если их больше одной
+                    // Передаем в стейт строку, пока пользователь вводит число
                     handleFieldChange('weight', processedText);
                   }}
                 />
@@ -626,20 +627,21 @@ const EditPetProfileComponent = observer(
                 <Divider className="mt-6" />
               </View>
 
-              <View className="mt-4">
-                {isNewPet ? (
-                  <CustomLoadingButton title={i18n.t('EditPetProfile.add')} handlePress={handleAddPet} />
-                ) : (
-                  <CustomLoadingButton title={i18n.t('EditPetProfile.save')} handlePress={handleSave} />
-                )}
-                <CustomButtonOutlined title={i18n.t('EditPetProfile.cancel')} handlePress={onCancel} />
-              </View>
 
-              <View className="h-32" />
+              <View className='h-48'/>
+
             </View>
           }
           keyExtractor={(item, index) => index.toString()} // Генерация ключа
         />
+        <View className="absolute bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200">
+          {isNewPet ? (
+            <CustomLoadingButton title={i18n.t('EditPetProfile.add')} handlePress={handleAddPet} />
+          ) : (
+            <CustomLoadingButton title={i18n.t('EditPetProfile.save')} handlePress={handleSave} />
+          )}
+          <CustomButtonOutlined title={i18n.t('EditPetProfile.cancel')} handlePress={onCancel} />
+        </View>
       </GestureHandlerRootView>
     );
   }

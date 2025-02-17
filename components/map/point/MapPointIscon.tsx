@@ -16,111 +16,112 @@ const MapPointIcon: React.FC<MapPointIconProps> = ({ mapPointType, isSelected })
     switch (mapPointType) {
       case MapPointType.Danger:
         return (
-          <View className={`${backgroundColor} ${borderColor} rounded-full h-6 w-6 justify-center items-center`}>
+          <View className={`${backgroundColor} ${borderColor} rounded-full  h-8 w-8 justify-center items-center`}>
             <IconSelectorComponent
               iconName='alert-circle-outline'
               iconSet='Ionicons'
-              size={15}
-              color={isSelected ? '#383838' : '#383838'}
+              size={27}
+            
+              color={isSelected ? '#383838' : 'red'}
             />
           </View>
         );
       case MapPointType.Other:
         return (
-          <View className={`${backgroundColor} ${borderColor} rounded-full h-6 w-6 justify-center items-center`}>
+          <View className={`${backgroundColor} ${borderColor} rounded-full h-8 w-8 justify-center items-center`}>
             <IconSelectorComponent
               iconName='tree-outline'
               iconSet='Ionicons'
-              size={15}
-              color={isSelected ? '#383838' : '#383838'}
+              size={25}
+              color={isSelected ? 'green' : 'green'}
             />
           </View>
         );
       case MapPointType.Playground:
         return (
-          <View className={`${backgroundColor} ${borderColor} rounded-full h-6 w-6 justify-center items-center`}>
+          <View className={`${backgroundColor} ${borderColor} rounded-full h-8 w-8 justify-center items-center`}>
             <IconSelectorComponent
               iconName='basketball-outline'
               iconSet='Ionicons'
-              size={15}
+              size={24}
               color={isSelected ? '#383838' : '#383838'}
             />
           </View>
         );
       case MapPointType.DogArea:
         return (
-          <View className={`${backgroundColor} ${borderColor} rounded-full h-6 w-6 justify-center items-center`}>
+          <View className={`${backgroundColor} ${borderColor} rounded-full h-8 w-8 justify-center items-center`}>
             <IconSelectorComponent
               iconName='select-place'
               iconSet='MaterialCommunityIcons'
-              size={15}
+              size={24}
               color={isSelected ? '#383838' : '#383838'}
             />
           </View>
         );
       case MapPointType.Cafe:
         return (
-          <View className={`${backgroundColor} ${borderColor} rounded-full h-6 w-6 justify-center items-center`}>
+          <View className={`${backgroundColor} ${borderColor} rounded-full h-8 w-8 justify-center items-center`}>
             <IconSelectorComponent
               iconName='cafe-outline'
               iconSet='Ionicons'
-              size={15}
+              size={22}
               color={isSelected ? '#383838' : '#383838'}
             />
           </View>
         );
       case MapPointType.Restaurant:
         return (
-          <View className={`${backgroundColor} ${borderColor} rounded-full h-6 w-6 justify-center items-center`}>
+          <View className={`${backgroundColor} ${borderColor} rounded-full h-8 w-8 justify-center items-center`}>
             <IconSelectorComponent
               iconName='restaurant-outline'
               iconSet='Ionicons'
-              size={15}
+              size={20}
               color={isSelected ? '#383838' : '#383838'}
             />
           </View>
         );
       case MapPointType.Veterinary:
         return (
-          <View className={`${backgroundColor} ${borderColor} rounded-full h-6 w-6 justify-center items-center`}>
+          <View className={`${backgroundColor} ${borderColor} rounded-full h-8 w-8 justify-center items-center`}>
             <IconSelectorComponent
               iconName='heart-outline'
               iconSet='Ionicons'
-              size={15}
+              size={22}
               color={isSelected ? '#383838' : '#383838'}
             />
           </View>
         );
       case MapPointType.PetStore:
         return (
-          <View className={`${backgroundColor} ${borderColor} rounded-full h-6 w-6 justify-center items-center`}>
+          <View className={`${backgroundColor} ${borderColor} rounded-full h-8 w-8 justify-center items-center`}>
             <IconSelectorComponent
               iconName='storefront-outline'
               iconSet='Ionicons'
-              size={20}
+              size={22}
               color={isSelected ? '#383838' : '#383838'}
             />
           </View>
         );
       case MapPointType.Note:
         return (
-          <View className={`${backgroundColor} ${borderColor} rounded-full h-6 w-6 justify-center items-center`}>
+          <View className={`${backgroundColor} ${borderColor} rounded-full h-8 w-8 justify-center items-center`}>
             <IconSelectorComponent
               iconName='location-pin'
               iconSet='SimpleLine'
-              size={20}
+              size={22}
               color={isSelected ? '#383838' : '#383838'}
             />
           </View>
         );
       default:
         return (
-          <View className={`${backgroundColor} ${borderColor} rounded-full h-6 w-6 justify-center items-center`}>
+          <View className={`${backgroundColor} ${borderColor} rounded-full h-8 w-8 justify-center items-center`}>
             <IconSelectorComponent
               iconName='leaf-outline'
               iconSet='Ionicons'
-              size={15}
-              color={isSelected ? '#383838' : '#383838'}
+              size={20}
+              color={isSelected ? '#383838' : 'green'}
             />
           </View>
         );
