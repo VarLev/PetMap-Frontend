@@ -49,15 +49,7 @@ const ViewProfileComponent = observer(
         headerRight: () => (
           <>
             {!isLoading && (
-              !isCurrentUser ? (
-                <IconButton
-                  icon="message-processing-outline"
-                  size={30}
-                  iconColor="white"
-                  style={styles.menuButton}
-                  onPress={openChat}
-                />
-              ) : (
+              isCurrentUser ? (
                 <Menu
                   visible={menuVisible}
                   onDismiss={closeMenu}
@@ -82,6 +74,14 @@ const ViewProfileComponent = observer(
                     icon="pencil-outline"
                   />
                 </Menu>
+              ) : (
+                <IconButton
+                  icon="message-processing-outline"
+                  size={30}
+                  iconColor="white"
+                  style={styles.menuButton}
+                  onPress={openChat}
+                />
               )
             )}
           </>
