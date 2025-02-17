@@ -37,8 +37,15 @@ const PostCard: FC<PostCardProps> = observer(
     const [isComplaintModal, setIsComplaintModal] = useState<boolean>(false);
     const [isComplaintDone, setIsComplaintDone] = useState(false);
     const [isComplaintSuccess, setIsComplaintSuccess] = useState(false);
-
     const [webViewRefresherKey, setWebViewRefresherKey] = useState<string>('');
+
+    const [previewAvailable, setPreviewAvailable] = useState(false);
+    const [retryCount, setRetryCount] = useState(0);
+    const [previewUrl, setPreviewUrl] = useState<string>(`https://vz-cb33998c-f18.b-cdn.net/${post.postPhotos[0]?.id}/preview.webp`);
+    const maxRetries = 10; // Например, 10 попыток
+  
+   
+    
 
     useEffect(() => {
       (async () => {
@@ -49,6 +56,42 @@ const PostCard: FC<PostCardProps> = observer(
         setCommentsCounter(postComments.length);
       })();
     }, [refresh]);
+
+    useEffect(() => {
+      if (!post.postPhotos.length) return;
+      let isMounted = true;
+      //setPreviewUrl(`https://vz-cb33998c-f18.b-cdn.net/${post.postPhotos[0].id}/preview.webp`);
+      const checkPreview = async () => {
+        try {
+          
+          const response = await fetch(previewUrl, { method: 'HEAD' });
+          if (response.ok && isMounted) {
+            console.log('Preview ready');
+            setPreviewAvailable(true);
+            setRetryCount(0); // Сбрасываем счетчик
+          } else {
+            throw new Error('Preview not ready');
+          }
+        } catch (_error) {
+          if (retryCount < maxRetries && isMounted) {
+            setTimeout(() => {
+              setRetryCount(prev => prev + 1);
+              checkPreview();
+            }, 5000);
+          } else {
+            setPreviewAvailable(false); // Если не удалось загрузить после 10 попыток, отключаем превью
+          }
+        }
+      };
+    
+      checkPreview();
+    
+      return () => {
+        isMounted = false;
+      };
+    }, [post.postPhotos[0]?.id]); // Зависимость - ID фото, а не URL, чтобы эффект срабатывал при смене фото
+    
+  
 
     const memoDepends = [
       post,
@@ -63,6 +106,7 @@ const PostCard: FC<PostCardProps> = observer(
       isComplaintSuccess,
       commentsCounter,
       currentPlayingVideo,
+      previewAvailable
     ];
 
     const updateLikes = async () => {
@@ -157,6 +201,8 @@ const PostCard: FC<PostCardProps> = observer(
       setWebViewRefresherKey(randomUUID());
     };
 
+ 
+
     const CardItem = useMemo(
       () => (
         <Card className="mx-2 mt-2 bg-white rounded-2xl">
@@ -217,7 +263,8 @@ const PostCard: FC<PostCardProps> = observer(
             {post.content.length > 0 && <CustomTextComponent text={post.content} maxLines={10} enableTranslation />}
             {post.postPhotos.length > 0 && (
               <View className="rounded-2xl justify-center items-center">
-                {post.postPhotos.length === 1 && post.postPhotos[0].url.includes('iframe.mediadelivery.net') ? (
+                {(post.postPhotos.length === 1 && post.postPhotos[0].url.includes('iframe.mediadelivery.net')) ? (
+                  previewAvailable ?(
                   Platform.OS === 'ios' ? (
                     <TouchableWithoutFeedback onPress={onVideoPress} style={{ width: 340, height: 180, alignSelf: 'center' }}>
                       <WebView
@@ -225,7 +272,7 @@ const PostCard: FC<PostCardProps> = observer(
                           uri:
                             currentPlayingVideo === post.id
                               ? post.postPhotos[0].url
-                              : `https://vz-cb33998c-f18.b-cdn.net/${post.postPhotos[0].id}/preview.webp`,
+                              : previewUrl,
                         }}
                         style={{ width: 360, height: 180, alignSelf: 'center' }}
                         allowsFullscreenVideo={true}
@@ -236,15 +283,13 @@ const PostCard: FC<PostCardProps> = observer(
                         useWebView2={true}
                       />
                     </TouchableWithoutFeedback>
-                  ) : (
-                    
+                    ):(
                       <WebView
-                        
                         source={{
                           uri:
                             currentPlayingVideo === post.id
                               ? post.postPhotos[0].url
-                              : `https://vz-cb33998c-f18.b-cdn.net/${post.postPhotos[0].id}/preview.webp`,
+                              : previewUrl,
                         }}
                         style={{ width: 360, height: 180, alignSelf: 'center' }}
                         allowsFullscreenVideo={true}
@@ -255,7 +300,10 @@ const PostCard: FC<PostCardProps> = observer(
                         allowsInlineMediaPlayback={true}
                         useWebView2={true}
                       />
-        
+                    )
+                  ) : (         
+                      
+                     <Text className="text-center text-gray-500 text-xs font-nunitoSansRegular">Loading...</Text>
                   )
                 ) : (
                   <PhotoCarusel images={post.postPhotos.map((image) => ({ uri: image.url }))} imageWidth={325} imageHeight={300} />

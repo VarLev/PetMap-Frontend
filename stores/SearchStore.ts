@@ -325,11 +325,6 @@ class SearchStore {
     const uploadUrl = `https://video.bunnycdn.com/library/${libraryId}/videos/${videoId}`;
     console.log('uploadPostVideo: uploadUrl =', uploadUrl);
 
-    // const fileInfo = await FileSystem.getInfoAsync(videoUri);
-    // console.log('File info:', fileInfo);
-
-    // const base64Data = await FileSystem.readAsStringAsync(videoUri, { encoding: FileSystem.EncodingType.Base64 });
-    // console.log('Base64 snippet:', base64Data.slice(0, 100));
 
     const response = await fetch(videoUri);
     const videoBlob = await response.blob();
