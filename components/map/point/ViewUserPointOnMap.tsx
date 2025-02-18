@@ -20,7 +20,8 @@ const ViewUserPointOnMap: React.FC<CompositeFormProps> = ({ mapPoint }) => {
   const [pointData, setPointData] = useState<IPointEntityDTO>(mapPoint);
   const [loading, setLoading] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
-  const [isFullAddress, setIsFulAddress] = useState(false);
+  const [isFullAddress, setIsFullAddress] = useState(false);
+  const [isFullPointName, setIsFullPointName] = useState(false);
 
   useEffect(() => {
 
@@ -123,9 +124,12 @@ const ViewUserPointOnMap: React.FC<CompositeFormProps> = ({ mapPoint }) => {
                   <Text className="text-base font-nunitoSansBold text-indigo-700">
                     {i18n.t('ViewUserPoint.name')}
                   </Text>
-                  <Text className="text-base font-nunitoSansBold">
-                    {pointData.name}
-                  </Text>
+                  {/* Дефолтно название сокращается до 2 строчек, при нажатии открывается полностью */}
+                  <TouchableOpacity onPress={() => setIsFullPointName(!isFullPointName)}>
+                    <Text numberOfLines={!isFullPointName ? 2 : undefined} ellipsizeMode={!isFullPointName ? "tail" : undefined} className="text-base font-nunitoSansBold">
+                      {pointData.name}
+                    </Text>
+                  </TouchableOpacity>
 
                   {/* Адрес — выводим только при наличии данных */}
                   {!!pointData.address && (
@@ -133,9 +137,9 @@ const ViewUserPointOnMap: React.FC<CompositeFormProps> = ({ mapPoint }) => {
                       <Text className="text-base font-nunitoSansBold text-indigo-700">
                         {i18n.t('ViewUserPoint.address')}
                       </Text>
-                      {/* Дефолтно адрес сокращается до 2 строчек, при нажатии открывается полностью */}
-                      <TouchableOpacity onPress={() => setIsFulAddress(!isFullAddress)}>
-                        <Text numberOfLines={!isFullAddress ? 2 : undefined} ellipsizeMode={!isFullAddress ? "tail" : undefined} className="text-base font-nunitoSansRegular">
+                      {/* Дефолтно адрес сокращается до 1 строчки, при нажатии открывается полностью */}
+                      <TouchableOpacity onPress={() => setIsFullAddress(!isFullAddress)}>
+                        <Text numberOfLines={!isFullAddress ? 1 : undefined} ellipsizeMode={!isFullAddress ? "tail" : undefined}  className="text-base font-nunitoSansRegular">
                           {pointData.address}
                         </Text>
                       </TouchableOpacity>
