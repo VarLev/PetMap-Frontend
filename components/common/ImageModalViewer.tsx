@@ -8,6 +8,7 @@ interface ImageModalViewerProps {
   imageHeight?: number; // Высота изображения, по умолчанию 130
   className_?: string;   // Внешний класс для кастомизации
   borderRadius?: number;  // Радиус скругления изображения, по умолчанию 8
+  flexWidth?: string; // Ширина флекс-элемента, по умолчанию 1
 }
 
 const ImageModalViewer: React.FC<ImageModalViewerProps> = ({
@@ -16,6 +17,7 @@ const ImageModalViewer: React.FC<ImageModalViewerProps> = ({
   imageHeight = 130,
   className_ = '',
   borderRadius = 2,
+  flexWidth = 'flex-1'
 }) => {
   const [visible, setVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -30,7 +32,7 @@ const ImageModalViewer: React.FC<ImageModalViewerProps> = ({
   };
 
   return (
-    <View className={`flex-1 items-center justify-center ${className_}`}>
+    <View className={`${flexWidth} items-center justify-center ${className_}`}>
       {/* Отображение миниатюр изображений */}
       <View className="flex-row flex-wrap justify-center">
         {images.map((image, index) => (
