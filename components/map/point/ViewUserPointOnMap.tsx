@@ -10,6 +10,7 @@ import SkeletonCard from '@/components/custom/cards/SkeletonCard';
 import ReviewSection from '@/components/review/ReviewSection';
 import { MapPointType } from '@/dtos/enum/MapPointType';
 import i18n from '@/i18n';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 interface CompositeFormProps {
   mapPoint: IPointEntityDTO;
@@ -19,6 +20,8 @@ const ViewUserPointOnMap: React.FC<CompositeFormProps> = ({ mapPoint }) => {
   const [pointData, setPointData] = useState<IPointEntityDTO>(mapPoint);
   const [loading, setLoading] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
+  const [isFullAddress, setIsFullAddress] = useState(false);
+  const [isFullPointName, setIsFullPointName] = useState(false);
 
   useEffect(() => {
 
@@ -103,7 +106,7 @@ const ViewUserPointOnMap: React.FC<CompositeFormProps> = ({ mapPoint }) => {
                   mapPoint.mapPointType
                 )}
               </Text>
-              <View className="-mt-2 h-36 overflow-hidden flex-row">
+              <View className="flex-row items-start min-h-max">
                 <ImageModalViewer
                   images={[
                     {
@@ -112,16 +115,21 @@ const ViewUserPointOnMap: React.FC<CompositeFormProps> = ({ mapPoint }) => {
                         'https://firebasestorage.googleapis.com/v0/b/petmeetar.appspot.com/o/assets%2Fimages%2Fpoints%2FPark.webp?alt=media&token=d553a7d8-d919-4514-88f0-faf0089cc067',
                     },
                   ]}
+                  flexWidth='flex'
                   imageHeight={120}
                   imageWidth={120}
+                  className_='-ml-1'
                 />
-                <View className="pt-2 pl-2 flex-col w-56">
+                <View className="pt-2 pl-2 flex-col w-[66%]">
                   <Text className="text-base font-nunitoSansBold text-indigo-700">
                     {i18n.t('ViewUserPoint.name')}
                   </Text>
-                  <Text className="text-base font-nunitoSansBold">
-                    {pointData.name}
-                  </Text>
+                  {/* Дефолтно название сокращается до 2 строчек, при нажатии открывается полностью */}
+                  <TouchableOpacity onPress={() => setIsFullPointName(!isFullPointName)}>
+                    <Text numberOfLines={!isFullPointName ? 2 : undefined} ellipsizeMode={!isFullPointName ? "tail" : undefined} className="text-base font-nunitoSansBold">
+                      {pointData.name}
+                    </Text>
+                  </TouchableOpacity>
 
                   {/* Адрес — выводим только при наличии данных */}
                   {!!pointData.address && (
@@ -129,9 +137,12 @@ const ViewUserPointOnMap: React.FC<CompositeFormProps> = ({ mapPoint }) => {
                       <Text className="text-base font-nunitoSansBold text-indigo-700">
                         {i18n.t('ViewUserPoint.address')}
                       </Text>
-                      <Text className="text-base font-nunitoSansRegular truncate h-6">
-                        {pointData.address}
-                      </Text>
+                      {/* Дефолтно адрес сокращается до 1 строчки, при нажатии открывается полностью */}
+                      <TouchableOpacity onPress={() => setIsFullAddress(!isFullAddress)}>
+                        <Text numberOfLines={!isFullAddress ? 1 : undefined} ellipsizeMode={!isFullAddress ? "tail" : undefined}  className="text-base font-nunitoSansRegular">
+                          {pointData.address}
+                        </Text>
+                      </TouchableOpacity>
                     </>
                   )}
                 </View>
