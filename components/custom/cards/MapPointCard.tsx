@@ -120,12 +120,12 @@ const MapPointCard: React.FC<MapPointDangerCardProps> = ({ mapPoint, onDetailPre
       <View className="px-2 pb-2 -mt-1 flex-row w-full justify-between">
         <CustomButtonPrimary
           title={i18n.t('MapPointCard.openMap')}
-          containerStyles="w-1/2"
+          containerStyles="w-40"
           handlePress={handleOpenMap}
         />
         <CustomButtonOutlined
           title={i18n.t('MapPointCard.details')}
-          containerStyles="w-1/2"
+          containerStyles="w-40"
           handlePress={handleDetailPress}
         />
       </View>

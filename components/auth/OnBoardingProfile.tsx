@@ -99,6 +99,9 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
   const navigation = useNavigation();
   
   const breeds = tagsByAnimalType[selectedAnimalType || 0] || [];
+  const maxUserBirthDate = new Date();
+  maxUserBirthDate.setFullYear(maxUserBirthDate.getFullYear() - 15);
+
   useEffect(() => {
     // Отключаем свайп назад (iOS) и кнопку "назад" (Android)
     navigation.setOptions({ gestureEnabled: false });
@@ -422,11 +425,13 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
       id: 3,
       content: (
         <View className="items-center w-full h-full justify-center">
+          <View className='h-60 w-full items-center justify-center'>
           {source ? (
             <Avatar.Image size={200} source={source} />
           ) : (
-            <Image source={require('@/assets/images/onboardingProfile/3user.webp')} className="h-[40%] w-full" resizeMode="contain" />
+            <Image source={require('@/assets/images/onboardingProfile/3user.webp')} className="h-full w-full" resizeMode="contain" />
           )}
+          </View>
           <Text className="px-4 leading-tight text-[18px] font-nunitoSansBold text-center my-2">
             {i18n.t('onboardingProfile.slide3.title')}
           </Text>
@@ -457,7 +462,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
               <Modal transparent={true} animationType="slide">
                 <View className="flex-1 justify-center bg-black/50">
                   <View className="bg-white mx-5 p-5 rounded-3xl shadow-lg">
-                    <DateTimePicker value={age} mode="date" display="spinner" onChange={onAgeChange} textColor='black'/>
+                    <DateTimePicker value={age} mode="date" display="spinner" onChange={onAgeChange} textColor='black' maximumDate={maxUserBirthDate} />
                     <Button mode="contained" onPress={() => setShowUserAge(false)} buttonColor={BG_COLORS.indigo[800]}>
                       OK
                     </Button>
@@ -468,7 +473,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
 
             {/* Для Android обычный вызов DateTimePicker */}
             {showUserAge && Platform.OS === 'android' && (
-              <DateTimePicker value={age} mode="date" display="spinner" onChange={onAgeChange} />
+              <DateTimePicker value={age} mode="date" display="spinner" onChange={onAgeChange} maximumDate={maxUserBirthDate}/>
             )}
             <CustomSegmentedButtons containerStyles="w-[50%] mt-[6px]" value={gender} onValueChange={handleGenderChange} />
           </View>
@@ -561,7 +566,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
               <Modal transparent={true} animationType="slide">
                 <View className="flex-1 justify-center bg-black/50">
                   <View className="bg-white mx-5 p-5 rounded-3xl shadow-lg">
-                    <DateTimePicker value={petAge} mode="date" display="spinner" onChange={onPetAgeChange} textColor='black' />
+                    <DateTimePicker value={petAge} mode="date" display="spinner" onChange={onPetAgeChange} textColor='black' maximumDate={new Date()}/>
                     <Button mode="contained" buttonColor={BG_COLORS.indigo[800]} onPress={() => setShowPetAge(false)}>
                       OK
                     </Button>
@@ -571,7 +576,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
             )}
 
             {showPetAge && Platform.OS === 'android' && (
-              <DateTimePicker value={petAge} mode="date" display="spinner" onChange={onPetAgeChange} />
+              <DateTimePicker value={petAge} mode="date" display="spinner" onChange={onPetAgeChange} maximumDate={new Date()}/>
             )}
             <CustomSegmentedButtons
               containerStyles="ml-2 w-[43%] mt-[6px]"
