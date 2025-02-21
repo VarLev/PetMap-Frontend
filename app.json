@@ -2,7 +2,7 @@
   "expo": {
     "name": "PetMap",
     "slug": "PetMap",
-    "version": "0.1.8",
+    "version": "0.1.9",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "com.lightway.petmap",
@@ -39,7 +39,7 @@
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
       ],
-      "versionCode": 18
+      "versionCode": 19
     },
     "web": {
       "bundler": "metro",
