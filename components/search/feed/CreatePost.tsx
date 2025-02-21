@@ -41,6 +41,7 @@ const CreatePost: FC<CreatePostProps> = ({ onClose }) => {
       mediaTypes: MediaTypeOptions.Images,
       allowsMultipleSelection: true,
       selectionLimit: remaining,
+      allowsEditing: true,
       quality: 0.8,
     });
     if (!result.canceled) {
@@ -65,7 +66,8 @@ const CreatePost: FC<CreatePostProps> = ({ onClose }) => {
     const result = await launchImageLibraryAsync({
       mediaTypes: MediaTypeOptions.Videos,
       allowsMultipleSelection: false,
-      allowsEditing: false
+      allowsEditing: true,
+      videoMaxDuration: 15
     });
     
     if (!result.canceled && result.assets.length > 0) {

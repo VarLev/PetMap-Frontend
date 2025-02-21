@@ -140,11 +140,11 @@ const PostComment: FC<PostCommentProps> = observer(({comment, handleDeleteCommen
       {isCurrentUser ? 
       <MenuItemWrapper
         onPress={deleteComment}
-        title="Удалить"
+        title={i18n.t("ReviewComment.delete")}
       /> :
       <MenuItemWrapper
         onPress={handleComplain}
-        title="Пожаловаться"
+        title={i18n.t("feedPosts.complainOnPost")}
       />}
     </Menu>
   )

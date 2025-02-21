@@ -178,7 +178,7 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                       size={20}
                     />}
                   >
-                    <Menu.Item onPress={handleComplain} title="Пожаловаться на прогулку" />
+                    <Menu.Item onPress={handleComplain} title={i18n.t("feedPosts.complainOnPost")} />
                   </Menu>
                 }
               </View>
