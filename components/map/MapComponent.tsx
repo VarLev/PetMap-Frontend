@@ -158,22 +158,22 @@ const MapBoxMap = observer(() => {
     }
   }, [userCoordinates, didLoad]);
 
-  // // --- Периодический опрос при фокусе экрана ---
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     if (mapStore.getMyPointToNavigateOnMap()) {
-  //       if (mapStore.getMyPointToNavigateOnMap()?.pointType === MapPointType.Walk) {
-  //         const advrt = mapStore.walkAdvrts.find((advrt: IWalkAdvrtDto) => advrt.id === mapStore.getMyPointToNavigateOnMap()?.pointId);
-  //         if (advrt) {
-  //           onPinPress(advrt,14);
-  //         }
-  //       }
-  //       mapStore.setMyPointToNavigateOnMap(null);
 
-  //     }
+  useFocusEffect(
+    useCallback(() => {
+      if (mapStore.getMyPointToNavigateOnMap()) {
+        if (mapStore.getMyPointToNavigateOnMap()?.pointType === MapPointType.Walk) {
+          const advrt = mapStore.walkAdvrts.find((advrt: IWalkAdvrtDto) => advrt.id === mapStore.getMyPointToNavigateOnMap()?.pointId);
+          if (advrt) {
+            setTimeout(() => onPinPress(advrt, 14), 500);
+          }
+        }
+        mapStore.setMyPointToNavigateOnMap(null);
 
-  //   }, [])
-  // );
+      }
+
+    }, [])
+  );
 
 
   // Обработка системной кнопки "Назад" на Android
@@ -306,6 +306,7 @@ const MapBoxMap = observer(() => {
 
   const onPinPress = async (advrt: IWalkAdvrtDto, zoomLevelx?: number) => {
     Keyboard.dismiss();
+
     cameraRef.current?.setCamera({
       centerCoordinate: [advrt.longitude!, advrt.latitude!],
       animationDuration: 300,
@@ -314,7 +315,7 @@ const MapBoxMap = observer(() => {
         paddingLeft: 0,
         paddingRight: 0,
         paddingTop: 0,
-        paddingBottom: 300,
+        paddingBottom: 400,
       },
     });
     setRenderContent(() => <AdvtComponent advrt={advrt} onInvite={handleChatInvite} onClose={handleSheetClose} />);
@@ -324,6 +325,8 @@ const MapBoxMap = observer(() => {
       setIsSheetVisible(true);
       mapStore.currentWalkId = advrt.id;
     }
+
+
   };
 
   const onMapPointPress = async (mapPoint: IPointEntityDTO) => {
@@ -468,7 +471,7 @@ const MapBoxMap = observer(() => {
       setUserCoordinates([coords.longitude, coords.latitude]);
 
 
-    }, 5000),
+    }, 15000),
     []
   );
 
@@ -501,8 +504,8 @@ const MapBoxMap = observer(() => {
 
   const handleRightListOpen = () => {
     setRightListAnimation(!rightListAnimation);
-    
-    if(!isCardView) 
+
+    if (!isCardView)
       setisCardView(true);
     else
       setTimeout(() => {
@@ -677,41 +680,43 @@ const MapBoxMap = observer(() => {
               </TouchableOpacity>
             )}
             <Animated.View
-      style={[
-        {
-          position: 'absolute',
-          top: 20,
-          left: 0,
-          right: 0,
-          zIndex: 10,
-        },
-        animatedStyle,
-      ]}
-    >
-      <SearchAndTags
-        selectedTag={selectedTag}
-        setSelectedTag={setSelectedTag}
-        onSearchTextChange={handleSearchTextChange}
-        onTagSelected={tagSelected}
-        onOpenFilter={handleOpenFilter}
-        onOpenCardView={() => handleRightListOpen()}
-        badgeCount={modifiedFieldsCount}
-        setSnackbarVisible={setSnackbarVisible}
-        snackbarVisible={snackbarVisible}
-        onAddressSelected={(coordinates) => {
-          cameraRef.current?.setCamera({
-            centerCoordinate: coordinates,
-            zoomLevel: 15,
-            animationDuration: 1000,
-          });
-        }}
-      />
+              style={[
+                {
+                  position: 'absolute',
+                  top: 20,
+                  left: 0,
+                  right: 0,
+                  zIndex: 10
+                },
+                animatedStyle,
+              ]}
+            >
+              <SearchAndTags
+                selectedTag={selectedTag}
+                setSelectedTag={setSelectedTag}
+                onSearchTextChange={handleSearchTextChange}
+                onTagSelected={tagSelected}
+                onOpenFilter={handleOpenFilter}
+                onOpenCardView={() => handleRightListOpen()}
+                badgeCount={modifiedFieldsCount}
+                setSnackbarVisible={setSnackbarVisible}
+                snackbarVisible={snackbarVisible}
+                onAddressSelected={(coordinates) => {
+                  cameraRef.current?.setCamera({
+                    centerCoordinate: coordinates,
+                    zoomLevel: 18,
+                    animationDuration: 2000,
+                  });
+                }}
+              />
+              {snackbarVisible && (
+                <CustomSnackBar
+                  visible={snackbarVisible}
+                  setVisible={setSnackbarVisible}
+                />
+              )}
 
-      <CustomSnackBar
-        visible={snackbarVisible}
-        setVisible={setSnackbarVisible}
-      />
-    </Animated.View>
+            </Animated.View>
             {/* BottomSheet для отображения деталей выбранной точки/объявления */}
             {isSheetVisible && (
               <BottomSheetComponent

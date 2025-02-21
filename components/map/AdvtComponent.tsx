@@ -167,9 +167,11 @@ const AdvtComponent: React.FC<AdvtProps> = React.memo(
                       borderRadius: 10,
                       top: 40
                     }}
+                  
                     visible={menuVisible}
                     onDismiss={closeMenu}
                     anchor={<IconButton
+                     iconColor="gray"
                       icon="dots-vertical"
                       style={{ margin: 0 }}
                       onPress={openMenu}

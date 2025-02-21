@@ -266,7 +266,7 @@ const PostCard: FC<PostCardProps> = observer(
                 {(post.postPhotos.length === 1 && post.postPhotos[0].url.includes('iframe.mediadelivery.net')) ? (
                   previewAvailable ?(
                   Platform.OS === 'ios' ? (
-                    <TouchableWithoutFeedback onPress={onVideoPress} style={{ width: 340, height: 180, alignSelf: 'center' }}>
+                    <TouchableWithoutFeedback onPress={onVideoPress} style={{ width: 340, height: 440, alignSelf: 'center' }}>
                       <WebView
                         source={{
                           uri:
@@ -274,7 +274,7 @@ const PostCard: FC<PostCardProps> = observer(
                               ? post.postPhotos[0].url
                               : previewUrl,
                         }}
-                        style={{ width: 360, height: 180, alignSelf: 'center' }}
+                        style={{ width: 360, height: 440, alignSelf: 'center' }}
                         allowsFullscreenVideo={true}
                         className="bg-white rounded-2xl overflow-hidden"
                         refresherKey={webViewRefresherKey}
@@ -291,7 +291,8 @@ const PostCard: FC<PostCardProps> = observer(
                               ? post.postPhotos[0].url
                               : previewUrl,
                         }}
-                        style={{ width: 360, height: 180, alignSelf: 'center' }}
+                       
+                        style={{ width: 360, height: 440, alignSelf: 'center' }}
                         allowsFullscreenVideo={true}
                         className="bg-white rounded-2xl overflow-hidden"
                         refresherKey={webViewRefresherKey}

@@ -17,7 +17,7 @@ class SearchStore {
   posts: IPost[] = [];
   news: string[] = [];
   loading: boolean = false;
-  postPageSize: number = 20; // размер страницы
+  postPageSize: number = 5; // размер страницы
   postHasMore: boolean = true; // флаг, что ещё есть данные
   postPage: number = 1;
 

@@ -212,6 +212,8 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
               fontFamily: 'NunitoSans_400Regular',
               padding: -10,
               alignSelf: 'center',
+              lineHeight: 30,
+              height: 40,
             }}
             className="h-12"
             placeholder={i18n.t('Map.searchAddress')}
