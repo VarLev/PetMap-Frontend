@@ -307,7 +307,7 @@ const PostCard: FC<PostCardProps> = observer(
                      <Text className="text-center text-gray-500 text-xs font-nunitoSansRegular">Loading...</Text>
                   )
                 ) : (
-                  <PhotoCarusel images={post.postPhotos.map((image) => ({ uri: image.url }))} imageWidth={325} imageHeight={300} />
+                  <PhotoCarusel images={post.postPhotos} imageWidth={325} imageHeight={300} />
                 )}
               </View>
             )}
