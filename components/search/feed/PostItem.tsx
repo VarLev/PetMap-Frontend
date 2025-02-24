@@ -106,7 +106,8 @@ const PostCard: FC<PostCardProps> = observer(
       isComplaintSuccess,
       commentsCounter,
       currentPlayingVideo,
-      previewAvailable
+      previewAvailable,
+      refresh
     ];
 
     const updateLikes = async () => {
