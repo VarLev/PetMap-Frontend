@@ -88,8 +88,10 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
   };
 
   const handleSheetClose = async () => {
+    setIsPostRefresh(true);
     setBottomSheetType('');
     sheetRef.current?.close();
+    setIsPostRefresh(false);
   };
 
   const handleCreatePost = () => {
@@ -98,11 +100,15 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
   }
 
   const handleRefresh = () => {
-    setIsRefreshing(true);
-    searchStore.resetPage();
-    searchStore.fetchPosts().finally(() => {
-      setIsRefreshing(false);
-    });
+    fetchPosts()
+      .then(() => {
+        setIsRefreshing(true);
+        setIsPostRefresh(true);
+      })
+      .finally(() => {
+        setIsRefreshing(false);
+        setIsPostRefresh(false);
+      })
   };
 
   const deleteComment = async (commentId: string) => {
