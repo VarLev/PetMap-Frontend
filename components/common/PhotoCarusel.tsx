@@ -1,3 +1,4 @@
+import { IPostPhotos } from '@/dtos/Interfaces/feed/IPost';
 import React, { useState } from 'react';
 import {
   View,
@@ -12,7 +13,7 @@ import { Icon } from 'react-native-paper';
 import Carousel from 'react-native-reanimated-carousel';
 
 interface PhotoCaruselProps {
-  images: { uri: string }[]; // Массив объектов с URI изображений
+  images: IPostPhotos[]; // Массив объектов с URI изображений
   // Размеры для превью-карусели (по умолчанию — квадрат на ширину экрана)
   imageWidth?: number;
   imageHeight?: number;
@@ -61,25 +62,43 @@ const PhotoCarusel: React.FC<PhotoCaruselProps> = ({
   return (
     <View style={styles.container}>
       {/* Основная горизонтальная карусель */}
-      <Carousel
-        loop={false}
-        width={imageWidth}
-        height={imageHeight}
-        data={images}
-        onSnapToItem={(index) => setMainIndex(index)}
-        renderItem={({ item, index }) => (
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => openModal(index)}
-          >
-            <Image
-              source={{ uri: item.uri }}
-              style={{ width: imageWidth, height: imageHeight, borderRadius }}
-            />
-          </TouchableOpacity>
-        )}
-      />
-      {renderPagination(mainIndex, images.length)}
+
+      {/* Если изображений больше 1, показываем карусель и пагинацию, если нет - только одно изображение */}
+      {images.length > 1 ? (
+        <View>
+          <Carousel
+            loop={false}
+            width={imageWidth}
+            height={imageHeight}
+            data={images}
+            onSnapToItem={(index) => setMainIndex(index)}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity
+                key={item.id}
+                activeOpacity={0.8}
+                onPress={() => openModal(index)}
+              >
+                <Image
+                  source={{ uri: item.url }}
+                  style={{ width: imageWidth, height: imageHeight, borderRadius }}
+                />
+              </TouchableOpacity>
+            )}
+          />
+        {renderPagination(mainIndex, images.length)}
+        </View>
+      ) : (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => openModal(0)}
+        >
+          <Image
+            source={{ uri: images[0].url }}
+            style={{ width: imageWidth, height: imageHeight, borderRadius }}
+          />
+        </TouchableOpacity>
+      )}
+      
 
       {/* Модальное окно с полноэкранной каруселью */}
       <Modal
@@ -97,9 +116,9 @@ const PhotoCarusel: React.FC<PhotoCaruselProps> = ({
             onSnapToItem={(index) => setSelectedImageIndex(index)}
             autoPlay={false}
             renderItem={({ item }) => (
-              <Animated.View style={styles.carouselItem}>
+              <Animated.View style={styles.carouselItem} key={item.id}>
                 <Image
-                  source={{ uri: item.uri }}
+                  source={{ uri: item.url }}
                   style={{ width: width, height: width }}
                   resizeMode="cover"
                 />
