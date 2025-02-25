@@ -11,7 +11,7 @@ const Map = observer (() => {
 
   useFocusEffect(
     React.useCallback(() => {
-      logScreenView("SignInScreen");
+      logScreenView("MapScreen");
       if (
         !userStore.currentUser ||
         !userStore.currentUser.name ||
