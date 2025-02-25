@@ -22,6 +22,7 @@ import { Photo } from '@/dtos/classes/Photo';
 import Animated from 'react-native-reanimated';
 import Carousel from 'react-native-reanimated-carousel';
 import { Ionicons } from '@expo/vector-icons';
+import { logViewPetProfile } from '@/services/AnalyticsService';
 
 const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: () => void }) => {
   const sheetRef = useRef<BottomSheet>(null);
@@ -122,6 +123,7 @@ const ViewPetProfileComponent = observer(({ pet, onEdit }: { pet: Pet; onEdit: (
   }, []);
 
   useEffect(() => {
+    logViewPetProfile(pet.id, pet?.petStatus?.toString()??''); 
     petStore.currentUserPets?.forEach((p) => {
       if (p.id === pet.id) {
         setIsCurrentUser(true);

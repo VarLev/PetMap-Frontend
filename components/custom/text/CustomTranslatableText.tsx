@@ -58,7 +58,7 @@ const TranslatableText: FC<TranslatableTextProps> = ({
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleTranslate}
-          disabled={loading}
+          disabled={loading||!userStore.getLogged()}
           className={"justify-start items-start " + iconContainerClassName}
         >
           {!loading ? (

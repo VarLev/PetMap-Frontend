@@ -26,6 +26,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
 import CustomDropDownCityList from '../custom/selectors/CustomDropDownCityList';
 import { router } from 'expo-router';
+import { logUpdateProfile } from '@/services/AnalyticsService';
 
 const TASK_IDS = {
   userEdit: {
@@ -132,6 +133,7 @@ const EditProfileComponent = observer(({ onSave, onCancel }: { onSave: () => voi
     // Вызываем метод в userStore для обновления данных пользователя и выполнения заданий
     await userStore.updateOnlyUserData(editableUser);
 
+    logUpdateProfile(editableUser.id);
     onSave();
   };
 

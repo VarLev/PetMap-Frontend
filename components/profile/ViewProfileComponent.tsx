@@ -24,7 +24,7 @@ import { BG_COLORS } from '@/constants/Colors';
 import Feed from '../search/feed/Feed';
 
 import Comment from './comment/Comment';
-import { set } from 'lodash';
+import { logViewProfile } from '@/services/AnalyticsService';
 
 const ViewProfileComponent = observer(
   ({ onEdit, onPetOpen, loadedUser }: { onEdit: () => void; onPetOpen: (petId: string) => void; loadedUser: IUser }) => {
@@ -95,6 +95,7 @@ const ViewProfileComponent = observer(
     }, []);
 
     const loadData = async () => {
+      logViewProfile(user?.id)
       if (user.id === userStore.currentUser?.id) {
         console.log('Загружаем текущего пользователя');
         const user = await userStore.loadUser();

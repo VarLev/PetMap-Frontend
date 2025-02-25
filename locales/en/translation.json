@@ -1506,6 +1506,8 @@
   },
   "lastOnline": "Was online:",
   "paywall": {
+    "mRenual":"One-month subscription with automatic renewal",
+    "yRenual":"One-year subscription with automatic renewal",
     "whatGet": "What will you get?",
     "standard": "Standard",
     "premium": "Premium",
@@ -1522,12 +1524,13 @@
     "perDay": "2 per day",
     "markers": "20",
     "purchaseError": "Subscription purchase error:",
-    "year": "year",
-    "month": "month",
+    "year": "1 year",
+    "month": "1 month",
     "loading": "Loading...",
     "free": "3 days free",
     "subscribe": "Subscribe",
     "tryFree": "Try 3 days for free",
+    "next": "Continue",
     "startModal": {
       "title": "Premium subscription with a discount!",
       "text": "Subscribe to unlock the full functionality of the app without limitations!"
@@ -1556,7 +1559,8 @@
       }
     },
     "learnMore": "Learn more about the benefits",
-    "advantage": "more advantageous"
+    "advantage": "more advantageous",
+    "note":"The subscription fee is charged to your Google account at the time of purchase. The subscription is activated immediately and remains valid until the end of the current billing period. The subscription is automatically renewed under identical conditions unless it is cancelled at least 24 hours before the end of the current period. You can manage your subscriptions and disable automatic renewal in your Google account settings after purchase. In the event of cancellation, access is maintained until the end of the current billing period, and no refund is provided for the period already paid."
   },
   "support": {
     "getSupport": "Get Help",

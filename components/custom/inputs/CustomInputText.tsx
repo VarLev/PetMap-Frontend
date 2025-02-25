@@ -3,6 +3,9 @@ import { View, Text, KeyboardAvoidingView, Platform } from "react-native";
 import { TextInput } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+// Определяем тип для набора разрешённых символов
+type AllowedSymbol = 'latin' | 'spanish' | 'cyrillic' | 'social';
+
 type InputTextProps = {
   value?: string;
   placeholder?: string;
@@ -13,7 +16,8 @@ type InputTextProps = {
   label?: string;
   labelStyles?: string;
   labelInput?: string;
-  allowOnlyLetters?: boolean; // Новый пропс для ограничения ввода
+  allowOnlyLetters?: boolean; // Флаг для ограничения ввода
+  allowedSymbols?: AllowedSymbol[]; // Массив разрешённых символов
 };
 
 const CustomInputText = ({
@@ -26,56 +30,75 @@ const CustomInputText = ({
   label,
   labelStyles,
   labelInput,
-  allowOnlyLetters = false, // По умолчанию отключено
+  allowOnlyLetters = false,
+  allowedSymbols,
 }: InputTextProps) => {
-  // Функция обработки ввода
+  // Обработчик ввода текста с фильтрацией по разрешённым символам
   const handleTextChange = (text: string) => {
     if (allowOnlyLetters) {
-      const filteredText = text.replace(/[^a-zA-Zа-яА-ЯёЁ\"\'\.–-\s]/g, ""); // Удаляем все, кроме букв, тире, кавычек и пробелов
+      // Если allowedSymbols не передан или пустой, используем набор по умолчанию
+      const allowedSet: AllowedSymbol[] =
+        allowedSymbols && allowedSymbols.length ? allowedSymbols : ['latin', 'spanish', 'cyrillic', 'social'];
+
+      let allowedChars = "";
+      if (allowedSet.includes('latin')) {
+        allowedChars += "a-zA-Z";
+      }
+      if (allowedSet.includes('spanish')) {
+        // Испанские символы: áéíóúÁÉÍÓÚüÜñÑ
+        allowedChars += "áéíóúÁÉÍÓÚüÜñÑ";
+      }
+      if (allowedSet.includes('cyrillic')) {
+        allowedChars += "а-яА-Я";
+      }
+      if (allowedSet.includes('social')) {
+        // Символы для соцсетей: . _ -
+        allowedChars += "._-";
+      }
+      // Создаём регулярное выражение для удаления недопустимых символов
+      const regex = new RegExp(`[^${allowedChars}\\s-]`, "g");
+      const filteredText = text.replace(regex, "");
       handleChange && handleChange(filteredText);
     } else {
       handleChange && handleChange(text);
     }
   };
+
   const insets = useSafeAreaInsets();
-  // Если у вас есть фиксированный заголовок, можно прибавить его высоту
-  const headerOffset = 60; // Замените на фактическую высоту вашего заголовка, если требуется
-
-  // Вычисляем отступ для клавиатуры (для iOS учитываем безопасную зону сверху)
+  const headerOffset = 60; // При необходимости можно заменить на высоту вашего заголовка
   const keyboardOffset = Platform.OS === "ios" ? insets.top + headerOffset : 0;
-
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ?"position" : undefined}
-      keyboardVerticalOffset={keyboardOffset} // настройте отступ по необходимости
+      behavior={Platform.OS === "ios" ? "position" : undefined}
+      keyboardVerticalOffset={keyboardOffset}
       className={`w-full ${containerStyles}`}
     >
-    <View className={`w-full`}>
-      {label && (
-        <Text className={` text-base font-nunitoSansRegular ${labelStyles}`}>
-          {label}
-        </Text>
-      )}
-      <TextInput
-        mode="outlined"
-        label={labelInput}
-        value={value}
-        theme={{ roundness: 8 }}
-        placeholder={placeholder}
-        onChangeText={handleTextChange} // Используем обработчик с фильтрацией
-        onFocus={handleClick}
-        keyboardType="default"
-        style={{
-          backgroundColor: "white",
-          height: 50,
-        }}
-        outlineStyle={{ borderWidth: 1 }}
-        outlineColor="#d1d5db" // Цвет рамки при неактивном состоянии
-        activeOutlineColor="#ababab" // Цвет рамки при фокусе
-        className={`text-base font-nunitoSansRegular ${inputStyles}`}
-      />
-    </View>
+      <View className="w-full">
+        {label && (
+          <Text className={`text-base font-nunitoSansRegular ${labelStyles}`}>
+            {label}
+          </Text>
+        )}
+        <TextInput
+          mode="outlined"
+          label={labelInput}
+          value={value}
+          theme={{ roundness: 8 }}
+          placeholder={placeholder}
+          onChangeText={handleTextChange}
+          onFocus={handleClick}
+          keyboardType="default"
+          style={{
+            backgroundColor: "white",
+            height: 50,
+          }}
+          outlineStyle={{ borderWidth: 1 }}
+          outlineColor="#d1d5db"
+          activeOutlineColor="#ababab"
+          className={`text-base font-nunitoSansRegular ${inputStyles}`}
+        />
+      </View>
     </KeyboardAvoidingView>
   );
 };

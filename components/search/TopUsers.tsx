@@ -22,6 +22,7 @@ import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import LottieView from 'lottie-react-native';
 import i18n from '@/i18n';
 import SkeletonCard from '../custom/cards/SkeletonCard';
+import { logScreenView } from '@/services/AnalyticsService';
 
 const clamp = (value: number, min: number, max: number) => {
   'worklet';
@@ -55,7 +56,9 @@ const TopUsers = () => {
     }
   }, []);
 
+
   useEffect(() => {
+    logScreenView("TopUsersScreen");
     fetchTopUsers();
     // Пример анимации "появления" блока при загрузке:
     translateY.value = withTiming(0, { duration: 500 });
@@ -67,29 +70,29 @@ const TopUsers = () => {
   // Общая позиция шапки
 
 
-// Храним offset при начале свайпа
+  // Храним offset при начале свайпа
   const offsetY = useSharedValue(0);
   const panGesture = Gesture.Pan()
-  .onBegin(() => {
-    // Запоминаем, где была шапка ДО начала жеста
-    offsetY.value = translateY.value;
-    runOnJS(setIsPanning)(true);
-  })
-  .onUpdate((evt) => {
-    // Текущее смещение = "где шапка была" + "сколько потянул пользователь"
-    const newY = offsetY.value + evt.translationY;
-    // Ограничиваем диапазон
-    translateY.value = clamp(newY, -280, 0);
-  })
-  .onEnd(() => {
-    // Snap-логика: если выше -100, доводим до -280, иначе опускаем до 0
-    if (translateY.value < -100) {
-      translateY.value = withTiming(-280, { duration: 600, easing: Easing.out(Easing.circle) });
-    } else {
-      translateY.value = withTiming(0, { duration: 600 });
-    }
-    runOnJS(setIsPanning)(false);
-  });
+    .onBegin(() => {
+      // Запоминаем, где была шапка ДО начала жеста
+      offsetY.value = translateY.value;
+      runOnJS(setIsPanning)(true);
+    })
+    .onUpdate((evt) => {
+      // Текущее смещение = "где шапка была" + "сколько потянул пользователь"
+      const newY = offsetY.value + evt.translationY;
+      // Ограничиваем диапазон
+      translateY.value = clamp(newY, -280, 0);
+    })
+    .onEnd(() => {
+      // Snap-логика: если выше -100, доводим до -280, иначе опускаем до 0
+      if (translateY.value < -100) {
+        translateY.value = withTiming(-280, { duration: 600, easing: Easing.out(Easing.circle) });
+      } else {
+        translateY.value = withTiming(0, { duration: 600 });
+      }
+      runOnJS(setIsPanning)(false);
+    });
 
   // ==============
   // SCROLL (Автоматически убирать «шапку» при прокрутке списка)
@@ -248,7 +251,7 @@ const TopUsers = () => {
                   <View className="border-2 rounded-full bg-white border-white">
                     <Avatar.Image
                       size={60}
-                      source={{ uri: topUsers[2]?.thumbnailUrl ??  `https://avatar.iran.liara.run/username?username=${topUsers[2].name}` }}
+                      source={{ uri: topUsers[2]?.thumbnailUrl ?? `https://avatar.iran.liara.run/username?username=${topUsers[2].name}` }}
                     />
                     <View style={{ position: 'absolute', top: -3, right: -3 }}>
                       <StarIcon />
@@ -288,7 +291,7 @@ const TopUsers = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       {/* TOP-3 BLOCK (с анимацией и свайпом) */}
       {renderTopThreeUsers()}
-      <View className='h-5'/>
+      <View className='h-5' />
 
       <FlatList
         data={

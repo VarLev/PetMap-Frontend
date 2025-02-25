@@ -1,25 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
-  TouchableOpacity,
-  View,
-  Image,
   Platform,
-  StatusBar
 } from 'react-native';
-import { Text } from 'react-native-paper';
-import OnboardingCarousel from '../components/auth/OnboardingCarousel';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomButtonPrimary from '@/components/custom/buttons/CustomButtonPrimary';
 import { Redirect, router } from 'expo-router';
 import { useStore } from '@/contexts/StoreProvider';
-import CustomButtonOutlined from '@/components/custom/buttons/CustomButtonOutlined';
-import googleLogo from '../assets/images/google.png';
-import appleLogo from '../assets/images/apple.png';
 import userStore from '@/stores/UserStore';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import i18n from '@/i18n';
 import ScreenHolderLogo from '@/components/common/ScreenHolderLogo';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAlert } from '@/contexts/AlertContext';
 import AppOpenAdHandler from '@/components/ads/AppOpenAdHandler';
 import { IUser } from '@/dtos/Interfaces/user/IUser';
@@ -28,7 +16,7 @@ import RevenueCatService from '@/services/RevenueCatService';
 import { signInWithApple } from '@/firebaseConfig';
 
 // === Импорт аналитики ===
-import { 
+import {
   logScreenView,
   logLogin,
   logSignUp,
@@ -37,7 +25,7 @@ import {
 
 GoogleSignin.configure({
   webClientId:
-    '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com', 
+    '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com',
 });
 
 const App = () => {
@@ -94,66 +82,6 @@ const App = () => {
   if (isError && !isInitialized) {
     return <Redirect href="/" />;
   }
-
-  const handleGooglePress = async () => {
-    try {
-      GoogleSignin.configure({
-        scopes: ['email'],
-        webClientId:
-          '938397449309-kqee2695quf3ai6ta2hmb82th9l9iifv.apps.googleusercontent.com',
-        offlineAccess: true,
-      });
-
-      const signIn = await userStore.googleSingInUser();
-      console.log('[App] Результат Google Sign-In:', signIn);
-
-      // signIn = [isExistingUser, isSuccess]
-      if (!signIn[0] && signIn[1]) {
-        // Новый пользователь
-        logSignUp("google"); // логируем регистрацию
-        router.replace('/(auth)/onboarding');
-      } else if (signIn[0] && signIn[1]) {
-        // Существующий пользователь
-        logLogin("google"); // логируем вход
-        router.replace('/search/news');
-      } else {
-        // Обработка ошибки / отмены входа
-      }
-    } catch (error: any) {
-      // Можно логировать ошибку
-      logLoginError("google", error.message);
-      console.error('[App] Ошибка Google Sign-In:', error);
-    }
-  };
-
-  const handleApplePress = async () => {
-    try {
-      const firebaseUserCredential = await signInWithApple();
-      const signIn = await userStore.appleSignInUser(
-        firebaseUserCredential.name,
-        firebaseUserCredential.firebCreds
-      );
-
-      if (!signIn[0] && signIn[1]) {
-        // Новый пользователь
-        logSignUp("apple");
-        router.replace('/(auth)/onboarding');
-      } else if (signIn[0] && signIn[1]) {
-        // Существующий пользователь
-        logLogin("apple");
-        router.replace('/search/news');
-      } else {
-        // Обработка ошибки / отмены входа
-      }
-    } catch (error: any) {
-      if (error.code === 'ERR_CANCELED') {
-        // Пользователь отменил вход
-      } else {
-        // Логировать ошибку
-        logLoginError("apple", error.message);
-      }
-    }
-  };
 
   if (!userHasSubscription && !adShown) {
     return (

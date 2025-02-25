@@ -1,5 +1,5 @@
 import { View, ScrollView, Alert, TouchableOpacity, Linking, Platform } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TextInput, Text, Checkbox } from 'react-native-paper';
 import { Link, router } from 'expo-router';
@@ -11,7 +11,7 @@ import i18n from '@/i18n'; // Импорт i18n для мультиязычно�
 import { BG_COLORS } from '@/constants/Colors';
 import CustomAlert from '@/components/custom/alert/CustomAlert';
 import SupportAlert from '@/components/custom/alert/SupportAlert';
-import { logSignUp } from '@/services/AnalyticsService';
+import { logScreenView, logSignUp } from '@/services/AnalyticsService';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -31,6 +31,10 @@ const SignUp = () => {
   const [alertVisible, setAlertVisible] = useState(false);
   const [isValidDomain, setIsValidDomain] = useState(true);
   const [supportAlertVisible, setSupportAlertVisible] = useState(false);
+
+  useEffect(() => {
+    logScreenView("SignUpScreen");
+  }, []);
 
   const handleRegister = async () => {
     // 1. Проверка совпадения паролей

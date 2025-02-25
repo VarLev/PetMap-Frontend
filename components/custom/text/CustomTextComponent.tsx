@@ -102,9 +102,10 @@ const CustomTextComponent: React.FC<CustomTextComponentProps> = ({
           {!translatedText ? (
             <TouchableOpacity
               onPress={handleTranslate}
-              disabled={loading}
+              disabled={loading || !userStore.getLogged()}
               activeOpacity={0.8}
               className="h-6 justify-start items-start"
+              
             >
               {!loading ? (
                 <MaterialIcons name="g-translate" size={20} color="#b39ddb" />

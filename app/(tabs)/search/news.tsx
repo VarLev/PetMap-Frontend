@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { View } from 'react-native';
 import PermissionsRequestComponent from '@/components/auth/PermissionsRequestComponent';
 import PetsGrid from '@/components/search/PetsGrid';
@@ -8,6 +8,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { Banner, Text } from 'react-native-paper';
 import { router } from 'expo-router';
 import userStore from '@/stores/UserStore';
+import { logScreenView } from '@/services/AnalyticsService';
 
 // Тип пропов для NewsScreen
 interface NewsScreenProps {
@@ -15,6 +16,10 @@ interface NewsScreenProps {
 }
 
 const NewsScreen: FC<NewsScreenProps> = ({ setSwipeEnabled }) => {
+  
+  useEffect(() => {
+    logScreenView("PetGridScreen");
+  }, []);
 
   function setBannerVisible(arg0: boolean): void {
     router.replace('/(auth)/welcomeScreen');

@@ -1,5 +1,5 @@
 import { Dispatch, FC, SetStateAction } from 'react';
-import { Image, View } from 'react-native';
+import { Image,  View } from 'react-native';
 import { RadioButton, IconButton, Text } from 'react-native-paper';
 import i18n from "@/i18n";
 import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
@@ -68,24 +68,26 @@ const StartModalContent: FC<StartModalContentProps> = ({
       <Text className="text-[20px] font-nunitoSansBold text-center text-white">
         {i18n.t("paywall.startModal.title")}
       </Text>
-      <Text className="text-[16px] text-center text-white mt-2">
+      <Text className="text-[16px] text-center text-white mt-2 font-nunitoSansRegular">
         {i18n.t("paywall.startModal.text")}
       </Text>
 
       {/* Радио-кнопки выбора подписки */}
-      <View className={`mt-[28px] ${isFullBenefitsVisible ? 'mb-[96px]' : ''}`}>
-        <RadioButton.Group
+      <View className={` mt-[28px] ${isFullBenefitsVisible ? 'mb-[180px]' : ''}`}>
+        <RadioButton.Group 
           onValueChange={(newValue) => setSubscriptionType(newValue)}
           value={subscriptionType}
+        
         >
           <SubscriptionRadioButton
             value="year"
             sale={20}
             price={
               annualPackage
-                ? `${annualPackage.product.priceString} / ${i18n.t("paywall.year")}`
+                ? `${annualPackage.product.priceString} / ${i18n.t("paywall.year")} `
                 : '...'
             }
+            addedText={i18n.t("paywall.yRenual")}
             handleOpenBenefits={handleOpenBenefits}
             checked={subscriptionType === 'year'}
             handleSheetOpen={() => handleSheetOpen('year')}
@@ -98,6 +100,7 @@ const StartModalContent: FC<StartModalContentProps> = ({
                 ? `${monthlyPackage.product.priceString} / ${i18n.t("paywall.month")}`
                 : '...'
             }
+            addedText={i18n.t("paywall.mRenual")}
             handleOpenBenefits={handleOpenBenefits}
             checked={subscriptionType === 'month'}
             handleSheetOpen={() => handleSheetOpen('month')}
@@ -107,12 +110,13 @@ const StartModalContent: FC<StartModalContentProps> = ({
 
       {/* Пробная подписка */}
       <CustomButtonOutlined
-        title={i18n.t("paywall.tryFree")}
-        handlePress={handleSubmitPayment}
+        title={i18n.t("paywall.next")}
+        handlePress={handleOpenBenefits}
         containerStyles="w-full bg-[#ACFFB9] mt-6 h-[46px]"
         textStyles="text-[16px]"
         fontWeight="font-semibold"
       />
+    
     </View>
   )};
 

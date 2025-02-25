@@ -1,21 +1,21 @@
 import { handleAxiosError } from '@/utils/axiosUtils';
-import Purchases, { CustomerInfo } from 'react-native-purchases';
+import Purchases, { CustomerInfo, PurchasesStoreProduct, SubscriptionOption } from 'react-native-purchases';
 
 export default class RevenueCatService {
   static async initialize(apiKey: string) {
     try {
       Purchases.configure({ apiKey });
-     
+
     } catch (error) {
       console.error('Ошибка инициализации RevenueCat:', error);
       throw error;
     }
   }
 
-   /**
-   * Установка appUserID (логин в RevenueCat)
-   */
-   static async setUserId(appUserId: string): Promise<CustomerInfo> {
+  /**
+  * Установка appUserID (логин в RevenueCat)
+  */
+  static async setUserId(appUserId: string): Promise<CustomerInfo> {
     try {
       const customerInfo = (await Purchases.logIn(appUserId)).customerInfo;
       // customerInfo обновит информацию в случае успешного логина
@@ -40,13 +40,19 @@ export default class RevenueCatService {
     }
   }
 
-
-
+  static async getPackages() {
+    try {
+      const offerings = await Purchases.getOfferings();
+      return offerings?.current?.availablePackages || [];
+    } catch (error) {
+      handleAxiosError(error);
+    }
+  }
 
   static async getOfferings() {
     try {
       const offerings = await Purchases.getOfferings();
-      return offerings?.current?.availablePackages || [];
+      return offerings || [];
     } catch (error) {
       handleAxiosError(error);
     }
@@ -99,7 +105,7 @@ export default class RevenueCatService {
     }
   }
 
-  
+
   static async setUserEmail(email: string): Promise<void> {
     try {
       await Purchases.setEmail(email);
@@ -109,5 +115,35 @@ export default class RevenueCatService {
     }
   }
 
+ static getFreeTrialDays(subscriptionOption: SubscriptionOption): number {
+    if (!subscriptionOption.freePhase || !subscriptionOption.freePhase.billingPeriod) {
+      console.log('Free trial не доступен для этой подписки');
+      return 0;
+    }
+
+    const { value, unit } = subscriptionOption.freePhase.billingPeriod;
+    let days = 0;
+
+    switch (unit) {
+      case 'DAY':
+        days = value;
+        break;
+      case 'WEEK':
+        days = value * 7;
+        break;
+      case 'MONTH':
+        days = value * 30;
+        break;
+      case 'YEAR':
+        days = value * 365;
+        break;
+      default:
+        console.warn('Неизвестная единица измерения');
+    }
+
+    return days;
+  }
   
+
+
 }

@@ -9,12 +9,14 @@ import i18n from '@/i18n';
 import uiStore from "@/stores/UIStore";
 import { Language } from "@/dtos/enum/Language";
 import { router } from "expo-router";
+import { logScreenView } from "@/services/AnalyticsService";
 
 function CongratulationsScreen() {
   const [benefites, setBenefits] = useState<number>(0);
   const confettiRef = useRef<LottieView>(null);
 
   useEffect(() => {
+    logScreenView("CongratulationsScreen");
     const fetchBonuses = async () => {
       const bonuses = await userStore.getEarnedBenefitsByJobType(userStore.currentUser?.id!, JobType.FillOnboarding);
       setBenefits(bonuses);

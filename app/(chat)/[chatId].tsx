@@ -20,6 +20,7 @@ import { generateChatData } from "@/utils/chatUtils";
 import TranslatableTextMessage from "@/components/chat/chatView/TranslatableTextMessage";
 import uiStore from "@/stores/UIStore";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { logOpenChat } from "@/services/AnalyticsService";
 
 const AI_ASSISTANT_CHAT_ID = process.env.EXPO_PUBLIC_AI_CHAT_ID;
 
@@ -49,7 +50,7 @@ const ChatScreen: React.FC = observer(() => {
     const loadData = async () => {
       try { 
         const loadedChat = await ChatStore.getChatById(chatId);
-        
+        logOpenChat(loadedChat?.id??'');
         if(loadedChat){
           // Чат уже существует в базе
           const otherUser = loadedChat?.participants?.find((p) => p.key !== currentUserId)?.value

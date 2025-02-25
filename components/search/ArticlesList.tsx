@@ -14,6 +14,7 @@ import CustomButtonOutlined from '../custom/buttons/CustomButtonOutlined';
 import { BG_COLORS } from '@/constants/Colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import i18n from '@/i18n';
+import { logScreenView } from '@/services/AnalyticsService';
 
 interface Article {
   title: string;
@@ -33,6 +34,7 @@ const ArticlesList: React.FC = () => {
 
   // Загрузка статей
   useEffect(() => {
+    logScreenView("WikiScreen");
     const fetchArticles = async () => {
       try {
         const folderList = await getFoldersInDirectory(`WIKI/articles/${i18n.locale}`);

@@ -25,6 +25,7 @@ import { Photo } from '@/dtos/classes/Photo';
 import CustomPriceInput from '../custom/inputs/CustomPriceInput';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { logUpdatePetProfile } from '@/services/AnalyticsService';
 
 const TASK_IDS = {
   petEdit: {
@@ -210,6 +211,7 @@ const EditPetProfileComponent = observer(
         alert(i18n.t('EditPetProfile.errors.saveErrorMessage'));
       }
       onSave(editablePet);
+      logUpdatePetProfile(editablePet.id, editablePet?.petStatus?.toString()??'');
     };
 
     const handleAddPet = async () => {

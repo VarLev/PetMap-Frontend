@@ -442,6 +442,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
             containerStyles="my-4"
             labelInput={i18n.t('onboardingProfile.slide3.nameLabel')}
             allowOnlyLetters={true}
+            allowedSymbols={['spanish', 'latin']}
           />
           {showUserNameError && (
             <HelperText className='-mt-4' type="error" visible={showUserNameError}>
@@ -520,6 +521,7 @@ const OnBoardingProfile: React.FC<OnBoardingProfileProps> = ({ onLanguageSelect,
             handleChange={setPetName}
             containerStyles="-mb-2"
             allowOnlyLetters={true}
+            allowedSymbols={['spanish', 'latin']}
           />
           {showPetNameError && (
             <HelperText className='h-6 mt-1 -mb-4' type="error" visible={showPetNameError}>

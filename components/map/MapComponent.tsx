@@ -47,6 +47,7 @@ import { BG_COLORS } from '@/constants/Colors';
 import { throttle } from 'lodash';
 import CustomSnackBar from '../custom/alert/CustomSnackBar';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { logCreateMapMarker, logViewMapMarker } from '@/services/AnalyticsService';
 
 
 
@@ -207,8 +208,8 @@ const MapBoxMap = observer(() => {
 
 
   const handlePress = (event: any) => {
-
-    Keyboard.dismiss()
+    logCreateMapMarker(event.geometry.coordinates);
+    Keyboard.dismiss();
     if (uiStore.getIsSearchAddressExpanded())
       return;
     if (
@@ -306,7 +307,7 @@ const MapBoxMap = observer(() => {
 
   const onPinPress = async (advrt: IWalkAdvrtDto, zoomLevelx?: number) => {
     Keyboard.dismiss();
-
+    logViewMapMarker(advrt?.id??'');
     cameraRef.current?.setCamera({
       centerCoordinate: [advrt.longitude!, advrt.latitude!],
       animationDuration: 300,
@@ -331,7 +332,7 @@ const MapBoxMap = observer(() => {
 
   const onMapPointPress = async (mapPoint: IPointEntityDTO) => {
     setSelectedPointId(mapPoint.id);
-
+    logViewMapMarker(mapPoint?.id??'');
     cameraRef.current?.setCamera({
       centerCoordinate: [mapPoint.longitude!, mapPoint.latitude!],
       animationDuration: 300,

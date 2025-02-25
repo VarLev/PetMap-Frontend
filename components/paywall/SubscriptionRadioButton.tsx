@@ -10,11 +10,12 @@ type SubscriptionRadioButtonProps = {
     price: string;
     checked: boolean;
     sale?: number;
+    addedText?: string;
     handleSheetOpen: () => void;
     handleOpenBenefits: () => void;
 }
 
-const SubscriptionRadioButton: FC<SubscriptionRadioButtonProps> = ({value, price, checked, sale, handleSheetOpen, handleOpenBenefits}) => {
+const SubscriptionRadioButton: FC<SubscriptionRadioButtonProps> = ({value, price, checked, sale, handleSheetOpen, handleOpenBenefits, addedText}) => {
     const [borderColor, setBorderColor] = useState("#BFA8FF");
     const [borderWidth, setBorderWidth] = useState(1);
     const [paddingVertical, setPaddingVertical] = useState(14);
@@ -82,24 +83,18 @@ const SubscriptionRadioButton: FC<SubscriptionRadioButtonProps> = ({value, price
                 />
                 <View className="flex-column gap-1">
                     <Text className="text-[24px] font-nunitoSansBold color-white">{price}</Text>
-                    <View className="flex-column">
-                        {fullBenefits.map(benefit => {
-                            return (
-                                <View key={benefit.id} className="flex-row">
-                                    <Text style={{...styles.textSmall, ...styles.semiBold}}>{'\u2022 '} {i18n.t(benefit.firstWord)} </Text>
-                                    <Text style={styles.textSmall}>{i18n.t(benefit.lastWords)}</Text>
-                                </View>
-                            )
-                        })}
-                        {/* <View className="flex-row">
+                    <Text className="text-[12px] color-white w-2/3 font-nunitoSansRegular">{addedText}</Text>
+                    {/*<View className="flex-column">
+                        
+                         <View className="flex-row">
                             <Text style={{...styles.textSmall, ...styles.semiBold}}>{'\u2022 '} Безлимитное </Text>
                             <Text style={styles.textSmall}>создание прогулок</Text>
                         </View>
                         <View className="flex-row">
                             <Text style={{...styles.textSmall, ...styles.semiBold}}>{'\u2022 '} Безлимитное </Text>
                             <Text style={styles.textSmall}>создание меток на карте</Text>
-                        </View> */}
-                    </View>
+                        </View> 
+                    </View>*/}
                     <TouchableOpacity
                         activeOpacity={0.8}
                         className="flex-row items-center"
@@ -146,7 +141,7 @@ const styles = StyleSheet.create({
         paddingTop: 2
     },
     textSmall: {
-        fontSize: 14,
+        fontSize: 16,
         color: "white",
     },
     semiBold: {

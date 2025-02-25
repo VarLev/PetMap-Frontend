@@ -62,8 +62,8 @@ export const logViewProfile = async (viewedUserId: string) => {
 /**
  * Логируем обновление собственного профиля (имя, аватар и т.д.)
  */
-export const logUpdateProfile = async () => {
-  await logAnalyticsEvent('update_profile');
+export const logUpdateProfile = async (viewedUserId: string) => {
+  await logAnalyticsEvent('update_profile', { viewedUserId });
 };
 
 /**

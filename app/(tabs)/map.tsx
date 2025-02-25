@@ -1,4 +1,5 @@
 import MapBoxMap from '@/components/map/MapComponent';
+import { logScreenView } from '@/services/AnalyticsService';
 import userStore from '@/stores/UserStore';
 import {useFocusEffect, useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
@@ -10,6 +11,7 @@ const Map = observer (() => {
 
   useFocusEffect(
     React.useCallback(() => {
+      logScreenView("SignInScreen");
       if (
         !userStore.currentUser ||
         !userStore.currentUser.name ||

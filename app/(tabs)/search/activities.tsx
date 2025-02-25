@@ -1,10 +1,12 @@
 import Feed from '@/components/search/feed/Feed';
 import { BG_COLORS } from '@/constants/Colors';
 import i18n from '@/i18n';
+import {  logViewFeed } from '@/services/AnalyticsService';
 import userStore from '@/stores/UserStore';
 import { FontAwesome5 } from '@expo/vector-icons';
+
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Banner, Text } from 'react-native-paper';
 
@@ -12,6 +14,10 @@ export default function Activities() {
   function setBannerVisible(arg0: boolean): void {
     router.replace('/(auth)/welcomeScreen');
   }
+  useEffect(() => {
+    logViewFeed();
+  }, []);
+  
   return (
     <GestureHandlerRootView className='flex-1 bg-white'>
       {!userStore.getLogged() && (

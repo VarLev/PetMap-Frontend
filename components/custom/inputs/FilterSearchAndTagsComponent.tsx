@@ -107,6 +107,7 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
     const lat = parseFloat(item.lat);
     const lon = parseFloat(item.lon);
     onAddressSelected([lon, lat]);
+    uiStore.setIsSearchAddressExpanded(false);
   };
 
   // Очистка строки
@@ -114,6 +115,7 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
     setSearchText('');
     setSearchResults([]);
     Keyboard.dismiss();
+    uiStore.setIsSearchAddressExpanded(false);
   };
 
   // === ЛОГИКА С ТЕГАМИ ===
@@ -130,6 +132,7 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
       uiStore.setIsPointSearchFilterTagSelected(true);
 
       onTagSelected(type);
+      uiStore.setIsSearchAddressExpanded(false);
     }, 1500);
   };
 
@@ -140,6 +143,7 @@ const SearchAndTags: React.FC<SearchAndTagsProps> = ({
     setSearchText('');
     uiStore.setIsPointSearchFilterTagSelected(false);
     Keyboard.dismiss();
+    uiStore.setIsSearchAddressExpanded(false);
   };
 
   // Переключение карты/списка

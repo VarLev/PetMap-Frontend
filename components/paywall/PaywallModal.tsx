@@ -33,16 +33,19 @@ const PaywallModal = () => {
     (async () => {
       // Инициализируем RevenueCat
       await RevenueCatService.initialize(
-        Platform.OS === "android"? process.env.EXPO_PUBLIC_REVENUECAT_API_KEY! : process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_APPLE!
+        Platform.OS === "android" ? process.env.EXPO_PUBLIC_REVENUECAT_API_KEY! : process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_APPLE!
       );
-      
-      await RevenueCatService.setUserEmail(userStore.currentUser?.email??'');
-      
-      const availablePackages = await RevenueCatService.getOfferings();
+
+      await RevenueCatService.setUserEmail(userStore.currentUser?.email ?? '');
+
+      const availablePackages = await RevenueCatService.getPackages();
 
       if (availablePackages) {
         setPackages(availablePackages);
       }
+
+      //const freeTrialDays = RevenueCatService.getFreeTrialDays(asda);
+      //console.log('freeTrialDays', availablePackages);
     })();
   }, []);
 
@@ -62,7 +65,6 @@ const PaywallModal = () => {
     try {
       const userId = userStore.currentUser?.id;
       if (!userId) return;
-
       let targetPackage = null;
       if (type === 'month' && monthlyPackage) {
         targetPackage = monthlyPackage;
@@ -70,6 +72,7 @@ const PaywallModal = () => {
         targetPackage = annualPackage;
       }
 
+      
       if (targetPackage) {
         const customerInfo = await RevenueCatService.purchasePackage(targetPackage);
         // Если userCancelled == true, purchasePackage вернёт null
@@ -78,11 +81,12 @@ const PaywallModal = () => {
           return;
         }
 
+
         // 2. Проверяем, действительно ли подписка активна. 
         //    (например, если у вас один Entitlement с ID 'premium')
         const hasPremium = !!customerInfo.entitlements.active['Basic'];
         const hasMonthly = !!customerInfo.entitlements.active['premium_month'];
-        const hasYearly  = !!customerInfo.entitlements.active['premium_year'];
+        const hasYearly = !!customerInfo.entitlements.active['premium_year'];
 
 
         // Обновляем подписку в нашем сторе
@@ -90,13 +94,13 @@ const PaywallModal = () => {
           type === 'year'
             ? SubsciptionType.Year
             : type === 'month'
-            ? SubsciptionType.Month
-            : null;
+              ? SubsciptionType.Month
+              : null;
 
         if (subscriptionTypeId && hasPremium) {
           await uiStore.subscribe(userId, hasPremium);
           setIsSubcribedSuccess(true);
-        }else{
+        } else {
           setIsSubcribedSuccess(false);
         }
 
@@ -121,7 +125,7 @@ const PaywallModal = () => {
 
     return (
       <View className="flex-col mx-5 mt-2 mb-5">
-        <Text className="text-[24px] font-semibold">
+        <Text className="text-[24px] font-nunitoSansBold">
           {priceString ? `${priceString} ${priceSuffix}` : i18n.t("paywall.loading")}
         </Text>
 
@@ -132,6 +136,9 @@ const PaywallModal = () => {
           textStyles="text-[16px]"
           fontWeight="font-semibold"
         />
+        <Text className='font-nunitoSansRegular text-xs leading-none text-justify'>
+          {i18n.t("paywall.note")}
+        </Text>
       </View>
     );
   };
@@ -142,7 +149,7 @@ const PaywallModal = () => {
         <MainModalContent>
           {isSubcribedSuccess ? (
             <SuccessModalContent />
-            ) : (
+          ) : (
             <StartModalContent
               isFullBenefitsVisible={isFullBenefitsVisible}
               subscriptionType={subscriptionType}
@@ -163,9 +170,10 @@ const PaywallModal = () => {
           <BottomSheetComponent
             ref={sheetRef}
             renderContent={<BottomSheetContent />}
-            snapPoints={['20%']}
+            snapPoints={['30%',"45%"]}
             enablePanDownToClose={false}
           />
+
         )}
       </GestureHandlerRootView>
     </Portal>

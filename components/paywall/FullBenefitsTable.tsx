@@ -74,9 +74,9 @@ const FullBenefitsTable: FC = () => {
       <View className="bg-[#1D1B204D] border-[1px] border-[#BFA8FF] rounded-[15px]">
         {/* Заголовок таблицы */}
         <View className="flex-row items-center py-[10px] mx-[16px]">
-          <Text className="w-1/2 text-white" />
-          <Text className="w-1/4 text-center text-white">{i18n.t("paywall.standard")}</Text>
-          <Text className="w-1/4 text-center text-[#ACFFB9]">{i18n.t("paywall.premium")}</Text>
+          <Text className="w-1/2 text-white font-nunitoSansRegular" />
+          <Text className="w-1/4 text-center text-white font-nunitoSansRegular">{i18n.t("paywall.standard")}</Text>
+          <Text className="w-1/4 text-center text-[#ACFFB9] font-nunitoSansRegular">{i18n.t("paywall.premium")}</Text>
         </View>
 
         {/* Динамические строки преимуществ */}
@@ -87,9 +87,9 @@ const FullBenefitsTable: FC = () => {
               idx !== 0 ? "border-t border-[#BFA8FF]" : ""
             }`}
           >
-            <Text className="w-1/2 text-white">{i18n.t(benefit.name)}</Text>
-            <Text className="w-1/4 text-center text-white">{typeof benefit.base === "string" ? i18n.t(benefit.base) : benefit.base}</Text>
-            <Text className="w-1/4 text-center text-[#ACFFB9]">
+            <Text className="w-1/2 text-white font-nunitoSansRegular">{i18n.t(benefit.name)}</Text>
+            <Text className="w-1/4 text-center text-white font-nunitoSansRegular">{typeof benefit.base === "string" ? i18n.t(benefit.base) : benefit.base}</Text>
+            <Text className="w-1/4 text-center text-[#ACFFB9] font-nunitoSansRegular">
               {benefit.premium}
             </Text>
           </View>

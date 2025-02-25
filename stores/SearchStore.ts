@@ -160,7 +160,7 @@ class SearchStore {
     }
   }
 
-  async createPost(content: string, items: string[], isVideo: boolean) {
+  async createPost(content: string, items: string[], isVideo: boolean): Promise<string | void> {
     this.setLoading(true);
     try {
       if (!isVideo) {
@@ -180,6 +180,7 @@ class SearchStore {
         runInAction(() => {
           this.posts.unshift(newPost); // Обновление в рамках действия
         });
+        return newPost.id;
       } else {
         // Предполагается, что видео хранится в массиве videos, и вы разрешаете только одно видео
         const videoUri = items[0];
@@ -198,11 +199,13 @@ class SearchStore {
         runInAction(() => {
           this.posts.unshift(newPost);
         });
+        return newPost.id;
       }
     } catch (error) {
       return handleAxiosError(error);
     } finally {
       this.setLoading(false);
+     
     }
   }
 

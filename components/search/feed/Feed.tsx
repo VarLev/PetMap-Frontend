@@ -14,7 +14,6 @@ import PostItem from '@/components/search/feed/PostItem';
 import CreatePost from '@/components/search/feed/CreatePost';
 import i18n from '@/i18n';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent';
-import { set } from 'lodash';
 import userStore from '@/stores/UserStore';
 
 
@@ -141,7 +140,7 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
           ) : null
         }
         data={userId ? userPosts : searchStore.posts}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         onEndReached={loadMorePosts}
         onEndReachedThreshold={0.5}
         refreshing={isRefreshing}

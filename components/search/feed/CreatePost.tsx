@@ -7,6 +7,7 @@ import CustomLoadingButton from '@/components/custom/buttons/CustomLoadingButton
 import * as FileSystem from 'expo-file-system';
 import i18n from '@/i18n';
 import { Video, ResizeMode } from 'expo-av';
+import { logCreatePost } from '@/services/AnalyticsService';
 
 interface CreatePostProps {
   onClose: () => void; // Метод для закрытия нижнего листа
@@ -104,7 +105,11 @@ const CreatePost: FC<CreatePostProps> = ({ onClose }) => {
         setSnackbarVisible(true);
         return;
       }
-      await searchStore.createPost(content, [...images, ...videos], isVideo);
+      const postId = await searchStore.createPost(content, [...images, ...videos], isVideo);
+
+      if (typeof postId === 'string') 
+        logCreatePost(postId);
+     
       handleClear();
       onClose();
     } catch {

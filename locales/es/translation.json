@@ -1509,6 +1509,8 @@
   },
   "lastOnline": "Estuvo en línea",
   "paywall": {
+    "mRenual":"Suscripción de un mes con renovación automática",
+    "yRenual":"Suscripción de un año con renovación automática",
     "whatGet": "¿Qué obtendrás?",
     "standard": "Estándar",
     "premium": "Premium",
@@ -1525,12 +1527,13 @@
     "perDay": "2 por día",
     "markers": "20",
     "purchaseError": "Error al comprar la suscripción:",
-    "year": "año",
-    "month": "mes",
+    "year": "1 año",
+    "month": "1 mes",
     "loading": "Cargando...",
     "free": "3 días gratis",
     "subscribe": "Suscribirse",
     "tryFree": "Prueba 3 días gratis",
+    "next": "Continuar",
     "startModal": {
       "title": "¡Suscripción premium con descuento!",
       "text": "¡Suscríbete para desbloquear toda la funcionalidad de la aplicación sin límites!"
@@ -1559,7 +1562,8 @@
       }
     },
     "learnMore": "Más información sobre los beneficios",
-    "advantage": "más conveniente"
+    "advantage": "más conveniente",
+    "note":"La tarifa de suscripción se descuenta de tu cuenta de Google en el momento de la compra. La suscripción se activa de inmediato y es válida hasta el final del período de facturación actual. La suscripción se renueva automáticamente en las mismas condiciones, a menos que se cancele al menos 24 horas antes del final del período actual. Podés gestionar tus suscripciones y desactivar la renovación automática en la configuración de tu cuenta de Google después de la compra. En caso de cancelación, el acceso se mantiene hasta el final del período de facturación actual, y no se realiza ningún reembolso por el período ya pagado."
   },
   "support": {
     "getSupport": "Obtener Soporte",

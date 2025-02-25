@@ -5,6 +5,7 @@ import ChatStore from '@/stores/ChatStore';
 import UserStore from '@/stores/UserStore';
 import EmptyChatScreen from '@/components/chat/chatList/EmptyChatScreen';
 import ChatListItem from '@/components/chat/chatList/ChatListItem';
+import { logScreenView } from '@/services/AnalyticsService';
 
 const ChatListView: React.FC = observer(() => {
   const [isLoading, setIsLoading] = useState(true);
@@ -27,6 +28,7 @@ const ChatListView: React.FC = observer(() => {
   };
 
   useEffect(() => {
+    logScreenView('ChatListView');
     fetchData();
   }, []);
 

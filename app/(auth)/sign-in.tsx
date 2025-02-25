@@ -1,7 +1,7 @@
 import { View, ScrollView, Alert, StatusBar, Keyboard } from 'react-native';
 import { Text } from 'react-native-paper';
 import { TextInput } from 'react-native-paper';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, router } from 'expo-router';
 import userStore from '@/stores/UserStore';
@@ -10,7 +10,7 @@ import ArrowHelp from '@/components/auth/arrowHelp';
 import i18n from '@/i18n'; // Импорт i18n для мультиязычности
 import { UserStatus } from '@/dtos/enum/UserStatus';
 import SupportAlert from '@/components/custom/alert/SupportAlert';
-import { logLogin } from '@/services/AnalyticsService';
+import { logLogin, logScreenView } from '@/services/AnalyticsService';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -19,6 +19,10 @@ const SignIn = () => {
   const [secureText, setSecureText] = useState(true); // состояние видимости пароля
   const [supportAlertVisible, setSupportAlertVisible] = useState(false); // состояние видимости алерта
 
+  useEffect(() => {
+    logScreenView("SignInScreen");
+  }, []); 
+  
   const handleLogin = async () => {
     Keyboard.dismiss();
     const validEmail = validateEmail(email);
