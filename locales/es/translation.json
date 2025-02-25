@@ -1579,5 +1579,8 @@
     "success": "Su denuncia se ha enviado con éxito",
     "error": "Lamentablemente, ha ocurrido un error. Inténtelo más tarde.",
     "close": "Cerrar"
-  }
+  },
+  "userAnauthorized": "Para obtener acceso completo a la aplicación, es necesario iniciar sesión.",
+  "makeAnauthorized": "Iniciar sesión"
+
 }

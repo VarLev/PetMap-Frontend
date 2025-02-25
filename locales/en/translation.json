@@ -1576,6 +1576,9 @@
     "success": "Your report has been successfully submitted",
     "error": "Unfortunately, an error has occurred. Please try again later.",
     "close": "Close"
-  }
+  },
+  "userAnauthorized": "To gain full access to the application, you need to log in.",
+  "makeAnauthorized": "Sign in"
+
 
 }

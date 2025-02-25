@@ -17,13 +17,14 @@ const apiClient = axios.create({
 //baseURL: 'http://192.168.0.98:5142/api'
 apiClient.interceptors.request.use(
   async (config) => {
+    
     const token = await AsyncStorage.getItem(process.env.EXPO_PUBLIC_F_TOKEN!);
     if (token) {
       // Использование токена в заголовке Authorization
       config.headers.Authorization = `Bearer ${token}`;
     } else {
       // Использование токена в параметре запроса
-      console.warn("Token not found");
+      //console.warn("Token not found");
       // config.params = config.params || {};
       // config.params["access_token"] = token;
     }

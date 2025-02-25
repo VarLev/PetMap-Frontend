@@ -15,6 +15,7 @@ import CreatePost from '@/components/search/feed/CreatePost';
 import i18n from '@/i18n';
 import BottomSheetComponent from '@/components/common/BottomSheetComponent';
 import { set } from 'lodash';
+import userStore from '@/stores/UserStore';
 
 
 // Если userId не передан, компонент показывает все посты.
@@ -157,7 +158,7 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
           />
         )}
       />
-      {!userId && <FAB icon="pen" size='medium' color='white' style={styles.fab} onPress={handleCreatePost} />}
+      {!userId  && userStore.getLogged() && <FAB icon="pen" size='medium' color='white' style={styles.fab} onPress={handleCreatePost} />}
       {bottomSheetType && (
         <BottomSheetComponent
           contentStyle={{ paddingHorizontal: 12 }}
@@ -193,7 +194,7 @@ const Feed: FC<FeedProps> = observer(({ userId }) => {
         />
       )}
       {/* Если открыт режим комментариев, отрисовываем поле ввода отдельно */}
-      {bottomSheetType === 'comments' && (
+      {bottomSheetType === 'comments' && userStore.getLogged() && (
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}

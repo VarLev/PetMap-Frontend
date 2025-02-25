@@ -6,15 +6,14 @@ import TabBarButton from './TabBarButton';
 import { Colors } from '@/constants/Colors';
 import { useDrawer } from '@/contexts/DrawerProvider';
 import SidebarUserProfileComponent from './SidebarUserProfileComponent';
+import userStore from '@/stores/UserStore';
 
 const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   const primaryColor = Colors.light.primTextButtHigh;
   const { openDrawer } = useDrawer();
- 
 
   return (
-   
-    <View style={styles.tabbar} className='shadow-md shadow-black'>
+    <View style={styles.tabbar} className="shadow-md shadow-black">
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
@@ -30,14 +29,13 @@ const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation })
 
         const onPress = () => {
           if (route.name === 'profile') {
-             openDrawer(<SidebarUserProfileComponent/>); // Открыть Drawer при нажатии на "Profile"
+            openDrawer(<SidebarUserProfileComponent />);
           } else {
             const event = navigation.emit({
               type: 'tabPress',
               target: route.key,
               canPreventDefault: true,
             });
-
             if (!isFocused && !event.defaultPrevented) {
               navigation.navigate(route.name, route.params);
             }
@@ -51,20 +49,23 @@ const TabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation })
           });
         };
 
+        // Если пользователь не авторизован, блокируем все экраны, кроме "search"
+        const isDisabled = !userStore.getLogged() && route.name !== 'search';
+
         return (
           <TabBarButton
             key={route.name}
             onPress={onPress}
-            //onLongPress={onLongPress}
+            // onLongPress={onLongPress}
             isFocused={isFocused}
             routeName={route.name}
             color={isFocused ? primaryColor : 'black'}
             label={label.toString()}
+            disabled={isDisabled}
           />
         );
       })}
     </View>
-   
   );
 };
 
@@ -76,13 +77,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'white',
-    marginHorizontal: 10 ,
+    marginHorizontal: 10,
     paddingVertical: 10,
     borderRadius: 25,
-    // shadowColor: 'black',
-    // shadowOffset: { width: 10, height: 10 },
-    // shadowRadius: 100,
-    // shadowOpacity: 1,
   },
 });
 

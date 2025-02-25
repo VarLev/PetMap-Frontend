@@ -65,22 +65,27 @@ const App = () => {
     setUserHasSubscription(hasSubscription);
 
     const checkAuthAndRedirect = async () => {
-      if (isInitialized && adShown && !loading && userStore.getLogged() && !isUserJustRegistrated) {
-        const currentUser = (await userStore.getCurrentUser()) as IUser;
-        if (currentUser.userStatus === UserStatus.Onboarding) {
-          await router.replace('/(auth)/onboarding');
-        } else if (currentUser.userStatus === UserStatus.ReadyToGo) {
+      if (isInitialized && adShown && !loading) {
+        // Если пользователь залогинен и не только что зарегистрировался – оставить существующую логику
+        if (userStore.getLogged() && !isUserJustRegistrated) {
+          const currentUser = (await userStore.getCurrentUser()) as IUser;
+          if (currentUser.userStatus === UserStatus.Onboarding) {
+            await router.replace('/(auth)/onboarding');
+          } else if (currentUser.userStatus === UserStatus.ReadyToGo) {
+            await router.replace('/search/news');
+          }
+        } else {
+          // Если пользователь не залогинен или новый – перенаправляем сразу в /search/news
           await router.replace('/search/news');
         }
       }
     };
-
     checkAuthAndRedirect();
 
     if (isError) {
       showAlert(i18n.t('index.error'), 'OK', require('../assets/images/InternetError.webp'));
     }
-  }, []);
+  }, [isInitialized, adShown, loading, isError, isUserJustRegistrated]);
 
   if (!isError && (loading || !isInitialized)) {
     return <ScreenHolderLogo />;
@@ -169,62 +174,7 @@ const App = () => {
   }
 
   return (
-    <GestureHandlerRootView>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-      <SafeAreaView className="bg-white h-full">
-        <View className="w-full h-full px-4 justify-center">
-          <View className="flex-row mt-2 items-start justify-center">
-            <Text
-              variant="titleSmall"
-              className="ml-0 text-xl font-nunitoSansBold mt-4 mb-2"
-            >
-              {i18n.t('index.welcome')}
-            </Text>
-          </View>
-          <View className="justify-center items-center">
-            <OnboardingCarousel />
-          </View>
-          <View className="pt-8">
-            <CustomButtonPrimary
-              title={i18n.t('index.signUp')}
-              handlePress={() => {
-                console.log('[App] Переход на экран регистрации (/sign-up)');
-                router.push('/sign-up');
-              }}
-              containerStyles="w-full"
-            />
-            <CustomButtonOutlined
-              title={i18n.t('index.alreadyHaveAccount')}
-              handlePress={() => {
-                console.log('[App] Переход на экран входа (/sign-in)');
-                router.push('/sign-in');
-              }}
-              containerStyles="w-full"
-            />
-          </View>
-          <View className="flex-col justify-center items-center pt-3">
-            <Text
-              variant="titleSmall"
-              className="text-sm font-nunitoSansRegular text-stone-400"
-            >
-              {i18n.t('index.otherSignInMethods')}
-            </Text>
-            <View className="flex-row justify-around mt-2 gap-x-4">
-              {Platform.OS === 'android' && (
-                <TouchableOpacity onPress={handleGooglePress}>
-                  <Image className="w-12 h-12" source={googleLogo} />
-                </TouchableOpacity>
-              )}
-              {Platform.OS === 'ios' && (
-                <TouchableOpacity onPress={handleApplePress}>
-                  <Image className="w-12 h-12" source={appleLogo} />
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-        </View>
-      </SafeAreaView>
-    </GestureHandlerRootView>
+    <Redirect href="/(auth)/welcomeScreen" />
   );
 };
 

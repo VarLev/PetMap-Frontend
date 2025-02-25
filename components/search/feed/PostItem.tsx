@@ -50,7 +50,7 @@ const PostCard: FC<PostCardProps> = observer(
     useEffect(() => {
       (async () => {
         const postComments = await searchStore.fetchGetComments(post.id);
-        const hasLiked = await searchStore.hasUserLiked(post.id);
+        const hasLiked = userStore.getLogged() ? await searchStore.hasUserLiked(post.id) : false;
         updateLikes();
         setHasLiked(hasLiked);
         setCommentsCounter(postComments.length);
@@ -223,7 +223,8 @@ const PostCard: FC<PostCardProps> = observer(
                       <Text className="text-gray-500 text-xs">{new Date(post.createdAt).toLocaleDateString()}</Text>
                     </View>
                   </View>
-                  <View>
+                  {userStore.getLogged() && (
+                    <View>
                     <Menu
                       contentStyle={{
                         backgroundColor: 'white',
@@ -247,6 +248,8 @@ const PostCard: FC<PostCardProps> = observer(
                       )}
                     </Menu>
                   </View>
+                  )}
+                  
                 </>
               )}
 
@@ -320,7 +323,7 @@ const PostCard: FC<PostCardProps> = observer(
                 <IconButton
                   icon={hasLiked ? 'heart' : 'heart-outline'}
                   iconColor={hasLiked ? BG_COLORS.purple[400] : 'gray'}
-                  onPress={toggleLike}
+                  onPress={()=> userStore.getLogged() ? toggleLike() : null}
                   size={20}
                 />
                 <Text className="-ml-2 text-sm text-gray-500 font-medium">{likesCounter}</Text>
@@ -351,8 +354,9 @@ const PostCard: FC<PostCardProps> = observer(
                   className="flex-1 bg-gray-100 rounded-md px-2 py-1 text-sm"
                   onChangeText={(text) => setCommentText(text)}
                   value={commentText}
+                  editable={userStore.getLogged()}
                 />
-                <IconButton icon="send" iconColor={BG_COLORS.purple[400]} onPress={addComment} size={20} style={{ marginLeft: 4 }} />
+                <IconButton icon="send" disabled={!userStore.getLogged()} iconColor={BG_COLORS.purple[400]} onPress={addComment} size={20} style={{ marginLeft: 4 }} />
               </View>
             </View>
           </Card.Actions>

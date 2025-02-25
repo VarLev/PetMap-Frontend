@@ -133,7 +133,7 @@ const SignUp = () => {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="w-full justify-between px-9 my-10 flex-1">
           <View>
-            <ArrowHelp onPressArrow={() => router.replace('/')} onPressHelp={() => setSupportAlertVisible(true)} />
+            <ArrowHelp onPressArrow={() => router.back()} onPressHelp={() => setSupportAlertVisible(true)} />
             <View className=" justify-start mt-10 ">
               <View className="flex-col items-start justify-center">
                 <Text variant="titleSmall" className="text-lg font-nunitoSansBold">

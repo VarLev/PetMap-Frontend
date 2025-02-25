@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Tabs, usePathname } from 'expo-router';
 import TabBar from '@/components/navigation/TabBar';
 import { DrawerProvider } from '@/contexts/DrawerProvider';
-import { Keyboard, Platform } from 'react-native';
+import { Keyboard, Platform, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DismissibleBanner from '@/components/ads/DismissibleBanner';
 import userStore from '@/stores/UserStore';
@@ -82,7 +82,9 @@ const Tabslayout = () => {
             options={{
               title: 'Search',
               headerShown: false,
+              
             }}
+            
           />
           <Tabs.Screen
             name="explore"
@@ -97,6 +99,7 @@ const Tabslayout = () => {
               title: 'Map',
               headerShown: false,
             }}
+            
           />
           <Tabs.Screen
             name="chat"

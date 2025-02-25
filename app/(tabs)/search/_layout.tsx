@@ -14,6 +14,7 @@ export default function Layout() {
   const [swipeEnabled, setSwipeEnabled] = useState(true);
   return (
     <SafeAreaView className="bg-white h-full">
+      
     <NavigationContainer>
     <TopTab.Navigator
       screenOptions={{

@@ -52,7 +52,7 @@ const SignIn = () => {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
         <View className="w-full justify-between h-full px-9 my-10">
           <View>
-            <ArrowHelp onPressArrow={() => router.replace('/')} onPressHelp={() => setSupportAlertVisible(true)} />
+            <ArrowHelp onPressArrow={() => router.back()} onPressHelp={() => setSupportAlertVisible(true)} />
             {/* временная ссылка для отладки */}
             <View className="justify-start mt-10 ">
               <View className="flex-col items-start justify-center">
