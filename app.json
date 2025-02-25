@@ -54,6 +54,10 @@
         {
           "ios": {
             "useFrameworks": "static"
+          },
+          "android": {
+            "enableProguardInReleaseBuilds": true,
+            "extraProguardRules": "-dontwarn android.media.LoudnessCodecController\n-dontwarn android.media.LoudnessCodecController$OnLoudnessCodecUpdateListener"
           }
         }
       ],
